@@ -81,17 +81,18 @@ export function buildVTableColumns<Row extends Record<string, unknown>>(
     field: CHECKBOX_FIELD,
     title: '',
     width: 42,
-    fixed: 'left',
     cellType: 'checkbox',
     headerType: 'checkbox',
-  }] as ColumnDefine[] : []
+  }] as unknown as ColumnDefine[] : []
   const actions: ColumnDefine[] = options.showActionsColumn ? [{
     field: ACTION_FIELD,
     title: '操作',
     width: options.actionsWidth ?? 160,
-    fixed: 'right',
     sort: false,
+    cellType: 'button',
+    text: '操作',
+    buttonStyle: { buttonColor: '#2d67dc', buttonHoverColor: '#1f56c1', color: '#ffffff' },
     customLayout: options.actionLayout,
-  }] as ColumnDefine[] : []
+  }] as unknown as ColumnDefine[] : []
   return [...checkbox, ...business, ...actions]
 }

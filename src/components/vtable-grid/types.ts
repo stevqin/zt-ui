@@ -1,4 +1,4 @@
-import type { ColumnDefine, ListTable, ListTableConstructorOptions } from '@visactor/vtable'
+import type { ListTable } from '@visactor/vtable'
 
 export type ZtVTableGridRowKey = string | number
 export type ZtVTableGridSize = 'large' | 'default' | 'medium' | 'small' | 'mini'
@@ -47,17 +47,25 @@ export interface ZtVTableGridSummaryRule<Row> {
 
 export type ZtVTableGridSummary<Row> = ZtVTableGridSummaryType | ZtVTableGridSummaryRule<Row>
 
-export type ZtVTableGridColumn<Row extends Record<string, unknown> = Record<string, unknown>> = Omit<
-  ColumnDefine,
-  'field' | 'fixed' | 'editor'
-> & {
+export interface ZtVTableGridColumn<Row extends Record<string, unknown> = Record<string, unknown>> {
   field: keyof Row & string
   key?: string
+  title?: string
+  width?: string | number
+  minWidth?: string | number
+  maxWidth?: string | number
   fixed?: 'left' | 'right'
+  sort?: boolean | ((first: unknown, second: unknown) => number)
+  formatter?: (args: unknown) => unknown
+  style?: unknown
+  headerStyle?: unknown
+  cellType?: string
+  headerType?: string
   visible?: boolean
   editable?: ZtVTableGridEditor
   summary?: ZtVTableGridSummary<Row>
   copyFormatter?: (row: Row) => unknown
+  [nativeOption: string]: unknown
 }
 
 export type ZtVTableGridActionStatus = 'primary' | 'success' | 'info' | 'warning' | 'danger'
@@ -114,7 +122,7 @@ export interface ZtVTableGridSummaryConfig {
   summaryData?: Record<string, unknown> | null
 }
 
-export type ZtVTableGridTableOptions = Omit<ListTableConstructorOptions, 'records' | 'columns' | 'pagination'>
+export type ZtVTableGridTableOptions = Record<string, unknown>
 
 export interface ZtVTableGridProps<
   Row extends Record<string, unknown> = Record<string, unknown>,

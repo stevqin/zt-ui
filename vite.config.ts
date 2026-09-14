@@ -6,7 +6,11 @@ import { resolve } from 'path'
 export default defineConfig({
   plugins: [
     vue(),
-    dts({ tsconfigPath: './tsconfig.build.json' }),
+    dts({
+      tsconfigPath: './tsconfig.build.json',
+      exclude: ['src/components/vtable-grid/ZtVTableGrid.vue'],
+      copyDtsFiles: true,
+    }),
   ],
   resolve: {
     alias: {

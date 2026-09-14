@@ -31,6 +31,7 @@ export function registerGridEditors(register: RegisterEditor) {
 }
 
 export function editorName(editor: ZtVTableGridEditor) {
+  if (!editor) return undefined
   if (editor === true) return 'zt-vtable-text'
   if (typeof editor === 'string') return `zt-vtable-${editor}`
   if (editor.type === 'number') return 'zt-vtable-number'

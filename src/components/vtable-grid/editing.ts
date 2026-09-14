@@ -1,7 +1,9 @@
 import type { ZtVTableGridRowKey, ZtVTableGridSavePayload } from './types'
 
 function clone<T>(value: T): T {
-  if (typeof structuredClone === 'function') return structuredClone(value)
+  if (typeof structuredClone === 'function') {
+    try { return structuredClone(value) } catch { /* Vue reactive proxies need the recursive fallback. */ }
+  }
   if (Array.isArray(value)) return value.map(clone) as T
   if (value && typeof value === 'object') {
     return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, item]) => [key, clone(item)])) as T
@@ -28,14 +30,14 @@ export function createEditStore<Row extends Record<string, unknown>>(getKey: (ro
     let draft = drafts.get(key)
     if (!draft) {
       const original = clone(row)
-      original[field] = clone(oldValue)
+      ;(original as Record<string, unknown>)[field] = clone(oldValue)
       draft = { key, original, current: clone(row), fields: new Set() }
       drafts.set(key, draft)
     } else {
       draft.current = { ...draft.current, ...clone(row) }
     }
-    draft.current[field] = clone(value)
-    if (equal(draft.original[field], value)) draft.fields.delete(field)
+    ;(draft.current as Record<string, unknown>)[field] = clone(value)
+    if (equal((draft.original as Record<string, unknown>)[field], value)) draft.fields.delete(field)
     else draft.fields.add(field)
     if (draft.fields.size === 0) drafts.delete(key)
   }
