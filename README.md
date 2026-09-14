@@ -19,6 +19,7 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 - Checkbox and CheckboxGroup
 - Switch
 - Badge
+- Steps and Step
 - Modal
 - Drawer
 
@@ -91,6 +92,18 @@ Drawer supports all four viewport edges:
 >
   Content
 </ZtDrawer>
+```
+
+## Steps
+
+`ZtSteps` supports responsive horizontal, centered, simple, fixed-space, and vertical layouts. Step states can be derived from `active` or set explicitly.
+
+```vue
+<ZtSteps :active="1" finish-status="success" align-center>
+  <ZtStep title="Create order" description="Enter order details" />
+  <ZtStep title="Review" description="Confirm inventory" />
+  <ZtStep title="Complete" description="Dispatch the order" />
+</ZtSteps>
 ```
 
 ## Development

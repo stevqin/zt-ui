@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { sfc } from '../utils/exampleCode'
 
-const pages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'badge']
+const pages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'badge', 'steps']
 
 describe('site example coverage', () => {
   it('contains long code lines without widening the documentation page', () => {
@@ -29,5 +29,12 @@ describe('site example coverage', () => {
     expect(source).not.toContain('<div class="doc-demo">')
     expect(demoCount).toBeGreaterThan(0)
     expect(codeCount).toBe(demoCount)
+  })
+
+  it('registers the Steps page in navigation and routing', () => {
+    const app = readFileSync(resolve(process.cwd(), 'src/App.vue'), 'utf8')
+    const router = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
+    expect(app).toContain("path: '/steps'")
+    expect(router).toContain("path: '/steps'")
   })
 })

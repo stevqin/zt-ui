@@ -36,6 +36,11 @@ const routes = [
     meta: { title: 'Badge 徽标' },
   },
   {
+    path: '/steps',
+    component: () => import('../views/steps/Index.vue'),
+    meta: { title: 'Steps 步骤条' },
+  },
+  {
     path: '/modal',
     component: () => import('../views/modal/Index.vue'),
     meta: { title: 'Modal 弹窗' },

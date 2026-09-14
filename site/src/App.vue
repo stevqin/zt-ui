@@ -15,6 +15,7 @@ const nav = [
     { path: '/checkbox', label: 'Checkbox 多选框' },
     { path: '/switch', label: 'Switch 开关' },
     { path: '/badge', label: 'Badge 徽标' },
+    { path: '/steps', label: 'Steps 步骤条' },
     { path: '/modal', label: 'Modal 弹窗' },
     { path: '/drawer', label: 'Drawer 抽屉' },
   ]},
