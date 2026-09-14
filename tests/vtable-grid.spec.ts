@@ -143,12 +143,54 @@ describe('ZtVTableGrid', () => {
     expect(tableMock.setRecords).toHaveBeenCalled()
   })
 
+  it('refreshes selected row objects without emitting a false selection change', async () => {
+    const refreshed = [{ ...rows[0], name: 'Alpha refreshed' }, rows[1]]
+    const proxyConfig = vi.fn().mockResolvedValueOnce({ data: rows, total: 2 }).mockResolvedValueOnce({ data: refreshed, total: 2 })
+    const wrapper = mount(ZtVTableGrid<Row>, {
+      props: { columns, proxyConfig, checkbox: true, toolbar: false },
+      slots: {
+        'toolbar-left': ({ selectedRows }: { selectedRows: Row[] }) => h('span', { class: 'selected-name' }, selectedRows[0]?.name ?? 'none'),
+      },
+    })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-checkbox-state-change', { row: 1, checked: true })
+    await nextTick()
+    expect(wrapper.get('.selected-name').text()).toBe('Alpha')
+    expect(wrapper.emitted('selection-change')).toHaveLength(1)
+
+    await (wrapper.vm as any).reload()
+    await nextTick()
+    expect(wrapper.get('.selected-name').text()).toBe('Alpha refreshed')
+    expect(wrapper.emitted('selection-change')).toHaveLength(1)
+  })
+
   it('sorts local records before applying pagination', async () => {
     const wrapper = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, pagination: false } })
     await flushPromises()
     wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-sort-click', { field: 'amount', order: 'desc' })
     await flushPromises()
     expect(tableMock.setRecords).toHaveBeenLastCalledWith([rows[1], rows[0]])
+  })
+
+  it('uses custom column comparators for local scalar and array sort fields', async () => {
+    const customRows: Row[] = [
+      { id: 1, name: 'First', amount: 12 },
+      { id: 2, name: 'Second', amount: 21 },
+    ]
+    const customColumns = [
+      columns[0],
+      { ...columns[1], sort: (left: unknown, right: unknown) => Number(left) % 10 - Number(right) % 10 },
+    ]
+    const wrapper = mount(ZtVTableGrid<Row>, { props: { columns: customColumns, records: customRows, pagination: false } })
+    await flushPromises()
+    const table = wrapper.findComponent({ name: 'MockListTable' })
+    table.vm.$emit('on-sort-click', { field: 'amount', order: 'asc' })
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([customRows[1], customRows[0]])
+
+    table.vm.$emit('on-sort-click', { field: ['amount'], order: 'desc' })
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([customRows[0], customRows[1]])
   })
 
   it('shows loading, empty and error states', async () => {
@@ -210,6 +252,38 @@ describe('ZtVTableGrid', () => {
     expect(editableColumns.find((column: any) => column.field === 'amount').editor({
       col: 1, row: 1, table: { getCellOriginRecord: () => rows[0] },
     })).toBe('zt-vtable-number')
+  })
+
+  it('blocks Canvas interactions while disabled', async () => {
+    const wrapper = mount(ZtVTableGrid<Row>, {
+      props: { columns, records: rows, checkbox: true, editable: true, showActionsColumn: true, disabled: true, pagination: false },
+    })
+    await flushPromises()
+    const table = wrapper.findComponent({ name: 'MockListTable' })
+    const nativeColumns = table.props('options').columns
+    const checkbox = nativeColumns.find((column: any) => column.field === '__zt_grid_checked__')
+    const amount = nativeColumns.find((column: any) => column.field === 'amount')
+    const cell = { col: 0, row: 1, table: { getCellOriginRecord: () => rows[0] } }
+    expect(checkbox.disable(cell)).toBe(true)
+    expect(amount.editor).toBeUndefined()
+    expect(amount.sort).toBe(false)
+
+    table.vm.$emit('on-checkbox-state-change', { row: 1, checked: true })
+    table.vm.$emit('on-sort-click', { field: 'amount', order: 'desc' })
+    table.vm.$emit('on-change-cell-value', { row: 1, field: 'amount', rawValue: 10, changedValue: 99 })
+    table.vm.$emit('on-click-cell', { row: 1 })
+    table.vm.$emit('on-dbl-click-cell', { row: 1 })
+    table.vm.$emit('on-button-click', { row: 1 })
+    await nextTick()
+
+    expect((wrapper.vm as any).getSelectedRows()).toEqual([])
+    expect((wrapper.vm as any).getChanges().changedRowCount).toBe(0)
+    expect(wrapper.emitted('selection-change')).toBeUndefined()
+    expect(wrapper.emitted('sort-change')).toBeUndefined()
+    expect(wrapper.emitted('cell-change')).toBeUndefined()
+    expect(wrapper.emitted('row-click')).toBeUndefined()
+    expect(wrapper.emitted('row-dblclick')).toBeUndefined()
+    expect(wrapper.find('[role="menu"]').exists()).toBe(false)
   })
 
   it('keeps changes when batch save fails', async () => {

@@ -63,6 +63,7 @@ export function buildVTableColumns<Row extends object>(
     checkbox: boolean
     showActionsColumn: boolean
     editable?: boolean
+    disabled?: boolean
     isRowSelected?: (row: Row) => boolean
     actionsWidth?: number
     actionLayout?: ColumnDefine['customLayout']
@@ -80,10 +81,11 @@ export function buildVTableColumns<Row extends object>(
   ]
 
   const business = arranged.map(column => {
-    const { editable, summary: _summary, visible: _visible, copyFormatter: _copy, ...native } = column
+    const { editable, sort, summary: _summary, visible: _visible, copyFormatter: _copy, ...native } = column
     return {
       ...native,
-      editor: options.editable !== false && editable
+      sort: options.disabled ? false : sort,
+      editor: !options.disabled && options.editable !== false && editable
         ? (args: any) => recordFromCell(args)?.[SUMMARY_FIELD] ? undefined : editorName(editable)
         : undefined,
     } as ColumnDefine
@@ -100,7 +102,7 @@ export function buildVTableColumns<Row extends object>(
         ? Boolean(options.isRowSelected?.(record))
         : false
     },
-    disable: (args: any) => Boolean(recordFromCell(args)?.[SUMMARY_FIELD]),
+    disable: (args: any) => options.disabled || Boolean(recordFromCell(args)?.[SUMMARY_FIELD]),
   }] as unknown as ColumnDefine[] : []
   const actions: ColumnDefine[] = options.showActionsColumn ? [{
     field: ACTION_FIELD,

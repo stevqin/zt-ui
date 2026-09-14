@@ -11,7 +11,7 @@ export interface ZtVTableGridSort {
   order: ZtVTableGridSortOrder
 }
 
-export interface ZtVTableGridQueryParams<FormData extends Record<string, unknown> = Record<string, unknown>> {
+export interface ZtVTableGridQueryParams<FormData extends object = Record<string, unknown>> {
   page: number
   pageSize: number
   sort: ZtVTableGridSort
@@ -26,7 +26,7 @@ export interface ZtVTableGridQueryResult<Row> {
   summary_data?: Record<string, unknown> | null
 }
 
-export type ZtVTableGridProxyConfig<Row, FormData extends Record<string, unknown> = Record<string, unknown>> =
+export type ZtVTableGridProxyConfig<Row, FormData extends object = Record<string, unknown>> =
   (params: ZtVTableGridQueryParams<FormData>) => Promise<ZtVTableGridQueryResult<Row>>
 
 export type ZtVTableGridEditor = boolean | 'text' | 'textarea' | 'date' | 'number' | 'email' | 'url' | {
@@ -126,7 +126,7 @@ export type ZtVTableGridTableOptions = Record<string, unknown>
 
 export interface ZtVTableGridProps<
   Row extends object = Record<string, unknown>,
-  FormData extends Record<string, unknown> = Record<string, unknown>,
+  FormData extends object = Record<string, unknown>,
 > {
   columns: ZtVTableGridColumn<Row>[]
   records?: Row[]
@@ -196,7 +196,7 @@ export interface ZtVTableGridExpose<Row> {
 
 export interface ZtVTableGridSlots<
   Row extends object = Record<string, unknown>,
-  FormData extends Record<string, unknown> = Record<string, unknown>,
+  FormData extends object = Record<string, unknown>,
 > {
   form?: (scope: { formData: FormData; query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void> }) => unknown
   'toolbar-left'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[] }) => unknown

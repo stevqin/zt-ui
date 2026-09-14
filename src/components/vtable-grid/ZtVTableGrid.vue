@@ -126,6 +126,7 @@ const nativeColumns = computed(() => buildVTableColumns(props.columns, {
   checkbox: props.checkbox,
   showActionsColumn: props.showActionsColumn,
   editable: props.editable,
+  disabled: props.disabled,
   isRowSelected: selection.has,
   actionsWidth: 108,
 }))
@@ -169,13 +170,13 @@ function currentPageRows(rows: Row[]) {
 }
 
 async function applyRows(rows: Row[], nextTotal: number, backendSummary: Record<string, unknown> | null = null) {
-  const previousSelection = selection.keys().join('|')
+  const previousSelection = selection.keys()
   const withDrafts = edits.apply(rows)
   displayedRecords.value = withDrafts
   total.value = nextTotal
   selection.replacePage(withDrafts, props.reserveCheckbox)
-  if (selection.keys().join('|') !== previousSelection) {
-    selectionVersion.value += 1
+  selectionVersion.value += 1
+  if (!sameKeys(selection.keys(), previousSelection)) {
     emit('selection-change', selection.rows())
   }
   summaryValues.value = buildSummaryValues(props.columns, withDrafts, backendSummary)
@@ -183,6 +184,10 @@ async function applyRows(rows: Row[], nextTotal: number, backendSummary: Record<
   await nextTick()
   tableInstance.value?.setRecords(renderedRecords.value)
   tableInstance.value?.resize()
+}
+
+function sameKeys(left: Array<string | number>, right: Array<string | number>) {
+  return left.length === right.length && left.every((key, index) => Object.is(key, right[index]))
 }
 
 function withSummaryRecord(rows: Row[]) {
@@ -234,14 +239,23 @@ async function query(resetPage = false) {
 }
 
 function sortLocalRows(rows: Row[]) {
-  if (sort.value.order === 'normal' || typeof sort.value.field !== 'string') return rows
-  const field = sort.value.field
+  if (sort.value.order === 'normal' || sort.value.field === undefined) return rows
+  const fields = Array.isArray(sort.value.field) ? sort.value.field : [sort.value.field]
+  if (!fields.length) return rows
   const direction = sort.value.order === 'asc' ? 1 : -1
   return [...rows].sort((first, second) => {
-    const left = first[field]
-    const right = second[field]
-    if (typeof left === 'number' && typeof right === 'number') return (left - right) * direction
-    return String(left ?? '').localeCompare(String(right ?? ''), undefined, { numeric: true }) * direction
+    for (const field of fields) {
+      const left = first[field]
+      const right = second[field]
+      const column = props.columns.find(item => item.field === String(field))
+      const compared = typeof column?.sort === 'function'
+        ? column.sort(left, right)
+        : typeof left === 'number' && typeof right === 'number'
+          ? left - right
+          : String(left ?? '').localeCompare(String(right ?? ''), undefined, { numeric: true })
+      if (compared) return compared * direction
+    }
+    return 0
   })
 }
 
@@ -273,6 +287,7 @@ function rowFromEvent(event: any) {
 }
 
 function handleCheckbox(event: any) {
+  if (props.disabled) return
   if (Number(event?.row) === 0 || event?.isHeader) {
     selection.selectPage(displayedRecords.value, Boolean(event.checked ?? event.value))
     selectionVersion.value += 1
@@ -289,12 +304,14 @@ function handleCheckbox(event: any) {
 }
 
 function handleSort(event: any) {
+  if (props.disabled) return
   sort.value = { field: event.field, order: event.order ?? 'normal' }
   emit('sort-change', { ...sort.value })
   void query(true)
 }
 
 function handleCellChange(event: any) {
+  if (props.disabled) return
   const row = rowFromEvent(event)
   const field = String(event.field ?? tableInstance.value?.getHeaderField?.(event.col, 0) ?? '')
   if (!row || !field || field === ACTION_FIELD) return
@@ -307,6 +324,7 @@ function handleCellChange(event: any) {
 }
 
 function handleRowClick(event: any, name: 'row-click' | 'row-dblclick') {
+  if (props.disabled) return
   const row = rowFromEvent(event)
   if (!row) return
   if (name === 'row-click') emit('row-click', row, event)
@@ -314,12 +332,14 @@ function handleRowClick(event: any, name: 'row-click' | 'row-dblclick') {
 }
 
 function handleActionCell(event: any) {
+  if (props.disabled) return
   const row = rowFromEvent(event)
   if (!row) return
   actionMenu.value = { row, items: resolveActionButtons(props.actionButtons, row) }
 }
 
 function runAction(item: ZtVTableGridActionButton<Row>) {
+  if (props.disabled) return
   const menu = actionMenu.value
   if (!menu || item.disabled) return
   item.handler?.(menu.row as Row)
@@ -328,6 +348,7 @@ function runAction(item: ZtVTableGridActionButton<Row>) {
 }
 
 function toolbarAction(item: string) {
+  if (props.disabled) return
   if (item === 'create') emit('create')
   else if (item === 'import') emit('import')
   else if (item === 'export') exportCsv()

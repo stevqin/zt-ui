@@ -9,7 +9,7 @@ import type {
 
 export declare const ZtVTableGrid: <
   Row extends object = Record<string, unknown>,
-  FormData extends Record<string, unknown> = Record<string, unknown>,
+  FormData extends object = Record<string, unknown>,
 >(props: ZtVTableGridProps<Row, FormData> & ZtVTableGridEventProps<Row>) => VNode & {
   __ctx?: {
     slots: ZtVTableGridSlots<Row, FormData>
