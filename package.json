@@ -52,10 +52,16 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
+    "@visactor/vtable": "^1.26.7",
+    "@visactor/vtable-editors": "^1.26.7",
+    "@visactor/vue-vtable": "^1.26.7",
     "vue": "^3.5.0"
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
+    "@visactor/vtable": "^1.26.8",
+    "@visactor/vtable-editors": "^1.26.8",
+    "@visactor/vue-vtable": "^1.26.8",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.5.0",
     "happy-dom": "^17.6.3",

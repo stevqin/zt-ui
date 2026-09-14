@@ -20,10 +20,13 @@ export default defineConfig({
       fileName: 'zt-ui',
     },
     rollupOptions: {
-      external: ['vue'],
+      external: ['vue', '@visactor/vtable', '@visactor/vtable-editors', '@visactor/vue-vtable'],
       output: {
         globals: {
           vue: 'Vue',
+          '@visactor/vtable': 'VTable',
+          '@visactor/vtable-editors': 'VTableEditors',
+          '@visactor/vue-vtable': 'VueVTable',
         },
       },
     },
