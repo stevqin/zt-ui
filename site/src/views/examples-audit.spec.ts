@@ -3,7 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { sfc } from '../utils/exampleCode'
 
-const pages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'badge', 'steps', 'pagination']
+const pages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'badge', 'steps', 'pagination', 'vtable-grid']
 
 describe('site example coverage', () => {
   it('contains long code lines without widening the documentation page', () => {
@@ -31,12 +31,22 @@ describe('site example coverage', () => {
     expect(codeCount).toBe(demoCount)
   })
 
-  it('registers the Steps and Pagination pages in navigation and routing', () => {
+  it('registers the Steps, Pagination and VTableGrid pages in navigation and routing', () => {
     const app = readFileSync(resolve(process.cwd(), 'src/App.vue'), 'utf8')
     const router = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
     expect(app).toContain("path: '/steps'")
     expect(router).toContain("path: '/steps'")
     expect(app).toContain("path: '/pagination'")
     expect(router).toContain("path: '/pagination'")
+    expect(app).toContain("path: '/vtable-grid'")
+    expect(router).toContain("path: '/vtable-grid'")
+  })
+
+  it('provides five copyable TypeScript VTableGrid examples', () => {
+    const source = readFileSync(resolve(process.cwd(), 'src/views/vtable-grid/Index.vue'), 'utf8')
+    expect((source.match(/<DemoBlock\s+:code=/g) ?? [])).toHaveLength(5)
+    expect(source).toContain('ZtVTableGridColumn')
+    expect(source).toContain('proxyConfig')
+    expect(source).toContain('batchSave')
   })
 })

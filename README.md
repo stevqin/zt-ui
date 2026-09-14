@@ -9,7 +9,7 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 - Accessible keyboard and focus behavior
 - Reduced-motion support
 - Interactive documentation with copyable Vue + TypeScript examples
-- No runtime dependency other than Vue
+- Optional VisActor peer dependencies for the high-performance VTableGrid
 
 ## Components
 
@@ -21,6 +21,7 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 - Badge
 - Steps and Step
 - Pagination
+- VTableGrid
 - Modal
 - Drawer
 
@@ -28,6 +29,12 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 
 ```bash
 npm install @ztechjs/zt-ui
+```
+
+To use `ZtVTableGrid`, install its VisActor peers as well:
+
+```bash
+npm install @visactor/vtable @visactor/vue-vtable @visactor/vtable-editors
 ```
 
 Import the stylesheet once in your application entry:
@@ -117,6 +124,38 @@ Drawer supports all four viewport edges:
   :page-sizes="[10, 20, 50, 100]"
   layout="total, sizes, prev, pager, next, jumper"
 />
+```
+
+## VTableGrid
+
+`ZtVTableGrid` combines VisActor VTable with zt-ui controls for local or remote data, paging, sorting, keyed selection, row actions, cell editing, summaries, column settings, and CSV export.
+
+```vue
+<script setup lang="ts">
+import { ZtVTableGrid, type ZtVTableGridColumn } from '@ztechjs/zt-ui'
+
+type Product = { id: number; name: string; price: number; stock: number }
+
+const columns: ZtVTableGridColumn<Product>[] = [
+  { field: 'name', title: 'Product', width: 180, sort: true },
+  { field: 'price', title: 'Price', editable: 'number', summary: 'avg' },
+  { field: 'stock', title: 'Stock', editable: 'number', summary: 'sum' },
+]
+const records: Product[] = [
+  { id: 1, name: 'Cloud knit', price: 399, stock: 42 },
+]
+</script>
+
+<template>
+  <ZtVTableGrid
+    :columns="columns"
+    :records="records"
+    editable
+    checkbox
+    :summary="{ label: 'Total' }"
+    :toolbar="['export', 'columnsetting', 'reload']"
+  />
+</template>
 ```
 
 ## Development

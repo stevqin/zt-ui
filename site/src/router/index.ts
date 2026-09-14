@@ -46,6 +46,11 @@ const routes = [
     meta: { title: 'Pagination 分页' },
   },
   {
+    path: '/vtable-grid',
+    component: () => import('../views/vtable-grid/Index.vue'),
+    meta: { title: 'VTableGrid 数据表格' },
+  },
+  {
     path: '/modal',
     component: () => import('../views/modal/Index.vue'),
     meta: { title: 'Modal 弹窗' },

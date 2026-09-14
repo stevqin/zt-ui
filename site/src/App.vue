@@ -17,6 +17,7 @@ const nav = [
     { path: '/badge', label: 'Badge 徽标' },
     { path: '/steps', label: 'Steps 步骤条' },
     { path: '/pagination', label: 'Pagination 分页' },
+    { path: '/vtable-grid', label: 'VTableGrid 数据表格' },
     { path: '/modal', label: 'Modal 弹窗' },
     { path: '/drawer', label: 'Drawer 抽屉' },
   ]},
