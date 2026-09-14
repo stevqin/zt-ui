@@ -87,6 +87,17 @@ describe('ZtVTableGrid', () => {
     expect(proxyConfig).toHaveBeenLastCalledWith(expect.objectContaining({ page: 3, pageSize: 10 }))
   })
 
+  it('uses the page size declared inside the pagination config', async () => {
+    const proxyConfig = vi.fn().mockResolvedValue({ data: rows, total: 37 })
+    const wrapper = mount(ZtVTableGrid<Row>, {
+      props: { columns, proxyConfig, pagination: { pageSize: 10, pageSizes: [10, 20] } },
+    })
+    await flushPromises()
+
+    expect(proxyConfig).toHaveBeenCalledWith(expect.objectContaining({ pageSize: 10 }))
+    expect(wrapper.get('[aria-label="下一页"]').attributes('disabled')).toBeUndefined()
+  })
+
   it('tracks checkbox selections emitted by VTable', async () => {
     const wrapper = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, checkbox: true, pagination: false } })
     await flushPromises()
@@ -142,6 +153,18 @@ describe('ZtVTableGrid', () => {
     ;(wrapper.vm as any).cancelChanges()
     await flushPromises()
     expect((wrapper.vm as any).getChanges().changedRowCount).toBe(0)
+  })
+
+  it('only enables column editors when editable mode is on', async () => {
+    const readonly = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, pagination: false } })
+    await flushPromises()
+    const readonlyColumns = readonly.findComponent({ name: 'MockListTable' }).props('options').columns
+    expect(readonlyColumns.find((column: any) => column.field === 'amount').editor).toBeUndefined()
+
+    const editable = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, editable: true, pagination: false } })
+    await flushPromises()
+    const editableColumns = editable.findComponent({ name: 'MockListTable' }).props('options').columns
+    expect(editableColumns.find((column: any) => column.field === 'amount').editor).toBe('zt-vtable-number')
   })
 
   it('keeps changes when batch save fails', async () => {

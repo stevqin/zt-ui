@@ -35,7 +35,6 @@ const props = withDefaults(defineProps<ZtVTableGridProps<Row, FormData>>(), {
   formData: () => ({} as FormData),
   pagination: true,
   currentPage: 1,
-  pageSize: 200,
   rowKey: 'id' as keyof Row & string,
   height: 480,
   size: 'default',
@@ -82,7 +81,8 @@ const renderedRecords = shallowRef<Row[]>([])
 const innerLoading = ref(false)
 const loadError = ref<unknown>(null)
 const total = ref(0)
-const paginationState = normalizePagination({ currentPage: props.currentPage, pageSize: props.pageSize })
+const declaredPageSize = typeof props.pagination === 'object' ? props.pagination.pageSize : undefined
+const paginationState = normalizePagination({ currentPage: props.currentPage, pageSize: props.pageSize ?? declaredPageSize ?? 200 })
 const innerCurrentPage = ref(paginationState.currentPage)
 const innerPageSize = ref(paginationState.pageSize)
 const sort = ref<ZtVTableGridSort>({ order: 'normal' })
@@ -125,6 +125,7 @@ const nativeColumns = computed(() => buildVTableColumns(props.columns, {
   settings: columnSettingsValue.value,
   checkbox: props.checkbox,
   showActionsColumn: props.showActionsColumn,
+  editable: props.editable,
   actionsWidth: 108,
 }))
 const nativeOptions = computed(() => ({
@@ -146,7 +147,10 @@ const selectedRows = computed(() => {
 })
 
 watch(() => props.currentPage, value => { innerCurrentPage.value = normalizePagination({ currentPage: value }).currentPage })
-watch(() => props.pageSize, value => { innerPageSize.value = normalizePagination({ pageSize: value }).pageSize })
+watch(
+  [() => props.pageSize, () => typeof props.pagination === 'object' ? props.pagination.pageSize : undefined],
+  ([value, configValue]) => { innerPageSize.value = normalizePagination({ pageSize: value ?? configValue ?? 200 }).pageSize },
+)
 watch(() => props.columns, value => {
   settings = createColumnSettingsStore(value, columnSettingsOptions())
   settingsVersion.value += 1

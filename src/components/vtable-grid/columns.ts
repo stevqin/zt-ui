@@ -55,6 +55,7 @@ export function buildVTableColumns<Row extends Record<string, unknown>>(
     settings: ZtVTableGridColumnSettingsValue
     checkbox: boolean
     showActionsColumn: boolean
+    editable?: boolean
     actionsWidth?: number
     actionLayout?: ColumnDefine['customLayout']
   },
@@ -74,7 +75,7 @@ export function buildVTableColumns<Row extends Record<string, unknown>>(
     const { editable, summary: _summary, visible: _visible, copyFormatter: _copy, ...native } = column
     return {
       ...native,
-      editor: editable ? editorName(editable) : undefined,
+      editor: options.editable !== false && editable ? editorName(editable) : undefined,
     } as ColumnDefine
   })
   const checkbox: ColumnDefine[] = options.checkbox ? [{
