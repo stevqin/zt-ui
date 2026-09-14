@@ -41,6 +41,11 @@ const routes = [
     meta: { title: 'Steps 步骤条' },
   },
   {
+    path: '/pagination',
+    component: () => import('../views/pagination/Index.vue'),
+    meta: { title: 'Pagination 分页' },
+  },
+  {
     path: '/modal',
     component: () => import('../views/modal/Index.vue'),
     meta: { title: 'Modal 弹窗' },

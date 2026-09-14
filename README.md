@@ -20,6 +20,7 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 - Switch
 - Badge
 - Steps and Step
+- Pagination
 - Modal
 - Drawer
 
@@ -104,6 +105,18 @@ Drawer supports all four viewport edges:
   <ZtStep title="Review" description="Confirm inventory" />
   <ZtStep title="Complete" description="Dispatch the order" />
 </ZtSteps>
+```
+
+`ZtPagination` supports composable layouts, collapsed page ranges, page-size selection, jump input, alignment, and two-way bindings:
+
+```vue
+<ZtPagination
+  v-model:current-page="currentPage"
+  v-model:page-size="pageSize"
+  :total="400"
+  :page-sizes="[10, 20, 50, 100]"
+  layout="total, sizes, prev, pager, next, jumper"
+/>
 ```
 
 ## Development

@@ -1,0 +1,150 @@
+@use '../../styles/tokens' as glass;
+
+.zt-pagination {
+  @include glass.tokens;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-width: 0;
+  gap: 8px;
+  color: var(--glass-muted);
+  font: var(--glass-size-default) / 1.4 var(--glass-font);
+
+  *, *::before, *::after { box-sizing: border-box; }
+
+  &__group {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    gap: 6px;
+
+    &--right { margin-left: auto; }
+  }
+
+  &__pager {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 32px;
+    height: 32px;
+    padding: 0 8px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: transparent;
+    color: #5d6470;
+    font: 600 13px/1 var(--glass-font);
+    cursor: pointer;
+    transition: color 160ms ease, border-color 160ms ease, background-color 160ms ease, box-shadow 160ms ease, transform 120ms ease;
+
+    svg { width: 16px; height: 16px; }
+    &:not(:disabled):hover { color: var(--glass-accent); background: var(--glass-accent-soft); }
+    &:not(:disabled):active { transform: scale(.95); }
+    &:focus-visible { outline: 2px solid rgba(var(--glass-accent-rgb), .35); outline-offset: 2px; }
+    &:disabled { color: #c6cad0; cursor: not-allowed; }
+    &.is-active {
+      color: #fff;
+      border-color: transparent;
+      background: var(--glass-accent-button);
+      box-shadow: 0 3px 8px rgba(var(--glass-accent-rgb), .2);
+    }
+    &.is-more { letter-spacing: 1px; font-weight: 700; }
+  }
+
+  &__total { white-space: nowrap; }
+
+  &__sizes select,
+  &__jumper input {
+    height: 32px;
+    border: 1px solid var(--glass-default-line);
+    border-radius: 9px;
+    background: rgba(255,255,255,.9);
+    color: var(--glass-default-ink);
+    font: inherit;
+    outline: none;
+    transition: border-color 160ms ease, box-shadow 160ms ease;
+
+    &:focus { border-color: var(--glass-accent-line); box-shadow: 0 0 0 3px rgba(var(--glass-accent-rgb), .1); }
+    &:disabled { background: #f5f6f8; color: #aeb3bb; cursor: not-allowed; }
+  }
+
+  &__sizes select { min-width: 102px; padding: 0 28px 0 10px; }
+
+  &__jumper {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+
+    input {
+      width: 52px;
+      padding: 0 6px;
+      text-align: center;
+      appearance: textfield;
+      &::-webkit-inner-spin-button, &::-webkit-outer-spin-button { appearance: none; margin: 0; }
+    }
+  }
+
+  &__slot { display: inline-flex; align-items: center; }
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  &.is-background &__button:not(.is-active) {
+    border-color: rgba(32,32,32,.07);
+    background: rgba(255,255,255,.82);
+    box-shadow: inset 0 1px 1px rgba(255,255,255,.9), 0 2px 6px rgba(0,0,0,.04);
+    &:not(:disabled):hover { border-color: var(--glass-accent-line); color: var(--glass-accent); background: var(--glass-accent-soft); }
+  }
+
+  &--small {
+    gap: 5px;
+    font-size: var(--glass-size-small);
+
+    .zt-pagination__group, .zt-pagination__pager { gap: 3px; }
+    .zt-pagination__button { min-width: 26px; height: 26px; padding: 0 6px; border-radius: 7px; font-size: 12px; }
+    .zt-pagination__button svg { width: 14px; height: 14px; }
+    .zt-pagination__sizes select, .zt-pagination__jumper input { height: 26px; border-radius: 7px; }
+  }
+
+  &--large {
+    font-size: var(--glass-size-medium);
+
+    .zt-pagination__button { min-width: 38px; height: 38px; border-radius: 11px; font-size: 14px; }
+    .zt-pagination__sizes select, .zt-pagination__jumper input { height: 38px; border-radius: 11px; }
+  }
+
+  &.is-disabled { color: #aeb3bb; }
+}
+
+@media (max-width: 640px) {
+  .zt-pagination {
+    overflow-x: auto;
+    padding: 2px;
+
+    &__group { flex: 0 0 auto; }
+    &__total, &__sizes, &__jumper { flex: 0 0 auto; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zt-pagination__button,
+  .zt-pagination__sizes select,
+  .zt-pagination__jumper input { transition: none !important; }
+}

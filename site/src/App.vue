@@ -16,6 +16,7 @@ const nav = [
     { path: '/switch', label: 'Switch 开关' },
     { path: '/badge', label: 'Badge 徽标' },
     { path: '/steps', label: 'Steps 步骤条' },
+    { path: '/pagination', label: 'Pagination 分页' },
     { path: '/modal', label: 'Modal 弹窗' },
     { path: '/drawer', label: 'Drawer 抽屉' },
   ]},
