@@ -41,6 +41,18 @@ describe('vtable-grid state helpers', () => {
     expect(store.restoreRows([{ ...row, amount: 20, name: 'B' }])).toEqual([row])
   })
 
+  it('rebases edited fields onto freshly queried rows', () => {
+    const store = createEditStore<Row>(item => item.id)
+    store.record({ id: 1, name: '旧名称', amount: 10 }, 'amount', 10, 20)
+
+    expect(store.apply([{ id: 1, name: '服务端新名称', amount: 15 }])).toEqual([
+      { id: 1, name: '服务端新名称', amount: 20 },
+    ])
+    expect(store.restoreRows([{ id: 1, name: '服务端新名称', amount: 20 }])).toEqual([
+      { id: 1, name: '服务端新名称', amount: 15 },
+    ])
+  })
+
   it('calculates standard summaries and applies custom formatters', () => {
     const summaryColumns: ZtVTableGridColumn<Row>[] = [
       { field: 'amount', title: '金额', summary: 'sum' },

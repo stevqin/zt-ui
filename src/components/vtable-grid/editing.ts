@@ -22,7 +22,7 @@ type Draft<Row> = {
   fields: Set<string>
 }
 
-export function createEditStore<Row extends Record<string, unknown>>(getKey: (row: Row) => ZtVTableGridRowKey) {
+export function createEditStore<Row extends object>(getKey: (row: Row) => ZtVTableGridRowKey) {
   const drafts = new Map<ZtVTableGridRowKey, Draft<Row>>()
 
   function record(row: Row, field: string, oldValue: unknown, value: unknown) {
@@ -61,7 +61,18 @@ export function createEditStore<Row extends Record<string, unknown>>(getKey: (ro
     record,
     payload,
     apply(rows: Row[]) {
-      return rows.map(row => clone(drafts.get(getKey(row))?.current ?? row))
+      return rows.map(row => {
+        const draft = drafts.get(getKey(row))
+        if (!draft) return clone(row)
+        const original = clone(row)
+        const current = clone(row)
+        draft.fields.forEach(field => {
+          ;(current as Record<string, unknown>)[field] = clone((draft.current as Record<string, unknown>)[field])
+        })
+        draft.original = original
+        draft.current = current
+        return clone(current)
+      })
     },
     restoreRows(rows: Row[]) {
       return rows.map(row => clone(drafts.get(getKey(row))?.original ?? row))

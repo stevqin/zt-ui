@@ -2,7 +2,7 @@ import type { ZtVTableGridColumn, ZtVTableGridColumnSettingsValue } from './type
 
 type StorageLike = Pick<Storage, 'getItem' | 'setItem' | 'removeItem'>
 
-export function createColumnSettingsStore<Row extends Record<string, unknown>>(
+export function createColumnSettingsStore<Row extends object>(
   columns: ZtVTableGridColumn<Row>[],
   options: { storageKey?: string; storage?: StorageLike } = {},
 ) {

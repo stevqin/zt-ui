@@ -35,6 +35,13 @@ const rows: Row[] = [
   { id: 2, name: 'Beta', amount: 20 },
 ]
 
+function deferred<T>() {
+  let resolve!: (value: T) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((res, rej) => { resolve = res; reject = rej })
+  return { promise, resolve, reject }
+}
+
 beforeEach(() => {
   Object.values(tableMock).forEach(mock => mock.mockClear())
 })
@@ -58,6 +65,22 @@ describe('ZtVTableGrid', () => {
     expect(tableMock.setRecords).toHaveBeenLastCalledWith(rows)
     expect(wrapper.text()).toContain('共 400 条')
     expect(wrapper.emitted('loaded')?.[0]?.[0]).toMatchObject({ data: rows, total: 400 })
+  })
+
+  it('keeps loading and errors owned by the latest remote query', async () => {
+    const first = deferred<{ data: Row[]; total: number }>()
+    const second = deferred<{ data: Row[]; total: number }>()
+    const proxyConfig = vi.fn().mockImplementationOnce(() => first.promise).mockImplementationOnce(() => second.promise)
+    const wrapper = mount(ZtVTableGrid<Row>, { props: { columns, proxyConfig } })
+    await nextTick()
+    const latest = (wrapper.vm as any).query()
+    first.reject(new Error('stale failure'))
+    await flushPromises()
+    expect(wrapper.find('[role="status"]').exists()).toBe(true)
+    expect(wrapper.emitted('error')).toBeUndefined()
+    second.resolve({ data: rows, total: 2 })
+    await latest
+    expect(wrapper.find('[role="status"]').exists()).toBe(false)
   })
 
   it('supports query, reload and toolbar events', async () => {
@@ -106,6 +129,26 @@ describe('ZtVTableGrid', () => {
     expect((wrapper.vm as any).getSelectedRows()).toEqual([rows[0]])
     expect(wrapper.emitted('selection-change')?.at(-1)?.[0]).toEqual([rows[0]])
     expect(wrapper.text()).toContain('已选 1 行')
+  })
+
+  it('selects the current page from the header checkbox and syncs exposed selection changes', async () => {
+    const wrapper = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, checkbox: true, pagination: false } })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-checkbox-state-change', { row: 0, checked: true })
+    await nextTick()
+    expect((wrapper.vm as any).getSelectedKeys()).toEqual([1, 2])
+
+    ;(wrapper.vm as any).clearSelection()
+    expect((wrapper.vm as any).getSelectedKeys()).toEqual([])
+    expect(tableMock.setRecords).toHaveBeenCalled()
+  })
+
+  it('sorts local records before applying pagination', async () => {
+    const wrapper = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, pagination: false } })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-sort-click', { field: 'amount', order: 'desc' })
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([rows[1], rows[0]])
   })
 
   it('shows loading, empty and error states', async () => {
@@ -164,7 +207,9 @@ describe('ZtVTableGrid', () => {
     const editable = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, editable: true, pagination: false } })
     await flushPromises()
     const editableColumns = editable.findComponent({ name: 'MockListTable' }).props('options').columns
-    expect(editableColumns.find((column: any) => column.field === 'amount').editor).toBe('zt-vtable-number')
+    expect(editableColumns.find((column: any) => column.field === 'amount').editor({
+      col: 1, row: 1, table: { getCellOriginRecord: () => rows[0] },
+    })).toBe('zt-vtable-number')
   })
 
   it('keeps changes when batch save fails', async () => {
@@ -206,6 +251,7 @@ describe('ZtVTableGrid', () => {
     await panel.get('[aria-label="隐藏金额列"]').get('.zt-checkbox__input').trigger('click')
     expect(wrapper.emitted('column-settings-change')).toHaveLength(1)
     expect(tableMock.updateColumns).toHaveBeenCalled()
+    expect((wrapper.vm as any).exportCsv()).not.toContain('金额')
     await panel.get('[aria-label="上移金额列"]').trigger('click')
     expect(wrapper.emitted('column-settings-change')).toHaveLength(2)
     expect(panel.findAll('.zt-vtable-grid__settings-row').map(row => row.text())).toEqual([
@@ -213,6 +259,18 @@ describe('ZtVTableGrid', () => {
       expect.stringContaining('名称'),
     ])
     expect(panel.get('[aria-label="上移金额列"]').attributes('disabled')).toBeDefined()
+  })
+
+  it('filters records, columns and pagination from tableOptions', async () => {
+    const wrapper = mount(ZtVTableGrid<Row>, {
+      props: { columns, records: rows, tableOptions: { records: [{ id: 99 }], columns: [], pagination: { currentPage: 9 }, overscrollBehavior: 'none' } },
+    })
+    await flushPromises()
+    const options = wrapper.findComponent({ name: 'MockListTable' }).props('options')
+    expect(options.records).toBeUndefined()
+    expect(options.pagination).toBeUndefined()
+    expect(options.overscrollBehavior).toBe('none')
+    expect(options.columns).not.toEqual([])
   })
 
   it('exports visible records as CSV', async () => {

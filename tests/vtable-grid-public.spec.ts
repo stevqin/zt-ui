@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { ZtVTableGrid, buildVTableGridSummary, createVTableGridCsv } from '../src'
 import type { ZtVTableGridColumn, ZtVTableGridQueryParams } from '../src'
 
-type Row = { id: number; amount: number }
+interface Row { id: number; amount: number }
 
 describe('VTableGrid public entry', () => {
   it('exports the component, helpers and generic types without loading the Vue VTable adapter', () => {

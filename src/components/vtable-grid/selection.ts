@@ -6,7 +6,10 @@ export function createSelectionStore<Row>(getKey: (row: Row) => ZtVTableGridRowK
 
   return {
     replacePage(rows: Row[], reserve: boolean) {
-      if (!reserve) selected.clear()
+      if (!reserve) {
+        selected.clear()
+        known.clear()
+      }
       rows.forEach(row => {
         const key = getKey(row)
         known.set(key, row)
@@ -19,6 +22,14 @@ export function createSelectionStore<Row>(getKey: (row: Row) => ZtVTableGridRowK
       if (checked) selected.set(key, row)
       else selected.delete(key)
     },
+    selectPage(rows: Row[], checked: boolean) {
+      rows.forEach(row => {
+        const key = getKey(row)
+        known.set(key, row)
+        if (checked) selected.set(key, row)
+        else selected.delete(key)
+      })
+    },
     setKeys(keys: ZtVTableGridRowKey[]) {
       selected.clear()
       keys.forEach(key => {
@@ -28,6 +39,7 @@ export function createSelectionStore<Row>(getKey: (row: Row) => ZtVTableGridRowK
     },
     keys: () => Array.from(selected.keys()),
     rows: () => Array.from(selected.values()),
+    has: (row: Row) => selected.has(getKey(row)),
     clear: () => selected.clear(),
   }
 }

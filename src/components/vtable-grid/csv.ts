@@ -8,9 +8,11 @@ function safeCell(value: unknown) {
   return text
 }
 
-export function toCsv<Row extends Record<string, unknown>>(columns: ZtVTableGridColumn<Row>[], rows: Row[]) {
+export function toCsv<Row extends object>(columns: ZtVTableGridColumn<Row>[], rows: Row[]) {
   const visible = columns.filter(column => column.visible !== false)
   const header = visible.map(column => safeCell(column.title ?? column.field)).join(',')
-  const body = rows.map(row => visible.map(column => safeCell(column.copyFormatter ? column.copyFormatter(row) : row[column.field])).join(','))
+  const body = rows.map(row => visible.map(column => safeCell(
+    column.copyFormatter ? column.copyFormatter(row) : (row as Record<string, unknown>)[column.field],
+  )).join(','))
   return `\uFEFF${[header, ...body].join('\r\n')}`
 }

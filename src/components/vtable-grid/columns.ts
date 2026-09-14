@@ -10,6 +10,11 @@ import type {
 
 export const CHECKBOX_FIELD = '__zt_grid_checked__'
 export const ACTION_FIELD = '__zt_grid_actions__'
+export const SUMMARY_FIELD = '__zt_grid_summary__'
+
+function recordFromCell(args: any) {
+  return args?.table?.getCellOriginRecord?.(args.col, args.row)
+}
 
 const ACTION_META: Record<string, Pick<ZtVTableGridActionButton<unknown>, 'text' | 'status'>> = {
   detail: { text: '查看', status: 'primary' },
@@ -42,20 +47,23 @@ export function resolveActionButtons<Row>(source: ZtVTableGridActionButtons<Row>
   })
 }
 
-export function resolveRowKey<Row extends Record<string, unknown>>(
+export function resolveRowKey<Row extends object>(
   row: Row,
   rowKey: (keyof Row & string) | ((row: Row) => ZtVTableGridRowKey),
 ) {
-  return typeof rowKey === 'function' ? rowKey(row) : row[rowKey] as ZtVTableGridRowKey
+  return typeof rowKey === 'function'
+    ? rowKey(row)
+    : (row as Record<string, unknown>)[rowKey] as ZtVTableGridRowKey
 }
 
-export function buildVTableColumns<Row extends Record<string, unknown>>(
+export function buildVTableColumns<Row extends object>(
   columns: ZtVTableGridColumn<Row>[],
   options: {
     settings: ZtVTableGridColumnSettingsValue
     checkbox: boolean
     showActionsColumn: boolean
     editable?: boolean
+    isRowSelected?: (row: Row) => boolean
     actionsWidth?: number
     actionLayout?: ColumnDefine['customLayout']
   },
@@ -75,7 +83,9 @@ export function buildVTableColumns<Row extends Record<string, unknown>>(
     const { editable, summary: _summary, visible: _visible, copyFormatter: _copy, ...native } = column
     return {
       ...native,
-      editor: options.editable !== false && editable ? editorName(editable) : undefined,
+      editor: options.editable !== false && editable
+        ? (args: any) => recordFromCell(args)?.[SUMMARY_FIELD] ? undefined : editorName(editable)
+        : undefined,
     } as ColumnDefine
   })
   const checkbox: ColumnDefine[] = options.checkbox ? [{
@@ -84,6 +94,13 @@ export function buildVTableColumns<Row extends Record<string, unknown>>(
     width: 42,
     cellType: 'checkbox',
     headerType: 'checkbox',
+    checked: (args: any) => {
+      const record = recordFromCell(args) as Row | undefined
+      return record && !(record as Record<string, unknown>)[SUMMARY_FIELD]
+        ? Boolean(options.isRowSelected?.(record))
+        : false
+    },
+    disable: (args: any) => Boolean(recordFromCell(args)?.[SUMMARY_FIELD]),
   }] as unknown as ColumnDefine[] : []
   const actions: ColumnDefine[] = options.showActionsColumn ? [{
     field: ACTION_FIELD,

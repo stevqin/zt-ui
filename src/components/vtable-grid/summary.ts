@@ -11,7 +11,7 @@ function standard(type: ZtVTableGridSummaryType, values: unknown[]) {
   return numbers.reduce((sum, value) => sum + value, 0)
 }
 
-export function buildSummaryValues<Row extends Record<string, unknown>>(
+export function buildSummaryValues<Row extends object>(
   columns: ZtVTableGridColumn<Row>[],
   rows: Row[],
   backend: Record<string, unknown> | null = null,
@@ -21,7 +21,7 @@ export function buildSummaryValues<Row extends Record<string, unknown>>(
     const rule: ZtVTableGridSummaryRule<Row> = typeof column.summary === 'string'
       ? { type: column.summary }
       : column.summary
-    const values = rows.map(row => row[column.field])
+    const values = rows.map(row => (row as Record<string, unknown>)[column.field])
     const raw = backend && column.field in backend
       ? backend[column.field]
       : rule.calculate ? rule.calculate(values, rows) : standard(rule.type ?? 'sum', values)

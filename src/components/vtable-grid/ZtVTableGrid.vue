@@ -10,7 +10,7 @@ import { createEditStore } from './editing'
 import { createColumnSettingsStore } from './column-settings'
 import { buildSummaryValues } from './summary'
 import { toCsv } from './csv'
-import { ACTION_FIELD, buildVTableColumns, resolveActionButtons, resolveRowKey } from './columns'
+import { ACTION_FIELD, SUMMARY_FIELD, buildVTableColumns, resolveActionButtons, resolveRowKey } from './columns'
 import { registerGridEditors } from './editors'
 import type {
   ZtVTableGridActionButton,
@@ -97,7 +97,7 @@ let settings = createColumnSettingsStore(props.columns, columnSettingsOptions())
 const actionMenu = shallowRef<{ row: Row; items: Array<ReturnType<typeof resolveActionButtons<Row>>[number]> } | null>(null)
 const settingsOpen = ref(false)
 const summaryValues = ref<Record<string, unknown>>({})
-const SUMMARY_FIELD = '__zt_grid_summary__'
+let querySequence = 0
 
 function columnSettingsOptions() {
   const config = typeof props.columnSettings === 'object' ? props.columnSettings : {}
@@ -126,17 +126,21 @@ const nativeColumns = computed(() => buildVTableColumns(props.columns, {
   checkbox: props.checkbox,
   showActionsColumn: props.showActionsColumn,
   editable: props.editable,
+  isRowSelected: selection.has,
   actionsWidth: 108,
 }))
-const nativeOptions = computed(() => ({
-  autoFillWidth: true,
-  widthMode: 'adaptive',
-  keyboardOptions: { moveFocusCellOnTab: true, editCellOnEnter: true },
-  hover: { highlightMode: 'row' },
-  select: { highlightMode: 'cell' },
-  ...props.tableOptions,
-  columns: nativeColumns.value,
-}))
+const nativeOptions = computed(() => {
+  const { records: _records, columns: _columns, pagination: _pagination, ...safeOptions } = props.tableOptions
+  return {
+    autoFillWidth: true,
+    widthMode: 'adaptive',
+    keyboardOptions: { moveFocusCellOnTab: true, editCellOnEnter: true },
+    hover: { highlightMode: 'row' },
+    select: { highlightMode: 'cell' },
+    ...safeOptions,
+    columns: nativeColumns.value,
+  }
+})
 const changes = computed(() => {
   editVersion.value
   return edits.payload()
@@ -165,10 +169,15 @@ function currentPageRows(rows: Row[]) {
 }
 
 async function applyRows(rows: Row[], nextTotal: number, backendSummary: Record<string, unknown> | null = null) {
+  const previousSelection = selection.keys().join('|')
   const withDrafts = edits.apply(rows)
   displayedRecords.value = withDrafts
   total.value = nextTotal
   selection.replacePage(withDrafts, props.reserveCheckbox)
+  if (selection.keys().join('|') !== previousSelection) {
+    selectionVersion.value += 1
+    emit('selection-change', selection.rows())
+  }
   summaryValues.value = buildSummaryValues(props.columns, withDrafts, backendSummary)
   renderedRecords.value = withSummaryRecord(withDrafts)
   await nextTick()
@@ -193,6 +202,7 @@ function withSummaryRecord(rows: Row[]) {
 }
 
 async function query(resetPage = false) {
+  const request = ++querySequence
   if (resetPage) innerCurrentPage.value = 1
   loadError.value = null
   innerLoading.value = true
@@ -204,21 +214,35 @@ async function query(resetPage = false) {
         sort: { ...sort.value },
         form: { ...props.formData } as FormData,
       }))
-      if (result.stale) return
+      if (result.stale || request !== querySequence) return
       await applyRows(result.data, result.total, result.summaryData)
       emit('loaded', { data: result.data, total: result.total, summaryData: result.summaryData })
     } else {
       queryRunner.invalidate()
-      const result = normalizeQueryResult<Row>({ data: currentPageRows(props.records), total: props.records.length })
+      const source = sortLocalRows(props.records)
+      const result = normalizeQueryResult<Row>({ data: currentPageRows(source), total: source.length })
       await applyRows(result.data, result.total)
       emit('loaded', { data: result.data, total: result.total, summaryData: null })
     }
   } catch (error) {
+    if (request !== querySequence) return
     loadError.value = error
     emit('error', error)
   } finally {
-    innerLoading.value = false
+    if (request === querySequence) innerLoading.value = false
   }
+}
+
+function sortLocalRows(rows: Row[]) {
+  if (sort.value.order === 'normal' || typeof sort.value.field !== 'string') return rows
+  const field = sort.value.field
+  const direction = sort.value.order === 'asc' ? 1 : -1
+  return [...rows].sort((first, second) => {
+    const left = first[field]
+    const right = second[field]
+    if (typeof left === 'number' && typeof right === 'number') return (left - right) * direction
+    return String(left ?? '').localeCompare(String(right ?? ''), undefined, { numeric: true }) * direction
+  })
 }
 
 const reload = () => query(false)
@@ -249,11 +273,19 @@ function rowFromEvent(event: any) {
 }
 
 function handleCheckbox(event: any) {
+  if (Number(event?.row) === 0 || event?.isHeader) {
+    selection.selectPage(displayedRecords.value, Boolean(event.checked ?? event.value))
+    selectionVersion.value += 1
+    emit('selection-change', selection.rows())
+    syncSelectionToTable()
+    return
+  }
   const row = rowFromEvent(event)
   if (!row) return
   selection.toggle(row, Boolean(event.checked ?? event.value))
   selectionVersion.value += 1
   emit('selection-change', selection.rows())
+  syncSelectionToTable()
 }
 
 function handleSort(event: any) {
@@ -310,12 +342,18 @@ function clearSelection() {
   selection.clear()
   selectionVersion.value += 1
   emit('selection-change', [])
+  syncSelectionToTable()
 }
 
 function setSelectedKeys(keys: Array<string | number>) {
   selection.setKeys(keys)
   selectionVersion.value += 1
   emit('selection-change', selection.rows())
+  syncSelectionToTable()
+}
+
+function syncSelectionToTable() {
+  nextTick(() => tableInstance.value?.setRecords(renderedRecords.value))
 }
 
 async function saveChanges() {
@@ -340,7 +378,12 @@ function cancelChanges() {
 }
 
 function exportCsv(filename = 'data.csv') {
-  const content = toCsv(props.columns, displayedRecords.value)
+  const byKey = new Map(props.columns.map(column => [columnKey(column), column]))
+  const exportColumns = columnSettingsValue.value.order
+    .filter(key => columnSettingsValue.value.visible.includes(key))
+    .map(key => byKey.get(key))
+    .filter((column): column is (typeof props.columns)[number] => Boolean(column))
+  const content = toCsv(exportColumns, displayedRecords.value)
   emit('export', content)
   if (typeof document !== 'undefined' && typeof URL.createObjectURL === 'function') {
     const url = URL.createObjectURL(new Blob([content], { type: 'text/csv;charset=utf-8' }))
