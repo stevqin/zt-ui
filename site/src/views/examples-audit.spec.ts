@@ -53,6 +53,10 @@ describe('site example coverage', () => {
   it('provides complete copyable TypeScript VTableGrid capability examples', () => {
     const source = readFileSync(resolve(process.cwd(), 'src/views/vtable-grid/Index.vue'), 'utf8')
     expect((source.match(/<DemoBlock\s+:code=/g) ?? [])).toHaveLength(7)
+    expect((source.match(/\$\{productTypeCode\}/g) ?? [])).toHaveLength(6)
+    expect((source.match(/\$\{productRecordCode\}/g) ?? [])).toHaveLength(4)
+    expect(source).toContain('const sourceRows: Product[]')
+    expect(source).toContain('async function proxyConfig(params: ZtVTableGridQueryParams)')
     for (const capability of [
       'ZtVTableGridColumn', 'proxyConfig', 'batchSave', 'reserve-checkbox', 'show-actions-column',
       'column-settings', 'table-options', 'auto-load', 'loading', 'disabled', 'copyFormatter',

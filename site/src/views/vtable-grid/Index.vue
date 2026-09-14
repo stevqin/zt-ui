@@ -177,6 +177,36 @@ function downloadFromApi() {
   logEvent('exportCsv', `${csv.split('\n').length - 1} 行`)
 }
 
+const productTypeCode = `type Product = {
+  id: number
+  sku: string
+  name: string
+  category: string
+  price: number
+  stock: number
+  status: string
+  launchDate: string
+  ownerEmail: string
+  website: string
+  sales: number
+  target: number
+}`
+
+const productRecordCode = `const records: Product[] = [{
+  id: 1,
+  sku: 'ZT-0001',
+  name: '云感针织衫',
+  category: '针织',
+  price: 399,
+  stock: 42,
+  status: '在售',
+  launchDate: '2026-09-14',
+  ownerEmail: 'buyer@example.com',
+  website: 'https://example.com/products/1',
+  sales: 128,
+  target: 200,
+}]`
+
 const basicCode = sfc(`import { ref } from 'vue'
 import { ZtVTableGrid, type ZtComponentSize, type ZtVTableGridColumn } from '@ztechjs/zt-ui'
 
@@ -194,14 +224,22 @@ const records: Product[] = [
 <ZtVTableGrid :columns="columns" :records="records" :row-key="row => row.id" :size="size" :pagination="false" :toolbar="false" :table-options="{ overscrollBehavior: 'none' }" height="280px" />`)
 
 const remoteCode = sfc(`import { ref } from 'vue'
-import { ZtVTableGrid, type ZtVTableGridQueryParams } from '@ztechjs/zt-ui'
+import { ZtVTableGrid, type ZtVTableGridColumn, type ZtVTableGridQueryParams } from '@ztechjs/zt-ui'
+
+${productTypeCode}
 
 const keyword = ref('')
 const page = ref(1)
 const pageSize = ref(10)
+const columns: ZtVTableGridColumn<Product>[] = [
+  { field: 'sku', title: '商品编码', width: 120 },
+  { field: 'name', title: '商品名称', width: 180, sort: true },
+  { field: 'price', title: '零售价', width: 100, sort: true },
+]
 async function proxyConfig(params: ZtVTableGridQueryParams<{ keyword: string }>) {
   const response = await fetch('/api/products', {
     method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(params),
   })
   return response.json() as Promise<{ data: Product[]; total: number }>
@@ -222,12 +260,21 @@ async function proxyConfig(params: ZtVTableGridQueryParams<{ keyword: string }>)
 </ZtVTableGrid>`)
 
 const selectionCode = sfc(`import { ref } from 'vue'
-import { ZtVTableGrid, type ZtVTableGridActionButtons, type ZtVTableGridInstance } from '@ztechjs/zt-ui'
+import { ZtVTableGrid, type ZtVTableGridActionButtons, type ZtVTableGridColumn, type ZtVTableGridInstance } from '@ztechjs/zt-ui'
+
+${productTypeCode}
+${productRecordCode}
 
 const grid = ref<ZtVTableGridInstance<Product> | null>(null)
+const columns: ZtVTableGridColumn<Product>[] = [
+  { field: 'sku', title: '商品编码', width: 120 },
+  { field: 'name', title: '商品名称', width: 180 },
+  { field: 'stock', title: '库存', width: 90 },
+  { field: 'status', title: '状态', width: 90 },
+]
 const actions: ZtVTableGridActionButtons<Product> = row => [
   'detail',
-  { type: 'restock', text: '补货', status: 'success', visible: row.stock < 80 },
+  { type: 'restock', text: '补货', status: 'success', visible: row.stock < 80, handler: current => console.log('补货', current) },
   { type: 'delete', text: '删除', status: 'danger', disabled: row.status === '在售' },
 ]
 function handleSelection(rows: Product[]) { console.log('selected', rows) }
@@ -240,6 +287,9 @@ function handleAction(payload: { type: string; row: Product }) { console.log(pay
 </ZtVTableGrid>`)
 
 const editCode = sfc(`import { ZtVTableGrid, type ZtVTableGridColumn, type ZtVTableGridSavePayload } from '@ztechjs/zt-ui'
+
+${productTypeCode}
+${productRecordCode}
 
 const columns: ZtVTableGridColumn<Product>[] = [
   { field: 'name', title: '文本', editable: true },
@@ -261,9 +311,12 @@ async function batchSave(payload: ZtVTableGridSavePayload<Product>) {
 
 const summaryCode = sfc(`import { ZtVTableGrid, type ZtVTableGridColumn } from '@ztechjs/zt-ui'
 
+${productTypeCode}
+${productRecordCode}
+
 const columns: ZtVTableGridColumn<Product>[] = [
   { field: 'sku', title: '记录数', summary: 'count' },
-  { field: 'price', title: '平均售价', summary: { type: 'avg', formatter: value => '￥' + Number(value).toFixed(2) } },
+  { field: 'price', title: '平均售价', summary: { type: 'avg', formatter: value => '￥' + Number(value).toFixed(2) }, copyFormatter: row => '￥' + row.price },
   { field: 'stock', title: '库存合计', summary: 'sum' },
   { field: 'sales', title: '最低销量', summary: 'min' },
   { field: 'target', title: '最高目标', summary: 'max' },
@@ -276,7 +329,19 @@ const columns: ZtVTableGridColumn<Product>[] = [
   :toolbar="['create', 'import', 'export', 'columnsetting', 'reload']"
 />`)
 const stateCode = sfc(`import { computed, ref } from 'vue'
-import { ZtButton, ZtVTableGrid } from '@ztechjs/zt-ui'
+import { ZtButton, ZtVTableGrid, type ZtVTableGridColumn } from '@ztechjs/zt-ui'
+
+${productTypeCode}
+const sourceRows: Product[] = [{
+  id: 1, sku: 'ZT-0001', name: '云感针织衫', category: '针织', price: 399,
+  stock: 42, status: '在售', launchDate: '2026-09-14', ownerEmail: 'buyer@example.com',
+  website: 'https://example.com/products/1', sales: 128, target: 200,
+}]
+const columns: ZtVTableGridColumn<Product>[] = [
+  { field: 'sku', title: '商品编码', width: 120 },
+  { field: 'name', title: '商品名称', width: 180 },
+  { field: 'stock', title: '库存', width: 90 },
+]
 
 const mode = ref<'empty' | 'loading' | 'disabled'>('empty')
 const records = computed(() => mode.value === 'empty' ? [] : sourceRows)`, `<ZtButton @click="mode = 'empty'">空状态</ZtButton>
@@ -293,7 +358,19 @@ const records = computed(() => mode.value === 'empty' ? [] : sourceRows)`, `<ZtB
 </ZtVTableGrid>`)
 
 const apiCode = sfc(`import { ref } from 'vue'
-import { ZtButton, ZtVTableGrid, type ZtVTableGridInstance } from '@ztechjs/zt-ui'
+import { ZtButton, ZtVTableGrid, type ZtVTableGridColumn, type ZtVTableGridInstance, type ZtVTableGridQueryParams } from '@ztechjs/zt-ui'
+
+${productTypeCode}
+${productRecordCode}
+const columns: ZtVTableGridColumn<Product>[] = [
+  { field: 'sku', title: '商品编码', width: 120 },
+  { field: 'name', title: '商品名称', width: 180 },
+  { field: 'price', title: '零售价', width: 100 },
+]
+async function proxyConfig(params: ZtVTableGridQueryParams) {
+  console.log('query', params)
+  return { data: records, total: records.length }
+}
 
 const grid = ref<ZtVTableGridInstance<Product> | null>(null)`, `<ZtButton @click="grid?.query(true)">query</ZtButton>
 <ZtButton @click="grid?.reload()">reload</ZtButton>
