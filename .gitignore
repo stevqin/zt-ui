@@ -4,6 +4,7 @@ site/node_modules/
 site/dist/
 coverage/
 .vite/
+.worktrees/
 .DS_Store
 *.log
 .env
