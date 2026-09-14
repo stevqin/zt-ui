@@ -1,0 +1,168 @@
+@use '../../styles/tokens' as glass;
+
+.zt-switch {
+  @include glass.tokens;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+  font: var(--glass-size-default) / 1.6 var(--glass-font);
+  color: #4b5563;
+
+  &.is-disabled {
+    opacity: .45;
+    cursor: not-allowed;
+  }
+
+  // ── Track ──
+  &__track {
+    position: relative;
+    width: 44px;
+    height: 22px;
+    border-radius: 12px;
+    background: #d1d5db;
+    transition: background 200ms;
+    flex: 0 0 auto;
+  }
+
+  // ── Thumb ──
+  &__thumb {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,.15);
+    transition: transform 200ms cubic-bezier(.4,0,.2,1);
+  }
+
+  // ── Spinner on thumb ──
+  &__spinner {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border: 2px solid transparent;
+    border-top-color: currentColor;
+    border-radius: 50%;
+    animation: zt-switch-spin .7s linear infinite;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  // ── Labels ──
+  &__label {
+    font-size: inherit;
+    transition: color 200ms;
+
+    &--left {
+      margin-right: -4px;
+    }
+    &--right {
+      margin-left: -4px;
+    }
+    &.is-active {
+      font-weight: 500;
+    }
+  }
+
+  // ════════════════════════════════════
+  //  Checked state
+  // ════════════════════════════════════
+  &.is-checked &__thumb {
+    transform: translateX(22px);
+  }
+
+  &.is-checked &__spinner {
+    left: auto;
+    right: 3px;
+    transform: translateX(0);
+  }
+
+  // Status colors (checked)
+  &--primary.is-checked &__track { background: var(--glass-accent); }
+  &--success.is-checked &__track { background: #16a34a; }
+  &--warning.is-checked &__track { background: #d97706; }
+  &--danger.is-checked &__track  { background: #dc2626; }
+  &--info.is-checked &__track    { background: #4b5563; }
+  &--default.is-checked &__track { background: #6b7280; }
+
+  // Label color on checked
+  &--primary.is-checked .is-active { color: var(--glass-accent); }
+  &--success.is-checked .is-active { color: #16a34a; }
+  &--warning.is-checked .is-active { color: #d97706; }
+  &--danger.is-checked .is-active  { color: #dc2626; }
+  &--info.is-checked .is-active    { color: #4b5563; }
+  &--default.is-checked .is-active { color: #6b7280; }
+
+  // ════════════════════════════════════
+  //  Size: small
+  // ════════════════════════════════════
+  &--small &__track {
+    width: 36px;
+    height: 18px;
+    border-radius: 10px;
+  }
+
+  &--small &__thumb {
+    width: 14px;
+    height: 14px;
+  }
+
+  &--small.is-checked &__thumb {
+    transform: translateX(18px);
+  }
+
+  &--small &__spinner {
+    width: 12px;
+    height: 12px;
+  }
+
+  // ════════════════════════════════════
+  //  Size: large
+  // ════════════════════════════════════
+  &--large &__track {
+    width: 52px;
+    height: 26px;
+    border-radius: 14px;
+  }
+
+  &--large &__thumb {
+    width: 22px;
+    height: 22px;
+  }
+
+  &--large.is-checked &__thumb {
+    transform: translateX(26px);
+  }
+
+  &--large &__spinner {
+    width: 18px;
+    height: 18px;
+  }
+
+  // ── Focus-visible ──
+  &:focus-visible &__track {
+    box-shadow: 0 0 0 2px var(--glass-accent-soft);
+  }
+}
+
+@keyframes zt-switch-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zt-switch,
+  .zt-switch__thumb,
+  .zt-switch__track,
+  .zt-switch__label {
+    transition: none !important;
+  }
+  .zt-switch__spinner {
+    animation: none;
+  }
+}

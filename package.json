@@ -1,0 +1,70 @@
+{
+  "name": "@ztechjs/zt-ui",
+  "version": "0.1.0",
+  "description": "A lightweight Vue 3 UI component library with TypeScript support",
+  "type": "module",
+  "license": "MIT",
+  "author": "ztech",
+  "keywords": [
+    "vue",
+    "vue3",
+    "typescript",
+    "ui",
+    "components",
+    "component-library"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/stevqin/zt-ui.git"
+  },
+  "homepage": "https://github.com/stevqin/zt-ui#readme",
+  "bugs": {
+    "url": "https://github.com/stevqin/zt-ui/issues"
+  },
+  "main": "./dist/zt-ui.umd.cjs",
+  "module": "./dist/zt-ui.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/zt-ui.js",
+      "require": "./dist/zt-ui.umd.cjs"
+    },
+    "./style.css": "./dist/zt-ui.css"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "test": "vitest run",
+    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "build": "npm run typecheck && vite build",
+    "prepublishOnly": "npm test && npm run build",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "vue": "^3.5.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.2",
+    "@vitejs/plugin-vue": "^5.2.4",
+    "@vue/test-utils": "^2.5.0",
+    "happy-dom": "^17.6.3",
+    "sass": "^1.89.2",
+    "typescript": "^5.8.3",
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4",
+    "vitest": "^3.2.7",
+    "vue": "^3.5.13",
+    "vue-tsc": "^2.2.10"
+  }
+}

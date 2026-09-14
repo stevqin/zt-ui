@@ -1,0 +1,220 @@
+@use '../../styles/tokens' as glass;
+
+.zt-tag {
+  @include glass.tokens;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: var(--glass-size-default) / 1.6 var(--glass-font);
+  box-sizing: border-box;
+  transition: color 160ms, background-color 160ms, border-color 160ms;
+
+  // ── Size: default (base) ──
+  padding: 0 8px;
+  height: 24px;
+  border-radius: 6px;
+
+  // ── Size: mini ──
+  &--mini {
+    font-size: var(--glass-size-mini);
+    padding: 0 5px;
+    height: 18px;
+    border-radius: 4px;
+  }
+
+  // ── Size: small ──
+  &--small {
+    font-size: var(--glass-size-small);
+    padding: 0 7px;
+    height: 21px;
+    border-radius: 5px;
+  }
+
+  // ── Size: medium ──
+  &--medium {
+    font-size: var(--glass-size-medium);
+    padding: 0 9px;
+    height: 27px;
+    border-radius: 7px;
+  }
+
+  // ── Size: large ──
+  &--large {
+    font-size: var(--glass-size-large);
+    padding: 0 11px;
+    height: 30px;
+    border-radius: 8px;
+  }
+
+  // ── Round ──
+  &--round {
+    border-radius: 999px;
+  }
+
+  // ── Hit: show border on light effect ──
+  &--hit#{&}--light {
+    border-width: 1px;
+    border-style: solid;
+  }
+
+  // ════════════════════════════════════
+  //  Effect: light (soft bg + ink text)
+  // ════════════════════════════════════
+  &--light {
+    border: 1px solid transparent;
+
+    &.zt-tag--default {
+      background: #f3f4f6;
+      color: #4b5563;
+      &.zt-tag--hit { border-color: #d1d5db; }
+    }
+
+    &.zt-tag--primary {
+      background: var(--glass-accent-soft);
+      color: var(--glass-accent-ink);
+      &.zt-tag--hit { border-color: var(--glass-accent-line); }
+    }
+
+    &.zt-tag--success {
+      background: var(--glass-success-soft);
+      color: var(--glass-success-ink);
+      &.zt-tag--hit { border-color: var(--glass-success-line); }
+    }
+
+    &.zt-tag--warning {
+      background: var(--glass-warning-soft);
+      color: var(--glass-warning-ink);
+      &.zt-tag--hit { border-color: var(--glass-warning-line); }
+    }
+
+    &.zt-tag--danger {
+      background: var(--glass-danger-soft);
+      color: var(--glass-danger-ink);
+      &.zt-tag--hit { border-color: var(--glass-danger-line); }
+    }
+
+    &.zt-tag--info {
+      background: var(--glass-info-soft);
+      color: var(--glass-info-ink);
+      &.zt-tag--hit { border-color: var(--glass-info-line); }
+    }
+  }
+
+  // ════════════════════════════════════
+  //  Effect: dark (solid bg + white text)
+  // ════════════════════════════════════
+  &--dark {
+    border: 1px solid transparent;
+
+    &.zt-tag--default {
+      background: #4b5563;
+      color: #fff;
+    }
+
+    &.zt-tag--primary {
+      background: var(--glass-accent);
+      color: #fff;
+    }
+
+    &.zt-tag--success {
+      background: #16a34a;
+      color: #fff;
+    }
+
+    &.zt-tag--warning {
+      background: #d97706;
+      color: #fff;
+    }
+
+    &.zt-tag--danger {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    &.zt-tag--info {
+      background: #4b5563;
+      color: #fff;
+    }
+  }
+
+  // ════════════════════════════════════
+  //  Effect: plain (transparent + border)
+  // ════════════════════════════════════
+  &--plain {
+    background: transparent;
+    border-width: 1px;
+    border-style: solid;
+
+    &.zt-tag--default {
+      color: #4b5563;
+      border-color: #d1d5db;
+    }
+
+    &.zt-tag--primary {
+      color: var(--glass-accent);
+      border-color: var(--glass-accent-line);
+    }
+
+    &.zt-tag--success {
+      color: var(--glass-success-ink);
+      border-color: var(--glass-success-line);
+    }
+
+    &.zt-tag--warning {
+      color: var(--glass-warning-ink);
+      border-color: var(--glass-warning-line);
+    }
+
+    &.zt-tag--danger {
+      color: var(--glass-danger-ink);
+      border-color: var(--glass-danger-line);
+    }
+
+    &.zt-tag--info {
+      color: var(--glass-info-ink);
+      border-color: var(--glass-info-line);
+    }
+  }
+
+  // ════════════════════════════════════
+  //  Close button
+  // ════════════════════════════════════
+  &__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: 2px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background-color 160ms;
+
+    svg {
+      width: 10px;
+      height: 10px;
+    }
+
+    &:hover {
+      background: rgba(0,0,0,.1);
+    }
+  }
+
+  &--mini &__close {
+    width: 12px;
+    height: 12px;
+    svg { width: 8px; height: 8px; }
+  }
+
+  &--large &__close {
+    width: 16px;
+    height: 16px;
+    svg { width: 12px; height: 12px; }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zt-tag {
+    transition: none !important;
+  }
+}

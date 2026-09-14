@@ -1,0 +1,63 @@
+@use '../../styles/tokens' as glass;
+
+.zt-badge {
+  @include glass.tokens;
+  position: relative;
+  display: inline-block;
+  font: var(--glass-size-default) / 1.6 var(--glass-font);
+
+  // ── Badge content ──
+  &__content {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    line-height: 1;
+    white-space: nowrap;
+    box-sizing: border-box;
+    transition: background 160ms;
+
+    // ── Dot mode ──
+    &.is-dot {
+      width: 8px;
+      height: 8px;
+      min-width: 8px;
+      padding: 0;
+      border-radius: 50%;
+    }
+
+    // ── Fixed (with slot child) ──
+    &.is-fixed {
+      position: absolute;
+      top: 0;
+      right: 0;
+      z-index: 1;
+      transform: translate(50%, -50%);
+
+      &.is-dot {
+        right: -2px;
+        top: -2px;
+        transform: none;
+      }
+    }
+  }
+
+  // ── Status colors ──
+  &--danger  { background: #dc2626; }
+  &--primary { background: var(--glass-accent); }
+  &--success { background: #16a34a; }
+  &--warning { background: #d97706; }
+  &--info    { background: #4b5563; }
+  &--default { background: #6b7280; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .zt-badge__content {
+    transition: none !important;
+  }
+}
