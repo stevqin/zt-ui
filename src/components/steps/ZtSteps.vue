@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<ZtStepsProps>(), {
   space: '',
   finishStatus: 'finish',
   processStatus: 'process',
+  size: 'default',
 })
 
 const emit = defineEmits<{
@@ -78,6 +79,7 @@ watch(() => props.active, (current, previous) => {
 const classes = computed(() => [
   'zt-steps',
   `zt-steps--${effectiveDirection.value}`,
+  `zt-steps--${props.size}`,
   {
     'is-align-center': effectiveAlignCenter.value,
     'zt-steps--simple': props.simple,

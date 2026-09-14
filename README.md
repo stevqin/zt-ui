@@ -25,6 +25,12 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 - Modal
 - Drawer
 
+## Sizes
+
+Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Badge, Steps, Pagination, Modal, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children.
+
+Drawer keeps its established `size` API for panel width or height, so values such as `420`, `"36rem"`, and `"60%"` remain compatible.
+
 ## Installation
 
 ```bash

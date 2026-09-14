@@ -1,7 +1,8 @@
 import type { InjectionKey, Ref, ComputedRef } from 'vue'
+import type { ZtComponentSize } from '../types'
 
 export type ZtRadioStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
-export type ZtRadioSize = 'mini' | 'small' | 'default' | 'medium' | 'large'
+export type ZtRadioSize = ZtComponentSize
 
 export interface ZtRadioProps {
   modelValue?: unknown

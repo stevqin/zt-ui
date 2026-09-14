@@ -10,6 +10,7 @@ const props = withDefaults(defineProps<ZtBadgeProps>(), {
   isDot: false,
   hidden: false,
   status: 'danger',
+  size: 'default',
   showZero: false,
 })
 
@@ -27,6 +28,7 @@ const content = computed(() => {
 const badgeClasses = computed(() => [
   'zt-badge__content',
   `zt-badge--${props.status}`,
+  `zt-badge--${props.size}`,
   {
     'is-dot': props.isDot,
     'is-fixed': !!slots.default,

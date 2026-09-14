@@ -1,3 +1,4 @@
+export type * from './types'
 export * from './button'
 export * from './tag'
 export * from './radio'

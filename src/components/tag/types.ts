@@ -1,5 +1,7 @@
+import type { ZtComponentSize } from '../types'
+
 export type ZtTagStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
-export type ZtTagSize = 'mini' | 'small' | 'default' | 'medium' | 'large'
+export type ZtTagSize = ZtComponentSize
 export type ZtTagEffect = 'light' | 'dark' | 'plain'
 
 export interface ZtTagProps {

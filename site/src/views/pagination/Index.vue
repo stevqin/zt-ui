@@ -23,9 +23,11 @@ const pageSize = ref(20)`, `<ZtPagination
   :total="400"
   layout="total, sizes, prev, pager, next, jumper"
 />`)
-const codeSize = sfc(paginationImport, `<ZtPagination size="small" layout="prev, pager, next" :total="100" />
-<ZtPagination size="small" background layout="prev, pager, next" :total="100" />
-<ZtPagination disabled layout="prev, pager, next" :total="100" />`)
+const codeSize = sfc(paginationImport, `<ZtPagination size="mini" layout="prev, pager, next" :total="100" />
+<ZtPagination size="small" layout="prev, pager, next" :total="100" />
+<ZtPagination layout="prev, pager, next" :total="100" />
+<ZtPagination size="medium" background layout="prev, pager, next" :total="100" />
+<ZtPagination size="large" layout="prev, pager, next" :total="100" />`)
 const codeAlign = sfc(paginationImport, `<ZtPagination layout="slot, ->, prev, pager, next">
   <span>已选择 12 条</span>
 </ZtPagination>`)
@@ -57,8 +59,8 @@ const hideSingle = ref(true)`, `<ZtSwitch v-model="hideSingle" active-text="隐�
     </DemoBlock>
 
     <h2>尺寸与禁用</h2>
-    <DemoBlock :code="codeSize" desc="size 支持 small、default 和 large；disabled 禁止所有交互。">
-      <div class="pagination-stack"><ZtPagination size="small" layout="prev, pager, next" :total="100" /><ZtPagination size="small" background layout="prev, pager, next" :total="100" /><ZtPagination disabled layout="prev, pager, next" :total="100" /></div>
+    <DemoBlock :code="codeSize" desc="size 支持五档尺寸；disabled 可以和任意尺寸组合并禁止全部交互。">
+      <div class="pagination-stack"><ZtPagination size="mini" layout="prev, pager, next" :total="100" /><ZtPagination size="small" layout="prev, pager, next" :total="100" /><ZtPagination layout="prev, pager, next" :total="100" /><ZtPagination size="medium" background layout="prev, pager, next" :total="100" /><ZtPagination size="large" layout="prev, pager, next" :total="100" /><ZtPagination disabled layout="prev, pager, next" :total="100" /></div>
     </DemoBlock>
 
     <h2>左右对齐与插槽</h2>
@@ -81,7 +83,7 @@ const hideSingle = ref(true)`, `<ZtSwitch v-model="hideSingle" active-text="隐�
       <tr><td><code>pagerCount</code></td><td><code>number</code></td><td><code>7</code></td><td>最多显示的页码按钮数</td></tr>
       <tr><td><code>pageSizes</code></td><td><code>number[]</code></td><td><code>[10, 20, 30, 40, 50, 100]</code></td><td>每页条数选项</td></tr>
       <tr><td><code>layout</code></td><td><code>string</code></td><td><code>prev, pager, next, jumper, ->, total</code></td><td>模块排列方式</td></tr>
-      <tr><td><code>size</code></td><td><code>small | default | large</code></td><td><code>default</code></td><td>组件尺寸</td></tr>
+      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>组件尺寸</td></tr>
       <tr><td><code>background</code></td><td><code>boolean</code></td><td><code>false</code></td><td>按钮背景样式</td></tr>
       <tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用分页</td></tr>
       <tr><td><code>hideOnSinglePage</code></td><td><code>boolean</code></td><td><code>false</code></td><td>单页时隐藏</td></tr>

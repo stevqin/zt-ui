@@ -1,7 +1,8 @@
 import type { ListTable } from '@visactor/vtable'
+import type { ZtComponentSize } from '../types'
 
 export type ZtVTableGridRowKey = string | number
-export type ZtVTableGridSize = 'large' | 'default' | 'medium' | 'small' | 'mini'
+export type ZtVTableGridSize = ZtComponentSize
 export type ZtVTableGridSortOrder = 'asc' | 'desc' | 'normal'
 export type ZtVTableGridToolbarItem = 'create' | 'import' | 'export' | 'columnsetting' | 'reload'
 export type ZtVTableGridSummaryType = 'sum' | 'avg' | 'count' | 'min' | 'max'

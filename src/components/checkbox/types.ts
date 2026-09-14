@@ -1,7 +1,8 @@
 import type { InjectionKey, Ref, ComputedRef } from 'vue'
+import type { ZtComponentSize } from '../types'
 
 export type ZtCheckboxStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
-export type ZtCheckboxSize = 'mini' | 'small' | 'default' | 'medium' | 'large'
+export type ZtCheckboxSize = ZtComponentSize
 
 export interface ZtCheckboxProps {
   modelValue?: boolean

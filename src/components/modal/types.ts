@@ -1,4 +1,7 @@
 import type { ZtOverlayCommonProps } from '../overlay/types'
+import type { ZtComponentSize } from '../types'
+
+export type ZtModalSize = ZtComponentSize
 
 export interface ZtModalProps extends ZtOverlayCommonProps {
   modelValue?: boolean
@@ -7,4 +10,5 @@ export interface ZtModalProps extends ZtOverlayCommonProps {
   fullscreen?: boolean
   showFullscreenButton?: boolean
   draggable?: boolean
+  size?: ZtModalSize
 }

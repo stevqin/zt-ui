@@ -1,2 +1,2 @@
 export { default as ZtBadge } from './ZtBadge.vue'
-export type { ZtBadgeProps, ZtBadgeStatus } from './types'
+export type { ZtBadgeProps, ZtBadgeSize, ZtBadgeStatus } from './types'

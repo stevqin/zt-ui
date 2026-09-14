@@ -55,6 +55,19 @@ describe('ZtVTableGrid', () => {
     expect(wrapper.find('.zt-vtable-grid').exists()).toBe(true)
   })
 
+  it('applies every declared size and forwards it to pagination', async () => {
+    const wrapper = mount(ZtVTableGrid<Row>, {
+      props: { columns, records: rows, size: 'medium', pagination: { pageSize: 1 } },
+    })
+    await flushPromises()
+    expect(wrapper.classes()).toContain('zt-vtable-grid--medium')
+    expect(wrapper.findComponent({ name: 'ZtPagination' }).props('size')).toBe('medium')
+    expect(wrapper.findComponent({ name: 'MockListTable' }).props('options')).toMatchObject({
+      defaultRowHeight: 40,
+      defaultHeaderRowHeight: 44,
+    })
+  })
+
   it('loads remote data with pagination and form state', async () => {
     const proxyConfig = vi.fn().mockResolvedValue({ data: rows, total: 400 })
     const wrapper = mount(ZtVTableGrid<Row, { keyword: string }>, {

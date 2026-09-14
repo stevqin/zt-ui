@@ -1,4 +1,6 @@
-export type ZtPaginationSize = 'small' | 'default' | 'large'
+import type { ZtComponentSize } from '../types'
+
+export type ZtPaginationSize = ZtComponentSize
 
 export interface ZtPaginationProps {
   currentPage?: number

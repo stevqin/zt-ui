@@ -29,6 +29,7 @@ const props = withDefaults(defineProps<ZtModalProps>(), {
   fullscreen: false,
   showFullscreenButton: false,
   draggable: false,
+  size: 'default',
   zIndex: 1000,
 })
 
@@ -81,6 +82,7 @@ const panelStyle = computed(() => ({
 }))
 const classes = computed(() => [
   'zt-modal',
+  `zt-modal--${props.size}`,
   props.top !== undefined && !currentFullscreen.value && 'zt-modal--top',
   currentFullscreen.value && 'zt-modal--fullscreen',
   dragging.value && 'zt-modal--dragging',
@@ -205,6 +207,7 @@ defineExpose({
               v-if="showFullscreenButton"
               class="zt-modal__fullscreen"
               circle
+              :size="size"
               :disabled="overlay.busy.value"
               :aria-label="currentFullscreen ? '退出全屏' : '进入全屏'"
               :aria-pressed="currentFullscreen"
@@ -236,6 +239,7 @@ defineExpose({
               v-if="showClose"
               class="zt-modal__close"
               circle
+              :size="size"
               :disabled="overlay.busy.value"
               :aria-label="`关闭${title || '弹窗'}`"
               @click="overlay.requestClose('close')"
@@ -256,6 +260,7 @@ defineExpose({
               <ZtButton
                 v-if="showCancelButton"
                 class="zt-modal__cancel"
+                :size="size"
                 :disabled="overlay.busy.value"
                 @click="overlay.cancel"
               >
@@ -264,6 +269,7 @@ defineExpose({
               <ZtButton
                 class="zt-modal__confirm"
                 status="primary"
+                :size="size"
                 :disabled="confirmDisabled"
                 :loading="confirmLoading"
                 @click="overlay.confirm"

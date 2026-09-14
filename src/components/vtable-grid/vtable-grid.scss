@@ -90,9 +90,18 @@
   &__footer-left { display: flex; flex: 0 0 auto; align-items: center; gap: 8px; color: var(--glass-muted); font-size: 13px; }
   &__footer .zt-pagination { margin-left: auto; }
   &.is-disabled { opacity: .72; }
-  &--mini &__toolbar, &--mini &__footer { min-height: 38px; padding: 5px 8px; }
-  &--small &__toolbar, &--small &__footer { min-height: 42px; padding: 6px 9px; }
-  &--large &__toolbar, &--large &__footer { min-height: 58px; padding: 10px 14px; }
+  &--mini { font-size: var(--glass-size-mini); }
+  &--mini &__form { padding: 7px 8px; }
+  &--mini &__toolbar, &--mini &__footer { min-height: 38px; padding: 5px 8px; gap: 7px; }
+  &--small { font-size: var(--glass-size-small); }
+  &--small &__form { padding: 9px 10px; }
+  &--small &__toolbar, &--small &__footer { min-height: 42px; padding: 6px 9px; gap: 9px; }
+  &--medium { font-size: var(--glass-size-medium); }
+  &--medium &__form { padding: 14px 16px; }
+  &--medium &__toolbar, &--medium &__footer { min-height: 54px; padding: 9px 13px; gap: 13px; }
+  &--large { font-size: var(--glass-size-large); }
+  &--large &__form { padding: 16px 18px; }
+  &--large &__toolbar, &--large &__footer { min-height: 58px; padding: 10px 14px; gap: 14px; }
 }
 
 @keyframes zt-grid-spin { to { transform: rotate(360deg); } }

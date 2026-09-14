@@ -1,5 +1,7 @@
+import type { ZtComponentSize } from '../types'
+
 export type ZtSwitchStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
-export type ZtSwitchSize = 'small' | 'default' | 'large'
+export type ZtSwitchSize = ZtComponentSize
 
 export interface ZtSwitchProps {
   modelValue?: boolean | string | number

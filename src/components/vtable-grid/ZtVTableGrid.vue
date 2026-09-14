@@ -132,9 +132,19 @@ const nativeColumns = computed(() => buildVTableColumns(props.columns, {
 }))
 const nativeOptions = computed(() => {
   const { records: _records, columns: _columns, pagination: _pagination, ...safeOptions } = props.tableOptions
+  const rowHeights = {
+    mini: [28, 32],
+    small: [32, 36],
+    default: [36, 40],
+    medium: [40, 44],
+    large: [44, 48],
+  } as const
+  const [defaultRowHeight, defaultHeaderRowHeight] = rowHeights[props.size]
   return {
     autoFillWidth: true,
     widthMode: 'adaptive',
+    defaultRowHeight,
+    defaultHeaderRowHeight,
     keyboardOptions: { moveFocusCellOnTab: true, editCellOnEnter: true },
     hover: { highlightMode: 'row' },
     select: { highlightMode: 'cell' },
@@ -581,7 +591,7 @@ defineExpose({
         :background="paginationConfig.background"
         :total="total"
         :disabled="disabled || actualLoading"
-        :size="size === 'mini' || size === 'medium' ? 'small' : size"
+        :size="size"
         @update:current-page="handlePage"
         @update:page-size="handlePageSize"
       />

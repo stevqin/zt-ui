@@ -42,11 +42,25 @@ describe('site example coverage', () => {
     expect(router).toContain("path: '/vtable-grid'")
   })
 
-  it('provides five copyable TypeScript VTableGrid examples', () => {
+  it('documents the shared five-level size contract for every density-aware component', () => {
+    const sizePages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'badge', 'steps', 'pagination', 'modal', 'vtable-grid']
+    for (const page of sizePages) {
+      const source = readFileSync(resolve(process.cwd(), `src/views/${page}/Index.vue`), 'utf8')
+      for (const size of ['mini', 'small', 'default', 'medium', 'large']) expect(source, `${page}: ${size}`).toContain(size)
+    }
+  })
+
+  it('provides complete copyable TypeScript VTableGrid capability examples', () => {
     const source = readFileSync(resolve(process.cwd(), 'src/views/vtable-grid/Index.vue'), 'utf8')
-    expect((source.match(/<DemoBlock\s+:code=/g) ?? [])).toHaveLength(5)
-    expect(source).toContain('ZtVTableGridColumn')
-    expect(source).toContain('proxyConfig')
-    expect(source).toContain('batchSave')
+    expect((source.match(/<DemoBlock\s+:code=/g) ?? [])).toHaveLength(7)
+    for (const capability of [
+      'ZtVTableGridColumn', 'proxyConfig', 'batchSave', 'reserve-checkbox', 'show-actions-column',
+      'column-settings', 'table-options', 'auto-load', 'loading', 'disabled', 'copyFormatter',
+      "editable: 'textarea'", "editable: 'date'", "type: 'number'", "type: 'select'", "editable: 'email'", "editable: 'url'",
+      "summary: 'sum'", "summary: 'min'", "summary: 'max'", 'calculate:', 'formatter:',
+      '#form', '#toolbar-left', '#toolbar-right', '#empty', '#pager-left', '#edit-actions',
+      'query(true)', 'reload()', 'resize()', 'setRecords(', 'getTableInstance()', 'getSelectedRows',
+      'getSelectedKeys', 'setSelectedKeys', 'clearSelection', 'getChanges', 'saveChanges', 'cancelChanges', 'exportCsv',
+    ]) expect(source, capability).toContain(capability)
   })
 })

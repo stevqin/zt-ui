@@ -1,7 +1,9 @@
 import type { Component, ComputedRef, InjectionKey } from 'vue'
+import type { ZtComponentSize } from '../types'
 
 export type ZtStepStatus = 'wait' | 'process' | 'finish' | 'error' | 'success'
 export type ZtStepsDirection = 'horizontal' | 'vertical'
+export type ZtStepsSize = ZtComponentSize
 
 export interface ZtStepsProps {
   active?: number
@@ -11,6 +13,7 @@ export interface ZtStepsProps {
   space?: number | string
   finishStatus?: ZtStepStatus
   processStatus?: ZtStepStatus
+  size?: ZtStepsSize
 }
 
 export interface ZtStepProps {

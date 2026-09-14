@@ -5,6 +5,7 @@ import DemoBlock from '@/components/DemoBlock.vue'
 import { sfc } from '@/utils/exampleCode'
 
 const active = ref(1)
+const stepSizes = ['mini', 'small', 'default', 'medium', 'large'] as const
 function next() { active.value = active.value >= 3 ? 0 : active.value + 1 }
 
 const stepsImport = `import { ZtStep, ZtSteps } from '@ztechjs/zt-ui'`
@@ -58,6 +59,11 @@ const codeSimple = sfc(stepsImport, `<ZtSteps :active="1" finish-status="success
   <ZtStep title="确认订单" />
   <ZtStep title="完成支付" />
 </ZtSteps>`)
+const codeSize = sfc(stepsImport, `<ZtSteps size="mini" :active="1" simple>...</ZtSteps>
+<ZtSteps size="small" :active="1" simple>...</ZtSteps>
+<ZtSteps :active="1" simple>...</ZtSteps>
+<ZtSteps size="medium" :active="1" simple>...</ZtSteps>
+<ZtSteps size="large" :active="1" simple>...</ZtSteps>`)
 </script>
 
 <template>
@@ -95,6 +101,13 @@ const codeSimple = sfc(stepsImport, `<ZtSteps :active="1" finish-status="success
       <div class="steps-demo"><ZtSteps :active="1" finish-status="success" simple><ZtStep title="选择商品" /><ZtStep title="确认订单" /><ZtStep title="完成支付" /></ZtSteps></div>
     </DemoBlock>
 
+    <h2>尺寸</h2>
+    <DemoBlock :code="codeSize" desc="size 会同步调整图标、连接线、标题、说明和简洁布局间距。">
+      <div class="steps-size-list">
+        <ZtSteps v-for="size in stepSizes" :key="size" :size="size" :active="1" simple><ZtStep title="提交" /><ZtStep title="审核" /><ZtStep title="完成" /></ZtSteps>
+      </div>
+    </DemoBlock>
+
     <h2>API</h2>
     <h3>Steps Props</h3>
     <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
@@ -103,6 +116,7 @@ const codeSimple = sfc(stepsImport, `<ZtSteps :active="1" finish-status="success
       <tr><td><code>alignCenter</code></td><td><code>boolean</code></td><td><code>false</code></td><td>居中排列</td></tr>
       <tr><td><code>simple</code></td><td><code>boolean</code></td><td><code>false</code></td><td>简洁箭头布局</td></tr>
       <tr><td><code>space</code></td><td><code>number | string</code></td><td>—</td><td>步骤宽度，数字单位为 px</td></tr>
+      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>步骤条尺寸</td></tr>
       <tr><td><code>finishStatus</code></td><td><code>ZtStepStatus</code></td><td><code>finish</code></td><td>已完成步骤状态</td></tr>
       <tr><td><code>processStatus</code></td><td><code>ZtStepStatus</code></td><td><code>process</code></td><td>当前步骤状态</td></tr>
     </tbody></table>
@@ -133,4 +147,5 @@ const codeSimple = sfc(stepsImport, `<ZtSteps :active="1" finish-status="success
 .steps-demo--scroll { overflow-x: auto; padding-bottom: 4px; }
 .steps-demo--vertical { height: 300px; }
 .steps-actions { margin-top: 24px; }
+.steps-size-list { display: grid; width: 100%; gap: 12px; }
 </style>
