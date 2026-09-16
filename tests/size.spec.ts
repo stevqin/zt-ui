@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { afterEach, describe, expect, it } from 'vitest'
-import { ZtBadge, ZtModal, ZtPagination, ZtSteps, ZtSwitch } from '../src'
+import { ZtBadge, ZtForm, ZtInput, ZtInputNumber, ZtModal, ZtPagination, ZtPassword, ZtSelect, ZtSteps, ZtSwitch } from '../src'
 import type { ZtComponentSize } from '../src'
 import { resetOverlayManager } from '../src/components/overlay/overlayManager'
 
@@ -40,6 +40,17 @@ describe('shared component sizes', () => {
     expect(document.querySelector('.zt-modal__confirm')?.classList.contains('zt-button--mini')).toBe(true)
   })
 
+  it.each(['mini', 'small', 'medium', 'large'] as const)('applies the %s size to every input component', (size) => {
+    expect(mount(ZtInput, { props: { size } }).classes()).toContain(`zt-input--${size}`)
+    expect(mount(ZtPassword, { props: { size } }).classes()).toContain(`zt-password--${size}`)
+    expect(mount(ZtInputNumber, { props: { size } }).classes()).toContain(`zt-input-number--${size}`)
+    expect(mount(ZtSelect, { props: { size } }).classes()).toContain(`zt-select--${size}`)
+  })
+
+  it.each(['mini', 'small', 'medium', 'large'] as const)('applies the %s size to Form', (size) => {
+    expect(mount(ZtForm, { props: { size } }).classes()).toContain(`zt-form--${size}`)
+  })
+
   it('defines concrete mini and medium styles for every newly completed component', () => {
     for (const [component, file] of [
       ['badge', 'badge/badge.scss'],
@@ -48,10 +59,14 @@ describe('shared component sizes', () => {
       ['pagination', 'pagination/pagination.scss'],
       ['modal', 'modal/modal.scss'],
       ['vtable-grid', 'vtable-grid/vtable-grid.scss'],
+      ['select', 'select/select.scss'],
     ]) {
       const source = readFileSync(resolve(process.cwd(), `src/components/${file}`), 'utf8')
       expect(source, `${component} mini styles`).toContain('&--mini')
       expect(source, `${component} medium styles`).toContain('&--medium')
     }
+
+    const selectComponent = readFileSync(resolve(process.cwd(), 'src/components/select/ZtSelect.vue'), 'utf8')
+    expect(selectComponent).toContain('`zt-select--${effectiveSize.value}`')
   })
 })

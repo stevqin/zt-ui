@@ -18,6 +18,11 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 - Radio and RadioGroup
 - Checkbox and CheckboxGroup
 - Switch
+- Input
+- Password
+- InputNumber
+- Select
+- Form, FormItem, and FormGroup
 - Badge
 - Steps and Step
 - Pagination
@@ -27,7 +32,7 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 
 ## Sizes
 
-Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Badge, Steps, Pagination, Modal, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children.
+Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Input, Password, InputNumber, Select, Form, Badge, Steps, Pagination, Modal, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children; Form passes it to registered input controls.
 
 Drawer keeps its established `size` API for panel width or height, so values such as `420`, `"36rem"`, and `"60%"` remain compatible.
 
@@ -75,6 +80,72 @@ const fullscreen = ref(false)
     Modal content
   </ZtModal>
 </template>
+```
+
+## Input controls
+
+`ZtInput`, `ZtPassword`, and `ZtInputNumber` provide text, password, and numeric input with the shared five-level size contract:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ZtInput, ZtInputNumber, ZtPassword } from '@ztechjs/zt-ui'
+
+const keyword = ref('')
+const password = ref('')
+const quantity = ref<number | null>(1)
+</script>
+
+<template>
+  <ZtInput v-model="keyword" clearable placeholder="Search" />
+  <ZtPassword v-model="password" autocomplete="current-password" />
+  <ZtInputNumber v-model="quantity" :min="1" :max="99" />
+</template>
+```
+
+`ZtForm` coordinates field layout and validation, while `ZtFormGroup` optionally organizes related sections:
+
+```vue
+<ZtForm ref="formRef" :model="account" :rules="rules" label-width="88px">
+  <ZtFormItem label="Email" prop="email">
+    <ZtInput v-model="account.email" />
+  </ZtFormItem>
+  <ZtFormItem>
+    <ZtButton status="primary" @click="formRef?.validate()">Submit</ZtButton>
+  </ZtFormItem>
+</ZtForm>
+```
+
+## Select
+
+`ZtSelect` supports single and multiple selection, local filtering, remote search, custom slots, and the shared size contract. Filter keywords remain after selection, closing, or blur; clearing the control resets both the value and keyword:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui'
+
+const city = ref<string | null>(null)
+const cityOptions: ZtSelectOption[] = [
+  { label: 'Hangzhou', value: 'hangzhou' },
+  { label: 'Shanghai', value: 'shanghai' },
+]
+</script>
+
+<template>
+  <ZtSelect v-model="city" :options="cityOptions" clearable aria-label="Operating city" placeholder="Select a city" />
+</template>
+```
+
+Provide an asynchronous method when `remote` is enabled:
+
+```ts
+import type { ZtSelectOption } from '@ztechjs/zt-ui'
+
+const searchUsers = async (keyword: string): Promise<ZtSelectOption[]> => {
+  const response = await fetch(`/api/users?keyword=${encodeURIComponent(keyword)}`)
+  return response.json()
+}
 ```
 
 ## Modal and Drawer

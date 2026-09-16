@@ -31,6 +31,31 @@ const routes = [
     meta: { title: 'Switch 开关' },
   },
   {
+    path: '/input',
+    component: () => import('../views/input/Index.vue'),
+    meta: { title: 'Input 输入框' },
+  },
+  {
+    path: '/password',
+    component: () => import('../views/password/Index.vue'),
+    meta: { title: 'Password 密码框' },
+  },
+  {
+    path: '/input-number',
+    component: () => import('../views/input-number/Index.vue'),
+    meta: { title: 'InputNumber 数字输入框' },
+  },
+  {
+    path: '/select',
+    component: () => import('../views/select/Index.vue'),
+    meta: { title: 'Select 选择器' },
+  },
+  {
+    path: '/form',
+    component: () => import('../views/form/Index.vue'),
+    meta: { title: 'Form 表单' },
+  },
+  {
     path: '/badge',
     component: () => import('../views/badge/Index.vue'),
     meta: { title: 'Badge 徽标' },

@@ -70,7 +70,7 @@ export type ZtSelectRemoteMethod = (keyword: string) => Promise<ZtSelectOption[]
 
 ## 选择与搜索行为
 
-普通模式直接显示 `options`。开启 `filterable` 后，组件使用不区分大小写的 `label.includes(keyword)` 做本地过滤。输入搜索词不会修改已选值。
+普通模式直接显示 `options`。开启 `filterable` 后，组件使用不区分大小写的 `label.includes(keyword)` 做本地过滤。输入搜索词不会修改已选值。搜索选中、关闭下拉层或整体失焦后保留关键词和当前筛选结果；多选标签与关键词同时展示。只有用户清空选择或手动删除输入内容时关键词才清空。
 
 远程模式中，关键词变化立即触发 `search`，然后根据 `debounce` 调用 `remoteMethod`。组件内部维护加载、结果和错误状态。每次调用获得递增请求编号；只有最新请求可以写入结果、加载状态或错误状态，从而避免慢请求覆盖新结果。清空关键词同样发起一次空关键词请求。组件卸载时清除待执行定时器，已返回的旧请求不会写入状态。
 

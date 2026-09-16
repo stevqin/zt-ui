@@ -2,6 +2,7 @@ import {
   computed,
   nextTick,
   onBeforeUnmount,
+  provide,
   ref,
   watch,
   type Ref,
@@ -9,12 +10,14 @@ import {
 } from 'vue'
 import type { ZtOverlayCloseReason, ZtOverlayCommonProps } from './types'
 import {
+  captureOverlayFocusFallback,
   enterOverlay,
   leaveOverlay,
   lockBody,
   topOverlayId,
   unlockBody,
 } from './overlayManager'
+import { overlayContextKey, type OverlayBranch } from './context'
 
 type OverlayEvent =
   | 'update:modelValue'
@@ -43,9 +46,33 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   const isTop = computed(() => topOverlayId.value === id)
   const busy = computed(() => Boolean(props.confirmLoading || closing.value))
   let previousFocus: HTMLElement | null = null
+  let previousFocusFallback: (() => void) | undefined
   let maskStartedOutside = false
   let lastCloseReason: ZtOverlayCloseReason = 'api'
   let activationEpoch = 0
+  const branches = new Set<OverlayBranch>()
+
+  provide(overlayContextKey, {
+    interactive: computed(() => active.value && visible.value && isTop.value),
+    registerBranch(branch) {
+      branches.add(branch)
+      return () => branches.delete(branch)
+    },
+  })
+
+  function captureFocusFallback(target: HTMLElement | null) {
+    const branch = branchContaining(target)
+    if (!branch) return undefined
+    return () => {
+      if (active.value && visible.value && isTop.value && branch.trigger.value?.isConnected) branch.focus()
+    }
+  }
+
+  function branchContaining(target: EventTarget | null) {
+    if (!(target instanceof Node)) return undefined
+    return [...branches].reverse().find(branch => branch.visible.value
+      && (branch.trigger.value?.contains(target) || branch.popup.value?.contains(target)))
+  }
 
   function focusableElements() {
     const elements = panel.value?.querySelectorAll<HTMLElement>(
@@ -53,7 +80,8 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     )
     return [...(elements ?? [])].filter(element => {
       const style = getComputedStyle(element)
-      return style.display !== 'none' && style.visibility !== 'hidden' && !element.closest('[inert]')
+      return element.tabIndex >= 0 && style.display !== 'none' && style.visibility !== 'hidden'
+        && !element.closest('[inert]')
     })
   }
 
@@ -65,7 +93,17 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   }
 
   function handleKeydown(event: KeyboardEvent) {
-    if (!active.value || !isTop.value) return
+    if (!active.value || !isTop.value || event.isComposing || event.defaultPrevented) return
+
+    const branch = branchContaining(event.target)
+    if (event.key === 'Escape' && branch) {
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      // Move focus before removing a teleported popup so it never blurs to body.
+      branch.focus()
+      branch.close()
+      return
+    }
 
     if (event.key === 'Escape' && !event.isComposing) {
       if (props.escClosable !== false) {
@@ -82,6 +120,18 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     const last = elements.at(-1)
     const current = document.activeElement
 
+    if (branch?.popup.value?.contains(current)) {
+      // Tab leaves a popup at its trigger's logical position in the dialog.
+      const triggerIndices = elements.flatMap((element, index) => branch.trigger.value?.contains(element) ? [index] : [])
+      const triggerIndex = (event.shiftKey ? triggerIndices[0] : triggerIndices.at(-1)) ?? -1
+      const nextIndex = (triggerIndex + (event.shiftKey ? -1 : 1) + elements.length) % elements.length
+      event.preventDefault()
+      const next = elements[nextIndex] ?? panel.value
+      next?.focus()
+      branch.close()
+      return
+    }
+
     if (!first || !last) {
       event.preventDefault()
       panel.value?.focus()
@@ -95,7 +145,8 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   }
 
   function handleFocusIn(event: FocusEvent) {
-    if (active.value && isTop.value && props.focusTrap && !panel.value?.contains(event.target as Node)) {
+    if (active.value && isTop.value && props.focusTrap
+      && !panel.value?.contains(event.target as Node) && !branchContaining(event.target)) {
       focusPanel()
     }
   }
@@ -106,7 +157,9 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     active.value = true
     alive.value = true
     previousFocus = document.activeElement as HTMLElement | null
-    layer.value = enterOverlay(id, props.zIndex ?? 1000)
+    // Capture before entering the stack closes the parent's transient popup.
+    previousFocusFallback = captureOverlayFocusFallback(previousFocus)
+    layer.value = enterOverlay(id, props.zIndex ?? 1000, captureFocusFallback)
     if (props.lockScroll !== false) lockBody(id)
     document.addEventListener('keydown', handleKeydown, true)
     document.addEventListener('focusin', handleFocusIn, true)
@@ -118,6 +171,7 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   function release() {
     if (!active.value) return
     const restoreTarget = previousFocus
+    const restoreFallback = previousFocusFallback
     active.value = false
     activationEpoch++
     closing.value = false
@@ -126,8 +180,11 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     leaveOverlay(id)
     unlockBody(id)
     previousFocus = null
+    previousFocusFallback = undefined
     void nextTick(() => {
-      if (!active.value && restoreTarget?.isConnected) restoreTarget.focus({ preventScroll: true })
+      if (active.value) return
+      if (restoreTarget?.isConnected) restoreTarget.focus({ preventScroll: true })
+      else restoreFallback?.()
     })
   }
 
@@ -172,7 +229,8 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
 
   function afterEnter() {
     if (!visible.value) return
-    if (isTop.value && props.autoFocus !== false) focusPanel()
+    if (isTop.value && props.autoFocus !== false
+      && !panel.value?.contains(document.activeElement) && !branchContaining(document.activeElement)) focusPanel()
     emit('opened')
   }
 

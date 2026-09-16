@@ -1,8 +1,11 @@
 import { computed, shallowRef } from 'vue'
 
+type CaptureFocusFallback = (target: HTMLElement | null) => (() => void) | undefined
+
 interface OverlayEntry {
   id: symbol
   layer: number
+  captureFocusFallback?: CaptureFocusFallback
 }
 
 const stack = shallowRef<OverlayEntry[]>([])
@@ -12,7 +15,7 @@ let previousPaddingRight = ''
 
 export const topOverlayId = computed(() => stack.value.at(-1)?.id)
 
-export function enterOverlay(id: symbol, baseZIndex = 1000) {
+export function enterOverlay(id: symbol, baseZIndex = 1000, captureFocusFallback?: CaptureFocusFallback) {
   const existing = stack.value.find(entry => entry.id === id)
   if (existing) return existing.layer
 
@@ -21,8 +24,12 @@ export function enterOverlay(id: symbol, baseZIndex = 1000) {
     baseZIndex - 2,
   )
   const layer = Math.max(baseZIndex, highestLayer + 2)
-  stack.value = [...stack.value, { id, layer }]
+  stack.value = [...stack.value, { id, layer, captureFocusFallback }]
   return layer
+}
+
+export function captureOverlayFocusFallback(target: HTMLElement | null) {
+  return stack.value.at(-1)?.captureFocusFallback?.(target)
 }
 
 export function leaveOverlay(id: symbol) {
