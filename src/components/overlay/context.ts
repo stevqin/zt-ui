@@ -5,6 +5,8 @@ export interface OverlayBranch {
   trigger: Ref<HTMLElement | undefined>
   popup: Ref<HTMLElement | undefined>
   visible: Ref<boolean>
+  /** Traverse popup controls before returning to the parent focus scope. */
+  tabThroughPopup?: boolean
   close: () => void
   focus: () => void
 }

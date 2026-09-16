@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import type { ZtCheckboxProps } from './types'
 import { checkboxGroupKey } from './types'
@@ -10,7 +11,6 @@ const props = withDefaults(defineProps<ZtCheckboxProps>(), {
   modelValue: false,
   disabled: false,
   indeterminate: false,
-  size: 'default',
   status: 'primary',
   border: false,
   checked: false,
@@ -50,7 +50,7 @@ const isDisabled = computed(() => {
   return props.disabled
 })
 
-const actualSize = computed(() => group?.size.value ?? props.size)
+const actualSize = useZtSize(props, () => group?.size.value)
 const actualStatus = computed(() => group?.status.value ?? props.status)
 
 const classes = computed(() => [

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, useSlots } from 'vue'
 import type { ZtBadgeProps } from './types'
 import './badge.scss'
@@ -10,9 +11,10 @@ const props = withDefaults(defineProps<ZtBadgeProps>(), {
   isDot: false,
   hidden: false,
   status: 'danger',
-  size: 'default',
   showZero: false,
 })
+const configSize = useZtSize(props)
+
 
 const slots = useSlots()
 
@@ -28,7 +30,7 @@ const content = computed(() => {
 const badgeClasses = computed(() => [
   'zt-badge__content',
   `zt-badge--${props.status}`,
-  `zt-badge--${props.size}`,
+  `zt-badge--${configSize.value}`,
   {
     'is-dot': props.isDot,
     'is-fixed': !!slots.default,

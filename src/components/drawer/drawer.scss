@@ -28,8 +28,8 @@
     max-height: 100vh;
     overflow: hidden;
     outline: 0;
-    border: 1px solid rgba(255, 255, 255, .9);
-    background: linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,255,255,.9) 48%, rgba(248,250,252,.96));
+    border: 1px solid var(--zt-shine, rgba(255, 255, 255, .9));
+    background: var(--zt-panel-bg, linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,255,255,.9) 48%, rgba(248,250,252,.96)));
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
   }
@@ -38,10 +38,10 @@
   &--left &__panel { height: 100%; }
   &--top &__panel,
   &--bottom &__panel { width: 100%; }
-  &--right &__panel { border-radius: 22px 0 0 22px; box-shadow: -20px 0 64px rgba(15, 23, 42, .18); }
-  &--left &__panel { border-radius: 0 22px 22px 0; box-shadow: 20px 0 64px rgba(15, 23, 42, .18); }
-  &--top &__panel { border-radius: 0 0 22px 22px; box-shadow: 0 20px 64px rgba(15, 23, 42, .18); }
-  &--bottom &__panel { border-radius: 22px 22px 0 0; box-shadow: 0 -20px 64px rgba(15, 23, 42, .18); }
+  &--right &__panel { border-radius: glass.radius(22px) 0 0 glass.radius(22px); box-shadow: -20px 0 64px rgba(15, 23, 42, .18); }
+  &--left &__panel { border-radius: 0 glass.radius(22px) glass.radius(22px) 0; box-shadow: 20px 0 64px rgba(15, 23, 42, .18); }
+  &--top &__panel { border-radius: 0 0 glass.radius(22px) glass.radius(22px); box-shadow: 0 20px 64px rgba(15, 23, 42, .18); }
+  &--bottom &__panel { border-radius: glass.radius(22px) glass.radius(22px) 0 0; box-shadow: 0 -20px 64px rgba(15, 23, 42, .18); }
 
   &__header {
     display: flex;
@@ -75,7 +75,7 @@
     min-height: 58px;
     padding: 10px 22px;
     border-top: 1px solid var(--glass-line);
-    background: rgba(248, 250, 252, .7);
+    background: var(--zt-surface-soft, rgba(248, 250, 252, .7));
   }
 }
 

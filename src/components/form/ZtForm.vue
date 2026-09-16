@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, provide } from 'vue'
 import type { ZtFormContext, ZtFormFieldContext } from './context'
 import { ztFormKey } from './context'
@@ -10,7 +11,6 @@ defineOptions({ name: 'ZtForm', inheritAttrs: false })
 const props = withDefaults(defineProps<ZtFormProps>(), {
   model: () => ({}),
   rules: () => ({}),
-  size: 'default',
   disabled: false,
   inline: false,
   labelPosition: 'right',
@@ -19,6 +19,8 @@ const props = withDefaults(defineProps<ZtFormProps>(), {
   showMessage: true,
   scrollToError: false,
 })
+const configSize = useZtSize(props)
+
 
 const emit = defineEmits<{
   validate: [prop: string, valid: boolean, message: string]
@@ -29,7 +31,7 @@ const classes = computed(() => [
   'zt-form',
   `zt-form--label-${props.labelPosition}`,
   props.inline && 'zt-form--inline',
-  props.size !== 'default' && `zt-form--${props.size}`,
+  configSize.value !== 'default' && `zt-form--${configSize.value}`,
   props.disabled && 'is-disabled',
 ])
 
@@ -48,7 +50,7 @@ function notifyValidate(prop: string, valid: boolean, message: string) {
 provide<ZtFormContext>(ztFormKey, {
   model: props.model,
   rules: computed(() => props.rules),
-  size: computed(() => props.size),
+  size: computed(() => configSize.value),
   disabled: computed(() => props.disabled),
   labelPosition: computed(() => props.labelPosition),
   labelWidth: computed(() => props.labelWidth),

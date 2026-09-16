@@ -3,3 +3,6 @@ declare module '*.vue' {
   const component: DefineComponent<Record<string, unknown>, Record<string, unknown>, unknown>
   export default component
 }
+
+interface ImportMetaEnv { readonly DEV: boolean }
+interface ImportMeta { readonly env: ImportMetaEnv }

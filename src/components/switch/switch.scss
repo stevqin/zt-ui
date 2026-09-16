@@ -8,7 +8,7 @@
   cursor: pointer;
   user-select: none;
   font: var(--glass-size-default) / 1.6 var(--glass-font);
-  color: #4b5563;
+  color: var(--zt-text, #4b5563);
 
   &.is-disabled {
     opacity: .45;
@@ -21,7 +21,7 @@
     width: 44px;
     height: 22px;
     border-radius: 12px;
-    background: #d1d5db;
+    background: var(--zt-surface-soft, #d1d5db);
     transition: background 200ms;
     flex: 0 0 auto;
   }
@@ -93,11 +93,11 @@
 
   // Label color on checked
   &--primary.is-checked .is-active { color: var(--glass-accent); }
-  &--success.is-checked .is-active { color: #16a34a; }
-  &--warning.is-checked .is-active { color: #d97706; }
-  &--danger.is-checked .is-active  { color: #dc2626; }
-  &--info.is-checked .is-active    { color: #4b5563; }
-  &--default.is-checked .is-active { color: #6b7280; }
+  &--success.is-checked .is-active { color: var(--zt-success-ink, #16a34a); }
+  &--warning.is-checked .is-active { color: var(--zt-warning-ink, #d97706); }
+  &--danger.is-checked .is-active  { color: var(--zt-danger-ink, #dc2626); }
+  &--info.is-checked .is-active    { color: var(--zt-text, #4b5563); }
+  &--default.is-checked .is-active { color: var(--zt-text-muted, #6b7280); }
 
   &--mini { gap: 5px; font-size: var(--glass-size-mini); }
   &--mini &__track { width: 28px; height: 14px; border-radius: 8px; }

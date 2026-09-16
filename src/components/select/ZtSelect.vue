@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useZtConfig } from '../config-provider/context'
+const { style: providerStyle } = useZtConfig()
+import { useZtSize } from '../config-provider/context'
 import {
   computed,
   getCurrentInstance,
@@ -70,7 +73,7 @@ let outsideClickListening = false
 let dropdownResizeObserver: ResizeObserver | undefined
 const selectId = `zt-select-${instance?.uid ?? Math.random().toString(36).slice(2)}`
 const listboxId = `${selectId}-listbox`
-const effectiveSize = computed(() => props.size ?? formItem?.size.value ?? 'default')
+const effectiveSize = useZtSize(props, () => formItem?.size.value)
 const effectiveDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 const valueOptions = computed(() => props.remote
   ? [...remoteSearch.options.value, ...retainedRemoteOptions.value, ...props.options]
@@ -87,7 +90,7 @@ const selectedOptions = computed(() => selectedValues.value.flatMap(value => {
 }))
 const hasSelection = computed(() => props.multiple
   ? selectedValues.value.length > 0
-  : singleValue(props.modelValue) !== null)
+  : selectedOption.value !== undefined || (singleValue(props.modelValue) !== null && singleValue(props.modelValue) !== ''))
 const canClear = computed(() => props.clearable && hasSelection.value && !effectiveDisabled.value)
 const displayedOptions = computed(() => {
   if (props.remote) return props.remoteMethod
@@ -473,7 +476,6 @@ defineExpose({ focus, blur, open, close })
       </span>
       <span v-else class="zt-select__value">
         <slot v-if="selectedOption" name="selected" :option="selectedOption">{{ selectedOption.label }}</slot>
-        <template v-else>{{ placeholder }}</template>
       </span>
       <input
         ref="comboboxElement"
@@ -484,6 +486,7 @@ defineExpose({ focus, blur, open, close })
         :disabled="effectiveDisabled"
         :readonly="!filterable && !remote"
         :value="inputValue"
+        :placeholder="!selectedOption && !selectedValues.length ? placeholder : undefined"
         :aria-expanded="visible"
         aria-haspopup="listbox"
         :aria-controls="listboxId"
@@ -519,7 +522,7 @@ defineExpose({ focus, blur, open, close })
           effectiveSize !== 'default' && `zt-select__dropdown--${effectiveSize}`,
         ]"
         :data-placement="placement"
-        :style="dropdownStyle"
+        :style="[providerStyle, dropdownStyle]"
         role="listbox"
         :aria-multiselectable="multiple ? 'true' : undefined"
         @focusout="handleFocusout"

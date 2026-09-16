@@ -1,0 +1,103 @@
+import ts from 'typescript'
+import { parse as parseSfc } from 'vue/compiler-sfc'
+import { methods as methodOverrides } from './api-overrides.mjs'
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { resolve, dirname } from 'node:path'
+import { fileURLToPath } from 'node:url'
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
+const walk = path => readdirSync(path, {withFileTypes:true}).flatMap(e => e.isDirectory() ? walk(resolve(path,e.name)) : [resolve(path,e.name)])
+const files = walk(resolve(root,'src/components')).filter(f=>f.endsWith('/types.ts'))
+files.push(resolve(root,'src/components/types.ts'))
+files.push(resolve(root,'src/components/index.ts'))
+const program = ts.createProgram(files, {strict:true, target:ts.ScriptTarget.ES2022, moduleResolution:ts.ModuleResolutionKind.Bundler, module:ts.ModuleKind.ESNext, skipLibCheck:true})
+const checker = program.getTypeChecker()
+const publicTypes = new Set(checker.getExportsOfModule(checker.getSymbolAtLocation(program.getSourceFile(resolve(root,'src/components/index.ts')))).map(s=>s.name))
+const declarations = new Map()
+for(const file of files) for(const node of program.getSourceFile(file).statements) if((ts.isInterfaceDeclaration(node)||ts.isTypeAliasDeclaration(node)) && node.name.text.startsWith('Zt')) declarations.set(node.name.text,node)
+const plain = s=>s.replace(/<[^>]*>/g,'').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').trim()
+const config = {
+ icon:['icon','ZtIcon'],
+ link:['link','ZtLink'], text:['text','ZtText'],
+ scrollbar:['scrollbar','ZtScrollbar'],
+ popover:['popover','ZtPopover'], popconfirm:['popconfirm','ZtPopconfirm'],
+ tabs:['tabs','ZtTabs','ZtTabPane'], breadcrumb:['breadcrumb','ZtBreadcrumb','ZtBreadcrumbItem'], segmented:['segmented','ZtSegmented'],
+ descriptions:['descriptions','ZtDescriptions','ZtDescriptionsItem'], collapse:['collapse','ZtCollapse','ZtCollapseItem'], result:['result','ZtResult'],
+ image:['image','ZtImage','ZtImageViewer'], avatar:['avatar','ZtAvatar'],
+ upload:['upload','ZtUpload'],
+ 'input-otp':['input-otp','ZtInputOtp'],
+ menu:['menu','ZtMenu'],
+ slider:['slider','ZtSlider'], progress:['progress','ZtProgress'],
+ 'config-provider':['config-provider','ZtConfigProvider'],
+ button:['button','ZtButton'], tag:['tag','ZtTag'], badge:['badge','ZtBadge'], radio:['radio','ZtRadio','ZtRadioGroup'], checkbox:['checkbox','ZtCheckbox','ZtCheckboxGroup'], switch:['switch','ZtSwitch'], input:['input','ZtInput'], password:['input','ZtPassword'], 'input-number':['input-number','ZtInputNumber'], select:['select','ZtSelect'], form:['form','ZtForm','ZtFormItem','ZtFormGroup'], steps:['steps','ZtSteps','ZtStep'], pagination:['pagination','ZtPagination'], modal:['modal','ZtModal'], drawer:['drawer','ZtDrawer'], 'date-picker':['date-picker','ZtDatePicker'], 'date-time-picker':['date-picker','ZtDateTimePicker'], 'vtable-grid':['vtable-grid','ZtVTableGrid'],
+}
+const output = {}
+for(const [id,[dir,...names]] of Object.entries(config)) {
+ const page=readFileSync(resolve(root,`site/src/views/${id}/Index.vue`),'utf8')
+ const descriptions=new Map()
+ let scope=names[0]
+ for(const part of page.slice(page.indexOf('<template>')).matchAll(/<h3>([^<]+)<\/h3>|<tr>([\s\S]*?)<\/tr>/g)) {
+  if(part[1]) { const owner=part[1].match(/^(\w+) Props$/)?.[1]; scope=owner?'Zt'+owner:names[0]; continue }
+  const cells=[...part[2].matchAll(/<td>([\s\S]*?)<\/td>/g)].map(m=>plain(m[1]))
+  if(cells.length>=3) for(const key of cells[0].split(' / ')) descriptions.set(scope+'.'+key,cells.at(-1))
+ }
+ const docs=[]
+ for(const name of names) {
+  const content=readFileSync(resolve(root,`src/components/${dir}/${name}.vue`),'utf8')
+  const source=ts.createSourceFile(name+'.ts',content.match(/<script[^>]*>([\s\S]*?)<\/script>/)?.[1]??'',ts.ScriptTarget.Latest,true)
+  let defaults={}, events=[],methods=[]
+  const collect=src=>{
+   const visit=node=>{
+    if(ts.isCallExpression(node)) {
+     if(node.expression.getText(src)==='withDefaults' && node.arguments[1] && ts.isObjectLiteralExpression(node.arguments[1])) for(const p of node.arguments[1].properties) if(ts.isPropertyAssignment(p)) {
+      let val=p.initializer.getText(src); if(ts.isArrowFunction(p.initializer)) val=p.initializer.body.getText(src).replace(/^\((.*)\)$/s,'$1')
+      defaults[p.name.getText(src).replace(/['"]/g,'')]=val
+     }
+     if(node.expression.getText(src)==='defineEmits') {
+      const type=node.typeArguments?.[0]
+      if(type && ts.isTypeLiteralNode(type)) events=type.members.map(m=>({name:m.name.getText(src).replace(/['"]/g,''),type:m.type?.getText(src)??'—'}))
+     }
+     if(node.expression.getText(src)==='defineExpose' && node.arguments[0] && ts.isObjectLiteralExpression(node.arguments[0])) methods=node.arguments[0].properties.map(p=>({name:p.name.getText(src),type:''}))
+    }
+    ts.forEachChild(node,visit)
+   }; visit(src)
+  }
+  if(dir==='date-picker') {const base=readFileSync(resolve(root,'src/components/date-picker/ZtDatePickerBase.vue'),'utf8');collect(ts.createSourceFile('base.ts',base.match(/<script[^>]*>([\s\S]*?)<\/script>/)[1],ts.ScriptTarget.Latest,true))}
+  collect(source)
+  const declaration=declarations.get(name+'Props')
+  if(!declaration) throw new Error('Missing props '+name)
+  const type=checker.getTypeAtLocation(declaration)
+  const props=checker.getPropertiesOfType(type).map(symbol=>{
+   const node=symbol.valueDeclaration??symbol.declarations[0]
+   return {name:symbol.name, type:node.type?.getText()??checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol,node)),required:!(symbol.flags&ts.SymbolFlags.Optional),default:defaults[symbol.name]??(symbol.name==='size' && !['ZtDrawer'].includes(name)?'default（可继承）':'未设置'),description:descriptions.get(name+'.'+symbol.name)??(symbol.name==='modelValue'?descriptions.get(name+'.v-model'):undefined)??ts.displayPartsToString(symbol.getDocumentationComment(checker))}
+  })
+  const slotMap=new Map()
+  const template=parseSfc(content).descriptor.template?.ast
+  if (!template) throw new Error('Missing template AST: '+name)
+  function visitTemplate(node){
+   if(node.type===1 && node.tag==='slot'){
+    const name=node.props.find(p=>p.type===6&&p.name==='name')?.value?.content??'default'
+    const args=node.props.filter(p=>p.type===7&&p.name==='bind'&&p.arg?.content).map(p=>p.arg.content)
+    slotMap.set(name,{name,type:args.length?`{ ${args.join(', ')} }`:'—'})
+   }
+   for(const child of node.children??[]) visitTemplate(child)
+  }
+  visitTemplate(template)
+  const slots=[...slotMap.values()]
+
+  const instance=declarations.get(name+'Instance')
+  if(instance) {const it=checker.getTypeAtLocation(instance);for(const m of methods){const symbol=it.getProperty(m.name); if(symbol){const d=symbol.valueDeclaration??symbol.declarations[0];m.type=d.type?.getText()??checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol,d))}}}
+  for(const m of methods) if(!m.type){const fn=source.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text===m.name);m.type=fn?`(${fn.parameters.map(p=>p.getText(source)).join(', ')})${fn.type?': '+fn.type.getText(source):''}`:'通过组件 ref 访问'}
+  for (const method of methods) method.type = methodOverrides[name]?.[method.name] ?? method.type
+  if(name==='ZtConfigProvider') for(const p of props) p.default=({size:'继承父级 / default',theme:'继承父级 / light',borderRadius:'继承父级 / 11'})[p.name]
+  if(name==='ZtVTableGrid') {const p=props.find(p=>p.name==='pageSize');p.default='200';p.description='优先使用 pageSize，其次 pagination.pageSize，均未设置时为 200。支持 v-model:page-size。'}
+  docs.push({name,props,events,slots,methods})
+ }
+ const types=[...declarations].filter(([,n])=>n.getSourceFile().fileName===resolve(root,`src/components/${dir}/types.ts`)).map(([name,n])=>({name,code:n.getText()}))
+ // Include referenced shared types (theme, size, overlay contracts).
+ const seen=new Set(types.map(t=>t.name))
+ for(let i=0;i<types.length;i++) for(const ref of types[i].code.match(/\bZt\w+\b/g)??[]) if(!seen.has(ref)&&declarations.has(ref)){seen.add(ref);types.push({name:ref,code:declarations.get(ref).getText()})}
+ const sections=[...page.matchAll(/<h[23]>([^<]+)<\/h[23]>/g)].map(m=>m[1])
+ output[id]={components:docs,types:types.map(t=>({...t,public:publicTypes.has(t.name)})),sections}
+}
+writeFileSync(resolve(root,'site/src/docs/api.generated.json'),JSON.stringify(output,null,2)+'\n')
+console.log(`API reference generated for ${Object.keys(output).length} component pages`)

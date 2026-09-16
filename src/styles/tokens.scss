@@ -1,64 +1,70 @@
+@use 'sass:math';
+
+@function radius($value) {
+  @return calc(var(--zt-radius, 11px) * #{math.div($value, 11px)});
+}
+
 @mixin tokens {
   // ── Base ──
-  --glass-ink: #202020;
-  --glass-muted: #626262;
-  --glass-font: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif;
-  --glass-line: rgba(32,32,32,.1);
-  --glass-shadow: 0 5px 18px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.055), inset 0 2px 1px rgba(255,255,255,.95), inset 0 -1px 2px rgba(0,0,0,.07);
-  --glass-island: linear-gradient(145deg, rgba(255,255,255,.9), rgba(255,255,255,.42) 46%, rgba(255,255,255,.7));
-  --glass-island-line: rgba(255,255,255,.9);
-  --glass-selected: linear-gradient(145deg, #f0f6ff, #dae7ff);
-  --glass-selected-ink: #214cac;
+  --glass-ink: var(--zt-ink, #202020);
+  --glass-muted: var(--zt-muted, #626262);
+  --glass-font: var(--zt-font, -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'PingFang SC', 'Microsoft YaHei', sans-serif);
+  --glass-line: var(--zt-line, rgba(32,32,32,.1));
+  --glass-shadow: var(--zt-shadow, 0 5px 18px rgba(0,0,0,.07), 0 0 0 1px rgba(0,0,0,.055), inset 0 2px 1px rgba(255,255,255,.95), inset 0 -1px 2px rgba(0,0,0,.07));
+  --glass-island: var(--zt-island, linear-gradient(145deg, rgba(255,255,255,.9), rgba(255,255,255,.42) 46%, rgba(255,255,255,.7)));
+  --glass-island-line: var(--zt-island-line, rgba(255,255,255,.9));
+  --glass-selected: var(--zt-selected, linear-gradient(145deg, #f0f6ff, #dae7ff));
+  --glass-selected-ink: var(--zt-selected-ink, #214cac);
 
   // ── Size (font-size) ──
-  --glass-size-mini: 11px;
-  --glass-size-small: 12px;
-  --glass-size-default: 13px;
-  --glass-size-medium: 14px;
-  --glass-size-large: 15px;
+  --glass-size-mini: var(--zt-size-mini, 11px);
+  --glass-size-small: var(--zt-size-small, 12px);
+  --glass-size-default: var(--zt-size-default, 13px);
+  --glass-size-medium: var(--zt-size-medium, 14px);
+  --glass-size-large: var(--zt-size-large, 15px);
 
   // ── Default (white/gray) ──
-  --glass-default-ink: #414141;
-  --glass-default-soft: rgba(255,255,255,.85);
-  --glass-default-line: #e2e2e2;
-  --glass-default-button: rgba(255,255,255,.85);
-  --glass-default-button-hover: rgba(255,255,255,1);
+  --glass-default-ink: var(--zt-default-ink, #414141);
+  --glass-default-soft: var(--zt-default-soft, rgba(255,255,255,.85));
+  --glass-default-line: var(--zt-default-line, #e2e2e2);
+  --glass-default-button: var(--zt-default-button, rgba(255,255,255,.85));
+  --glass-default-button-hover: var(--zt-default-button-hover, rgba(255,255,255,1));
 
   // ── Primary (blue) ──
-  --glass-accent: #245edb;
-  --glass-accent-ink: #244c9e;
-  --glass-accent-soft: #f0f5ff;
-  --glass-accent-line: #bfd2ff;
-  --glass-accent-rgb: 36, 94, 219;
-  --glass-accent-title: #243e75;
-  --glass-accent-button: linear-gradient(165deg, #3675ef, #174dcc);
-  --glass-accent-button-hover: linear-gradient(165deg, #2865df, #123fad);
+  --glass-accent: var(--zt-accent, #245edb);
+  --glass-accent-ink: var(--zt-accent-ink, #244c9e);
+  --glass-accent-soft: var(--zt-accent-soft, #f0f5ff);
+  --glass-accent-line: var(--zt-accent-line, #bfd2ff);
+  --glass-accent-rgb: var(--zt-accent-rgb, 36, 94, 219);
+  --glass-accent-title: var(--zt-accent-title, #243e75);
+  --glass-accent-button: var(--zt-accent-button, linear-gradient(165deg, #3675ef, #174dcc));
+  --glass-accent-button-hover: var(--zt-accent-button-hover, linear-gradient(165deg, #2865df, #123fad));
 
   // ── Success (green) ──
-  --glass-success-ink: #166534;
-  --glass-success-soft: #f0fdf4;
-  --glass-success-line: #bbf7d0;
-  --glass-success-button: linear-gradient(165deg, #22c55e, #16a34a);
-  --glass-success-button-hover: linear-gradient(165deg, #16a34a, #15803d);
+  --glass-success-ink: var(--zt-success-ink, #166534);
+  --glass-success-soft: var(--zt-success-soft, #f0fdf4);
+  --glass-success-line: var(--zt-success-line, #bbf7d0);
+  --glass-success-button: var(--zt-success-button, linear-gradient(165deg, #22c55e, #16a34a));
+  --glass-success-button-hover: var(--zt-success-button-hover, linear-gradient(165deg, #16a34a, #15803d));
 
   // ── Warning (amber) ──
-  --glass-warning-ink: #92400e;
-  --glass-warning-soft: #fffbeb;
-  --glass-warning-line: #fde68a;
-  --glass-warning-button: linear-gradient(165deg, #f59e0b, #d97706);
-  --glass-warning-button-hover: linear-gradient(165deg, #d97706, #b45309);
+  --glass-warning-ink: var(--zt-warning-ink, #92400e);
+  --glass-warning-soft: var(--zt-warning-soft, #fffbeb);
+  --glass-warning-line: var(--zt-warning-line, #fde68a);
+  --glass-warning-button: var(--zt-warning-button, linear-gradient(165deg, #f59e0b, #d97706));
+  --glass-warning-button-hover: var(--zt-warning-button-hover, linear-gradient(165deg, #d97706, #b45309));
 
   // ── Danger (red) ──
-  --glass-danger-ink: #991b1b;
-  --glass-danger-soft: #fef2f2;
-  --glass-danger-line: #fecaca;
-  --glass-danger-button: linear-gradient(165deg, #ef4444, #dc2626);
-  --glass-danger-button-hover: linear-gradient(165deg, #dc2626, #b91c1c);
+  --glass-danger-ink: var(--zt-danger-ink, #991b1b);
+  --glass-danger-soft: var(--zt-danger-soft, #fef2f2);
+  --glass-danger-line: var(--zt-danger-line, #fecaca);
+  --glass-danger-button: var(--zt-danger-button, linear-gradient(165deg, #ef4444, #dc2626));
+  --glass-danger-button-hover: var(--zt-danger-button-hover, linear-gradient(165deg, #dc2626, #b91c1c));
 
   // ── Info (gray) ──
-  --glass-info-ink: #374151;
-  --glass-info-soft: #f9fafb;
-  --glass-info-line: #d1d5db;
-  --glass-info-button: linear-gradient(165deg, #6b7280, #4b5563);
-  --glass-info-button-hover: linear-gradient(165deg, #4b5563, #374151);
+  --glass-info-ink: var(--zt-info-ink, #374151);
+  --glass-info-soft: var(--zt-info-soft, #f9fafb);
+  --glass-info-line: var(--zt-info-line, #d1d5db);
+  --glass-info-button: var(--zt-info-button, linear-gradient(165deg, #6b7280, #4b5563));
+  --glass-info-button-hover: var(--zt-info-button-hover, linear-gradient(165deg, #4b5563, #374151));
 }

@@ -1,0 +1,10 @@
+@use '../../styles/tokens' as glass;
+.zt-icon{
+ @include glass.tokens;display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--zt-icon-size,1em);height:var(--zt-icon-size,1em);color:var(--zt-icon-color,currentColor);font-style:normal;line-height:1;transform:rotate(var(--zt-icon-rotate,0deg));transform-origin:center;
+ svg{display:block;width:100%;height:100%}
+ &--mini{--zt-icon-size:var(--glass-size-mini)}&--small{--zt-icon-size:var(--glass-size-small)}&--default{--zt-icon-size:var(--glass-size-default)}&--medium{--zt-icon-size:var(--glass-size-medium)}&--large{--zt-icon-size:var(--glass-size-large)}
+ &--primary{color:var(--glass-accent)}&--success{color:var(--glass-success-ink)}&--warning{color:var(--glass-warning-ink)}&--danger{color:var(--glass-danger-ink)}&--info{color:var(--glass-info-ink)}
+ &.is-spin{animation:zt-icon-spin 1s linear infinite}
+}
+@keyframes zt-icon-spin{to{transform:rotate(calc(var(--zt-icon-rotate,0deg) + 360deg))}}
+@media(prefers-reduced-motion:reduce){.zt-icon.is-spin{animation:none}}

@@ -26,7 +26,7 @@
   min-width: 72px;
   padding: 5px 15px;
   gap: 6px;
-  border-radius: 11px;
+  border-radius: glass.radius(11px);
 
   // ── Size: mini ──
   &--mini {
@@ -35,7 +35,7 @@
     min-width: 56px;
     padding: 3px 10px;
     gap: 4px;
-    border-radius: 8px;
+    border-radius: glass.radius(8px);
   }
 
   // ── Size: small ──
@@ -45,7 +45,7 @@
     min-width: 64px;
     padding: 4px 13px;
     gap: 5px;
-    border-radius: 10px;
+    border-radius: glass.radius(10px);
   }
 
   // ── Size: medium ──
@@ -55,7 +55,7 @@
     min-width: 76px;
     padding: 6px 17px;
     gap: 8px;
-    border-radius: 12px;
+    border-radius: glass.radius(12px);
   }
 
   // ── Size: large ──
@@ -65,7 +65,7 @@
     min-width: 84px;
     padding: 7px 19px;
     gap: 8px;
-    border-radius: 14px;
+    border-radius: glass.radius(14px);
   }
 
   // ════════════════════════════════════
@@ -77,7 +77,7 @@
     border: 1px solid transparent;
     background: var(--glass-accent-button);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(var(--glass-accent-rgb),.17);
+    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(var(--glass-accent-rgb),.17);
 
     &:not(:disabled):hover {
       background: var(--glass-accent-button-hover);
@@ -93,7 +93,7 @@
     border: 1px solid transparent;
     background: var(--glass-success-button);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(34,197,94,.17);
+    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(34,197,94,.17);
 
     &:not(:disabled):hover {
       background: var(--glass-success-button-hover);
@@ -109,7 +109,7 @@
     border: 1px solid transparent;
     background: var(--glass-warning-button);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(245,158,11,.17);
+    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(245,158,11,.17);
 
     &:not(:disabled):hover {
       background: var(--glass-warning-button-hover);
@@ -125,7 +125,7 @@
     border: 1px solid transparent;
     background: var(--glass-danger-button);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(239,68,68,.17);
+    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(239,68,68,.17);
 
     &:not(:disabled):hover {
       background: var(--glass-danger-button-hover);
@@ -141,7 +141,7 @@
     border: 1px solid transparent;
     background: var(--glass-info-button);
     color: #fff;
-    box-shadow: inset 0 1px 0 rgba(255,255,255,.25), 0 3px 8px rgba(107,114,128,.17);
+    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(107,114,128,.17);
 
     &:not(:disabled):hover {
       background: var(--glass-info-button-hover);
@@ -197,7 +197,7 @@
     }
 
     &:not(:disabled):hover {
-      box-shadow: 0 3px 8px rgba(0,0,0,.09), inset 0 1px 1px #fff;
+      box-shadow: 0 3px 8px rgba(0,0,0,.09), inset 0 1px 1px var(--zt-shine, #fff);
 
       .portal-icon,
       svg,
@@ -212,10 +212,10 @@
 
     // Default circle: gray style when no status color
     &.zt-button--default {
-      border: 1px solid rgba(255,255,255,.85);
+      border: 1px solid var(--zt-shine, rgba(255,255,255,.85));
       background: rgba(0,0,0,.035);
-      color: #59616a;
-      box-shadow: inset 0 1px 1px rgba(255,255,255,.9);
+      color: var(--zt-text, #59616a);
+      box-shadow: inset 0 1px 1px var(--zt-shine, rgba(255,255,255,.9));
 
       &:not(:disabled):hover {
         background: var(--glass-accent-soft);
@@ -231,7 +231,7 @@
     // Close-specific red hover
     &.zt-button--close:not(:disabled):hover {
       background: rgba(220,38,38,.08) !important;
-      color: #dc2626 !important;
+      color: var(--zt-danger-ink, #dc2626) !important;
 
       .portal-icon,
       svg,

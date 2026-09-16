@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, inject, ref } from 'vue'
 import { ztFormItemKey } from '../form/context'
 import ZtInput from './ZtInput.vue'
@@ -30,7 +31,7 @@ const emit = defineEmits<{
 const inputRef = ref<InstanceType<typeof ZtInput>>()
 const formItem = inject(ztFormItemKey, undefined)
 const visible = ref(false)
-const effectiveSize = computed(() => props.size ?? formItem?.size.value ?? 'default')
+const effectiveSize = useZtSize(props, () => formItem?.size.value)
 const effectiveDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 const classes = computed(() => [
   'zt-password',

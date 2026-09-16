@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, useId } from 'vue'
 
 const props = defineProps<{
   code: string
   desc?: string
 }>()
 
+const sourceId = `demo-source-${useId()}`
 const expanded = ref(false)
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 let resetTimer: ReturnType<typeof setTimeout> | undefined
@@ -57,11 +58,12 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="doc-demo__actions">
-      <button class="doc-demo__toggle" @click="expanded = !expanded">
+      <button type="button" class="doc-demo__toggle" :aria-expanded="expanded" :aria-controls="sourceId" @click="expanded = !expanded">
         <svg :class="{ 'is-rotated': expanded }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         {{ expanded ? '隐藏代码' : '查看代码' }}
       </button>
       <button
+        type="button"
         class="doc-demo__copy"
         :class="{ 'is-copied': copyState === 'copied', 'is-failed': copyState === 'failed' }"
         :aria-label="copyLabel"
@@ -79,7 +81,7 @@ onBeforeUnmount(() => {
     </div>
 
     <Transition name="code-expand">
-      <div v-show="expanded" class="doc-demo__source">
+      <div v-show="expanded" :id="sourceId" class="doc-demo__source">
         <div class="doc-demo__source-head">
           <span class="doc-demo__language">Vue + TypeScript</span>
         </div>

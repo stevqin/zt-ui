@@ -1,0 +1,1 @@
+<template><article class="doc-section"><span class="doc-eyebrow">404</span><h1>没有找到这个页面</h1><p>地址可能已变更。你可以搜索文档，或从组件索引继续。</p><RouterLink class="doc-primary" to="/components">浏览组件 →</RouterLink></article></template>

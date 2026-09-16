@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useZtSize, useZtConfig } from '../config-provider/context'
 import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRef, watch, type Component } from 'vue'
-import { register, type ListTable } from '@visactor/vtable'
+import { register, themes, type ListTable } from '@visactor/vtable'
 import { ZtButton } from '../button'
 import { ZtCheckbox } from '../checkbox'
 import { ZtPagination } from '../pagination'
@@ -37,7 +38,6 @@ const props = withDefaults(defineProps<ZtVTableGridProps<Row, FormData>>(), {
   currentPage: 1,
   rowKey: 'id' as keyof Row & string,
   height: 480,
-  size: 'default',
   loading: false,
   autoLoad: true,
   disabled: false,
@@ -51,6 +51,9 @@ const props = withDefaults(defineProps<ZtVTableGridProps<Row, FormData>>(), {
   toolbar: () => ['reload'],
   tableOptions: () => ({}),
 })
+const configSize = useZtSize(props)
+const provider = useZtConfig()
+
 
 const emit = defineEmits<{
   'update:currentPage': [page: number]
@@ -139,8 +142,14 @@ const nativeOptions = computed(() => {
     medium: [40, 44],
     large: [44, 48],
   } as const
-  const [defaultRowHeight, defaultHeaderRowHeight] = rowHeights[props.size]
+  const [defaultRowHeight, defaultHeaderRowHeight] = rowHeights[configSize.value]
   return {
+    theme: provider.theme.value === 'dark' ? themes.DARK.extends({
+      defaultStyle: { bgColor: '#3b4554', color: '#e4eaf3', borderColor: '#5c697c' },
+      headerStyle: { bgColor: '#465160', color: '#e4eaf3', borderColor: '#5c697c' },
+      bodyStyle: { bgColor: '#3b4554', color: '#e4eaf3', borderColor: '#5c697c', hover: { cellBgColor: '#40577a' } },
+      frameStyle: { borderColor: '#5c697c' },
+    }) : themes.DEFAULT,
     autoFillWidth: true,
     widthMode: 'adaptive',
     defaultRowHeight,
@@ -152,6 +161,12 @@ const nativeOptions = computed(() => {
     columns: nativeColumns.value,
   }
 })
+// The native options update recreates the data source. Restore our managed rows
+// after the child has applied theme, size, or other option changes.
+watch(nativeOptions, async () => {
+  await nextTick()
+  tableInstance.value?.setRecords(renderedRecords.value)
+}, { flush: 'post' })
 const changes = computed(() => {
   editVersion.value
   return edits.payload()
@@ -505,7 +520,7 @@ defineExpose({
 </script>
 
 <template>
-  <section class="zt-vtable-grid" :class="[`zt-vtable-grid--${size}`, { 'is-disabled': disabled }]" :style="containerStyle" v-bind="$attrs">
+  <section class="zt-vtable-grid" :class="[`zt-vtable-grid--${configSize}`, { 'is-disabled': disabled }]" :style="containerStyle" v-bind="$attrs">
     <div v-if="$slots.form" class="zt-vtable-grid__form">
       <slot name="form" :form-data="formData" :query="query" :reload="reload" />
     </div>
@@ -513,19 +528,19 @@ defineExpose({
     <header v-if="toolbarItems.length || $slots['toolbar-left'] || $slots['toolbar-right']" class="zt-vtable-grid__toolbar" aria-label="表格工具栏">
       <div class="zt-vtable-grid__toolbar-group">
         <slot name="toolbar-left" :query="query" :reload="reload" :selected-rows="selectedRows" />
-        <ZtButton v-if="toolbarItems.includes('create')" :size="size" status="primary" :disabled="disabled" aria-label="新建" @click="toolbarAction('create')">新建</ZtButton>
+        <ZtButton v-if="toolbarItems.includes('create')" :size="configSize" status="primary" :disabled="disabled" aria-label="新建" @click="toolbarAction('create')">新建</ZtButton>
       </div>
       <div class="zt-vtable-grid__toolbar-group zt-vtable-grid__toolbar-group--right">
         <slot name="toolbar-right" :query="query" :reload="reload" :selected-rows="selectedRows" />
-        <ZtButton v-if="toolbarItems.includes('import')" :size="size" :disabled="disabled" aria-label="导入" @click="toolbarAction('import')">导入</ZtButton>
-        <ZtButton v-if="toolbarItems.includes('export')" :size="size" :disabled="disabled || actualLoading" aria-label="导出" @click="toolbarAction('export')">导出</ZtButton>
+        <ZtButton v-if="toolbarItems.includes('import')" :size="configSize" :disabled="disabled" aria-label="导入" @click="toolbarAction('import')">导入</ZtButton>
+        <ZtButton v-if="toolbarItems.includes('export')" :size="configSize" :disabled="disabled || actualLoading" aria-label="导出" @click="toolbarAction('export')">导出</ZtButton>
         <div v-if="toolbarItems.includes('columnsetting') && settingsEnabled" class="zt-vtable-grid__settings-wrap">
-          <ZtButton :size="size" :disabled="disabled" aria-label="列设置" :aria-expanded="settingsOpen" @click="settingsOpen = !settingsOpen">列设置</ZtButton>
+          <ZtButton :size="configSize" :disabled="disabled" aria-label="列设置" :aria-expanded="settingsOpen" @click="settingsOpen = !settingsOpen">列设置</ZtButton>
           <div v-if="settingsOpen" class="zt-vtable-grid__settings" role="dialog" aria-label="列设置" @keydown.esc="settingsOpen = false">
             <div v-for="(column, index) in orderedSettingsColumns" :key="columnKey(column)" class="zt-vtable-grid__settings-row">
               <ZtCheckbox
                 :model-value="isColumnVisible(column)"
-                :size="size"
+                :size="configSize"
                 tabindex="0"
                 :disabled="typeof columnSettings === 'object' && columnSettings.allowVisibility === false"
                 :aria-label="`${isColumnVisible(column) ? '隐藏' : '显示'}${columnTitle(column)}列`"
@@ -533,14 +548,14 @@ defineExpose({
                 @keydown.space.prevent="setColumnVisible(column, !isColumnVisible(column))"
               >{{ columnTitle(column) }}</ZtCheckbox>
               <div class="zt-vtable-grid__settings-actions">
-                <ZtButton :size="size" circle :disabled="index === 0 || (typeof columnSettings === 'object' && columnSettings.allowReorder === false)" :aria-label="`上移${columnTitle(column)}列`" @click="moveColumn(column, -1)">↑</ZtButton>
-                <ZtButton :size="size" circle :disabled="index === orderedSettingsColumns.length - 1 || (typeof columnSettings === 'object' && columnSettings.allowReorder === false)" :aria-label="`下移${columnTitle(column)}列`" @click="moveColumn(column, 1)">↓</ZtButton>
+                <ZtButton :size="configSize" circle :disabled="index === 0 || (typeof columnSettings === 'object' && columnSettings.allowReorder === false)" :aria-label="`上移${columnTitle(column)}列`" @click="moveColumn(column, -1)">↑</ZtButton>
+                <ZtButton :size="configSize" circle :disabled="index === orderedSettingsColumns.length - 1 || (typeof columnSettings === 'object' && columnSettings.allowReorder === false)" :aria-label="`下移${columnTitle(column)}列`" @click="moveColumn(column, 1)">↓</ZtButton>
               </div>
             </div>
-            <ZtButton :size="size" class="zt-vtable-grid__settings-reset" @click="resetColumnSettings">重置列设置</ZtButton>
+            <ZtButton :size="configSize" class="zt-vtable-grid__settings-reset" @click="resetColumnSettings">重置列设置</ZtButton>
           </div>
         </div>
-        <ZtButton v-if="toolbarItems.includes('reload')" :size="size" :disabled="disabled || actualLoading" aria-label="刷新" @click="toolbarAction('reload')">刷新</ZtButton>
+        <ZtButton v-if="toolbarItems.includes('reload')" :size="configSize" :disabled="disabled || actualLoading" aria-label="刷新" @click="toolbarAction('reload')">刷新</ZtButton>
       </div>
     </header>
 
@@ -567,7 +582,7 @@ defineExpose({
         <slot name="empty">暂无数据</slot>
       </div>
       <div v-if="actionMenu" class="zt-vtable-grid__action-menu" role="menu" aria-label="行操作">
-        <ZtButton v-for="item in actionMenu.items" :key="item.type" :size="size" :status="item.status" :disabled="item.disabled" role="menuitem" @click="runAction(item)">{{ item.text }}</ZtButton>
+        <ZtButton v-for="item in actionMenu.items" :key="item.type" :size="configSize" :status="item.status" :disabled="item.disabled" role="menuitem" @click="runAction(item)">{{ item.text }}</ZtButton>
       </div>
     </main>
 
@@ -578,8 +593,8 @@ defineExpose({
         </slot>
         <slot v-if="changes.changedRowCount" name="edit-actions" :changes="changes" :save="saveChanges" :cancel="cancelChanges">
           <span>已修改 {{ changes.changedRowCount }} 行 / {{ changes.changedCellCount }} 项</span>
-          <ZtButton :size="size" @click="cancelChanges">撤销</ZtButton>
-          <ZtButton :size="size" status="primary" :loading="innerLoading" @click="saveChanges">保存修改</ZtButton>
+          <ZtButton :size="configSize" @click="cancelChanges">撤销</ZtButton>
+          <ZtButton :size="configSize" status="primary" :loading="innerLoading" @click="saveChanges">保存修改</ZtButton>
         </slot>
       </div>
       <ZtPagination
@@ -591,7 +606,7 @@ defineExpose({
         :background="paginationConfig.background"
         :total="total"
         :disabled="disabled || actualLoading"
-        :size="size"
+        :size="configSize"
         @update:current-page="handlePage"
         @update:page-size="handlePageSize"
       />

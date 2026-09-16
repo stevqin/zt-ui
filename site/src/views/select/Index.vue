@@ -11,6 +11,8 @@ const cityOptions: ZtSelectOption[] = [
   { label: '深圳', value: 'shenzhen' },
 ]
 const selectedCity = ref('hangzhou')
+const emptyCity = ref('')
+const nullCity = ref<string | null>(null)
 
 const storeOptions: ZtSelectOption[] = [
   { label: '杭州大厦店', value: 'hz-tower' },
@@ -86,7 +88,11 @@ const options: ZtSelectOption[] = [
   { label: '上海', value: 'shanghai' },
   { label: '北京', value: 'beijing' },
 ]
-const city = ref('hangzhou')`, `<ZtSelect v-model="city" :options="options" clearable aria-label="经营城市" placeholder="选择经营城市" />
+const city = ref('hangzhou')
+const emptyCity = ref('')
+const nullCity = ref<string | null>(null)`, `<ZtSelect v-model="city" :options="options" clearable aria-label="经营城市" placeholder="选择经营城市" />
+<ZtSelect v-model="emptyCity" :options="options" clearable aria-label="空字符串城市" placeholder="请选择城市（空字符串）" />
+<ZtSelect v-model="nullCity" :options="options" clearable aria-label="null 城市" placeholder="请选择城市（null）" />
 <p>当前城市：{{ city || '未选择' }}</p>`)
 
 const codeMultiple = sfc(`${baseImports}
@@ -245,6 +251,8 @@ const city = ref('hangzhou')`, `<ZtSelect v-model="city" :options="options" size
     <DemoBlock :code="codeBasic" desc="使用 v-model 绑定单个值；clearable 允许快速清空当前城市。">
       <div class="select-demo-stack">
         <ZtSelect v-model="selectedCity" :options="cityOptions" clearable aria-label="经营城市" placeholder="选择经营城市" />
+        <ZtSelect v-model="emptyCity" :options="cityOptions" clearable aria-label="空字符串城市" placeholder="请选择城市（空字符串）" />
+        <ZtSelect v-model="nullCity" :options="cityOptions" clearable aria-label="null 城市" placeholder="请选择城市（null）" />
         <span>当前城市：{{ selectedCity || '未选择' }}</span>
       </div>
     </DemoBlock>

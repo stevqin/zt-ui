@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, inject } from 'vue'
 import type { ZtRadioProps } from './types'
 import { radioGroupKey } from './types'
@@ -8,7 +9,6 @@ defineOptions({ name: 'ZtRadio', inheritAttrs: false })
 
 const props = withDefaults(defineProps<ZtRadioProps>(), {
   disabled: false,
-  size: 'default',
   status: 'primary',
 })
 
@@ -21,7 +21,7 @@ const group = inject(radioGroupKey, null)
 
 const isGroup = computed(() => !!group)
 const isDisabled = computed(() => group?.disabled.value ?? props.disabled)
-const actualSize = computed(() => group?.size.value ?? props.size)
+const actualSize = useZtSize(props, () => group?.size.value)
 const actualStatus = computed(() => group?.status.value ?? props.status)
 
 const isChecked = computed(() => {

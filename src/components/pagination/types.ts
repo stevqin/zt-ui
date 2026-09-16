@@ -1,8 +1,11 @@
 import type { ZtComponentSize } from '../types'
 
+export type ZtPaginationStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
+
 export type ZtPaginationSize = ZtComponentSize
 
 export interface ZtPaginationProps {
+  status?: ZtPaginationStatus
   currentPage?: number
   pageSize?: number
   total?: number

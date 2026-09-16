@@ -8,7 +8,7 @@ function read(path: string) {
 
 describe('overlay documentation pages', () => {
   it('registers Modal and Drawer navigation and routes', () => {
-    const app = read('src/App.vue')
+    const app = read('src/docs/catalog.ts')
     const router = read('src/router/index.ts')
     expect(app).toContain("path: '/modal'")
     expect(app).toContain("path: '/drawer'")

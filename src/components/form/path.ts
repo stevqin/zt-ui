@@ -1,3 +1,4 @@
+import { toRaw } from 'vue'
 import type { ZtFormProp } from './types'
 
 export function pathSegments(path: ZtFormProp): string[] {
@@ -36,12 +37,33 @@ export function setPathValue(source: Record<string, unknown>, path: ZtFormProp, 
   })
 }
 
-export function cloneFormValue<T>(value: T): T {
-  if (typeof structuredClone === 'function') return structuredClone(value)
-  if (value instanceof Date) return new Date(value.getTime()) as T
-  if (Array.isArray(value)) return value.map(cloneFormValue) as T
-  if (value && typeof value === 'object') {
-    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, cloneFormValue(item)])) as T
+export function cloneFormValue<T>(value: T, seen = new WeakMap<object, unknown>()): T {
+  if (value == null || typeof value !== 'object') return value
+  const raw = toRaw(value)
+  // File/Blob contents are immutable; preserving them also preserves upload metadata.
+  if (typeof Blob !== 'undefined' && raw instanceof Blob) return raw
+  if (raw instanceof Date) return new Date(raw.getTime()) as T
+  if (seen.has(raw)) return seen.get(raw) as T
+  if (Array.isArray(raw)) {
+    const copy: unknown[] = []; seen.set(raw, copy)
+    for (const item of raw) copy.push(cloneFormValue(item, seen))
+    return copy as T
   }
-  return value
+  if (raw instanceof Map) {
+    const copy = new Map(); seen.set(raw, copy)
+    raw.forEach((item, key) => copy.set(cloneFormValue(key, seen), cloneFormValue(item, seen)))
+    return copy as T
+  }
+  if (raw instanceof Set) {
+    const copy = new Set(); seen.set(raw, copy)
+    raw.forEach(item => copy.add(cloneFormValue(item, seen)))
+    return copy as T
+  }
+  if (Object.getPrototypeOf(raw) === Object.prototype || Object.getPrototypeOf(raw) === null) {
+    const copy: Record<string, unknown> = {}; seen.set(raw, copy)
+    for (const [key, item] of Object.entries(raw)) Object.defineProperty(copy, key, {value:cloneFormValue(item, seen), enumerable:true, writable:true, configurable:true})
+    return copy as T
+  }
+  if (typeof structuredClone === 'function') return structuredClone(raw)
+  return raw
 }

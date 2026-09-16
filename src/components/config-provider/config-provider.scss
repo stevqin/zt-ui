@@ -1,0 +1,6 @@
+@use '../../styles/tokens' as glass;
+.zt-config-provider {
+  @include glass.tokens;
+  color: var(--glass-default-ink);
+  background: var(--zt-surface, #fff);
+}

@@ -1,0 +1,17 @@
+@use '../../styles/tokens' as glass;
+.zt-progress {
+ @include glass.tokens;
+ --progress-color:var(--glass-accent); --progress-height:8px;
+ display:flex; align-items:center; gap:12px; width:100%; font:13px var(--glass-font); color:var(--glass-default-ink);
+ @each $status in default,success,warning,danger,info { &--status-#{$status} { --progress-color:var(--glass-#{$status}-ink); } }
+ &--mini { --progress-height:3px; font-size:11px; }
+ &--small { --progress-height:5px; font-size:12px; }
+ &--medium { --progress-height:10px; font-size:14px; }
+ &--large { --progress-height:12px; font-size:15px; }
+ &__track { flex:1; min-width:0; height:var(--progress-height); border-radius:glass.radius(8px); overflow:hidden; background:var(--glass-default-line); }
+ &__fill { display:block; height:100%; background:var(--progress-color); border-radius:inherit; transition:width .2s ease; }
+ &__text { min-width:3em; text-align:right; font-variant-numeric:tabular-nums; }
+ &.is-indeterminate &__fill { animation:zt-progress-moving 1.6s ease-in-out infinite; }
+}
+@keyframes zt-progress-moving { from { transform:translateX(-100%); } to { transform:translateX(386%); } }
+@media(prefers-reduced-motion:reduce) { .zt-progress__fill { transition:none; } .zt-progress.is-indeterminate .zt-progress__fill { animation:none; transform:translateX(90%); } }

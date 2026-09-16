@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, inject, nextTick, ref, useAttrs } from 'vue'
 import { ztFormItemKey } from '../form/context'
 import type { ZtInputProps } from './types'
@@ -30,7 +31,7 @@ const attrs = useAttrs()
 const formItem = inject(ztFormItemKey, undefined)
 const inputRef = ref<HTMLInputElement>()
 const text = computed(() => props.modelValue == null ? '' : String(props.modelValue))
-const effectiveSize = computed(() => props.size ?? formItem?.size.value ?? 'default')
+const effectiveSize = useZtSize(props, () => formItem?.size.value)
 const effectiveDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 const canClear = computed(() => props.clearable && text.value.length > 0 && !effectiveDisabled.value && !props.readonly)
 const ariaInvalid = computed(() => props.status === 'error' || formItem?.validateState.value === 'error' ? 'true' : undefined)

@@ -1,0 +1,23 @@
+@use '../../styles/tokens' as glass;
+.zt-slider {
+ @include glass.tokens;
+ --slider-color:var(--glass-accent); --slider-height:6px; --slider-thumb:16px; --slider-target:32px;
+ width:100%; min-width:40px; padding:0 calc(var(--slider-thumb)/2); font:13px var(--glass-font);
+ @each $status in default,success,warning,danger,info { &--status-#{$status} { --slider-color:var(--glass-#{$status}-ink); } }
+ &--mini { --slider-height:3px; --slider-thumb:12px; --slider-target:24px; }
+ &--small { --slider-height:4px; --slider-thumb:14px; --slider-target:28px; }
+ &--medium { --slider-height:7px; --slider-thumb:18px; --slider-target:36px; }
+ &--large { --slider-height:8px; --slider-thumb:20px; --slider-target:40px; }
+ &__track { position:relative; height:var(--slider-target); cursor:pointer; touch-action:none; }
+ &__rail,&__fill { position:absolute; top:50%; transform:translateY(-50%); height:var(--slider-height); border-radius:glass.radius(6px); pointer-events:none; }
+ &__rail { width:100%; background:var(--glass-default-line); }
+ &__fill { background:var(--slider-color); }
+ &__thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:var(--slider-thumb); height:var(--slider-thumb); border:2px solid var(--slider-color); border-radius:50%; padding:0; background:var(--zt-surface,#fff); cursor:grab; box-shadow:0 1px 4px #0002; outline:none; touch-action:none; }
+ &__thumb::after { content:''; position:absolute; inset:-6px; }
+ &__thumb:focus-visible { outline:2px solid var(--slider-color); outline-offset:3px; z-index:2; }
+ &__tooltip { position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%); background:var(--zt-panel-bg,#263445); color:var(--zt-text,#fff); padding:5px 8px; border-radius:glass.radius(6px); white-space:nowrap; font-size:11px; pointer-events:none; opacity:0; }
+ &__thumb:hover &__tooltip,&__thumb:focus-visible &__tooltip,&.is-dragging &__tooltip { opacity:1; }
+ &.is-dragging &__thumb { cursor:grabbing; }
+ &.is-disabled { opacity:.45; }
+ &.is-disabled &__track,&.is-disabled &__thumb { cursor:not-allowed; }
+}

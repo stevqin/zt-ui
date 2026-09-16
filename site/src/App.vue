@@ -1,62 +1,69 @@
 <script setup lang="ts">
-import { useRouter, useRoute } from 'vue-router'
-
-const router = useRouter()
-const route = useRoute()
-
-const nav = [
-  { label: '指南', items: [
-    { path: '/', label: '介绍' },
-  ]},
-  { label: '组件', items: [
-    { path: '/button', label: 'Button 按钮' },
-    { path: '/tag', label: 'Tag 标签' },
-    { path: '/radio', label: 'Radio 单选框' },
-    { path: '/checkbox', label: 'Checkbox 多选框' },
-    { path: '/switch', label: 'Switch 开关' },
-    { path: '/input', label: 'Input 输入框' },
-    { path: '/password', label: 'Password 密码框' },
-    { path: '/input-number', label: 'InputNumber 数字输入框' },
-    { path: '/select', label: 'Select 选择器' },
-    { path: '/form', label: 'Form 表单' },
-    { path: '/badge', label: 'Badge 徽标' },
-    { path: '/steps', label: 'Steps 步骤条' },
-    { path: '/pagination', label: 'Pagination 分页' },
-    { path: '/vtable-grid', label: 'VTableGrid 数据表格' },
-    { path: '/modal', label: 'Modal 弹窗' },
-    { path: '/drawer', label: 'Drawer 抽屉' },
-  ]},
-]
-
-function go(path: string) {
-  router.push(path)
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { components, groups, guides, scenarios } from './docs/catalog'
+import { slug } from './docs/reference'
+import DocSearch from './components/DocSearch.vue'
+import DemoSettings from './components/DemoSettings.vue'
+import { ZtConfigProvider, ZtMenu } from '@ztechjs/zt-ui'
+import type { ZtMenuItem } from '@ztechjs/zt-ui'
+import { demoConfig } from './docs/demo-config'
+const route=useRoute()
+const router=useRouter()
+const scrollArea=ref<HTMLElement>()
+const mobile=ref(window.innerWidth<=800)
+function resize(){mobile.value=window.innerWidth<=800}
+function escapeMenu(event:KeyboardEvent){if(event.key==='Escape'&&menu.value){menu.value=false;document.querySelector<HTMLButtonElement>('.menu-toggle')?.focus()}}
+const menu=ref(false), content=ref<HTMLElement>(), outline=ref<{id:string;title:string;level:number}[]>([]), active=ref('')
+const component=computed(()=>components.find(c=>route.path===c.path||route.path==='/api'+c.path))
+const navigation=computed<ZtMenuItem[]>(()=>[
+ {key:'guides',label:'开始使用',type:'group',children:guides.map(g=>({key:g.path,label:g.title,href:g.path}))},
+ ...groups.map(group=>({key:'group-'+group,label:group,type:'group' as const,children:components.filter(c=>c.group===group).map(c=>({key:c.path,label:c.title,description:c.name,href:c.path}))})),
+])
+function navigate(key:string,_item:ZtMenuItem,event:MouseEvent){event.preventDefault();menu.value=false;void router.push(key)}
+const related=computed(()=>scenarios.filter(s=>s.components.includes(component.value?.path.slice(1)??'')))
+const isApi=computed(()=>route.path.startsWith('/api/'))
+let observer:MutationObserver|undefined
+let pendingHash=true
+function collect(){
+ const headings=[...content.value?.querySelectorAll<HTMLElement>('h2,h3')??[]].filter(el=>!el.closest('.doc-demo, .scene-card, .component-card'))
+ const counts=new Map<string,number>()
+ const items=headings.map(el=>{const base=slug(el.textContent??'section'); const count=counts.get(base)??0; counts.set(base,count+1); if(!el.id)el.id=base+(count?'-'+count:''); el.tabIndex=-1;return{id:el.id,title:el.textContent??'',level:Number(el.tagName.slice(1))}})
+ if(JSON.stringify(items)!==JSON.stringify(outline.value))outline.value=items
+ if(pendingHash&&route.hash){let id='';try{id=decodeURIComponent(route.hash.slice(1))}catch{return}const target=document.getElementById(id);if(target){target.scrollIntoView();pendingHash=false}}
+ updateActive()
 }
+function updateActive(){const items=outline.value.filter(h=>(document.getElementById(h.id)?.getBoundingClientRect().top??Infinity)<160);active.value=items.at(-1)?.id??outline.value[0]?.id??''}
+watch(()=>route.fullPath,async()=>{menu.value=false;pendingHash=true;await nextTick();collect();document.title=`${component.value?component.value.name+' '+component.value.title:route.meta.title??'文档'} · Zt UI`},{immediate:true})
+onMounted(()=>{window.addEventListener('resize',resize);window.addEventListener('keydown',escapeMenu);observer=new MutationObserver(collect);if(content.value)observer.observe(content.value,{childList:true,subtree:true});collect();scrollArea.value?.addEventListener('scroll',updateActive,{passive:true})})
+onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEventListener('keydown',escapeMenu);observer?.disconnect();scrollArea.value?.removeEventListener('scroll',updateActive)})
 </script>
-
 <template>
-  <div class="doc-layout">
-    <aside class="doc-aside">
-      <div class="doc-aside__logo" @click="go('/')">
-        <span class="doc-aside__logo-icon">Zt</span>
-        <span>Zt UI</span>
-      </div>
-      <nav v-for="group in nav" :key="group.label" class="doc-nav-group">
-        <h4 class="doc-nav-group__title">{{ group.label }}</h4>
-        <ul>
-          <li v-for="item in group.items" :key="item.path">
-            <a
-              :class="['doc-nav-link', { 'is-active': route.path === item.path }]"
-              @click="go(item.path)"
-            >
-              {{ item.label }}
-            </a>
-          </li>
-        </ul>
-      </nav>
-    </aside>
-
-    <main class="doc-main">
-      <router-view />
-    </main>
+ <ZtConfigProvider v-bind="demoConfig" class="doc-site" :class="`doc-site--${demoConfig.size}`">
+ <a class="skip-link" href="#doc-content">跳转到正文</a>
+ <header class="doc-header">
+  <div class="doc-header__main">
+  <RouterLink class="doc-brand" to="/"><span class="doc-brand__mark">zt<span>·</span></span><strong>Zt UI</strong><span class="doc-brand__sub">开发文档</span></RouterLink>
+  <DocSearch />
+  <DemoSettings />
+  <nav class="doc-header__links" aria-label="主要导航"><RouterLink to="/scenarios">场景指南</RouterLink><RouterLink to="/api">API 手册</RouterLink><span class="version">v0.3.0</span></nav>
+  <button class="menu-toggle" :aria-expanded="menu" aria-controls="doc-sidebar" @click="menu=!menu">{{menu?'关闭导航':'导航'}}</button>
   </div>
+ </header>
+ <div ref="scrollArea" class="doc-layout">
+  <button v-if="menu" class="nav-backdrop" aria-label="关闭导航" @click="menu=false" />
+  <aside id="doc-sidebar" class="doc-aside" :inert="mobile && !menu" :class="{'is-open':menu}">
+   <ZtMenu :items="navigation" :model-value="component?.path ?? route.path" aria-label="文档导航" @select="navigate" />
+   <p class="doc-sidebar-note">Vue 3 · TypeScript<br>为业务界面提供一致的交互。</p>
+  </aside>
+  <main id="doc-content" ref="content" class="doc-main" tabindex="-1">
+   <div class="doc-breadcrumb"><RouterLink to="/">文档</RouterLink><span>/</span><span>{{component?.group??'指南'}}</span><template v-if="component"><span>/</span><span>{{component.title}}</span></template></div>
+   <div v-if="component" class="doc-page-tabs" aria-label="阅读方式"><RouterLink :to="component.path" :class="{'is-active':!isApi}">示例与用法</RouterLink><RouterLink :to="'/api'+component.path" :class="{'is-active':isApi}">完整 API</RouterLink></div>
+   <RouterView />
+   <section v-if="component && related.length" class="doc-related"><h2>相关场景</h2><div class="related-links"><RouterLink v-for="s in related" :key="s.id" :to="'/scenarios/'+s.id">{{s.title}} <span>↗</span></RouterLink></div></section>
+   <footer class="doc-footer"><span>Zt UI · 组件、场景与接口参考</span><RouterLink to="/components">浏览全部组件 →</RouterLink></footer>
+  </main>
+  <aside class="doc-outline" aria-label="本页目录"><span class="doc-outline__title">本页内容</span><a v-for="item in outline" :key="item.id" :href="'#'+encodeURIComponent(item.id)" :class="{'is-active':active===item.id,'is-sub':item.level===3}">{{item.title}}</a><a class="back-top" href="#doc-content">返回顶部 ↑</a></aside>
+ </div>
+ </ZtConfigProvider>
 </template>

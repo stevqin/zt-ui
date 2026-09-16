@@ -38,11 +38,11 @@
     align-items: center;
     min-height: 34px;
     margin-right: var(--zt-form-label-gap, 12px);
-    color: #3f4753;
+    color: var(--zt-text, #3f4753);
     font: inherit;
   }
 
-  &__required { margin-right: 4px; color: #dc2626; font-weight: 700; }
+  &__required { margin-right: 4px; color: var(--zt-danger-ink, #dc2626); font-weight: 700; }
 
   &__content {
     position: relative;
@@ -52,7 +52,55 @@
     transition: padding-right 160ms;
   }
 
-  &.is-error &__content { padding-right: 28px; }
+  &.is-error &__content:not(:has(> .zt-input-otp)) { padding-right: 28px; }
+
+  // OTP fields have an intrinsic width; keep feedback beside the last cell.
+  &__content:has(> .zt-input-otp) {
+    display: flex;
+    width: fit-content;
+    align-items: center;
+    gap: 6px;
+    flex: 0 1 auto;
+    max-width: 100%;
+    padding-right: 0;
+
+    > .zt-input-otp { min-width: 0; }
+
+    > .zt-form-item__error-indicator {
+      position: static;
+      flex: 0 0 22px;
+      transform: none;
+
+      &:hover,
+      &:focus-visible { transform: scale(1.08); }
+    }
+  }
+
+  &__content:has(> .zt-upload.is-form-feedback-compact) {
+    display: flex;
+    width: fit-content;
+    align-items: flex-start;
+    gap: 6px;
+    flex: 0 1 auto;
+    max-width: 100%;
+    padding-right: 0;
+
+    > .zt-upload {
+      width: fit-content;
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    > .zt-form-item__error-indicator {
+      position: static;
+      flex: 0 0 22px;
+      margin-top: 6px;
+      transform: none;
+
+      &:hover,
+      &:focus-visible { transform: scale(1.08); }
+    }
+  }
 
   &__error-indicator {
     position: absolute;
@@ -67,7 +115,7 @@
     border: 0;
     border-radius: 50%;
     background: rgba(239, 68, 68, .1);
-    color: #dc2626;
+    color: var(--zt-danger-ink, #dc2626);
     cursor: help;
     transform: translateY(-50%);
     transition: color 160ms, background-color 160ms, transform 160ms;
@@ -86,7 +134,7 @@
     &:focus-visible {
       outline: none;
       background: rgba(239, 68, 68, .17);
-      color: #b91c1c;
+      color: var(--zt-danger-ink, #b91c1c);
       transform: translateY(-50%) scale(1.08);
     }
 
@@ -100,10 +148,10 @@
     max-width: min(320px, calc(100vw - 32px));
     padding: 7px 10px;
     border: 1px solid rgba(239, 68, 68, .28);
-    border-radius: 8px;
+    border-radius: glass.radius(8px);
     background: rgba(255, 247, 247, .98);
     box-shadow: 0 8px 24px rgba(127, 29, 29, .14);
-    color: #b91c1c;
+    color: var(--zt-danger-ink, #b91c1c);
     font-size: .9em;
     line-height: 1.35;
     overflow-wrap: anywhere;
@@ -167,6 +215,10 @@
   &--small &__error-indicator { top: 15px; }
   &--medium &__error-indicator { top: 18px; }
   &--large &__error-indicator { top: 20px; }
+  &--mini &__content:has(> .zt-upload.is-form-feedback-compact) > &__error-indicator { margin-top: 2px; }
+  &--small &__content:has(> .zt-upload.is-form-feedback-compact) > &__error-indicator { margin-top: 4px; }
+  &--medium &__content:has(> .zt-upload.is-form-feedback-compact) > &__error-indicator { margin-top: 8px; }
+  &--large &__content:has(> .zt-upload.is-form-feedback-compact) > &__error-indicator { margin-top: 10px; }
 }
 
 .zt-form-group {
@@ -177,13 +229,13 @@
 
   &--bordered {
     padding: 20px 20px 2px;
-    border: 1px solid var(--glass-default-line, #e2e2e2);
-    border-radius: 14px;
-    background: rgba(255, 255, 255, .55);
+    border: 1px solid var(--glass-default-line, var(--zt-border, #e2e2e2));
+    border-radius: glass.radius(14px);
+    background: var(--zt-surface, rgba(255, 255, 255, .55));
   }
 
-  &__legend { padding: 0 8px 0 0; color: #202938; font-size: 16px; font-weight: 650; }
-  &__description { margin: 5px 0 16px; color: #7b8492; font-size: 12px; line-height: 1.6; }
+  &__legend { padding: 0 8px 0 0; color: var(--zt-text, #202938); font-size: 16px; font-weight: 650; }
+  &__description { margin: 5px 0 16px; color: var(--zt-text-muted, #7b8492); font-size: 12px; line-height: 1.6; }
   &__content { min-width: 0; }
   &.is-disabled { opacity: .62; }
 }

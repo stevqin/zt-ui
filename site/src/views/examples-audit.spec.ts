@@ -22,7 +22,7 @@ function selectCodeInitializer(source: string, name: string) {
 
 describe('site example coverage', () => {
   it('contains long code lines without widening the documentation page', () => {
-    const styles = readFileSync(resolve(process.cwd(), 'src/style.scss'), 'utf8')
+    const styles = readFileSync(resolve(process.cwd(), 'src/style.scss'), 'utf8') + readFileSync(resolve(process.cwd(), 'src/docs/docs.scss'), 'utf8')
     expect(styles).toMatch(/\.doc-main\s*\{[\s\S]*?min-width:\s*0/)
     expect(styles).toMatch(/\.doc-demo\s*\{[\s\S]*?min-width:\s*0/)
   })
@@ -47,7 +47,7 @@ describe('site example coverage', () => {
   })
 
   it('registers the Steps, Pagination, Form and VTableGrid pages in navigation and routing', () => {
-    const app = readFileSync(resolve(process.cwd(), 'src/App.vue'), 'utf8')
+    const app = readFileSync(resolve(process.cwd(), 'src/docs/catalog.ts'), 'utf8')
     const router = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
     expect(app).toContain("path: '/steps'")
     expect(router).toContain("path: '/steps'")
@@ -79,7 +79,7 @@ describe('site example coverage', () => {
   })
 
   it('registers Select immediately after InputNumber', () => {
-    const app = readFileSync(resolve(process.cwd(), 'src/App.vue'), 'utf8')
+    const app = readFileSync(resolve(process.cwd(), 'src/docs/catalog.ts'), 'utf8')
     const router = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
     const navPaths = [...app.matchAll(/\{ path: '([^']+)'/g)].map(match => match[1])
     const routePaths = [...router.matchAll(/^\s+path: '([^']+)'/gm)].map(match => match[1])
@@ -118,7 +118,7 @@ describe('site example coverage', () => {
     const readme = readFileSync(resolve(process.cwd(), '../README.md'), 'utf8')
 
     const liveTags = selectOpeningTags(template)
-    expect(liveTags).toHaveLength(13)
+    expect(liveTags).toHaveLength(15)
     for (const tag of liveTags) expect(tag).toMatch(/\saria-(?:label|labelledby)="[^"]+"/)
 
     for (const name of selectCodeNames) {

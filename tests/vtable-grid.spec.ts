@@ -24,6 +24,7 @@ vi.mock('@visactor/vue-vtable', () => ({
 }))
 
 import ZtVTableGrid from '../src/components/vtable-grid/ZtVTableGrid.vue'
+import { ZtConfigProvider } from '../src/components/config-provider'
 
 type Row = { id: number; name: string; amount: number }
 const columns = [
@@ -47,6 +48,18 @@ beforeEach(() => {
 })
 
 describe('ZtVTableGrid', () => {
+  it('restores displayed records after global theme or size updates native options', async () => {
+    const wrapper = mount(ZtConfigProvider, {
+      props: { theme: 'light', size: 'default' },
+      slots: { default: () => h(ZtVTableGrid, { columns, records: rows, pagination: false }) },
+    })
+    await flushPromises()
+    tableMock.setRecords.mockClear()
+    await wrapper.setProps({ theme: 'dark', size: 'large' })
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith(rows)
+    wrapper.unmount()
+  })
   it('loads local records and exposes the table instance', async () => {
     const wrapper = mount(ZtVTableGrid<Row>, { props: { columns, records: rows, toolbar: false, pagination: false } })
     await flushPromises()

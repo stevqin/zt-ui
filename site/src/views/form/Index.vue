@@ -13,6 +13,8 @@ import {
 } from '@ztechjs/zt-ui'
 import DemoBlock from '@/components/DemoBlock.vue'
 import { sfc } from '@/utils/exampleCode'
+import IntegratedValidation from './IntegratedValidation.vue'
+import integratedValidationCode from './IntegratedValidation.vue?raw'
 
 const formRef = ref<ZtFormInstance>()
 const submitState = ref('尚未提交')
@@ -69,7 +71,8 @@ const codeSize = sfc(`import { reactive } from 'vue'\nimport { ZtForm, ZtFormIte
 
 <template>
   <div class="doc-section form-doc">
-    <h1>Form 表单</h1><p>管理字段布局、校验状态和提交过程；FormGroup 用于可选的语义分区。</p>
+    <h1>Form 表单</h1><p>统一管理输入、选择、日期、验证码和附件字段的布局、校验状态与提交过程；FormGroup 用于组织完整的业务表单。</p>
+    <h2>全组件校验场景</h2><DemoBlock :code="integratedValidationCode" desc="覆盖当前全部数据录入组件。点击“校验全部字段”可一次观察 13 个字段的规则、错误定位和提示方式。"><IntegratedValidation /></DemoBlock>
     <h2>基础校验</h2><DemoBlock :code="codeBasic" desc="规则支持 blur、change、内置类型和公开校验方法；错误图标悬停或聚焦时显示 Tooltip。"><ZtForm ref="formRef" :model="account" :rules="accountRules" label-width="88px" scroll-to-error class="form-demo"><ZtFormItem label="名称" prop="name"><ZtInput v-model="account.name" name="username" autocomplete="username" clearable placeholder="请输入名称" /></ZtFormItem><ZtFormItem label="邮箱" prop="email"><ZtInput v-model="account.email" name="email" autocomplete="email" placeholder="name@example.com" /></ZtFormItem><ZtFormItem label="密码" prop="password"><ZtPassword v-model="account.password" name="password" /></ZtFormItem><ZtFormItem label="数量" prop="quantity"><ZtInputNumber v-model="account.quantity" :min="0" /></ZtFormItem><ZtFormItem><div class="form-actions"><ZtButton status="primary" @click="submitAccount">提交</ZtButton><ZtButton @click="resetAccount">重置</ZtButton><span>{{ submitState }}</span></div></ZtFormItem></ZtForm></DemoBlock>
     <h2>标签布局</h2><DemoBlock :code="codeLabels" desc="label-position 支持 left、right 和 top。"><div class="form-layout-grid"><ZtForm :model="profile" label-position="left" label-width="72px"><ZtFormItem label="左对齐"><ZtInput v-model="profile.firstName" /></ZtFormItem></ZtForm><ZtForm :model="profile" label-position="right" label-width="72px"><ZtFormItem label="右对齐"><ZtInput v-model="profile.lastName" /></ZtFormItem></ZtForm><ZtForm :model="profile" label-position="top"><ZtFormItem label="顶部标签"><ZtInput v-model="profile.city" /></ZtFormItem></ZtForm></div></DemoBlock>
     <h2>行内表单</h2><DemoBlock :code="codeInline" desc="inline 适合筛选栏和紧凑操作区。"><ZtForm :model="search" inline size="small"><ZtFormItem label="关键词"><ZtInput v-model="search.keyword" placeholder="商品名称" /></ZtFormItem><ZtFormItem label="数量"><ZtInputNumber v-model="search.limit" /></ZtFormItem><ZtFormItem><ZtButton status="primary">查询</ZtButton></ZtFormItem></ZtForm></DemoBlock>
@@ -81,6 +84,7 @@ const codeSize = sfc(`import { reactive } from 'vue'\nimport { ZtForm, ZtFormIte
     <h3>Form Methods</h3><table class="doc-table"><thead><tr><th>方法</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>validate</code></td><td>—</td><td>校验所有已注册字段</td></tr><tr><td><code>validateField</code></td><td><code>string | string[]</code></td><td>校验指定字段</td></tr><tr><td><code>resetFields</code></td><td><code>string | string[]?</code></td><td>恢复字段初始值</td></tr><tr><td><code>clearValidate</code></td><td><code>string | string[]?</code></td><td>清除校验状态</td></tr><tr><td><code>scrollToField</code></td><td><code>string</code></td><td>滚动到指定字段</td></tr></tbody></table>
     <h3>FormItem Props</h3><table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>label / prop</code></td><td><code>string</code></td><td>标签和模型路径，支持嵌套路径</td></tr><tr><td><code>rules</code></td><td><code>ZtFormRule | ZtFormRule[]</code></td><td>字段局部规则</td></tr><tr><td><code>required</code></td><td><code>boolean</code></td><td>添加必填规则</td></tr><tr><td><code>error</code></td><td><code>string</code></td><td>直接显示外部错误</td></tr><tr><td><code>showMessage / labelWidth / size</code></td><td>对应 Form 类型</td><td>覆盖表单默认配置</td></tr></tbody></table>
     <h3>FormGroup Props</h3><table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>说明</th></tr></thead><tbody><tr><td><code>title / description</code></td><td><code>string</code></td><td>分组标题与说明，也支持同名插槽</td></tr><tr><td><code>bordered / disabled</code></td><td><code>boolean</code></td><td>边框样式或整组禁用</td></tr></tbody></table>
+    <h3>Rule Options</h3><table class="doc-table"><thead><tr><th>规则</th><th>类型</th><th>适用场景</th></tr></thead><tbody><tr><td><code>required</code></td><td><code>boolean</code></td><td>字符串、选择值、日期及数组不能为空</td></tr><tr><td><code>type</code></td><td><code>string | number | email | url</code></td><td>检查常见基础类型与格式</td></tr><tr><td><code>min / max / len</code></td><td><code>number</code></td><td>检查数值范围或字符串、数组长度</td></tr><tr><td><code>pattern</code></td><td><code>RegExp</code></td><td>检查验证码、编号等字符串格式</td></tr><tr><td><code>whitespace</code></td><td><code>boolean</code></td><td>将仅含空白字符的字符串视为无效</td></tr><tr><td><code>trigger</code></td><td><code>change | blur | Array</code></td><td>限制规则在值变化或失焦时执行；手动 validate 会执行全部规则</td></tr><tr><td><code>validator</code></td><td><code>Function | Promise</code></td><td>处理布尔确认、跨字段判断和异步业务校验</td></tr><tr><td><code>message</code></td><td><code>string</code></td><td>覆盖规则默认错误提示</td></tr></tbody></table>
   </div>
 </template>
 

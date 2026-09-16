@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useZtConfig } from '../config-provider/context'
+const { style: providerStyle } = useZtConfig()
 import { computed, useId } from 'vue'
 import ZtButton from '../button/ZtButton.vue'
 import { useOverlay } from '../overlay/useOverlay'
@@ -78,7 +80,7 @@ defineExpose({
         v-show="overlay.visible.value"
         v-bind="$attrs"
         :class="classes"
-        :style="{ zIndex: overlay.layer.value }"
+        :style="[providerStyle, { zIndex: overlay.layer.value }]"
         :aria-hidden="!overlay.isTop.value || !overlay.visible.value ? true : undefined"
         @mousedown="overlay.maskDown"
         @click="overlay.maskClick"

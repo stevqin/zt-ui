@@ -254,3 +254,128 @@ npm run dev
 ## License
 
 [MIT](./LICENSE)
+
+
+### 日期与日期时间选择器
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ZtDatePicker, ZtDateTimePicker, ZtPagination } from '@ztechjs/zt-ui'
+import type { ZtDatePickerValue } from '@ztechjs/zt-ui'
+import '@ztechjs/zt-ui/style.css'
+const date = ref<ZtDatePickerValue>(null)
+const dateRange = ref<ZtDatePickerValue>(null)
+const datetime = ref<ZtDatePickerValue>(null)
+const datetimeRange = ref<ZtDatePickerValue>(null)
+</script>
+<template>
+  <ZtDatePicker v-model="date" clearable />
+  <ZtDatePicker v-model="dateRange" range clearable />
+  <ZtDateTimePicker v-model="datetime" clearable />
+  <ZtDateTimePicker v-model="datetimeRange" range clearable />
+  <ZtPagination status="success" :total="100" />
+</template>
+```
+
+日期值为本地 `YYYY-MM-DD`，日期时间为本地 `YYYY-MM-DD HH:mm:ss`，不做时区转换。
+范围值为 `[开始值, 结束值]`，清空返回 `null`，`''` 和 `null` 显示 placeholder。
+日期选择完成即提交；日期时间在点击“确定”后提交，Esc / 取消 / 点击外部会丢弃草稿。
+支持 `range`、`placeholder`、`clearable`、`disabled`、`readonly`、`disabledDate(date)`、五档 `size` 和颜色主题 `status`（default / primary / success / warning / danger / info，默认 primary；兼容原 error 校验状态）。
+`disabledDate` 限制起止端点，区间内部允许包含禁用日期。时间精确到秒，年份 1–9999。
+事件：`update:modelValue`、`change`、`clear`、`visible-change`、`focus`、`blur`；实例方法：`focus`、`blur`、`open`、`close`、`clear`。
+
+分页 `status` 支持 `default / primary / success / warning / danger / info`，默认 `primary`，保持原有蓝色高亮。
+
+
+日期组件的节假日标识由业务传入，不内置年度节假日或调休表：
+
+```vue
+<ZtDatePicker
+  v-model="date"
+  status="success"
+  :holidays="[
+    { key: '2026-01-01', value: '元旦' },
+    { key: '2026-01-15', value: '公司纪念日（示例）' },
+  ]"
+  :show-holidays="true"
+/>
+```
+
+`DateTimePicker` 和 `range` 模式使用相同参数。`holidays` 默认为 `[]`，
+`showHolidays` 默认为 `true`；`key` 为本地 `YYYY-MM-DD`，`value` 为节日名。
+名称在日期格内显示，过长时截断，悬停显示全名。重复日期取最后一项，无效日期和空名称忽略。
+标识不会禁用日期；是否可选仍由 `disabledDate` 控制。
+主题覆盖输入框焦点、日历选中日期、范围高亮和确认按钮；表单错误状态独立保留。
+
+日期面板使用自定义年月选择器：点击年份打开十年网格，选年后进入十二个月网格；
+点击月份可直接切月。全部按钮、主题色和焦点样式由组件绘制，不使用浏览器原生年份输入或月份下拉菜单。
+支持方向键、Home / End、PageUp / PageDown；浏览年月不会提交值，完成日期选择才提交。
+
+日期与日期时间组件的 `range` 模式使用双日历面板展示连续两个月，左右年月联动，支持跨面板选择和区间高亮；小屏下自动上下排列。单日期模式保持单面板。
+
+### 文档站维护
+
+`site/` 提供场景指南、组件示例与独立 API 手册。`site/src/docs/catalog.ts` 维护组件分组与场景关联，场景示例位于 `site/src/views/scenarios/`；示例直接以 `?raw` 提供可复制的完整源码。
+
+在 `site/` 中运行 `npm run dev`、`npm test` 或 `npm run build` 会先执行 API 同步。生成器从组件的 Props、Emits、Slots、Expose 及 TypeScript 定义生成 `site/src/docs/api.generated.json`；无法自动推断的实例方法签名维护在 `site/scripts/api-overrides.mjs`。运行 `npm run docs:api` 可手动刷新。更新组件时同时检查中文说明、默认值与场景回归测试。
+
+
+### ConfigProvider 全局配置
+
+```vue
+<script setup lang="ts">
+import { ZtConfigProvider } from '@ztechjs/zt-ui'
+import '@ztechjs/zt-ui/style.css'
+</script>
+
+<template>
+  <ZtConfigProvider size="large" theme="dark" :border-radius="6">
+    <RouterView />
+  </ZtConfigProvider>
+</template>
+```
+
+`size` 支持五档尺寸；`theme` 支持 `light` / `dark`；`borderRadius` 为非负像素数，默认 11，0 为直角。组件显式尺寸优先，其次为表单/组合配置，再使用最近的 Provider。嵌套 Provider 仅覆盖已设置的参数，支持动态更新；浮层继承配色和圆角。圆形与胶囊控件保留形状，Drawer 的 size 仍为宽高值。Provider 渲染 div 容器，可通过 class / style 配置布局。示例与完整 API 位于文档站 `/config-provider`。
+
+### Slider / Progress
+
+`ZtSlider` 支持单值和 `[起点, 终点]` 范围选择、小数步长、禁用、六种状态颜色、五档尺寸和数值提示。拖动时触发 `update:modelValue` / `input`，松开后触发 `change`；支持方向键、Home / End 和 PageUp / PageDown。接入 FormItem 时继承尺寸与禁用，并触发 change 校验。
+
+`ZtProgress` 通过 `percentage` 展示 0–100 的完成率，支持 `status`、`size`、`format` 和默认插槽。无法确定进度时使用 `indeterminate`，不会报告虚假的百分比，并遵循系统减少动画偏好。两者都继承 ConfigProvider，示例与 API 位于 `/slider`、`/progress`。
+
+### Menu
+
+`ZtMenu` 为纵向导航菜单，使用 `items` 配置叶子项、分组和多级子菜单，`v-model` 管理当前选择，`v-model:expanded-keys` 管理展开状态。支持 `accordion`、禁用、图标、辅助说明、链接及完整键盘导航，并继承 ConfigProvider 的尺寸、主题和圆角。设置 `router` 可接入应用已安装的 Vue Router：默认用 key 作为路径，也支持 item.route 字符串或命名路由对象；高亮跟随实际路由，导航失败不会误切换。未开启时不需要路由依赖。文档站侧栏已使用该组件，示例与完整 API 位于 `/menu`。
+
+Menu 还支持 `v-model:collapsed` 整栏折叠、`collapsible` 底部按钮、`v-model:width` 动态宽度以及 `resizable` 边缘拖动（含键盘调整，受 minWidth / maxWidth 限制）。`mode="double"` 提供左侧业务模块与右侧分组导航两栏布局，使用 `v-model:active-key` 管理当前模块，叶子选择仍由 modelValue 管理。折叠后点击模块浮出子菜单，选中叶子项、点击外部或按 Escape 后关闭，主栏保持折叠；collapsedWidth 和 railWidth 分别控制折叠宽度与模块栏宽度。
+
+`mode="horizontal"` 提供横向菜单与多级浮层，`menu-trigger="hover | click"` 控制触发方式，默认 hover；支持方向键、Escape、外部点击关闭和窄屏横向滚动。横向模式忽略 collapsed、collapsible、width 和 resizable。完整示例位于 `/menu` 的“横向导航”和“路由模式”。
+
+### InputOtp
+
+`ZtInputOtp` 提供验证码分格输入，支持字符串 `v-model`、自定义 `length`、整段粘贴、`integerOnly`、`mask`、`separator`、六种主题颜色及五档尺寸。默认 `autocomplete="one-time-code"`，输入填满时触发 `complete`。提供 focus(index)、blur()、clear() 方法，继承 ConfigProvider 和 Form；示例与 API 位于 `/input-otp`。
+
+### Upload
+
+`ZtUpload` 支持 `v-model:file-list`、文件选择/拖拽、多选、图片预览、类型/大小/数量限制、异步校验和删除钩子。配置 `action` 后通过 multipart/form-data 上传；也可将已封装并返回 Promise 的 Axios 接口方法直接传给 `request`，继续复用项目的认证和统一拦截器；需要完全接管底层上传时使用 `httpRequest`。提供 submit、abort、retry、remove、clearFiles、open；支持进度、取消、失败重试及 Form / ConfigProvider。`/upload` 的交互示例使用本地模拟，不发送文件。
+
+### Icon
+
+`ZtIcon` 提供常用内置 SVG 图标，并支持自定义 Vue 组件和默认插槽。可继承 ConfigProvider 的五档尺寸，也支持数值/CSS 尺寸、六种状态色、旋转、加载旋转和无障碍标签；具名图标组件可按需导入。完整图标列表与 API 位于 `/icon`。
+
+### Link / Text
+
+`ZtLink` 提供安全的原生链接和可选 Vue Router 导航，支持前后图标、下划线策略、禁用、五档尺寸和六种状态色。`ZtText` 提供安全语义标签、字号、字重、状态色、单行截断和多行 `lineClamp`。示例与 API 位于 `/link`、`/text`。
+
+### Scrollbar
+
+`ZtScrollbar` 使用真实原生滚动容器，并绘制统一的横向和纵向滑块。支持固定/最大高度、常显轨道、系统滚动条模式、ResizeObserver 自动更新，以及 scrollTo、setScrollTop、setScrollLeft、update 方法。完整示例位于 `/scrollbar`。
+
+### Popover / Popconfirm
+
+`ZtPopover` 支持 click、hover、focus、manual 触发，自动翻转和限制在视口内，并正确处理外部点击、Escape 与父级弹层焦点。`ZtPopconfirm` 在其上提供状态图标、说明、确认/取消及异步 beforeConfirm。示例位于 `/popover`、`/popconfirm`。
+
+### 导航、展示与媒体组件
+
+`ZtTabs`、`ZtBreadcrumb` 和 `ZtSegmented` 提供标签切换、层级导航与分段选择，均支持键盘操作和全局尺寸。`ZtDescriptions`、`ZtCollapse`、`ZtResult` 用于详情、分组内容和任务结果。`ZtImage` 内置加载与错误后备及全屏预览，`ZtAvatar` 支持图片、插槽、图标和文字首字后备。完整示例与 API 已收录在文档站对应页面。

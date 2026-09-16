@@ -18,6 +18,7 @@ describe('buildPagerItems', () => {
 describe('ZtPagination', () => {
   it('renders configured layout modules and page count from total', () => {
     const wrapper = mount(ZtPagination, {
+      global: { stubs: { teleport: true } },
       props: { total: 95, pageSize: 10, currentPage: 3, layout: 'total, sizes, prev, pager, next, jumper' },
     })
 
@@ -69,10 +70,12 @@ describe('ZtPagination', () => {
 
   it('clamps the current page when page size changes', async () => {
     const wrapper = mount(ZtPagination, {
+      global: { stubs: { teleport: true } },
       props: { total: 95, currentPage: 10, pageSize: 10, pageSizes: [10, 20], layout: 'sizes, pager' },
     })
 
-    await wrapper.find('select').setValue('20')
+    await wrapper.find('[role="combobox"]').trigger('click')
+    await wrapper.findAll('[role="option"]').find(option => option.text() === '20 条/页')!.trigger('click')
     expect(wrapper.emitted('update:pageSize')).toEqual([[20]])
     expect(wrapper.emitted('size-change')).toEqual([[20]])
     expect(wrapper.emitted('update:currentPage')).toEqual([[5]])
@@ -82,10 +85,12 @@ describe('ZtPagination', () => {
 
   it('never emits page zero when page-count is zero', async () => {
     const wrapper = mount(ZtPagination, {
+      global: { stubs: { teleport: true } },
       props: { pageCount: 0, currentPage: 5, pageSize: 10, pageSizes: [10, 20], layout: 'sizes, pager' },
     })
 
-    await wrapper.find('select').setValue('20')
+    await wrapper.find('[role="combobox"]').trigger('click')
+    await wrapper.findAll('[role="option"]').find(option => option.text() === '20 条/页')!.trigger('click')
     expect(wrapper.find('[aria-current="page"]').text()).toBe('1')
     expect(wrapper.emitted('change')).toEqual([[1, 20]])
     expect((wrapper.emitted('update:currentPage') ?? []).flat()).not.toContain(0)

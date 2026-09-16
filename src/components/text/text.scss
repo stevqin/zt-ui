@@ -1,0 +1,10 @@
+@use '../../styles/tokens' as glass;
+.zt-text{
+ @include glass.tokens;color:var(--glass-default-ink);font-family:var(--glass-font);font-size:var(--glass-size-default);font-weight:var(--zt-text-weight,400);line-height:1.6;
+ &--mini{font-size:var(--glass-size-mini)}&--small{font-size:var(--glass-size-small)}&--medium{font-size:var(--glass-size-medium)}&--large{font-size:var(--glass-size-large)}
+ &--primary{color:var(--glass-accent)}&--success{color:var(--glass-success-ink)}&--warning{color:var(--glass-warning-ink)}&--danger{color:var(--glass-danger-ink)}&--info{color:var(--glass-info-ink)}
+ &.is-truncated{display:inline-block;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;vertical-align:bottom}
+ &.is-line-clamp{display:-webkit-box;max-width:100%;overflow:hidden;-webkit-box-orient:vertical;-webkit-line-clamp:var(--zt-line-clamp)}
+ &code,&.zt-text:is(code){padding:.12em .38em;border:1px solid var(--glass-line);border-radius:glass.radius(5px);background:var(--glass-info-soft);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+ &.zt-text:is(mark){padding:.05em .18em;border-radius:glass.radius(3px);background:var(--glass-warning-soft);color:var(--glass-warning-ink)}
+}

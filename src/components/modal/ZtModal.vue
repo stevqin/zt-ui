@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { useZtConfig } from '../config-provider/context'
+const { style: providerStyle } = useZtConfig()
+import { useZtSize } from '../config-provider/context'
 import { computed, onBeforeUnmount, reactive, ref, useId, watch } from 'vue'
 import ZtButton from '../button/ZtButton.vue'
 import { useOverlay } from '../overlay/useOverlay'
@@ -29,9 +32,10 @@ const props = withDefaults(defineProps<ZtModalProps>(), {
   fullscreen: false,
   showFullscreenButton: false,
   draggable: false,
-  size: 'default',
   zIndex: 1000,
 })
+const configSize = useZtSize(props)
+
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -82,7 +86,7 @@ const panelStyle = computed(() => ({
 }))
 const classes = computed(() => [
   'zt-modal',
-  `zt-modal--${props.size}`,
+  `zt-modal--${configSize.value}`,
   props.top !== undefined && !currentFullscreen.value && 'zt-modal--top',
   currentFullscreen.value && 'zt-modal--fullscreen',
   dragging.value && 'zt-modal--dragging',
@@ -180,7 +184,7 @@ defineExpose({
         v-show="overlay.visible.value"
         v-bind="$attrs"
         :class="classes"
-        :style="overlayStyle"
+        :style="[providerStyle, overlayStyle]"
         :aria-hidden="!overlay.isTop.value || !overlay.visible.value ? true : undefined"
         @mousedown="overlay.maskDown"
         @click="overlay.maskClick"

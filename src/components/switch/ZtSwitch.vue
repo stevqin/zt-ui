@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed } from 'vue'
 import type { ZtSwitchProps } from './types'
 import './switch.scss'
@@ -9,11 +10,12 @@ const props = withDefaults(defineProps<ZtSwitchProps>(), {
   modelValue: false,
   disabled: false,
   loading: false,
-  size: 'default',
   status: 'primary',
   activeValue: true,
   inactiveValue: false,
 })
+const configSize = useZtSize(props)
+
 
 const emit = defineEmits<{
   'update:modelValue': [val: boolean | string | number]
@@ -28,7 +30,7 @@ const classes = computed(() => [
   isChecked.value && 'is-checked',
   props.disabled && 'is-disabled',
   props.loading && 'is-loading',
-  props.size !== 'default' && `zt-switch--${props.size}`,
+  configSize.value !== 'default' && `zt-switch--${configSize.value}`,
 ])
 
 const trackStyle = computed(() => {

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, getCurrentInstance, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { ztFormItemKey, ztFormKey } from './context'
@@ -47,7 +48,7 @@ const rules = computed(() => {
   return merged
 })
 const isRequired = computed(() => props.required || rules.value.some(rule => rule.required))
-const size = computed(() => props.size ?? form?.size.value ?? 'default')
+const size = useZtSize(props, () => form?.size.value)
 const disabled = computed(() => form?.disabled.value ?? false)
 const hasOwnShowMessage = computed(() => {
   const vnodeProps = instance?.vnode.props

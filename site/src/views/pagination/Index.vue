@@ -4,6 +4,9 @@ import { ZtPagination, ZtSwitch } from '@ztechjs/zt-ui'
 import DemoBlock from '@/components/DemoBlock.vue'
 import { sfc } from '@/utils/exampleCode'
 
+const statuses = ['default', 'primary', 'success', 'warning', 'danger', 'info'] as const
+const codeStatus = sfc(`import { ZtPagination } from '@ztechjs/zt-ui'`, statuses.map(status => `<ZtPagination status="${status}" :total="100" layout="prev, pager, next" />`).join('\n'))
+
 const currentPage = ref(5)
 const pageSize = ref(20)
 const hideSingle = ref(true)
@@ -53,6 +56,10 @@ const hideSingle = ref(true)`, `<ZtSwitch v-model="hideSingle" active-text="隐�
       <ZtPagination background layout="prev, pager, next" :total="1000" />
     </DemoBlock>
 
+    <h2>主题颜色</h2>
+    <DemoBlock :code="codeStatus" desc="status 与 Button 的六种主题一致，默认 primary。当前页悬停保留主题高亮。">
+      <div class="pagination-stack"><ZtPagination v-for="status in statuses" :key="status" :status="status" :total="100" layout="prev, pager, next" /></div>
+    </DemoBlock>
     <h2>完整功能</h2>
     <DemoBlock :code="codeComplete" desc="通过 layout 自由组合总数、每页条数、页码和跳转输入框。">
       <ZtPagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[10, 20, 50, 100]" :total="400" layout="total, sizes, prev, pager, next, jumper" />
@@ -76,6 +83,7 @@ const hideSingle = ref(true)`, `<ZtSwitch v-model="hideSingle" active-text="隐�
     <h2>API</h2>
     <h3>Props</h3>
     <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
+      <tr><td><code>status</code></td><td><code>default | primary | success | warning | danger | info</code></td><td><code>primary</code></td><td>主题颜色</td></tr>
       <tr><td><code>currentPage</code></td><td><code>number</code></td><td><code>1</code></td><td>当前页，支持 v-model</td></tr>
       <tr><td><code>pageSize</code></td><td><code>number</code></td><td><code>10</code></td><td>每页条数，支持 v-model</td></tr>
       <tr><td><code>total</code></td><td><code>number</code></td><td><code>0</code></td><td>数据总数</td></tr>

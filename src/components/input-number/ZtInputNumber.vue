@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, inject, ref, useAttrs, watch } from 'vue'
 import { ztFormItemKey } from '../form/context'
 import type { ZtInputNumberProps } from './types'
@@ -46,7 +47,7 @@ const classes = computed(() => [
   effectiveDisabled.value && 'is-disabled',
   props.readonly && 'is-readonly',
 ])
-const effectiveSize = computed(() => props.size ?? formItem?.size.value ?? 'default')
+const effectiveSize = useZtSize(props, () => formItem?.size.value)
 const effectiveDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 const inputAttrs = computed(() => {
   const { class: _class, style: _style, ...rest } = attrs

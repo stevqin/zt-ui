@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, provide, toRef } from 'vue'
 import type { ZtCheckboxGroupProps, CheckboxGroupContext } from './types'
 import { checkboxGroupKey } from './types'
@@ -11,9 +12,10 @@ const props = withDefaults(defineProps<ZtCheckboxGroupProps>(), {
   disabled: false,
   min: 0,
   max: Infinity,
-  size: 'default',
   status: 'primary',
 })
+const configSize = useZtSize(props)
+
 
 const emit = defineEmits<{
   'update:modelValue': [val: unknown[]]
@@ -37,7 +39,7 @@ function toggle(val: unknown) {
 provide<CheckboxGroupContext>(checkboxGroupKey, {
   modelValue: toRef(props, 'modelValue'),
   disabled: computed(() => props.disabled),
-  size: computed(() => props.size),
+  size: computed(() => configSize.value),
   status: computed(() => props.status),
   min: computed(() => props.min),
   max: computed(() => props.max),

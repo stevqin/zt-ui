@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, onMounted, onUpdated, provide, ref, watch } from 'vue'
 import type { ZtStepStatus, ZtStepsProps } from './types'
 import { ztStepsKey } from './types'
@@ -14,8 +15,9 @@ const props = withDefaults(defineProps<ZtStepsProps>(), {
   space: '',
   finishStatus: 'finish',
   processStatus: 'process',
-  size: 'default',
 })
+const configSize = useZtSize(props)
+
 
 const emit = defineEmits<{
   change: [current: number, previous: number]
@@ -79,7 +81,7 @@ watch(() => props.active, (current, previous) => {
 const classes = computed(() => [
   'zt-steps',
   `zt-steps--${effectiveDirection.value}`,
-  `zt-steps--${props.size}`,
+  `zt-steps--${configSize.value}`,
   {
     'is-align-center': effectiveAlignCenter.value,
     'zt-steps--simple': props.simple,

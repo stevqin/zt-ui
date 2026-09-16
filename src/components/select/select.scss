@@ -4,7 +4,7 @@
   @include glass.tokens;
   --zt-select-height: 34px;
   --zt-select-font-size: var(--glass-size-default);
-  --zt-select-radius: 11px;
+  --zt-select-radius: #{glass.radius(11px)};
   position: relative;
   display: inline-flex;
   width: 240px;
@@ -27,8 +27,8 @@
     padding: 0 56px 0 11px;
     border: 1px solid var(--glass-default-line);
     border-radius: var(--zt-select-radius);
-    background: rgba(255, 255, 255, .82);
-    box-shadow: inset 0 1px 1px rgba(255, 255, 255, .9), 0 1px 3px rgba(15, 23, 42, .04);
+    background: var(--zt-surface, rgba(255, 255, 255, .82));
+    box-shadow: inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .9)), 0 1px 3px rgba(15, 23, 42, .04);
     cursor: pointer;
     transition: border-color 160ms, box-shadow 160ms, background-color 160ms;
   }
@@ -38,7 +38,7 @@
   &:focus-within:not(.is-disabled) &__control,
   &.is-open:not(.is-disabled) &__control {
     border-color: var(--glass-accent);
-    box-shadow: 0 0 0 3px var(--glass-accent-soft), inset 0 1px 1px rgba(255, 255, 255, .9);
+    box-shadow: 0 0 0 3px var(--glass-accent-soft), inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .9));
   }
 
   &__prefix,
@@ -55,14 +55,14 @@
     display: inline-flex;
     flex: 0 0 auto;
     align-items: center;
-    color: #7b8492;
+    color: var(--zt-text-muted, #7b8492);
   }
 
   &__value {
     z-index: 1;
     flex: 1;
     overflow: hidden;
-    color: #9ca3af;
+    color: var(--zt-text-muted, #9ca3af);
     text-overflow: ellipsis;
     white-space: nowrap;
   }
@@ -118,7 +118,7 @@
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: #8992a0;
+    color: var(--zt-text-muted, #8992a0);
     font: 600 15px / 1 var(--glass-font);
     cursor: pointer;
     transition: color 160ms, background-color 160ms, transform 160ms;
@@ -158,7 +158,7 @@
     height: 7px;
     border-right: 1.5px solid currentColor;
     border-bottom: 1.5px solid currentColor;
-    color: #8992a0;
+    color: var(--zt-text-muted, #8992a0);
     pointer-events: none;
     transform: translateY(-2px) rotate(45deg);
     transition: color 160ms, transform 160ms;
@@ -181,6 +181,8 @@
     background: transparent;
     color: transparent;
     caret-color: transparent;
+
+    &::placeholder { color: var(--zt-text-muted, #9ca3af); opacity: 1; }
     cursor: pointer;
     font: inherit;
   }
@@ -217,16 +219,16 @@
   }
 
   &.is-disabled &__control {
-    background: rgba(245, 247, 250, .86);
+    background: var(--zt-surface-soft, rgba(245, 247, 250, .86));
     cursor: not-allowed;
   }
 
   &.is-disabled &__input { cursor: not-allowed; }
 
-  &--mini { --zt-select-height: 26px; --zt-select-font-size: var(--glass-size-mini); --zt-select-radius: 8px; }
-  &--small { --zt-select-height: 30px; --zt-select-font-size: var(--glass-size-small); --zt-select-radius: 9px; }
-  &--medium { --zt-select-height: 36px; --zt-select-font-size: var(--glass-size-medium); --zt-select-radius: 12px; }
-  &--large { --zt-select-height: 40px; --zt-select-font-size: var(--glass-size-large); --zt-select-radius: 14px; }
+  &--mini { --zt-select-height: 26px; --zt-select-font-size: var(--glass-size-mini); --zt-select-radius: #{glass.radius(8px)}; }
+  &--small { --zt-select-height: 30px; --zt-select-font-size: var(--glass-size-small); --zt-select-radius: #{glass.radius(9px)}; }
+  &--medium { --zt-select-height: 36px; --zt-select-font-size: var(--glass-size-medium); --zt-select-radius: #{glass.radius(12px)}; }
+  &--large { --zt-select-height: 40px; --zt-select-font-size: var(--glass-size-large); --zt-select-radius: #{glass.radius(14px)}; }
 
   &--mini &__control { padding-left: 8px; }
   &--small &__control { padding-left: 9px; }
@@ -244,10 +246,11 @@
   min-width: 120px;
   max-width: calc(100vw - 16px);
   overflow: hidden;
-  border: 1px solid rgba(32, 32, 32, .1);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 14px 38px rgba(15, 23, 42, .14), 0 0 0 1px rgba(255, 255, 255, .9) inset;
+  border: 1px solid;
+  border-color: var(--zt-border, rgba(32, 32, 32, .1));
+  border-radius: glass.radius(12px);
+  background: var(--zt-surface, rgba(255, 255, 255, .94));
+  box-shadow: 0 14px 38px rgba(15, 23, 42, .14), 0 0 0 1px var(--zt-shine, rgba(255, 255, 255, .9)) inset;
   color: var(--glass-default-ink);
   font: var(--glass-size-default) / 1.5 var(--glass-font);
   -webkit-backdrop-filter: blur(18px) saturate(145%);
@@ -290,7 +293,7 @@
   min-height: var(--zt-select-option-height);
   margin: 1px 0;
   padding: 6px 34px 6px 10px;
-  border-radius: 8px;
+  border-radius: glass.radius(8px);
   cursor: pointer;
   outline: 0;
   transition: color 140ms, background-color 140ms, box-shadow 140ms;
@@ -323,7 +326,7 @@
   }
 
   &.is-disabled {
-    color: #aeb3bb;
+    color: var(--zt-text-muted, #aeb3bb);
     cursor: not-allowed;
   }
 }
@@ -336,7 +339,7 @@
   justify-content: center;
   min-height: 72px;
   padding: 14px;
-  color: #8a929f;
+  color: var(--zt-text-muted, #8a929f);
   text-align: center;
 }
 
@@ -352,7 +355,7 @@
 }
 
 .zt-select__error {
-  background: rgba(254, 242, 242, .72);
+  background: var(--zt-danger-soft, rgba(254, 242, 242, .72));
   color: var(--glass-danger-ink);
 }
 
@@ -362,12 +365,12 @@
   overflow-y: auto;
   padding: 8px 10px;
   border-top: 1px solid var(--glass-line);
-  background: rgba(248, 250, 252, .68);
+  background: var(--zt-surface-soft, rgba(248, 250, 252, .68));
 }
 
 .zt-form-item.is-error .zt-select .zt-select__control { border-color: #ef4444; }
 .zt-form-item.is-error .zt-select:focus-within .zt-select__control {
-  box-shadow: 0 0 0 3px rgba(239, 68, 68, .12), inset 0 1px 1px rgba(255, 255, 255, .9);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, .12), inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .9));
 }
 .zt-form-item.is-success .zt-select .zt-select__control { border-color: #22c55e; }
 
@@ -389,7 +392,7 @@
   .zt-select { width: 100%; }
   .zt-select__dropdown {
     max-width: calc(100vw - 16px);
-    border-radius: 10px;
+    border-radius: glass.radius(10px);
   }
   .zt-select__option { min-height: max(40px, var(--zt-select-option-height)); }
 }

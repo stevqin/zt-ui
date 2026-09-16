@@ -1,0 +1,11 @@
+@use '../../styles/tokens' as glass;
+.zt-link{
+ @include glass.tokens;display:inline-flex;align-items:center;gap:.35em;color:var(--glass-default-ink);font:inherit;font-size:var(--glass-size-default);line-height:1.5;text-decoration:none;cursor:pointer;border-radius:glass.radius(4px);transition:color .16s ease,text-decoration-color .16s ease;text-underline-offset:.2em;
+ &--mini{font-size:var(--glass-size-mini)}&--small{font-size:var(--glass-size-small)}&--medium{font-size:var(--glass-size-medium)}&--large{font-size:var(--glass-size-large)}
+ &--primary{color:var(--glass-accent)}&--success{color:var(--glass-success-ink)}&--warning{color:var(--glass-warning-ink)}&--danger{color:var(--glass-danger-ink)}&--info{color:var(--glass-info-ink)}
+ &--underline-always{text-decoration:underline}&--underline-hover:hover{text-decoration:underline}&--underline-never{text-decoration:none}
+ &:hover{filter:brightness(.86)}&:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+ &.is-disabled{opacity:.48;cursor:not-allowed;text-decoration:none;filter:none}
+ &__icon{font-size:1.05em}.zt-link__content{min-width:0}
+}
+@media(prefers-reduced-motion:reduce){.zt-link{transition:none}}

@@ -1,20 +1,23 @@
 <script setup lang="ts">
+import { useZtSize } from '../config-provider/context'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { ZtPaginationProps } from './types'
 import type { PagerItem } from './pagination'
 import { buildPagerItems, normalizePagerCount } from './pagination'
 import './pagination.scss'
+import ZtSelect from '../select/ZtSelect.vue'
+import type { ZtSelectModelValue } from '../select/types'
 
 defineOptions({ name: 'ZtPagination', inheritAttrs: false })
 
 const props = withDefaults(defineProps<ZtPaginationProps>(), {
   currentPage: 1,
+  status: 'primary',
   pageSize: 10,
   total: 0,
   pagerCount: 7,
   pageSizes: () => [10, 20, 30, 40, 50, 100],
   layout: 'prev, pager, next, jumper, ->, total',
-  size: 'default',
   small: false,
   background: false,
   disabled: false,
@@ -22,6 +25,8 @@ const props = withDefaults(defineProps<ZtPaginationProps>(), {
   prevText: '',
   nextText: '',
 })
+const configSize = useZtSize(props)
+
 
 const emit = defineEmits<{
   'update:currentPage': [page: number]
@@ -45,7 +50,7 @@ const totalPages = computed(() => {
 })
 const innerCurrentPage = ref(Math.min(totalPages.value, normalizePositiveInteger(props.currentPage)))
 const current = computed(() => Math.min(totalPages.value, normalizePositiveInteger(innerCurrentPage.value)))
-const effectiveSize = computed(() => props.small ? 'small' : props.size)
+const effectiveSize = computed(() => props.small ? 'small' : configSize.value)
 const pagerItems = computed(() => buildPagerItems(totalPages.value, current.value, props.pagerCount))
 const jumpValue = ref(String(current.value))
 const rootElement = ref<HTMLElement>()
@@ -72,6 +77,7 @@ const layoutGroups = computed(() => {
 
 const classes = computed(() => [
   'zt-pagination',
+  `zt-pagination--status-${props.status}`,
   `zt-pagination--${effectiveSize.value}`,
   {
     'is-background': props.background,
@@ -112,9 +118,9 @@ function handleNext() {
   emit('next-click', next)
 }
 
-function handleSize(event: Event) {
+function handleSize(value: ZtSelectModelValue) {
   if (props.disabled) return
-  const size = normalizePositiveInteger(Number((event.target as HTMLSelectElement).value), effectivePageSize.value)
+  const size = normalizePositiveInteger(Number(value), effectivePageSize.value)
   if (size === effectivePageSize.value) return
   const previousPage = current.value
   innerPageSize.value = size
@@ -158,12 +164,10 @@ function pagerLabel(item: PagerItem) {
       <template v-for="(item, itemIndex) in group" :key="`${item}-${itemIndex}`">
         <span v-if="item === 'total'" class="zt-pagination__total">共 {{ total }} 条</span>
 
-        <label v-else-if="item === 'sizes'" class="zt-pagination__sizes">
-          <span class="zt-pagination__sr-only">每页条数</span>
-          <select :value="effectivePageSize" :disabled="disabled" aria-label="每页条数" @change="handleSize">
-            <option v-for="option in pageSizes" :key="option" :value="option">{{ option }} 条/页</option>
-          </select>
-        </label>
+        <ZtSelect v-else-if="item === 'sizes'" class="zt-pagination__sizes"
+          :model-value="effectivePageSize" :disabled="disabled" :size="effectiveSize"
+          :options="pageSizes.map(value => ({ value, label: `${value} 条/页` }))"
+          aria-label="每页条数" @update:model-value="handleSize" />
 
         <button v-else-if="item === 'prev'" type="button" class="zt-pagination__button zt-pagination__prev" :disabled="disabled || current <= 1" aria-label="上一页" @click="handlePrev">
           <span v-if="prevText">{{ prevText }}</span>

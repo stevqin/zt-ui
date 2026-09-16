@@ -74,8 +74,8 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
       && (branch.trigger.value?.contains(target) || branch.popup.value?.contains(target)))
   }
 
-  function focusableElements() {
-    const elements = panel.value?.querySelectorAll<HTMLElement>(
+  function focusableElements(root = panel.value) {
+    const elements = root?.querySelectorAll<HTMLElement>(
       'button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),a[href],summary,[tabindex]:not([tabindex="-1"])',
     )
     return [...(elements ?? [])].filter(element => {
@@ -121,6 +121,16 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     const current = document.activeElement
 
     if (branch?.popup.value?.contains(current)) {
+      if (branch.tabThroughPopup) {
+        const popupElements = focusableElements(branch.popup.value)
+        const currentIndex = popupElements.indexOf(current as HTMLElement)
+        const next = currentIndex >= 0 ? popupElements[currentIndex + (event.shiftKey ? -1 : 1)] : undefined
+        if (next) {
+          event.preventDefault()
+          next.focus()
+          return
+        }
+      }
       // Tab leaves a popup at its trigger's logical position in the dialog.
       const triggerIndices = elements.flatMap((element, index) => branch.trigger.value?.contains(element) ? [index] : [])
       const triggerIndex = (event.shiftKey ? triggerIndices[0] : triggerIndices.at(-1)) ?? -1

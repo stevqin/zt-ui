@@ -83,7 +83,7 @@ describe('Select search completion and committed values', () => {
     await wrapper.setProps({ modelValue: multiple ? [] : null })
     expect(wrapper.get<HTMLInputElement>('input').element.value).toBe('')
     expect(wrapper.classes()).not.toContain('has-keyword')
-    expect(wrapper.get('.zt-select__value').text()).toBe('请选择')
+    expect(wrapper.get('input').attributes('placeholder')).toBe('请选择')
     expect(document.querySelectorAll('[role="option"]')).toHaveLength(2)
   })
 
@@ -122,7 +122,7 @@ describe('Select search completion and committed values', () => {
   it('treats a scalar controlled model as empty after switching to multiple', async () => {
     const wrapper = select({ modelValue: 'hz' })
     await wrapper.setProps({ multiple: true })
-    expect(wrapper.get('.zt-select__value').text()).toBe('请选择')
+    expect(wrapper.get('input').attributes('placeholder')).toBe('请选择')
     expect(wrapper.find('.zt-select__tags').exists()).toBe(false)
     expect(wrapper.get<HTMLInputElement>('input').element.value).toBe('')
   })
