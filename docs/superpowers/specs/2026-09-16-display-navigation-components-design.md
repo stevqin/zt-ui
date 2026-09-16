@@ -1,12 +1,12 @@
-# Icon、Image、Avatar 与常用展示交互组件设计
+# 基础展示、导航与常用交互组件设计
 
 ## 目标
 
-为 zt-ui 增加 Icon、Image、Avatar、Scrollbar、Popover、Popconfirm、Tabs、Breadcrumb、Segmented、Descriptions、Collapse 和 Result。组件保持现有 Vue 3、TypeScript、ConfigProvider、文档生成器和样式 token 约定，并覆盖亮色/暗色、五档尺寸、圆角基准、键盘操作和减少动画偏好。
+为 zt-ui 增加 Icon、Link、Text、Image、Avatar、Scrollbar、Popover、Popconfirm、Tabs、Breadcrumb、Segmented、Descriptions、Collapse 和 Result。组件保持现有 Vue 3、TypeScript、ConfigProvider、文档生成器和样式 token 约定，并覆盖亮色/暗色、五档尺寸、圆角基准、键盘操作和减少动画偏好。
 
 ## 实现策略
 
-采用公共能力优先的分组实现：先完成 Icon、Scrollbar，并抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
+采用公共能力优先的分组实现：先完成 Icon、Link、Text、Scrollbar，并抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
 
 每组按测试驱动流程完成：先用组件测试表达公开行为并确认失败，再实现最少代码，最后补样式、文档站示例和 API 生成配置。每组完成后运行聚焦测试；全部完成后运行组件库与文档站的全量测试、类型检查和构建。
 
@@ -28,6 +28,18 @@
 组件内置一组覆盖库内操作和常用业务界面的线性图标：add、minus、close、check、search、info、warning、error、success、chevron/arrow 四方向、more、user、image、upload、download、calendar、edit、delete、home、settings、refresh、visibility。内置图标共用 `currentColor`，支持 strokeWidth；各图标也以具名 Vue 组件导出，以便按需导入和获得类型提示。未知 name 显示为空并在开发环境给出一次警告。
 
 `spin` 使用匀速旋转并遵守减少动画偏好；`rotate` 接受有限数字并转为 CSS 角度。Icon 本身不承担点击行为，交互图标应放在 Button 或具有完整键盘语义的业务控件中。
+
+### Link
+
+`ZtLink` 默认渲染语义化 `<a>`，支持 `href`、`target`、`rel`、`download`、`status`、`size`、`disabled`、`underline`（always、hover、never）、`icon` 和 `suffixIcon`。默认插槽提供链接文字，icon、suffix 插槽允许自定义两侧图标。设置 `to` 时在已安装 Vue Router 的应用中使用 router push/replace；没有 Router 时，字符串 `to` 回退为普通 href，对象 `to` 保持不可导航并发出开发警告，不增加强制路由依赖。
+
+禁用链接移除 href、设置 `aria-disabled`，阻止点击和键盘导航。`target="_blank"` 且未显式提供 rel 时自动补充 `noopener noreferrer`。click 事件仅在可用时触发；外部链接、下载属性和原生 anchor 属性保持浏览器行为。焦点样式使用状态色并保持清晰可见。
+
+### Text
+
+`ZtText` 是轻量排版容器，支持 `tag`、`status`、`size`、`weight`、`truncated`、`lineClamp` 和 `title`。默认 tag 为 span，可选择 p、div、strong、em、label、code、del、ins、mark 等安全标签；不接受任意组件名。`truncated` 提供单行省略，`lineClamp` 提供指定行数的多行省略，两者同时设置时 lineClamp 优先。
+
+Text 只控制文字语义、颜色、字号、字重和溢出，不重置父容器布局。省略时如果没有显式 title，组件使用纯文本默认插槽生成 title；插槽包含复杂节点时不猜测可访问名称。code、mark 等语义标签保留对应基础视觉，并适配明暗主题。
 
 ### Scrollbar
 
@@ -101,11 +113,13 @@
 
 每个组件使用 `src/components/<name>/Zt*.vue`、`types.ts`、`*.scss`、`index.ts` 的现有结构，并在 `src/components/index.ts` 公开导出。Popover 的定位与事件管理放在其目录内的独立 composable，Popconfirm 通过公开组件组合复用。
 
-文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Icon、Image、Avatar、Scrollbar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
+文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Icon、Link、Text、Image、Avatar、Scrollbar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
 
 ## 测试与验收
 
 - Icon：三种渲染来源、尺寸、状态、旋转、减少动画行为和无障碍名称。
+- Link：原生与路由链接、禁用、下划线、图标、外部链接安全属性和键盘焦点。
+- Text：语义标签、状态与尺寸、单行/多行省略、复杂插槽及明暗主题。
 - Scrollbar：横纵溢出、尺寸更新、滚动事件、拖动、轨道翻页、原生模式和实例方法。
 - Popover/Popconfirm：四种触发方式、定位翻转、外部点击、Escape、焦点、异步确认和清理监听器。
 - Tabs/Breadcrumb/Segmented：受控状态、禁用项、增删、路由降级、溢出与完整键盘操作。
