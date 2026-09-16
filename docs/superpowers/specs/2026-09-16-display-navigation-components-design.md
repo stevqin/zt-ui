@@ -1,12 +1,12 @@
-# Image、Avatar 与常用展示交互组件设计
+# Icon、Image、Avatar 与常用展示交互组件设计
 
 ## 目标
 
-为 zt-ui 增加 Image、Avatar、Scrollbar、Popover、Popconfirm、Tabs、Breadcrumb、Segmented、Descriptions、Collapse 和 Result。组件保持现有 Vue 3、TypeScript、ConfigProvider、文档生成器和样式 token 约定，并覆盖亮色/暗色、五档尺寸、圆角基准、键盘操作和减少动画偏好。
+为 zt-ui 增加 Icon、Image、Avatar、Scrollbar、Popover、Popconfirm、Tabs、Breadcrumb、Segmented、Descriptions、Collapse 和 Result。组件保持现有 Vue 3、TypeScript、ConfigProvider、文档生成器和样式 token 约定，并覆盖亮色/暗色、五档尺寸、圆角基准、键盘操作和减少动画偏好。
 
 ## 实现策略
 
-采用公共能力优先的分组实现：先完成 Scrollbar 并抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
+采用公共能力优先的分组实现：先完成 Icon、Scrollbar，并抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
 
 每组按测试驱动流程完成：先用组件测试表达公开行为并确认失败，再实现最少代码，最后补样式、文档站示例和 API 生成配置。每组完成后运行聚焦测试；全部完成后运行组件库与文档站的全量测试、类型检查和构建。
 
@@ -20,6 +20,14 @@
 - 文档页包含基础、不同状态/尺寸、禁用或异常、键盘/复杂用法和完整 API 入口。
 
 ## 基础容器组件
+
+### Icon
+
+`ZtIcon` 是统一尺寸、颜色和无障碍语义的 SVG 图标容器。支持 `name`、`component`、`size`（五档或 number/string）、`color`、`status`、`rotate`、`spin`、`strokeWidth` 和 `label`，渲染优先级为默认插槽、自定义 component、内置 name。没有 label 时作为装饰图标设置 `aria-hidden`；存在 label 时使用 `role="img"` 与 `aria-label`。
+
+组件内置一组覆盖库内操作和常用业务界面的线性图标：add、minus、close、check、search、info、warning、error、success、chevron/arrow 四方向、more、user、image、upload、download、calendar、edit、delete、home、settings、refresh、visibility。内置图标共用 `currentColor`，支持 strokeWidth；各图标也以具名 Vue 组件导出，以便按需导入和获得类型提示。未知 name 显示为空并在开发环境给出一次警告。
+
+`spin` 使用匀速旋转并遵守减少动画偏好；`rotate` 接受有限数字并转为 CSS 角度。Icon 本身不承担点击行为，交互图标应放在 Button 或具有完整键盘语义的业务控件中。
 
 ### Scrollbar
 
@@ -93,10 +101,11 @@
 
 每个组件使用 `src/components/<name>/Zt*.vue`、`types.ts`、`*.scss`、`index.ts` 的现有结构，并在 `src/components/index.ts` 公开导出。Popover 的定位与事件管理放在其目录内的独立 composable，Popconfirm 通过公开组件组合复用。
 
-文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Image、Avatar、Scrollbar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
+文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Icon、Image、Avatar、Scrollbar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
 
 ## 测试与验收
 
+- Icon：三种渲染来源、尺寸、状态、旋转、减少动画行为和无障碍名称。
 - Scrollbar：横纵溢出、尺寸更新、滚动事件、拖动、轨道翻页、原生模式和实例方法。
 - Popover/Popconfirm：四种触发方式、定位翻转、外部点击、Escape、焦点、异步确认和清理监听器。
 - Tabs/Breadcrumb/Segmented：受控状态、禁用项、增删、路由降级、溢出与完整键盘操作。
@@ -107,4 +116,4 @@
 
 ## 非目标
 
-本轮不实现服务端图片处理、图片裁剪上传、AvatarGroup、拖拽排序标签、可编辑 Descriptions、面包屑自动读取路由表或跨窗口浮层。这些能力可在基础组件稳定后独立扩展。
+本轮不实现完整品牌图标库、动态图标下载、服务端图片处理、图片裁剪上传、AvatarGroup、拖拽排序标签、可编辑 Descriptions、面包屑自动读取路由表或跨窗口浮层。这些能力可在基础组件稳定后独立扩展。
