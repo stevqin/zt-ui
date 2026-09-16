@@ -2,11 +2,11 @@
 
 ## 目标
 
-为 zt-ui 增加 Image、Avatar、Popover、Popconfirm、Tabs、Breadcrumb、Segmented、Descriptions、Collapse 和 Result。组件保持现有 Vue 3、TypeScript、ConfigProvider、文档生成器和样式 token 约定，并覆盖亮色/暗色、五档尺寸、圆角基准、键盘操作和减少动画偏好。
+为 zt-ui 增加 Image、Avatar、Scrollbar、Popover、Popconfirm、Tabs、Breadcrumb、Segmented、Descriptions、Collapse 和 Result。组件保持现有 Vue 3、TypeScript、ConfigProvider、文档生成器和样式 token 约定，并覆盖亮色/暗色、五档尺寸、圆角基准、键盘操作和减少动画偏好。
 
 ## 实现策略
 
-采用公共能力优先的分组实现：先抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
+采用公共能力优先的分组实现：先完成 Scrollbar 并抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
 
 每组按测试驱动流程完成：先用组件测试表达公开行为并确认失败，再实现最少代码，最后补样式、文档站示例和 API 生成配置。每组完成后运行聚焦测试；全部完成后运行组件库与文档站的全量测试、类型检查和构建。
 
@@ -18,6 +18,16 @@
 - 动画遵守 `prefers-reduced-motion`。交互元素提供语义角色、可访问名称、当前状态和键盘路径。
 - 受控值均提供 `update:*` 事件；业务事件携带稳定的值，而非要求用户解析 DOM。
 - 文档页包含基础、不同状态/尺寸、禁用或异常、键盘/复杂用法和完整 API 入口。
+
+## 基础容器组件
+
+### Scrollbar
+
+`ZtScrollbar` 使用真实可滚动容器承载默认插槽，浏览器继续负责滚轮、触控惯性、键盘和程序化滚动；组件只隐藏平台差异明显的原生轨道并绘制一致的横向、纵向轨道与滑块。支持 `height`、`maxHeight`、`native`、`always`、`minSize`、`noresize`、`wrapClass`、`wrapStyle`、`viewClass`、`viewStyle`、`tag` 和 `size`。
+
+内容或容器尺寸变化时通过 ResizeObserver 更新滑块比例与位置；不支持 ResizeObserver 时仍在滚动和窗口 resize 时更新。滑块支持指针拖动，点击轨道按视口翻页；触摸内容区继续使用原生滚动，不劫持手势。内容没有溢出时隐藏对应轨道，`always` 只控制有溢出时是否常显。`native` 保留系统滚动条并跳过自定义轨道。
+
+组件触发 `scroll` 事件，参数为 `{ scrollTop, scrollLeft }`。实例暴露 `wrapRef`、`update`、`scrollTo`、`setScrollTop` 和 `setScrollLeft`。滚动容器可聚焦，并保留 `aria-label`、`role` 等透传属性；自定义滑块本身不替代内容区的滚动语义。
 
 ## 浮层组件
 
@@ -83,10 +93,11 @@
 
 每个组件使用 `src/components/<name>/Zt*.vue`、`types.ts`、`*.scss`、`index.ts` 的现有结构，并在 `src/components/index.ts` 公开导出。Popover 的定位与事件管理放在其目录内的独立 composable，Popconfirm 通过公开组件组合复用。
 
-文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Image、Avatar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
+文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Image、Avatar、Scrollbar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
 
 ## 测试与验收
 
+- Scrollbar：横纵溢出、尺寸更新、滚动事件、拖动、轨道翻页、原生模式和实例方法。
 - Popover/Popconfirm：四种触发方式、定位翻转、外部点击、Escape、焦点、异步确认和清理监听器。
 - Tabs/Breadcrumb/Segmented：受控状态、禁用项、增删、路由降级、溢出与完整键盘操作。
 - Descriptions/Collapse/Result：布局、span、accordion、插槽、状态与尺寸继承。
