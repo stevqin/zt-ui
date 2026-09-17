@@ -316,7 +316,9 @@ const datetimeRange = ref<ZtDatePickerValue>(null)
 
 ### 文档站维护
 
-`site/` 提供场景指南、组件示例与独立 API 手册。`site/src/docs/catalog.ts` 维护组件分组与场景关联，场景示例位于 `site/src/views/scenarios/`；示例直接以 `?raw` 提供可复制的完整源码。
+`site/` 按“设计基础 → 组件全景 → 场景方案 → API 参考”组织阅读路径。组件体系分为基础、布局、表单、数据展示、导航、反馈、浮层与媒体八类；已稳定组件提供示例和 API，规划组件只出现在路线图中，避免把尚未交付的能力误当成公开接口。
+
+`site/src/docs/catalog.ts` 是组件分组、状态、路线图与场景关联的单一数据源。场景示例位于 `site/src/views/scenarios/`，并通过 `?raw` 提供可复制的完整源码。新增组件时应先确定所属分组和状态，再补充示例、API 与至少一个真实场景；规划项达到公开质量后才移入稳定组件列表。
 
 在 `site/` 中运行 `npm run dev`、`npm test` 或 `npm run build` 会先执行 API 同步。生成器从组件的 Props、Emits、Slots、Expose 及 TypeScript 定义生成 `site/src/docs/api.generated.json`；无法自动推断的实例方法签名维护在 `site/scripts/api-overrides.mjs`。运行 `npm run docs:api` 可手动刷新。更新组件时同时检查中文说明、默认值与场景回归测试。
 

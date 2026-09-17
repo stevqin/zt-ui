@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { components } from '../docs/catalog'
+import { componentGroups, components } from '../docs/catalog'
 import { api, descriptions, eventDescription, methodDescriptions, slug } from '../docs/reference'
-const route=useRoute(), filter=ref('')
+import ComponentTile from '../components/ComponentTile.vue'
+const route=useRoute(), filter=ref(''), apiQuery=ref('')
 const component=computed(()=>components.find(c=>c.path==='/'+route.params.component))
 const doc=computed(()=>api[String(route.params.component)])
 watch(()=>route.fullPath,()=>filter.value='')
 const visible=(name:string,type:string)=>!filter.value||(name+' '+type).toLowerCase().includes(filter.value.toLowerCase())
 const sections=[{key:'events',title:'事件 Events'},{key:'slots',title:'插槽 Slots'},{key:'methods',title:'实例方法与属性 Expose'}] as const
+const apiGroups=computed(()=>componentGroups.map(group=>({group,items:components.filter(item=>item.group===group.id&&(item.name+item.title+item.description).toLowerCase().includes(apiQuery.value.toLowerCase()))})).filter(entry=>entry.items.length))
 </script>
 <template>
  <article class="doc-section api-page" v-if="component && doc">
@@ -34,5 +36,10 @@ const sections=[{key:'events',title:'事件 Events'},{key:'slots',title:'插槽 
   <h2>类型定义</h2><p>从组件公开 TypeScript 定义同步，包含组合配置与引用的公共类型。标记为“公开”的类型可从 <code>@ztechjs/zt-ui</code> 导入；依赖定义仅用于解释接口结构。</p>
   <details v-for="type in doc.types" :key="type.name" class="type-definition"><summary>{{type.name}} <small>{{type.public?'公开':'依赖定义'}}</small></summary><pre><code>{{type.code}}</code></pre></details>
  </article>
- <article v-else class="doc-section"><span class="doc-eyebrow">REFERENCE LIBRARY</span><h1>API 手册</h1><p>按组件查阅属性、默认值、事件、插槽与实例方法。每份文档都附有相关类型定义。</p><div class="component-grid"><RouterLink v-for="c in components" :key="c.path" :to="'/api'+c.path" class="component-card"><strong>{{c.name}} <span>↗</span></strong><span>{{c.title}}</span><p>{{c.description}}</p><small>{{api[c.path.slice(1)]?.components[0]?.props.length}} 个属性 · 查看完整接口</small></RouterLink></div></article>
+ <article v-else class="doc-section api-index">
+  <div class="page-kicker">REFERENCE LIBRARY / API 参考</div><div class="page-title-row"><div><h1>从公开接口开始，<br>准确接入组件。</h1><p class="page-lead">每份手册由源码同步生成，集中呈现属性、默认值、事件、插槽、实例方法与可导出的 TypeScript 类型。</p></div><div class="component-count"><strong>{{components.length}}</strong><span>COMPONENTS</span><strong>{{componentGroups.length}}</strong><span>GROUPS</span></div></div>
+  <div class="component-toolbar"><label><span>查找 API</span><input v-model="apiQuery" type="search" placeholder="组件名、中文名称或用途" /></label><RouterLink class="text-link" to="/conventions">先阅读通用约定 →</RouterLink></div>
+  <section v-for="entry in apiGroups" :key="entry.group.id" class="component-group-section"><div class="component-group-head" :style="{'--group-accent':entry.group.accent}"><span>{{entry.group.english}}</span><h2>{{entry.group.title}}</h2><p>{{entry.group.description}}</p></div><div class="component-landscape"><ComponentTile v-for="item in entry.items" :key="item.path" :item="item" :to="'/api'+item.path" :action="`${api[item.path.slice(1)]?.components[0]?.props.length||0} 个属性 · 查看接口`" /></div></section>
+  <div v-if="!apiGroups.length" class="empty-search" role="status"><strong>没有匹配的 API</strong><p>可尝试搜索“日期”“上传”“导航”或组件英文名。</p></div>
+ </article>
 </template>

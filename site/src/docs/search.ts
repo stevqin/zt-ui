@@ -1,9 +1,10 @@
-import { components, guides, scenarios } from './catalog'
+import { componentPlan, components, guides, scenarios } from './catalog'
 import { api, slug } from './reference'
 export interface SearchResult { title: string; detail: string; path: string }
 const entries: SearchResult[] = [
  ...guides.map(g => ({title:g.title,detail:'指南',path:g.path})),
  ...scenarios.map(s => ({title:s.title,detail:s.description,path:'/scenarios/'+s.id})),
+ ...componentPlan.map(item=>({title:`${item.name} ${item.title}`,detail:`规划组件 · ${item.description}`,path:`/roadmap#${item.phase}`})),
  ...components.flatMap(c => [
   {title:`${c.name} ${c.title}`,detail:c.description,path:c.path},
   ...api[c.path.slice(1)]!.sections.map(title=>({title,detail:`${c.name} · 示例章节`,path:`${c.path}#${slug(title)}`})),

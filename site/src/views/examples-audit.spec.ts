@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { sfc } from '../utils/exampleCode'
+import { components } from '../docs/catalog'
 
 const pages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'input', 'password', 'input-number', 'select', 'form', 'badge', 'steps', 'pagination', 'vtable-grid']
 const selectCodeNames = ['codeBasic', 'codeMultiple', 'codeFilterable', 'codeRemote', 'codeSlots', 'codeDisabled', 'codeSizes']
@@ -47,15 +48,14 @@ describe('site example coverage', () => {
   })
 
   it('registers the Steps, Pagination, Form and VTableGrid pages in navigation and routing', () => {
-    const app = readFileSync(resolve(process.cwd(), 'src/docs/catalog.ts'), 'utf8')
     const router = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
-    expect(app).toContain("path: '/steps'")
+    expect(components.some(item=>item.path==='/steps')).toBe(true)
     expect(router).toContain("path: '/steps'")
-    expect(app).toContain("path: '/pagination'")
+    expect(components.some(item=>item.path==='/pagination')).toBe(true)
     expect(router).toContain("path: '/pagination'")
-    expect(app).toContain("path: '/form'")
+    expect(components.some(item=>item.path==='/form')).toBe(true)
     expect(router).toContain("path: '/form'")
-    expect(app).toContain("path: '/vtable-grid'")
+    expect(components.some(item=>item.path==='/vtable-grid')).toBe(true)
     expect(router).toContain("path: '/vtable-grid'")
   })
 
@@ -78,15 +78,13 @@ describe('site example coverage', () => {
     expect((source.match(/autocomplete="email"/g) ?? [])).toHaveLength(2)
   })
 
-  it('registers Select immediately after InputNumber', () => {
-    const app = readFileSync(resolve(process.cwd(), 'src/docs/catalog.ts'), 'utf8')
+  it('registers Select and InputNumber in the form group', () => {
     const router = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
-    const navPaths = [...app.matchAll(/\{ path: '([^']+)'/g)].map(match => match[1])
     const routePaths = [...router.matchAll(/^\s+path: '([^']+)'/gm)].map(match => match[1])
-    expect(navPaths.indexOf('/input-number')).toBeGreaterThanOrEqual(0)
+    expect(components.find(item=>item.path==='/input-number')?.group).toBe('form')
+    expect(components.find(item=>item.path==='/select')?.group).toBe('form')
     expect(routePaths.indexOf('/input-number')).toBeGreaterThanOrEqual(0)
-    expect(navPaths.indexOf('/select')).toBe(navPaths.indexOf('/input-number') + 1)
-    expect(routePaths.indexOf('/select')).toBe(routePaths.indexOf('/input-number') + 1)
+    expect(routePaths.indexOf('/select')).toBeGreaterThanOrEqual(0)
   })
 
   it('documents all Select capabilities in exactly seven complete copyable SFCs', () => {

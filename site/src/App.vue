@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { components, groups, guides, scenarios } from './docs/catalog'
+import { componentGroups, components, guides, groupOf, scenarios } from './docs/catalog'
 import { slug } from './docs/reference'
 import DocSearch from './components/DocSearch.vue'
 import DemoSettings from './components/DemoSettings.vue'
@@ -17,8 +17,8 @@ function escapeMenu(event:KeyboardEvent){if(event.key==='Escape'&&menu.value){me
 const menu=ref(false), content=ref<HTMLElement>(), outline=ref<{id:string;title:string;level:number}[]>([]), active=ref('')
 const component=computed(()=>components.find(c=>route.path===c.path||route.path==='/api'+c.path))
 const navigation=computed<ZtMenuItem[]>(()=>[
- {key:'guides',label:'开始使用',type:'group',children:guides.map(g=>({key:g.path,label:g.title,href:g.path}))},
- ...groups.map(group=>({key:'group-'+group,label:group,type:'group' as const,children:components.filter(c=>c.group===group).map(c=>({key:c.path,label:c.title,description:c.name,href:c.path}))})),
+ {key:'guides',label:'文档',type:'group',children:guides.map(g=>({key:g.path,label:g.title,href:g.path}))},
+ ...componentGroups.map(group=>({key:'group-'+group.id,label:group.title,type:'group' as const,children:components.filter(c=>c.group===group.id).map(c=>({key:c.path,label:c.title,description:c.name,href:c.path}))})),
 ])
 function navigate(key:string,_item:ZtMenuItem,event:MouseEvent){event.preventDefault();menu.value=false;void router.push(key)}
 const related=computed(()=>scenarios.filter(s=>s.components.includes(component.value?.path.slice(1)??'')))
@@ -50,14 +50,14 @@ onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEv
   <button class="menu-toggle" :aria-expanded="menu" aria-controls="doc-sidebar" @click="menu=!menu">{{menu?'关闭导航':'导航'}}</button>
   </div>
  </header>
- <div ref="scrollArea" class="doc-layout">
+ <div ref="scrollArea" class="doc-layout" :class="{'is-home':route.path==='/' }">
   <button v-if="menu" class="nav-backdrop" aria-label="关闭导航" @click="menu=false" />
   <aside id="doc-sidebar" class="doc-aside" :inert="mobile && !menu" :class="{'is-open':menu}">
    <ZtMenu :items="navigation" :model-value="component?.path ?? route.path" aria-label="文档导航" @select="navigate" />
-   <p class="doc-sidebar-note">Vue 3 · TypeScript<br>为业务界面提供一致的交互。</p>
+   <div class="doc-sidebar-note"><span>{{components.length}} components</span><strong>Vue 3 · TypeScript</strong><p>为业务界面提供一致的交互。</p></div>
   </aside>
   <main id="doc-content" ref="content" class="doc-main" tabindex="-1">
-   <div class="doc-breadcrumb"><RouterLink to="/">文档</RouterLink><span>/</span><span>{{component?.group??'指南'}}</span><template v-if="component"><span>/</span><span>{{component.title}}</span></template></div>
+   <div class="doc-breadcrumb"><RouterLink to="/">Zt UI</RouterLink><span>/</span><span>{{component?groupOf(component.group).title:'文档'}}</span><template v-if="component"><span>/</span><strong>{{component.title}}</strong></template></div>
    <div v-if="component" class="doc-page-tabs" aria-label="阅读方式"><RouterLink :to="component.path" :class="{'is-active':!isApi}">示例与用法</RouterLink><RouterLink :to="'/api'+component.path" :class="{'is-active':isApi}">完整 API</RouterLink></div>
    <RouterView />
    <section v-if="component && related.length" class="doc-related"><h2>相关场景</h2><div class="related-links"><RouterLink v-for="s in related" :key="s.id" :to="'/scenarios/'+s.id">{{s.title}} <span>↗</span></RouterLink></div></section>

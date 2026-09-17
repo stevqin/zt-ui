@@ -1,77 +1,11 @@
-.doc-site {
-  min-height:100vh;
-  --site-bg:#fff;
-  --site-soft:#f4f7fc;
-  --site-code:#18263b;
-  --site-code-ink:#dce8f8;
-  color:var(--doc-ink);
-  background:var(--site-bg);
-  &--mini { --site-font:12px; --site-space:16px; }
-  &--small { --site-font:13px; --site-space:20px; }
-  &--default { --site-font:14px; --site-space:24px; }
-  &--medium { --site-font:15px; --site-space:28px; }
-  &--large { --site-font:16px; --site-space:32px; }
-  font-size:var(--site-font);
-  .doc-header,.doc-aside,.doc-search__results,.api-filter input,.menu-toggle { background:var(--site-bg); color:var(--doc-ink); }
-  .doc-section h1 { color:var(--doc-ink); }
-  .doc-section p,.doc-steps,.doc-points,.doc-table { font-size:calc(var(--site-font) - 1px); }
-  .doc-nav-link { font-size:calc(var(--site-font) - 2px); }
-  .doc-demo__preview { padding:var(--site-space); }
-  .doc-demo,.scene-card,.component-card,.reading-path,.doc-code,.table-scroll,.type-definition,.doc-search,.doc-search__results,.doc-primary,.doc-secondary,.related-links a,.api-filter input,.menu-toggle { border-radius:var(--zt-radius); }
+.doc-site[data-zt-theme='dark']{
+ --doc-ink:#e8edf5;--doc-muted:#b2bdcc;--doc-blue:#9bbcff;--doc-line:#566273;--doc-soft:#414b59;--doc-canvas:#333b47;--doc-panel:#3a4350;--doc-code:#29323e;
+ .doc-brand__mark{background:#40516c;border-color:#617ba1}.doc-search__results button:hover,.doc-search__results button.is-active{background:#46566d}.doc-aside{background:#363f4c}.doc-table code,.doc-section>p code,.doc-callout code{background:#485568;color:#d5e4ff}.doc-primary{color:#fff;background:#527ec7}.required{color:#ffabb4}
+ .doc-demo,.doc-demo__desc,.doc-demo__actions,.doc-demo__copy,.table-scroll,.type-definition{border-color:var(--doc-line)}
+ .doc-demo__preview{background:var(--doc-panel)}
+ .doc-demo__desc,.doc-demo__actions,.doc-demo__copy,.doc-table th{background:var(--doc-soft);color:var(--doc-ink)}
+ .doc-demo__toggle,.doc-demo__copy,.type-definition summary{color:var(--doc-blue)}
+ .doc-demo__source,.type-definition pre{background:var(--doc-code);color:#e2ecfa}
+ .doc-callout{color:#c4d2e5}
+ .system-board{border-color:var(--doc-line);box-shadow:0 24px 70px #151b2550}
 }
-.doc-site[data-zt-theme='dark'] {
-  --site-bg:#343c49;
-  --site-soft:#3e4857;
-  --site-code:#303946;
-  --doc-ink:#e4eaf3;
-  --doc-muted:#b4bfce;
-  --doc-blue:#9bbdff;
-  --doc-line:#546173;
-  --doc-wash:#3e4857;
-  .doc-header { border-color:var(--doc-line); }
-  .doc-brand__mark { background:#40516c; border-color:#617ba1; }
-  .doc-brand__mark span { color:#b7cffa; }
-  .doc-nav-group h4,.doc-sidebar-note,.doc-breadcrumb,.doc-outline a,.doc-footer,.doc-eyebrow,.component-card small,.component-card strong span,.scene-card small,.scene-card__label,.scene-card>div,.home-conventions p,.reading-path small,.reading-path>span,.related-links a { color:var(--doc-muted); }
-  .doc-nav-link { color:var(--doc-muted); }
-  .doc-nav-link small { color:#aab9ce; }
-  .doc-nav-link.is-active,.doc-nav-link:hover,.doc-search__results button:hover,.doc-search__results button.is-active,.reading-path a:hover,.api-page .doc-table tr:target { background:#415576; color:#c8dcff; }
-  .doc-outline a.is-active { color:var(--doc-blue); }
-  .scene-card,.reading-path,.doc-callout,.component-card:hover,.type-definition summary,.doc-table th,.doc-demo__desc,.doc-demo__actions { background:var(--site-soft); color:var(--doc-ink); }
-  .reading-path,.reading-path>span,.reading-path a,.scene-card>div,.doc-demo,.doc-demo__desc,.doc-demo__actions,.doc-demo__copy,.doc-table th,.doc-table td { border-color:var(--doc-line); }
-  .doc-callout { border-color:#8aaddf; }
-  .doc-table td,.doc-demo__toggle,.doc-demo__copy { color:var(--doc-muted); }
-  .doc-demo__copy:hover { background:#465468; color:var(--doc-blue); }
-  .doc-demo__desc code,.doc-section>p code,.doc-callout code,.doc-table code,.table-scroll .doc-table code { background:#46546a; color:#d0e2ff; }
-  .doc-code,.doc-demo__source,.type-definition pre { background:var(--site-code); color:var(--site-code-ink); }
-  .doc-demo__source-head { background:var(--site-soft); border-color:var(--doc-line); }
-  .doc-demo__language { color:var(--doc-muted); }
-  .doc-primary { background:#527ec7; color:#fff; }
-  .required { color:#f7a3ab; }
-  .doc-search kbd { border-color:var(--doc-line); }
-}
-
-// The header is outside every scrollport. Navigation retains its own scrollbar.
-html,body,#app { height:100%; overflow:hidden; }
-.doc-site { height:100%; min-height:0; overflow:hidden; }
-.doc-site .doc-layout { position:fixed; inset:var(--doc-header-height) 0 0; min-height:0; padding-top:0; overflow-y:auto; overflow-x:hidden; scroll-padding-top:24px; }
-.doc-site .doc-main { min-height:100%; }
-.doc-site [id] { scroll-margin-top:24px; }
-.doc-site .doc-nav-group {
-  margin-bottom:24px;
-  & + .doc-nav-group { border-top:1px solid var(--doc-line); padding-top:20px; }
-  h4 { display:flex; align-items:center; gap:8px; font-size:12px; font-weight:750; color:var(--doc-ink); margin-bottom:10px; padding:0 10px; }
-  h4::before { content:''; width:4px; height:12px; border-radius:2px; background:var(--doc-blue); opacity:.7; }
-  .doc-nav-link { margin-left:12px; padding-left:12px; font-weight:400; }
-  .doc-nav-link.is-active { font-weight:650; }
-}
-
-// Document controls own their focus treatment; component demos use library styles.
-.doc-site :is(.doc-nav-link,.doc-header a,.doc-outline a,.doc-page-tabs a,.doc-demo__toggle,.doc-demo__copy,.doc-primary,.doc-secondary,.scene-card,.component-card,.reading-path a):focus-visible { outline:2px solid var(--doc-blue); outline-offset:2px; }
-.doc-site :is(.doc-layout,.doc-main,[tabindex="-1"]):focus { outline:none; }
-.doc-site .doc-search:focus-within { border-color:var(--doc-blue); box-shadow:none; }
-.doc-site .doc-search input::placeholder { color:var(--doc-muted); opacity:.8; }
-
-.doc-site .doc-aside>.zt-menu { padding:0; background:transparent; }
-.doc-site .doc-aside .zt-menu__heading { color:var(--doc-ink); }
-.doc-site .doc-aside .zt-menu__row { color:var(--doc-muted); }
-.doc-site .doc-aside .zt-menu__row.is-selected { color:var(--doc-blue); }
