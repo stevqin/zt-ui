@@ -67,9 +67,11 @@
     input {
       position: absolute;
       opacity: 0;
-      width: 0;
-      height: 0;
-      pointer-events: none;
+      inset: 0;
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      cursor: inherit;
     }
   }
 
@@ -123,7 +125,7 @@
   &--default.is-checked .zt-radio__inner { background: #6b7280; }
 
   // ── Focus-visible ──
-  &:focus-within .zt-radio__inner {
+  &:has(input:focus-visible) .zt-radio__inner {
     box-shadow: 0 0 0 2px var(--glass-accent-soft);
   }
 
@@ -144,4 +146,46 @@
   .zt-radio__inner::after {
     transition: none !important;
   }
+}
+
+.zt-radio-group--segmented {
+  @include glass.tokens;
+  --zt-radio-height: 34px;
+  width: fit-content;
+  max-width: 100%;
+  gap: 0;
+  flex-wrap: nowrap;
+  border: 1px solid var(--glass-default-line);
+  border-radius: glass.radius(11px);
+  background: var(--zt-surface-soft, #f5f7fa);
+  &.zt-radio-group--mini { --zt-radio-height: 26px; }
+  &.zt-radio-group--small { --zt-radio-height: 30px; }
+  &.zt-radio-group--medium { --zt-radio-height: 36px; }
+  &.zt-radio-group--large { --zt-radio-height: 40px; }
+  .zt-radio {
+    --zt-radio-color: var(--glass-accent);
+    --zt-radio-hover-soft: var(--glass-accent-soft);
+    position: relative;
+    justify-content: center;
+    min-height: var(--zt-radio-height);
+    padding: 0 1em;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    transition: background-color 160ms, color 160ms;
+    & + .zt-radio { border-left: 1px solid var(--glass-default-line); }
+    &:first-child { border-radius: inherit; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    &:last-child { border-radius: inherit; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+    &:only-child { border-radius: inherit; }
+    &--success { --zt-radio-color: #16a34a; --zt-radio-hover-soft: var(--glass-success-soft); }
+    &--warning { --zt-radio-color: #b45309; --zt-radio-hover-soft: var(--glass-warning-soft); }
+    &--danger { --zt-radio-color: #dc2626; --zt-radio-hover-soft: var(--glass-danger-soft); }
+    &--info { --zt-radio-color: #4b5563; --zt-radio-hover-soft: var(--glass-info-soft); }
+    &--default { --zt-radio-color: #4b5563; --zt-radio-hover-soft: var(--glass-default-soft); }
+    &:hover:not(.is-disabled):not(.is-checked) { background: var(--zt-radio-hover-soft); color: var(--zt-radio-color); }
+    &.is-checked { background: var(--zt-radio-color); color: #fff; }
+    &:has(input:focus-visible) { outline: 2px solid var(--zt-radio-color); outline-offset: 3px; z-index: 1; }
+  }
+  .zt-radio__input { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .zt-radio__inner { display: none; }
 }

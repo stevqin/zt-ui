@@ -11,6 +11,7 @@ function mountNameForm(
 ) {
   return mount(ZtForm, {
     props: { model, rules },
+    global: { stubs: { teleport: true } },
     slots: {
       default: () => h(ZtFormItem, { label: '名称', prop: 'user.name', ...itemProps }, {
         default: () => h(ZtInput, {
@@ -74,21 +75,21 @@ describe('ZtForm validation', () => {
         {},
         { error: '服务端校验失败' },
       )
-      const error = wrapper.get('.zt-form-item__error')
+      const error = () => wrapper.get('.zt-form-item__error')
       const indicator = wrapper.get('.zt-form-item__error-indicator')
 
       await vi.advanceTimersByTimeAsync(2600)
-      expect(error.classes()).not.toContain('is-visible')
+      expect(error().classes()).not.toContain('is-visible')
 
       await wrapper.get('input').trigger('focusin')
-      expect(error.classes()).toContain('is-visible')
+      expect(error().classes()).toContain('is-visible')
       await wrapper.get('input').trigger('focusout')
-      expect(error.classes()).not.toContain('is-visible')
+      expect(error().classes()).not.toContain('is-visible')
 
       await indicator.trigger('mouseenter')
-      expect(error.classes()).toContain('is-visible')
+      expect(error().classes()).toContain('is-visible')
       await indicator.trigger('mouseleave')
-      expect(error.classes()).not.toContain('is-visible')
+      expect(error().classes()).not.toContain('is-visible')
     } finally {
       vi.useRealTimers()
     }
@@ -144,6 +145,7 @@ describe('ZtForm validation', () => {
   it('validates number controls after stepping', async () => {
     const model = reactive({ quantity: 1 })
     const wrapper = mount(ZtForm, {
+      global: { stubs: { teleport: true } },
       props: { model, rules: { quantity: { min: 3, trigger: 'change', message: '至少为 3' } } },
       slots: {
         default: () => h(ZtFormItem, { prop: 'quantity' }, () => h(ZtInputNumber, {

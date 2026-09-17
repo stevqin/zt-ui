@@ -28,6 +28,9 @@ export interface ZtFormContext {
   disabled: ComputedRef<boolean>
   labelPosition: ComputedRef<ZtFormLabelPosition>
   labelWidth: ComputedRef<number | string | 'auto'>
+  autoLabelWidth: ComputedRef<number>
+  setLabelWidth: (id: number, width: number) => void
+  removeLabelWidth: (id: number) => void
   hideRequiredAsterisk: ComputedRef<boolean>
   showMessage: ComputedRef<boolean>
   addField: (field: ZtFormFieldContext) => void

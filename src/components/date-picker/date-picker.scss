@@ -31,6 +31,7 @@
   @include glass.tokens;
   @include date-theme;
   --zt-date-height: 34px;
+  --zt-date-padding: 9px;
   --zt-date-font: var(--glass-size-default);
   display: inline-flex;
   align-items: center;
@@ -49,17 +50,18 @@
   &.is-range { width: 420px; }
   &:hover:not(.is-disabled), &.is-open, &:focus-within { border-color: var(--zt-date-color); }
   &:focus-within, &.is-open { box-shadow: 0 0 0 3px var(--zt-date-soft); }
-  > input { width: 100%; min-width: 0; height: 100%; padding: 0 30px 0 34px; border: 0; outline: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; text-overflow: ellipsis; }
+  > input { width: 100%; min-width: 0; height: 100%; padding: 0 var(--zt-date-padding) 0 calc(var(--zt-date-padding) + 22px); border: 0; outline: 0; background: transparent; color: inherit; font: inherit; cursor: pointer; text-overflow: ellipsis; }
   > input::placeholder { color: var(--zt-text-muted, #9ca3af); opacity: 1; }
-  &__icon { position: absolute; left: 10px; width: 16px; height: 16px; color: var(--zt-text-muted, #8992a0); pointer-events: none; }
-  &__clear { position: absolute; right: 7px; width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--zt-text-muted, #8992a0); cursor: pointer; font: 16px/1 var(--glass-font); }
+  &__icon { position: absolute; left: var(--zt-date-padding); width: 16px; height: 16px; color: var(--zt-text-muted, #8992a0); pointer-events: none; }
+  &__clear { opacity: 0; pointer-events: none; transform: scale(.8); transition: opacity 160ms, transform 160ms, background-color 160ms; position: absolute; right: var(--zt-date-padding); width: 20px; height: 20px; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--zt-text-muted, #8992a0); cursor: pointer; font: 16px/1 var(--glass-font); }
+  &:hover &__clear, &:focus-within &__clear { opacity: 1; pointer-events: auto; transform: scale(1); }
   &__clear:hover { color: var(--zt-date-color); background: var(--zt-date-soft); }
   &.is-disabled { opacity: .52; background: var(--zt-surface-soft, #f5f7fa); }
   &.is-disabled > input { cursor: not-allowed; }
-  &--mini { --zt-date-height: 26px; --zt-date-font: var(--glass-size-mini); border-radius: glass.radius(8px); }
-  &--small { --zt-date-height: 30px; --zt-date-font: var(--glass-size-small); border-radius: glass.radius(9px); }
-  &--medium { --zt-date-height: 36px; --zt-date-font: var(--glass-size-medium); }
-  &--large { --zt-date-height: 40px; --zt-date-font: var(--glass-size-large); border-radius: glass.radius(14px); }
+  &--mini { --zt-date-padding: 5px; --zt-date-height: 26px; --zt-date-font: var(--glass-size-mini); border-radius: glass.radius(8px); }
+  &--small { --zt-date-padding: 7px; --zt-date-height: 30px; --zt-date-font: var(--glass-size-small); border-radius: glass.radius(9px); }
+  &--medium { --zt-date-padding: 10px; --zt-date-height: 36px; --zt-date-font: var(--glass-size-medium); }
+  &--large { --zt-date-padding: 12px; --zt-date-height: 40px; --zt-date-font: var(--glass-size-large); border-radius: glass.radius(14px); }
   &--status-error, &.is-error {
     border-color: #ef4444 !important;
     &:focus-within, &.is-open { box-shadow: 0 0 0 3px var(--glass-danger-soft); }
@@ -190,3 +192,9 @@
     .zt-date-picker__calendar + .zt-date-picker__calendar::before { top: -8px; left: 0; right: 0; bottom: auto; border-left: 0; border-top: 1px solid var(--glass-line); }
   }
 }
+
+.zt-date-picker__period-grid .is-in-range { background: var(--zt-date-soft); color: var(--zt-date-ink); }
+@media (hover: none) { .zt-date-picker__clear { opacity: 1; pointer-events: auto; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .zt-date-picker__clear { transition: none; } }
+
+.zt-date-picker__clear { z-index: 4; background: var(--zt-surface, #fff); }

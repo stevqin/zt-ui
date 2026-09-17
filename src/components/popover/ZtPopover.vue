@@ -42,6 +42,7 @@ const config = useZtConfig(),
   reference = ref<HTMLElement>(),
   popup = ref<HTMLElement>(),
   opened = ref(props.visible),
+  layer = ref(props.zIndex),
   actualPlacement = ref<ZtPopoverPlacement>(props.placement),
   position = ref({ top: 0, left: 0, arrowX: 0, arrowY: 0 });
 let openTimer: number | undefined,
@@ -56,7 +57,7 @@ const popupStyle = computed<CSSProperties>(() => ({
   top: `${position.value.top}px`,
   left: `${position.value.left}px`,
   width: width.value,
-  zIndex: props.zIndex,
+  zIndex: Math.max(props.zIndex, layer.value),
   '--zt-popover-arrow-x': `${position.value.arrowX}px`,
   '--zt-popover-arrow-y': `${position.value.arrowY}px`,
 }));
@@ -74,6 +75,12 @@ function focusReference() {
 }
 function updatePosition() {
   if (!reference.value || !popup.value) return;
+  let nextLayer = props.zIndex;
+  for (let node: HTMLElement | null = reference.value; node; node = node.parentElement) {
+    const z = Number.parseFloat(getComputedStyle(node).zIndex);
+    if (Number.isFinite(z)) nextLayer = Math.max(nextLayer, z + 1);
+  }
+  layer.value = nextLayer;
   const a = reference.value.getBoundingClientRect(),
     b = popup.value.getBoundingClientRect(),
     next = placePopover(
@@ -224,7 +231,7 @@ defineExpose({
         v-show="opened"
         ref="popup"
         class="zt-popover"
-        :class="`zt-popover--${actualPlacement}`"
+        :class="[`zt-popover--${actualPlacement}`, {'zt-popover--content-width': width === 'max-content'}]"
         :style="popupStyle"
         role="dialog"
         tabindex="-1"

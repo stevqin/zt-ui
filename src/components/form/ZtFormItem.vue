@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useZtSize } from '../config-provider/context'
-import { computed, getCurrentInstance, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
+import { useZtConfig, useZtSize } from '../config-provider/context'
+import { Teleport, computed, getCurrentInstance, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, watch } from 'vue'
 import type { CSSProperties } from 'vue'
 import { ztFormItemKey, ztFormKey } from './context'
 import type { ZtFormFieldContext } from './context'
@@ -15,10 +15,14 @@ const props = withDefaults(defineProps<ZtFormItemProps>(), {
   required: false,
 })
 
+const config = useZtConfig()
 const form = inject(ztFormKey, undefined)
 const instance = getCurrentInstance()
 const element = ref<HTMLElement>()
 const contentElement = ref<HTMLElement>()
+const labelContent = ref<HTMLElement>()
+let labelObserver: ResizeObserver | undefined
+const labelId = instance?.uid ?? Math.random()
 const indicatorElement = ref<HTMLElement>()
 const tooltipElement = ref<HTMLElement>()
 const validateState = ref<ZtFormFieldContext['validateState']['value']>('')
@@ -55,13 +59,20 @@ const hasOwnShowMessage = computed(() => {
   return Boolean(vnodeProps && ('showMessage' in vnodeProps || 'show-message' in vnodeProps))
 })
 const showMessage = computed(() => hasOwnShowMessage.value ? props.showMessage : form?.showMessage.value ?? true)
+const labelPosition = computed(() => props.labelPosition ?? form?.labelPosition.value ?? 'right')
 const labelWidth = computed(() => props.labelWidth ?? form?.labelWidth.value ?? 'auto')
 const labelStyle = computed<CSSProperties>(() => {
-  if (form?.labelPosition.value === 'top' || labelWidth.value === 'auto') return {}
-  return { width: typeof labelWidth.value === 'number' ? `${labelWidth.value}px` : labelWidth.value }
+  const position = labelPosition.value
+  return {
+    width: position === 'top' ? undefined : labelWidth.value === 'auto' ? (form?.autoLabelWidth.value ? `${form.autoLabelWidth.value}px` : undefined) : /^\d+(\.\d+)?$/.test(String(labelWidth.value)) ? `${labelWidth.value}px` : labelWidth.value,
+    margin: position === 'top' ? '0 0 7px' : '0 var(--zt-form-label-gap, 12px) 0 0',
+    textAlign: position === 'right' ? 'right' : 'left',
+    justifyContent: position === 'right' ? 'flex-end' : 'flex-start',
+  }
 })
 const classes = computed(() => [
   'zt-form-item',
+  { 'is-label-top': labelPosition.value === 'top' },
   validateState.value && `is-${validateState.value}`,
   isRequired.value && 'is-required',
   size.value !== 'default' && `zt-form-item--${size.value}`,
@@ -93,6 +104,12 @@ function updateTooltipPosition() {
   const tooltip = tooltipElement.value?.getBoundingClientRect()
   if (!anchor || !tooltip) return
 
+  let layer = 2000
+  for (let parent = element.value; parent; parent = parent.parentElement ?? undefined) {
+    const z = Number.parseFloat(getComputedStyle(parent).zIndex)
+    if (Number.isFinite(z)) layer = Math.max(layer, z)
+  }
+  const fieldStyle = element.value ? getComputedStyle(element.value) : undefined
   const viewportPadding = 12
   const gap = 9
   const width = tooltip.width
@@ -113,8 +130,12 @@ function updateTooltipPosition() {
 
   tooltipPlacement.value = placement
   tooltipStyle.value = {
+    ...config.style.value,
     position: 'fixed',
     pointerEvents: 'none',
+    zIndex: layer + 1,
+    fontSize: fieldStyle?.fontSize,
+    fontFamily: fieldStyle?.fontFamily,
     left: `${Math.round(left)}px`,
     top: `${Math.round(top)}px`,
   }
@@ -188,12 +209,25 @@ const fieldContext: ZtFormFieldContext = {
 }
 
 provide(ztFormItemKey, fieldContext)
+function measureLabel() {
+  if (labelWidth.value === 'auto' && labelPosition.value !== 'top' && labelContent.value) {
+    form?.setLabelWidth(labelId, Math.ceil(labelContent.value.getBoundingClientRect().width))
+  } else form?.removeLabelWidth(labelId)
+}
+watch([labelWidth, labelPosition, () => props.label], () => { void nextTick(measureLabel) })
 onMounted(() => {
+  measureLabel()
+  if (typeof ResizeObserver !== 'undefined' && labelContent.value) {
+    labelObserver = new ResizeObserver(measureLabel)
+    labelObserver.observe(labelContent.value)
+  }
   if (fieldKey.value) form?.addField(fieldContext)
   window.addEventListener('resize', updateTooltipPosition)
   window.addEventListener('scroll', updateTooltipPosition, true)
 })
 onBeforeUnmount(() => {
+  labelObserver?.disconnect()
+  form?.removeLabelWidth(labelId)
   clearAutoHideTimer()
   window.removeEventListener('resize', updateTooltipPosition)
   window.removeEventListener('scroll', updateTooltipPosition, true)
@@ -225,10 +259,12 @@ defineExpose({ validate, resetField, clearValidate, validateState, validateMessa
 </script>
 
 <template>
-  <div ref="element" :class="classes">
+  <div ref="element" :class="classes" :style="{display: labelPosition === 'top' ? 'block' : 'flex'}">
     <label v-if="label || $slots.label" class="zt-form-item__label" :for="inputId" :style="labelStyle">
+      <span ref="labelContent" class="zt-form-item__label-text">
       <span v-if="isRequired && !form?.hideRequiredAsterisk.value" class="zt-form-item__required" aria-hidden="true">*</span>
       <slot name="label" :label="label">{{ label }}</slot>
+      </span>
     </label>
     <div ref="contentElement" class="zt-form-item__content" @focusin="handleFocusIn" @focusout="handleFocusOut">
       <slot />
@@ -248,6 +284,7 @@ defineExpose({ validate, resetField, clearValidate, validateState, validateMessa
             <path d="M10 5.8v5.1M10 14.2h.01" />
           </svg>
         </button>
+        <Teleport to="body">
         <div
           ref="tooltipElement"
           :id="errorId"
@@ -256,6 +293,7 @@ defineExpose({ validate, resetField, clearValidate, validateState, validateMessa
           role="alert"
           :style="tooltipStyle"
         >{{ validateMessage }}</div>
+        </Teleport>
       </template>
     </div>
   </div>

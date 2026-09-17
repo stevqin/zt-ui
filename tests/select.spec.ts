@@ -1,3 +1,4 @@
+import { searchInput } from './select-test-utils'
 import { h, nextTick, reactive } from 'vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -19,7 +20,7 @@ describe('ZtSelect single selection', () => {
     })
 
     try {
-      await wrapper.get('input').setValue('上')
+      await (await searchInput(wrapper)).setValue('上')
 
       expect(wrapper.emitted('search')).toEqual([['上']])
       expect(document.querySelectorAll('[role="option"]')).toHaveLength(1)
@@ -37,7 +38,7 @@ describe('ZtSelect single selection', () => {
     const combobox = wrapper.get('[role="combobox"]')
 
     try {
-      await wrapper.get('input').setValue('上')
+      await (await searchInput(wrapper)).setValue('上')
       expect(combobox.attributes('aria-expanded')).toBe('true')
 
       await combobox.trigger('click')
@@ -368,7 +369,7 @@ describe('ZtSelect slots and dropdown placement', () => {
     })
 
     try {
-      await wrapper.get('input').setValue('不存在')
+      await (await searchInput(wrapper)).setValue('不存在')
       expect(document.querySelector('.slot-empty')?.textContent).toBe('没有匹配项')
     } finally {
       wrapper.unmount()
@@ -602,7 +603,7 @@ describe('ZtSelect slots and dropdown placement', () => {
       expect(observe).toHaveBeenCalledWith(dropdown)
 
       menuHeight = 100
-      await wrapper.get('input').setValue('上')
+      await (await searchInput(wrapper)).setValue('上')
       notifyResize!()
       await nextTick()
       expect(dropdown.dataset.placement).toBe('up')

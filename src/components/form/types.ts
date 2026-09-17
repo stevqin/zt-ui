@@ -40,6 +40,7 @@ export interface ZtFormProps {
 }
 
 export interface ZtFormItemProps {
+  /** 字段标签位置，默认继承 Form。 */ labelPosition?: ZtFormLabelPosition
   label?: string
   prop?: ZtFormProp
   required?: boolean

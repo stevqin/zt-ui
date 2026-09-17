@@ -1,10 +1,15 @@
 @use '../../styles/tokens' as glass;
+@use '../../styles/clear-action' as clear;
 
 .zt-input {
   @include glass.tokens;
   --zt-input-height: 34px;
+  --zt-input-padding: 9px;
+  --zt-input-gap: 5px;
+  --zt-input-action-size: 20px;
   --zt-input-font-size: var(--glass-size-default);
   --zt-input-autofill-background: var(--zt-surface, #fff);
+  &, *, *::before, *::after { box-sizing: border-box; }
   display: inline-flex;
   align-items: stretch;
   width: 100%;
@@ -18,7 +23,7 @@
     align-items: center;
     min-width: 0;
     min-height: var(--zt-input-height);
-    padding: 0 11px;
+    padding: 0 var(--zt-input-padding);
     border: 1px solid var(--glass-default-line);
     border-radius: glass.radius(11px);
     background: var(--zt-surface, rgba(255, 255, 255, .82));
@@ -76,14 +81,14 @@
     color: var(--zt-text-muted, #7b8492);
   }
 
-  &__prefix { margin-right: 7px; }
-  &__suffix { margin-left: 7px; }
+  &__prefix { margin-right: var(--zt-input-gap); }
+  &__suffix { position: relative; margin-left: var(--zt-input-gap); }
 
   &__addon {
     display: inline-flex;
     align-items: center;
     min-height: var(--zt-input-height);
-    padding: 0 12px;
+    padding: 0 var(--zt-input-padding);
     border: 1px solid var(--glass-default-line);
     background: var(--zt-surface-soft, rgba(248, 250, 252, .9));
     color: var(--zt-text, #59616a);
@@ -108,8 +113,8 @@
   .zt-password__toggle {
     display: inline-grid;
     place-items: center;
-    width: 20px;
-    height: 20px;
+    width: var(--zt-input-action-size);
+    height: var(--zt-input-action-size);
     padding: 0;
     border: 0;
     border-radius: 50%;
@@ -155,15 +160,15 @@
   &.is-disabled &__wrapper,
   &.is-readonly &__wrapper { background: var(--zt-surface-soft, rgba(245, 247, 250, .86)); }
 
-  &--mini { --zt-input-height: 26px; --zt-input-font-size: var(--glass-size-mini); }
-  &--small { --zt-input-height: 30px; --zt-input-font-size: var(--glass-size-small); }
-  &--medium { --zt-input-height: 36px; --zt-input-font-size: var(--glass-size-medium); }
-  &--large { --zt-input-height: 40px; --zt-input-font-size: var(--glass-size-large); }
+  &--mini { --zt-input-action-size: 16px; --zt-input-padding: 5px; --zt-input-gap: 3px; --zt-input-height: 26px; --zt-input-font-size: var(--glass-size-mini); }
+  &--small { --zt-input-action-size: 18px; --zt-input-padding: 7px; --zt-input-gap: 4px; --zt-input-height: 30px; --zt-input-font-size: var(--glass-size-small); }
+  &--medium { --zt-input-action-size: 22px; --zt-input-padding: 10px; --zt-input-gap: 6px; --zt-input-height: 36px; --zt-input-font-size: var(--glass-size-medium); }
+  &--large { --zt-input-action-size: 24px; --zt-input-padding: 12px; --zt-input-gap: 7px; --zt-input-height: 40px; --zt-input-font-size: var(--glass-size-large); }
 
-  &--mini &__wrapper { padding: 0 8px; border-radius: glass.radius(8px); }
-  &--small &__wrapper { padding: 0 9px; border-radius: glass.radius(9px); }
-  &--medium &__wrapper { padding: 0 12px; border-radius: glass.radius(12px); }
-  &--large &__wrapper { padding: 0 14px; border-radius: glass.radius(14px); }
+  &--mini &__wrapper { border-radius: glass.radius(8px); }
+  &--small &__wrapper { border-radius: glass.radius(9px); }
+  &--medium &__wrapper { padding: 0 var(--zt-input-padding); border-radius: glass.radius(12px); }
+  &--large &__wrapper { border-radius: glass.radius(14px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -171,3 +176,9 @@
   .zt-input__clear,
   .zt-password__toggle { transition: none !important; }
 }
+
+// Zero-width anchor follows the text area, before any real suffix icons.
+.zt-input__clear-slot { position: relative; display: flex; align-items: center; width: 0; flex: 0 0 0; }
+.zt-input__clear-slot > .zt-input__clear { position: absolute; right: 0; z-index: 4; background: var(--zt-surface, #fff); }
+.zt-input__clear { @include clear.reveal('.zt-input'); }
+.zt-password__toggle:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: 2px; }

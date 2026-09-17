@@ -1,3 +1,4 @@
+import { searchInput } from './select-test-utils';
 import { mount, flushPromises } from '@vue/test-utils';
 import { describe, it, expect, afterEach } from 'vitest';
 import ZtSelect from '../src/components/select/ZtSelect.vue';
@@ -37,7 +38,7 @@ describe('virtual select', () => {
       },
       attachTo: document.body,
     });
-    const input = w.get('input');
+    const input = await searchInput(w);
     await input.trigger('click');
     await flushPromises();
     const list = document.querySelector('.zt-select__list') as HTMLElement;

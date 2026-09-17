@@ -23,6 +23,10 @@ export interface ZtSelectProps {
   modelValue?: ZtSelectModelValue;
   options?: ZtSelectOption[];
   multiple?: boolean;
+  /** 多选时折叠超出数量的标签，剩余项显示为 +N。 */
+  collapseTags?: boolean;
+  /** 开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。 */
+  maxCollapseTags?: number;
   filterable?: boolean;
   remote?: boolean;
   remoteMethod?: ZtSelectRemoteMethod;

@@ -3,8 +3,10 @@
 .zt-input-number {
   @include glass.tokens;
   --zt-number-height: 34px;
+  --zt-number-padding: 6px;
   --zt-number-control-width: 38px;
   --zt-number-font-size: var(--glass-size-default);
+  &, *, *::before, *::after { box-sizing: border-box; }
   position: relative;
   display: inline-grid;
   grid-template-columns: var(--zt-number-control-width) minmax(44px, 1fr) var(--zt-number-control-width);
@@ -28,7 +30,7 @@
     min-width: 0;
     width: 100%;
     height: 100%;
-    padding: 0 6px;
+    padding: 0 var(--zt-number-padding);
     border: 0;
     outline: 0;
     background: transparent;
@@ -85,13 +87,15 @@
 
   &--without-controls { grid-template-columns: minmax(44px, 1fr); }
 
-  &--mini { --zt-number-height: 26px; --zt-number-control-width: 30px; --zt-number-font-size: var(--glass-size-mini); width: 118px; border-radius: glass.radius(8px); }
-  &--small { --zt-number-height: 30px; --zt-number-control-width: 34px; --zt-number-font-size: var(--glass-size-small); width: 134px; border-radius: glass.radius(9px); }
-  &--medium { --zt-number-height: 36px; --zt-number-control-width: 40px; --zt-number-font-size: var(--glass-size-medium); width: 160px; border-radius: glass.radius(12px); }
-  &--large { --zt-number-height: 40px; --zt-number-control-width: 44px; --zt-number-font-size: var(--glass-size-large); width: 176px; border-radius: glass.radius(14px); }
+  &--mini { --zt-number-padding: 3px; --zt-number-height: 26px; --zt-number-control-width: 30px; --zt-number-font-size: var(--glass-size-mini); width: 118px; border-radius: glass.radius(8px); }
+  &--small { --zt-number-padding: 4px; --zt-number-height: 30px; --zt-number-control-width: 34px; --zt-number-font-size: var(--glass-size-small); width: 134px; border-radius: glass.radius(9px); }
+  &--medium { --zt-number-padding: 7px; --zt-number-height: 36px; --zt-number-control-width: 40px; --zt-number-font-size: var(--glass-size-medium); width: 160px; border-radius: glass.radius(12px); }
+  &--large { --zt-number-padding: 8px; --zt-number-height: 40px; --zt-number-control-width: 44px; --zt-number-font-size: var(--glass-size-large); width: 176px; border-radius: glass.radius(14px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .zt-input-number,
   .zt-input-number__control { transition: none !important; }
 }
+
+.zt-input-number__control:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: -3px; }

@@ -12,6 +12,8 @@ import Example05 from './Example05.vue';
 import Example05Code from './Example05.vue?raw';
 import Example06 from './Example06.vue';
 import Example06Code from './Example06.vue?raw';
+import Segmented from './Segmented.vue';
+import SegmentedCode from './Segmented.vue?raw';
 import Events from './Events.vue';
 import EventsCode from './Events.vue?raw';
 </script>
@@ -33,6 +35,9 @@ import EventsCode from './Events.vue?raw';
 
     <h2>RadioGroup 组合</h2>
     <DemoBlock :code="Example03Code" desc="RadioGroup 统一管理选中状态。"><Example03 /></DemoBlock>
+
+    <h2>连体分段按钮</h2>
+    <DemoBlock :code="SegmentedCode" desc="variant=segmented 将单选项连成一组按钮。支持五种 size、status 以及 ConfigProvider 的圆角与尺寸；Tab 聚焦，方向键切换，空格选择。为分组添加 aria-label，disabled 可单独禁用选项。"><Segmented /></DemoBlock>
 
     <h2>颜色状态</h2>
     <DemoBlock :code="Example04Code" desc="通过 RadioGroup 的 status 设置选中颜色。"

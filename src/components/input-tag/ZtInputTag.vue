@@ -132,10 +132,12 @@ function clear() {
     /><button
       v-if="clearable && editable && modelValue.length"
       type="button"
+      class="zt-input-tag__clear"
+      @mousedown.prevent
       aria-label="清空标签"
       @click="clear"
     >
-      清空
+      ×
     </button>
   </div>
 </template>

@@ -40,7 +40,9 @@ function escape() {
   hovered = false;
   focused = false;
   popupHovered = false;
-  show(false);
+  clearTimeout(timer);
+  open.value = false;
+  emit('update:visible', false);
 }
 function show(value: boolean, delay = 0) {
   clearTimeout(timer);
@@ -88,6 +90,7 @@ onBeforeUnmount(() => clearTimeout(timer));
       @focusin="focus(true)"
       @focusout="focus(false, $event)"
       @keydown.esc.stop="escape"
+      @click="escape"
       ><slot /></span
     ><template #content
       ><span

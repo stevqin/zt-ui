@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useZtSize } from '../config-provider/context'
-import { computed, provide } from 'vue'
+import { computed, provide, reactive } from 'vue'
 import type { ZtFormContext, ZtFormFieldContext } from './context'
 import { ztFormKey } from './context'
 import type { ZtFormProps, ZtFormValidationErrors } from './types'
@@ -27,6 +27,8 @@ const emit = defineEmits<{
 }>()
 
 const fields = new Set<ZtFormFieldContext>()
+const labelWidths = reactive(new Map<number, number>())
+const autoLabelWidth = computed(() => props.inline ? 0 : Math.max(0, ...labelWidths.values()))
 const classes = computed(() => [
   'zt-form',
   `zt-form--label-${props.labelPosition}`,
@@ -54,6 +56,9 @@ provide<ZtFormContext>(ztFormKey, {
   disabled: computed(() => props.disabled),
   labelPosition: computed(() => props.labelPosition),
   labelWidth: computed(() => props.labelWidth),
+  autoLabelWidth,
+  setLabelWidth: (id, width) => labelWidths.set(id, width),
+  removeLabelWidth: id => labelWidths.delete(id),
   hideRequiredAsterisk: computed(() => props.hideRequiredAsterisk),
   showMessage: computed(() => props.showMessage),
   addField,

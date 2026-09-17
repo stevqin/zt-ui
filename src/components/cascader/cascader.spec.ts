@@ -119,9 +119,10 @@ it('links Form errors and validates an unopened field on blur', async () => {
     .get('.zt-cascader')
     .trigger('focusout', { relatedTarget: document.body });
   await flushPromises();
-  const error = w.get('.zt-form-item__error');
-  expect(w.get('[role=combobox]').attributes('aria-describedby')).toBe(
-    error.attributes('id'),
+  const error = document.getElementById(w.get('[role=combobox]').attributes('aria-describedby') || '');
+  expect(error).not.toBeNull();
+  expect(w.get('[role=combobox]').attributes('aria-describedby') || '').toBe(
+    error?.id,
   );
 });
 it('applies inherited size to the teleported panel', async () => {

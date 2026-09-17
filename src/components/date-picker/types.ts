@@ -12,10 +12,13 @@ export interface ZtDatePickerHoliday {
   value: string;
 }
 
+export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';
 export type ZtDatePickerValue = string | [string, string] | null;
 export interface ZtDatePickerProps {
-  /** Local calendar value: YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */
+  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */
   modelValue?: ZtDatePickerValue;
+  /** Selection granularity. Range suffix is equivalent to range=true. */
+  type?: ZtDatePickerType;
   range?: boolean;
   holidays?: readonly ZtDatePickerHoliday[];
   showHolidays?: boolean;
@@ -25,6 +28,7 @@ export interface ZtDatePickerProps {
   disabled?: boolean;
   readonly?: boolean;
   clearable?: boolean;
+  /** For month/year selection, receives the first local day of the period. */
   disabledDate?: (date: Date) => boolean;
 }
 export type ZtDateTimePickerProps = ZtDatePickerProps;

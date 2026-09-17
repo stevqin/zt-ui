@@ -1,0 +1,21 @@
+// Reveal the floating action without changing the text area or control geometry.
+@mixin reveal($owner) {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.86);
+  transition: opacity 150ms ease, transform 150ms ease, color 150ms ease, background-color 150ms ease;
+  #{$owner}:hover &, #{$owner}:focus-within &, &:focus-visible {
+    opacity: 1;
+    pointer-events: auto;
+    transform: scale(1);
+  }
+  &:focus-visible { outline: 2px solid var(--zt-accent, #409eff); outline-offset: 2px; }
+  @media (hover: none), (pointer: coarse) {
+    opacity: 1;
+    pointer-events: auto;
+    transform: none;
+    min-width: 24px;
+    min-height: 24px;
+  }
+  @media (prefers-reduced-motion: reduce) { transition: none; transform: none; }
+}

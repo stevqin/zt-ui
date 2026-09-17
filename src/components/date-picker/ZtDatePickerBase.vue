@@ -78,26 +78,35 @@ const disabled = computed(
   () => props.disabled || formItem?.disabled.value || false,
 );
 const size = useZtSize(props, () => formItem?.size.value);
+const mode = computed(() => props.datetime ? 'date' : props.type?.startsWith('year') ? 'year' : props.type?.startsWith('month') ? 'month' : 'date');
+const range = computed(() => props.range || Boolean(props.type?.endsWith('range')));
+const periodLabel = computed(() => mode.value === 'year' ? '年份' : mode.value === 'month' ? '月份' : '日期');
+function parseValue(value: string | undefined) {
+  if (mode.value === 'year') return /^\d{4}$/.test(value ?? '') ? parseDate(`${value}-01-01`) : null;
+  if (mode.value === 'month') return /^\d{4}-\d{2}$/.test(value ?? '') ? parseDate(`${value}-01`) : null;
+  return parseDate(value, props.datetime);
+}
+function periodKey(date: Date) { return dateKey(date).slice(0, mode.value === 'year' ? 4 : mode.value === 'month' ? 7 : 10); }
 const placeholder = computed(
   () =>
     props.placeholder ??
-    (props.range
+    (range.value
       ? props.datetime
         ? '请选择日期时间范围'
-        : '请选择日期范围'
+        : `请选择${periodLabel.value}范围`
       : props.datetime
         ? '请选择日期时间'
-        : '请选择日期'),
+        : `请选择${periodLabel.value}`),
 );
 const values = computed(() => {
   const value = props.modelValue;
-  if (props.range)
+  if (range.value)
     return Array.isArray(value) &&
       value.length === 2 &&
-      value.every((v) => parseDate(v, props.datetime))
+      value.every((v) => parseValue(v))
       ? value
       : [];
-  return typeof value === 'string' && parseDate(value, props.datetime)
+  return typeof value === 'string' && parseValue(value)
     ? [value]
     : [];
 });
@@ -115,7 +124,7 @@ const holidayMap = computed(() => {
   );
 });
 const calendars = computed(() =>
-  Array.from({ length: props.range ? 2 : 1 }, (_, index) => {
+  Array.from({ length: range.value && mode.value === 'date' ? 2 : 1 }, (_, index) => {
     const value = calendarDate(
       month.value.getFullYear(),
       month.value.getMonth() + index,
@@ -134,7 +143,7 @@ const calendars = computed(() =>
 );
 function clampMonth(value: Date) {
   const min = calendarDate(1, 0, 1);
-  const max = calendarDate(9999, props.range ? 10 : 11, 1);
+  const max = calendarDate(9999, range.value && mode.value === 'date' ? 10 : 11, 1);
   return new Date(
     Math.max(min.getTime(), Math.min(max.getTime(), value.getTime())),
   );
@@ -148,13 +157,13 @@ const draft = computed<ZtDatePickerValue>(() => {
     start.value + (props.datetime ? ` ${normalizeTime(startTime.value)}` : '');
   const last =
     end.value + (props.datetime ? ` ${normalizeTime(endTime.value)}` : '');
-  if (!parseDate(first, props.datetime) || isDisabled(parseDate(start.value)))
+  if (!parseValue(first) || isDisabled(parseValue(first)))
     return null;
-  if (!props.range) return first;
+  if (!range.value) return first;
   if (
     pickingEnd.value ||
-    !parseDate(last, props.datetime) ||
-    isDisabled(parseDate(end.value)) ||
+    !parseValue(last) ||
+    isDisabled(parseValue(last)) ||
     first > last
   )
     return null;
@@ -175,7 +184,7 @@ function resetDraft() {
   endTime.value = values.value[1]?.slice(11) || '23:59:59';
   pickingEnd.value = false;
   hovered.value = '';
-  const date = parseDate(start.value) ?? new Date();
+  const date = parseValue(values.value[0]) ?? new Date();
   active.value = dateKey(date);
   month.value = clampMonth(
     calendarDate(date.getFullYear(), date.getMonth(), 1),
@@ -267,9 +276,9 @@ function clear() {
 }
 function selectDay(date: Date) {
   if (disabled.value || props.readonly || isDisabled(date)) return;
-  const key = dateKey(date);
+  const key = periodKey(date);
   active.value = key;
-  if (props.range) {
+  if (range.value) {
     if (!pickingEnd.value) {
       start.value = key;
       end.value = '';
@@ -297,6 +306,10 @@ function setMonth(value: Date, index = 0) {
 }
 async function focusDay() {
   await nextTick();
+  if (mode.value !== 'date') {
+    (popup.value?.querySelector<HTMLButtonElement>('.zt-date-picker__period-grid button[tabindex="0"]:not(:disabled)') ?? popup.value?.querySelector<HTMLButtonElement>('.zt-date-picker__period-grid button:not(:disabled)'))?.focus();
+    return;
+  }
   const target =
     popup.value?.querySelector<HTMLButtonElement>(
       `[data-date="${active.value}"]:not(:disabled)`,
@@ -347,7 +360,7 @@ function keydown(event: KeyboardEvent) {
         month.value = clampMonth(
           calendarDate(
             date.getFullYear(),
-            date.getMonth() - (props.range ? 1 : 0),
+            date.getMonth() - (range.value ? 1 : 0),
             1,
           ),
         );
@@ -397,7 +410,7 @@ watch([disabled, () => props.readonly], ([off, readonly]) => {
   if (off || readonly) close();
 });
 watch(
-  [() => props.modelValue, () => props.range, () => props.datetime],
+  [() => props.modelValue, range, mode, () => props.datetime],
   () => {
     if (visible.value) resetDraft();
   },
@@ -422,6 +435,7 @@ defineExpose({ focus, blur, open, close, clear });
       {
         'is-disabled': disabled,
         'is-open': visible,
+        'has-clear': clearable && displayValue && !disabled && !readonly,
         'is-range': range,
         'is-error': formItem?.validateState.value === 'error',
       },
@@ -491,7 +505,7 @@ defineExpose({ focus, blur, open, close, clear });
       :class="[
         `zt-date-picker--status-${status}`,
         `zt-date-picker--${size}`,
-        { 'is-range': range },
+        { 'is-range': range && mode === 'date' },
       ]"
       :role="inline ? 'group' : 'dialog'"
       :aria-label="placeholder"
@@ -504,7 +518,7 @@ defineExpose({ focus, blur, open, close, clear });
       @focusout="focusout"
     >
       <p v-if="range" class="zt-date-picker__hint" aria-live="polite">
-        {{ pickingEnd ? '请选择结束日期' : '请选择开始日期' }}
+        {{ `请选择${pickingEnd ? '结束' : '开始'}${periodLabel}` }}
       </p>
       <div class="zt-date-picker__calendars">
         <section
@@ -515,7 +529,14 @@ defineExpose({ focus, blur, open, close, clear });
           :aria-label="`${calendar.month.getFullYear()}年${calendar.month.getMonth() + 1}月`"
         >
           <ZtCalendarNavigation
+            :key="mode"
             :model-value="calendar.month"
+            :mode="mode"
+            :period-disabled="date => disabled || readonly || isDisabled(date)"
+            :selected="date => periodKey(date) === start || periodKey(date) === end"
+            :in-range="date => Boolean(range && bounds[0] && periodKey(date) > bounds[0] && periodKey(date) < bounds[1])"
+            @pick="selectDay"
+            @hover="hovered = $event ? periodKey($event) : ''"
             @update:model-value="setMonth($event, index)"
             @select="focusDay"
             @view-change="updatePosition"
@@ -595,7 +616,7 @@ defineExpose({ focus, blur, open, close, clear });
       </div>
       <footer v-if="!inline || datetime" class="zt-date-picker__footer">
         <span v-if="range" class="zt-date-picker__summary"
-          >{{ start || '开始日期' }} 至 {{ end || '结束日期' }}</span
+          >{{ start || `开始${periodLabel}` }} 至 {{ end || `结束${periodLabel}` }}</span
         >
         <button
           type="button"

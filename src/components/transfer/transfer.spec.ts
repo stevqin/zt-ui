@@ -60,7 +60,7 @@ it('keeps Form blur validation within the composite field until focus leaves', a
     .get('.zt-transfer')
     .trigger('focusout', { relatedTarget: document.body });
   await flushPromises();
-  expect(w.get('.zt-transfer').attributes('aria-describedby')).toBe(
-    w.get('.zt-form-item__error').attributes('id'),
-  );
+  const error = document.getElementById(w.get('.zt-transfer').attributes('aria-describedby') || '');
+  expect(error).not.toBeNull();
+  expect(error?.classList.contains('zt-form-item__error')).toBe(true);
 });

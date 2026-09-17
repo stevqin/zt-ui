@@ -271,13 +271,15 @@ defineExpose({
         @keydown="inputKey"
         @blur="focusout"
         ><template #suffix
-          ><button
+          ><span v-if="clearable" class="zt-time-picker__clear-slot"><button
             v-if="clearable && display && !disabled && !readonly"
             type="button"
+            class="zt-time-picker__clear"
             aria-label="清空时间"
+            @mousedown.prevent
             @click.stop="clear"
           >
-            ×</button
+            ×</button></span
           ><span aria-hidden="true">◷</span></template
         ></ZtInput
       ><template #content

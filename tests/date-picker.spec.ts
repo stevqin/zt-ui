@@ -134,7 +134,7 @@ describe('date picker integration', () => {
     expect(wrapper.find('.zt-form-item.is-error').exists()).toBe(false)
     await child.get('[aria-label="清空日期"]').trigger('click')
     await flushPromises()
-    expect(wrapper.text()).toContain('请选择日期')
+    expect(document.getElementById(child.get('input').attributes('aria-describedby') || '')?.textContent).toContain('请选择日期')
     await wrapper.setProps({ disabled: true })
     expect(child.get('input').element.disabled).toBe(true)
   })

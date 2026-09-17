@@ -43,8 +43,11 @@
   &--top &__panel { border-radius: 0 0 glass.radius(22px) glass.radius(22px); box-shadow: 0 20px 64px rgba(15, 23, 42, .18); }
   &--bottom &__panel { border-radius: glass.radius(22px) glass.radius(22px) 0 0; box-shadow: 0 -20px 64px rgba(15, 23, 42, .18); }
 
+  &--narrow &__panel { width: 100% !important; border-radius: 0; }
+
   &__header {
     display: flex;
+    flex: 0 0 auto;
     align-items: center;
     gap: 16px;
     min-height: 60px;
@@ -54,6 +57,7 @@
 
   &__heading { flex: 1; min-width: 0; }
   &__heading h2 { margin: 0; color: var(--glass-accent-title); font-size: 18px; line-height: 1.4; font-weight: 650; }
+  &__subtitle { margin: 5px 0 0; color: var(--glass-muted); font-size: 12px; }
   &__close { flex: 0 0 auto; }
   &__close svg { width: 17px; height: 17px; }
 
@@ -64,6 +68,32 @@
     padding: 22px;
     overflow: auto;
     overscroll-behavior: contain;
+  }
+
+  &__body--custom-scroll {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  &__loading {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: var(--zt-panel-bg, rgba(255, 255, 255, .85));
+  }
+
+  &__spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: 50%;
+    animation: zt-drawer-spin .8s linear infinite;
   }
 
   &__footer {
@@ -102,3 +132,6 @@
   .zt-drawer,
   .zt-drawer .zt-drawer__panel { transition: none !important; transform: none !important; }
 }
+
+@keyframes zt-drawer-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .zt-drawer__spinner { animation: none; } }

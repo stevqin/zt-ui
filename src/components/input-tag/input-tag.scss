@@ -1,2 +1,6 @@
 @use '../../styles/tokens' as glass;
+@use '../../styles/clear-action' as clear;
 .zt-input-tag { @include glass.tokens; display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--glass-default-ink);font:14px/1.5 var(--glass-font);.zt-input{flex:1;min-width:120px}.zt-input-tag__tag{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:var(--zt-entry-soft,var(--glass-accent-soft));border-radius:glass.radius(6px);overflow-wrap:anywhere;max-width:100%}button{background:none;color:inherit;border:0;cursor:pointer;padding:2px 4px}.is-disabled{opacity:.5}&--mini{font-size:11px}&--small{font-size:12px}&--medium{font-size:15px}&--large{font-size:16px}}
+
+.zt-input-tag { position: relative; }
+.zt-input-tag .zt-input-tag__clear { position: absolute; right: 6px; bottom: 4px; z-index: 4; width: 18px; height: 18px; padding: 0; border-radius: 50%; background: var(--zt-surface, #fff); @include clear.reveal('.zt-input-tag'); }

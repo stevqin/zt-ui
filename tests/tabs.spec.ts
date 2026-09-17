@@ -28,3 +28,18 @@ describe('Tabs',()=>{
   await wrapper.findAll('button[aria-label^="关闭"]')[0].trigger('click');expect(wrapper.emitted('tab-remove')?.[0]).toEqual(['a']);expect(wrapper.emitted('tab-click')?.length).toBe(clicks)
  })
 })
+
+// The island variant must retain the same public interaction contract.
+it('island tabs preserve guards, disabled navigation and close without selecting', async () => {
+ const wrapper=mount(ZtTabs,{props:{modelValue:'a',type:'island',size:'mini',status:'success',beforeLeave:()=>false},slots:{default:()=>[
+  h(ZtTabPane,{name:'a',label:'甲'}),h(ZtTabPane,{name:'b',label:'乙',closable:true}),h(ZtTabPane,{name:'c',label:'停用',disabled:true}),
+ ]}})
+ await nextTick()
+ await wrapper.findAll('[role="tab"]')[1].trigger('click');await flushPromises()
+ expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+ await wrapper.get('button[aria-label="关闭 乙"]').trigger('click')
+ expect(wrapper.emitted('tab-remove')?.[0]).toEqual(['b'])
+ await wrapper.findAll('[role="tab"]')[2].trigger('click')
+ expect(wrapper.emitted('tab-click')).toEqual([['b']])
+ wrapper.unmount()
+})

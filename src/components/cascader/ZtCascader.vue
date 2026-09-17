@@ -15,6 +15,7 @@ const props = withDefaults(defineProps<ZtCascaderProps>(), {
   options: () => [],
   placeholder: '请选择',
   teleported: true,
+  clearable: false,
 });
 const emit = defineEmits<{
   'update:modelValue': [value: ZtCascaderValue];
@@ -212,7 +213,7 @@ onBeforeUnmount(() => {
     ref="host"
     class="zt-cascader"
     @focusout="blur"
-    :class="`zt-cascader--${size}`"
+    :class="[`zt-cascader--${size}`, { 'is-clearable': clearable }]"
     :style="[config.style.value, hierarchyStyle(status)]"
     ><ZtPopover
       v-model:visible="visible"
@@ -331,7 +332,7 @@ onBeforeUnmount(() => {
         </div></template
       ></ZtPopover
     ><button
-      v-if="clearable && paths.length"
+      v-if="clearable && paths.length && !disabled"
       type="button"
       class="zt-hierarchy__clear"
       :disabled="disabled"

@@ -1,3 +1,4 @@
+import { searchInput } from './select-test-utils'
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
@@ -139,7 +140,7 @@ describe('ZtSelect public style contract', () => {
     expect(customContentRule).toContain('pointer-events: auto')
     expect(wrapper.get('.zt-select__tag').classes()).toContain('is-custom')
 
-    await wrapper.get('input').setValue('杭')
+    await (await searchInput(wrapper)).setValue('杭')
     expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
     expect(getComputedStyle(wrapper.get('.zt-select__tags').element).opacity).not.toBe('0')
     expect(getComputedStyle(wrapper.get('.custom-tag-remove').element).pointerEvents).not.toBe('none')
@@ -149,7 +150,7 @@ describe('ZtSelect public style contract', () => {
     expect(wrapper.emitted('remove-tag')).toEqual([['hz']])
     expect(wrapper.emitted('update:modelValue')).toEqual([[[]]])
 
-    await wrapper.get('input').setValue('杭')
+    await (await searchInput(wrapper)).setValue('杭')
     expect(wrapper.classes()).toContain('has-keyword')
     expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
     wrapper.unmount()

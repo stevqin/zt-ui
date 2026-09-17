@@ -4,7 +4,7 @@ import ZtPopover from '../popover/ZtPopover.vue';
 import { useZtSize } from '../config-provider/context';
 import type { ZtDropdownProps, ZtDropdownItem } from './types';
 import './dropdown.scss';
-defineOptions({ name: 'ZtDropdown' });
+defineOptions({ name: 'ZtDropdown', inheritAttrs: false });
 const props = withDefaults(defineProps<ZtDropdownProps>(), {
   trigger: 'click',
   disabled: false,
@@ -80,6 +80,7 @@ function choose(item: ZtDropdownItem) {
 <template>
   <ZtPopover
     :visible="open"
+    :width="width ?? 'max-content'"
     :trigger="trigger"
     :disabled="disabled"
     :placement="placement"
@@ -87,7 +88,9 @@ function choose(item: ZtDropdownItem) {
     @update:visible="changed"
     ><button
       ref="reference"
+      v-bind="$attrs"
       class="zt-dropdown__trigger"
+      :class="`zt-dropdown__trigger--${size}`"
       type="button"
       :disabled="disabled"
       aria-haspopup="menu"

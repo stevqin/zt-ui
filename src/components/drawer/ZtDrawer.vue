@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useZtConfig } from '../config-provider/context'
 const { style: providerStyle } = useZtConfig()
-import { computed, useId } from 'vue'
+import { computed, useId, watch, ref, onBeforeUnmount } from 'vue'
 import ZtButton from '../button/ZtButton.vue'
 import { useOverlay } from '../overlay/useOverlay'
 import type { ZtOverlayCloseReason } from '../overlay/types'
@@ -15,6 +15,11 @@ const props = withDefaults(defineProps<ZtDrawerProps>(), {
   title: '',
   placement: 'right',
   size: 420,
+  fullscreenBelow: 0,
+  bodyScroll: true,
+  bodyPadding: 22,
+  loading: false,
+  loadingText: '正在加载…',
   showHeader: true,
   showClose: true,
   showFooter: false,
@@ -36,6 +41,8 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   open: []
   opened: []
+  show: []
+  hide: []
   close: [reason: ZtOverlayCloseReason]
   closed: [reason: ZtOverlayCloseReason]
   cancel: []
@@ -47,21 +54,84 @@ const model = computed({
   get: () => props.modelValue,
   set: value => emit('update:modelValue', value),
 })
-const overlay = useOverlay({ modelValue: model, props, emit: emit as any })
+// Keep all close paths (mask, Escape, slot/API, cancel) behind the same gate.
+const overlayProps = new Proxy(props, {
+  get(target, key) {
+    if (key === 'confirmLoading') return target.loading || target.confirmLoading
+    if (key === 'beforeClose') return (reason: ZtOverlayCloseReason) => {
+      if (target.loading || target.confirmLoading) return false
+      return target.beforeClose?.(reason)
+    }
+    return Reflect.get(target, key)
+  },
+})
+const overlay = useOverlay({
+  modelValue: model,
+  props: overlayProps,
+  emit: (event, ...args) => {
+    ;(emit as (...args: any[]) => void)(event, ...args)
+    if (event === 'opened') emit('show')
+    if (event === 'closed') emit('hide')
+  },
+})
+const scope = { close: overlay.requestClose, confirm: overlay.confirm, cancel: overlay.cancel }
 const panel = overlay.panel
 const titleId = useId()
+let transitionPhase: 'entering' | 'open' | 'leaving' | 'closed' = 'closed'
+watch(overlay.visible, visible => { transitionPhase = visible ? 'entering' : 'leaving' }, { immediate: true, flush: 'sync' })
+function afterEnter() {
+  if (!overlay.visible.value || transitionPhase !== 'entering') return
+  transitionPhase = 'open'
+  overlay.afterEnter()
+}
+function afterLeave() {
+  if (overlay.visible.value || transitionPhase !== 'leaving') return
+  transitionPhase = 'closed'
+  overlay.afterLeave()
+}
+function guardLoading(event: Event) {
+  if (!props.loading) return
+  if (event.type === 'keydown') {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+  if (event.target !== panel.value) panel.value?.focus({ preventScroll: true })
+}
+watch(() => props.loading, loading => {
+  if (loading && overlay.visible.value && overlay.isTop.value) panel.value?.focus({ preventScroll: true })
+}, { flush: 'post' })
 
 function cssLength(value: number | string) {
-  return typeof value === 'number' ? `${value}px` : value
+  return typeof value === 'number' || /^\d+(?:\.\d+)?$/.test(value.trim()) ? `${Number(value)}px` : value
 }
+
+const narrow = ref(false)
+let media: MediaQueryList | undefined
+const updateNarrow = () => { narrow.value = media?.matches ?? false }
+function removeMedia() {
+  if (media?.removeEventListener) media.removeEventListener('change', updateNarrow)
+  else media?.removeListener(updateNarrow)
+  media = undefined
+}
+watch(() => props.fullscreenBelow, value => {
+  removeMedia()
+  if (value > 0 && typeof window !== 'undefined' && window.matchMedia) {
+    media = window.matchMedia(`(max-width: ${value - 0.02}px)`)
+    if (media.addEventListener) media.addEventListener('change', updateNarrow)
+    else media.addListener(updateNarrow)
+  }
+  updateNarrow()
+}, { immediate: true })
+onBeforeUnmount(removeMedia)
 
 const isVertical = computed(() => props.placement === 'top' || props.placement === 'bottom')
 const panelStyle = computed(() => isVertical.value
   ? { height: cssLength(props.size) }
-  : { width: cssLength(props.size) })
+  : { width: cssLength(props.width ?? props.size) })
 const classes = computed(() => [
   'zt-drawer',
   `zt-drawer--${props.placement}`,
+  narrow.value && !isVertical.value && 'zt-drawer--narrow',
   !overlay.isTop.value && 'zt-drawer--underneath',
 ])
 
@@ -74,7 +144,7 @@ defineExpose({
 
 <template>
   <Teleport to="body">
-    <Transition name="zt-drawer" appear @after-enter="overlay.afterEnter" @after-leave="overlay.afterLeave">
+    <Transition name="zt-drawer" appear @after-enter="afterEnter" @after-leave="afterLeave">
       <div
         v-if="overlay.alive.value"
         v-show="overlay.visible.value"
@@ -96,19 +166,23 @@ defineExpose({
           :aria-busy="overlay.busy.value"
           :inert="!overlay.isTop.value || !overlay.visible.value ? true : undefined"
           tabindex="-1"
+          @keydown.capture="guardLoading"
+          @focusin.capture="guardLoading"
         >
           <header v-if="showHeader" class="zt-drawer__header">
             <div :id="titleId" class="zt-drawer__heading">
-              <slot name="title" :close="overlay.requestClose">
+              <slot name="title" v-bind="scope">
                 <h2>{{ title || '抽屉' }}</h2>
               </slot>
+              <p v-if="subtitle" class="zt-drawer__subtitle">{{ subtitle }}</p>
             </div>
+            <slot name="header-actions" v-bind="scope" />
             <ZtButton
               v-if="showClose"
               class="zt-drawer__close"
               circle
               :disabled="overlay.busy.value"
-              :aria-label="`关闭${title || '抽屉'}`"
+              :aria-label="closeLabel || `关闭${title || '抽屉'}`"
               @click="overlay.requestClose('close')"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -118,12 +192,17 @@ defineExpose({
             </ZtButton>
           </header>
 
-          <div class="zt-drawer__body">
-            <slot :close="overlay.requestClose" />
+          <slot v-if="$slots.content" name="content" v-bind="scope" />
+          <div v-else class="zt-drawer__body"
+            :class="{ 'zt-drawer__body--custom-scroll': !bodyScroll }"
+            :style="{ padding: cssLength(bodyPadding) }"
+            :inert="loading ? true : undefined"
+          >
+            <slot v-bind="scope" />
           </div>
 
           <footer v-if="showFooter || $slots.footer" class="zt-drawer__footer">
-            <slot name="footer" :close="overlay.requestClose" :confirm="overlay.confirm" :cancel="overlay.cancel">
+            <slot name="footer" v-bind="scope">
               <ZtButton
                 v-if="showCancelButton"
                 class="zt-drawer__cancel"
@@ -135,7 +214,7 @@ defineExpose({
               <ZtButton
                 class="zt-drawer__confirm"
                 status="primary"
-                :disabled="confirmDisabled"
+                :disabled="overlay.busy.value || confirmDisabled"
                 :loading="confirmLoading"
                 @click="overlay.confirm"
               >
@@ -143,6 +222,9 @@ defineExpose({
               </ZtButton>
             </slot>
           </footer>
+          <div v-if="loading" class="zt-drawer__loading" role="status" aria-live="polite">
+            <span class="zt-drawer__spinner" aria-hidden="true" />{{ loadingText }}
+          </div>
         </section>
       </div>
     </Transition>

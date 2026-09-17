@@ -6,6 +6,8 @@ import Example02 from './Example02.vue';
 import Example02Code from './Example02.vue?raw';
 import Layouts from './Layouts.vue';
 import LayoutsCode from './Layouts.vue?raw';
+import Island from './Island.vue';
+import IslandCode from './Island.vue?raw';
 import Guard from './Guard.vue';
 import GuardCode from './Guard.vue?raw';
 </script>
@@ -18,7 +20,9 @@ import GuardCode from './Guard.vue?raw';
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
     <h2>卡片与可编辑</h2>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>四向布局与三种外观</h2>
+    <h2>液态玻璃岛</h2>
+    <DemoBlock :code="IslandCode" desc="type=island；五种 size 同步调整高度、间距和关闭按钮，六种 status 调整选中底色、文字与焦点。"><Island /></DemoBlock>
+    <h2>四向布局</h2>
     <DemoBlock :code="LayoutsCode" desc=""><Layouts /></DemoBlock>
 
     <h2>异步切换守卫</h2>

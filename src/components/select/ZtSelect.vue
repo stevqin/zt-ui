@@ -38,6 +38,8 @@ const props = withDefaults(defineProps<ZtSelectProps>(), {
   virtual: false,
   height: 280,
   multiple: false,
+  collapseTags: false,
+  maxCollapseTags: 1,
   filterable: false,
   remote: false,
   debounce: 300,
@@ -67,6 +69,7 @@ const instance = getCurrentInstance();
 const rootElement = ref<HTMLElement>();
 const controlElement = ref<HTMLElement>();
 const comboboxElement = ref<HTMLInputElement>();
+const searchElement = ref<HTMLInputElement>();
 const listboxElement = ref<HTMLElement>();
 const optionsElement = ref<HTMLElement>();
 const visible = ref(false);
@@ -114,6 +117,19 @@ const selectedOptions = computed(() =>
     );
     return option ? [option] : [];
   }),
+);
+const visibleTagLimit = computed(() =>
+  Number.isFinite(props.maxCollapseTags)
+    ? Math.max(1, Math.floor(props.maxCollapseTags))
+    : 1,
+);
+const visibleTagOptions = computed(() =>
+  props.collapseTags
+    ? selectedOptions.value.slice(0, visibleTagLimit.value)
+    : selectedOptions.value,
+);
+const collapsedTagCount = computed(() =>
+  selectedOptions.value.length - visibleTagOptions.value.length,
 );
 const hasSelection = computed(() =>
   props.multiple
@@ -231,8 +247,9 @@ const dropdownStyle = computed(() => ({
       ? undefined
       : `${dropdownMaxHeight.value}px`,
 }));
+const panelSearch = computed(() => props.multiple && (props.filterable || props.remote));
 const inputValue = computed(() =>
-  searching.value ? keyword.value : (selectedOption.value?.label ?? ''),
+  panelSearch.value ? '' : searching.value ? keyword.value : (selectedOption.value?.label ?? ''),
 );
 const ariaInvalid = computed(() =>
   formItem?.validateState.value === 'error' ? 'true' : undefined,
@@ -254,6 +271,7 @@ const classes = computed(() => [
   keyword.value && 'has-keyword',
   searching.value && 'is-searching',
   hasSelection.value && 'has-selection',
+  props.clearable && 'has-clear',
   props.multiple && 'is-multiple',
 ]);
 const controlAttrs = computed(() => {
@@ -293,8 +311,10 @@ function setVisible(next: boolean) {
   if (next) {
     startOutsideClickListening();
     void nextTick(() => {
+      if (!visible.value) return;
       updateDropdownPosition();
       startDropdownResizeObserver();
+      if (panelSearch.value) searchElement.value?.focus();
     });
   } else {
     stopOutsideClickListening();
@@ -317,6 +337,11 @@ function toggle() {
 }
 
 function handleClick() {
+  if (panelSearch.value) {
+    open();
+    void nextTick(() => searchElement.value?.focus());
+    return;
+  }
   if (!searching.value && (props.filterable || props.remote))
     comboboxElement.value?.select();
   if (props.filterable || props.remote) open();
@@ -354,11 +379,17 @@ function selectOption(option: ZtSelectOption) {
 
 function removeValue(value: ZtSelectValue) {
   if (effectiveDisabled.value || !selectedValues.value.includes(value)) return;
+  const focused = document.activeElement;
+  const focusedTag = focused instanceof HTMLElement && rootElement.value?.contains(focused) && focused.closest('.zt-select__tag');
   const next = selectedValues.value.filter((item) => item !== value);
   emit('remove-tag', value);
   emit('update:modelValue', next);
   emit('change', next);
   void formItem?.validate('change');
+  if (focusedTag) void nextTick(() => {
+    // Keyboard activation removes its own focused chip; keep navigation in the control.
+    if (!focused?.isConnected && document.activeElement === document.body) comboboxElement.value?.focus();
+  });
 }
 
 function clear() {
@@ -373,14 +404,24 @@ function clear() {
 }
 
 function handleInput(event: Event) {
+  if (panelSearch.value && event.target === comboboxElement.value) return;
+  updateKeyword((event.target as HTMLInputElement).value);
+}
+
+function updateKeyword(value: string) {
   searching.value = true;
-  keyword.value = (event.target as HTMLInputElement).value;
+  keyword.value = value;
   activeIndex.value = -1;
   emit('search', keyword.value);
   open();
   if (!props.remote) return;
   hasRemoteSearch.value = true;
   remoteSearch.search(keyword.value, (reason) => emit('remote-error', reason));
+}
+
+function clearSearch() {
+  updateKeyword('');
+  searchElement.value?.focus();
 }
 
 async function moveActive(direction: 1 | -1) {
@@ -407,6 +448,11 @@ async function moveActive(direction: 1 | -1) {
 
 function handleKeydown(event: KeyboardEvent) {
   if (event.isComposing || event.keyCode === 229) return;
+  if (panelSearch.value && !visible.value && (event.key === 'Enter' || event.key === ' ')) {
+    event.preventDefault();
+    open();
+    return;
+  }
   if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
     event.preventDefault();
     void moveActive(event.key === 'ArrowDown' ? 1 : -1);
@@ -428,10 +474,11 @@ function handleKeydown(event: KeyboardEvent) {
     return;
   }
   if (event.key === 'Tab') {
+    if (event.target === searchElement.value) comboboxElement.value?.focus();
     close();
     return;
   }
-  if (event.key !== 'Backspace' || !props.multiple || keyword.value) return;
+  if (event.key !== 'Backspace' || !props.multiple || keyword.value || event.target === searchElement.value) return;
   const value = selectedValues.value.at(-1);
   if (value !== undefined) removeValue(value);
 }
@@ -464,6 +511,7 @@ function focus(options?: FocusOptions) {
 }
 
 function blur() {
+  searchElement.value?.blur();
   comboboxElement.value?.blur();
   close();
 }
@@ -531,7 +579,8 @@ function updateDropdownPosition() {
   const borderHeight =
     (Number.parseFloat(style.borderTopWidth) || 0) +
     (Number.parseFloat(style.borderBottomWidth) || 0);
-  const chromeHeight = footerHeight + borderHeight;
+  const headerHeight = dropdown.querySelector<HTMLElement>('.zt-select__header')?.getBoundingClientRect().height ?? 0;
+  const chromeHeight = headerHeight + footerHeight + borderHeight;
   const menuHeight = list?.scrollHeight
     ? Math.min(props.height, list.scrollHeight) + chromeHeight
     : Math.max(dropdown.scrollHeight + borderHeight, dropdownRect.height);
@@ -571,6 +620,7 @@ function startDropdownResizeObserver() {
   if (typeof ResizeObserver === 'undefined' || !listboxElement.value) return;
   dropdownResizeObserver = new ResizeObserver(updateDropdownPosition);
   dropdownResizeObserver.observe(listboxElement.value);
+  if (controlElement.value) dropdownResizeObserver.observe(controlElement.value);
 }
 
 function stopDropdownResizeObserver() {
@@ -627,7 +677,7 @@ defineExpose({ focus, blur, open, close });
         @wheel="handleTagsWheel"
       >
         <span
-          v-for="option in selectedOptions"
+          v-for="option in visibleTagOptions"
           :key="`${typeof option.value}:${String(option.value)}`"
           class="zt-select__tag"
           :class="{ 'is-custom': Boolean($slots.tag) }"
@@ -637,12 +687,12 @@ defineExpose({ focus, blur, open, close });
             :option="option"
             :remove="() => removeValue(option.value)"
           >
-            <span>{{ option.label }}</span>
+            <span class="zt-select__tag-label" :title="option.label">{{ option.label }}</span>
             <button
               type="button"
               class="zt-select__tag-remove"
               :aria-label="`移除${option.label}`"
-              tabindex="-1"
+              :disabled="effectiveDisabled"
               @mousedown.prevent
               @click.stop="removeValue(option.value)"
             >
@@ -650,6 +700,11 @@ defineExpose({ focus, blur, open, close });
             </button>
           </slot>
         </span>
+        <span
+          v-if="collapsedTagCount > 0"
+          class="zt-select__tag zt-select__tag-count"
+          :aria-label="`另有 ${collapsedTagCount} 项已选`"
+        >+{{ collapsedTagCount }}</span>
       </span>
       <span v-else class="zt-select__value">
         <slot v-if="selectedOption" name="selected" :option="selectedOption">{{
@@ -663,15 +718,17 @@ defineExpose({ focus, blur, open, close });
         :id="String(attrs.id ?? formItem?.inputId ?? selectId)"
         role="combobox"
         :disabled="effectiveDisabled"
-        :readonly="!filterable && !remote"
+        :readonly="panelSearch || (!filterable && !remote)"
         :value="inputValue"
         :placeholder="
-          !selectedOption && !selectedValues.length ? placeholder : undefined
+          !selectedOption && !selectedValues.length
+            ? placeholder
+            : undefined
         "
         :aria-expanded="visible"
         aria-haspopup="listbox"
         :aria-controls="listboxId"
-        :aria-activedescendant="activeOptionId"
+        :aria-activedescendant="panelSearch ? undefined : activeOptionId"
         :aria-disabled="effectiveDisabled"
         :aria-invalid="ariaInvalid"
         :aria-describedby="describedBy"
@@ -685,7 +742,6 @@ defineExpose({ focus, blur, open, close });
         type="button"
         class="zt-select__clear"
         aria-label="清空选择"
-        tabindex="-1"
         @mousedown.prevent
         @click.stop="clear"
       >
@@ -698,7 +754,7 @@ defineExpose({ focus, blur, open, close });
       <div
         v-if="visible"
         ref="listboxElement"
-        :id="listboxId"
+        :id="panelSearch ? `${selectId}-popup` : listboxId"
         class="zt-select__dropdown"
         :class="[
           {
@@ -710,11 +766,31 @@ defineExpose({ focus, blur, open, close });
         ]"
         :data-placement="placement"
         :style="[providerStyle, dropdownStyle]"
-        role="listbox"
-        :aria-multiselectable="multiple ? 'true' : undefined"
+        :role="panelSearch ? undefined : 'listbox'"
+        :aria-multiselectable="!panelSearch && multiple ? 'true' : undefined"
         @focusout="handleFocusout"
         @keydown="handleDropdownKeydown"
       >
+        <div v-if="panelSearch" class="zt-select__header">
+          <span class="zt-select__search-icon" aria-hidden="true" />
+          <input
+            ref="searchElement"
+            class="zt-select__search-input"
+            role="combobox"
+            aria-label="搜索选项"
+            aria-autocomplete="list"
+            :aria-expanded="visible"
+            :aria-controls="listboxId"
+            :aria-activedescendant="activeOptionId"
+            :disabled="effectiveDisabled"
+            :value="keyword"
+            placeholder="搜索选项"
+            @input="handleInput"
+            @keydown.stop="handleKeydown"
+          />
+          <button v-if="keyword" type="button" class="zt-select__search-clear" aria-label="清空搜索" @mousedown.prevent @click.stop="clearSearch">×</button>
+        </div>
+        <div :id="panelSearch ? listboxId : undefined" class="zt-select__content" :role="panelSearch ? 'listbox' : undefined" :aria-multiselectable="panelSearch ? 'true' : undefined">
         <div
           v-if="remote && remoteSearch.loading.value"
           class="zt-select__loading"
@@ -786,6 +862,7 @@ defineExpose({ focus, blur, open, close });
         </div>
         <div v-else class="zt-select__empty">
           <slot name="empty">{{ noDataText }}</slot>
+        </div>
         </div>
         <div v-if="$slots.footer" class="zt-select__footer">
           <slot name="footer" />

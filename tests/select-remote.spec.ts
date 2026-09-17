@@ -1,3 +1,4 @@
+import { searchInput } from './select-test-utils'
 import { nextTick, ref } from 'vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
@@ -16,7 +17,7 @@ it('renders remote loading, results and current request errors', async () => {
   })
 
   try {
-    await wrapper.get('input').setValue('杭')
+    await (await searchInput(wrapper)).setValue('杭')
     await vi.advanceTimersByTimeAsync(10)
     await nextTick()
     expect(document.body.textContent).toContain('加载中...')
@@ -26,7 +27,7 @@ it('renders remote loading, results and current request errors', async () => {
     await nextTick()
     expect(document.body.textContent).toContain('远程杭州')
 
-    await wrapper.get('input').setValue('失败')
+    await (await searchInput(wrapper)).setValue('失败')
     expect(document.body.textContent).not.toContain('加载失败，请重试')
     await vi.advanceTimersByTimeAsync(10)
     await Promise.resolve()
@@ -49,7 +50,7 @@ it('renders the custom loading slot while the current remote request is pending'
   })
 
   try {
-    await wrapper.get('input').setValue('杭州')
+    await (await searchInput(wrapper)).setValue('杭州')
     await vi.advanceTimersByTimeAsync(0)
     await nextTick()
     expect(document.querySelector('.slot-loading')?.textContent).toBe('正在查询')
@@ -70,7 +71,7 @@ it('keeps a selected remote label after a later search replaces the results', as
   })
 
   try {
-    await wrapper.get('input').setValue('杭')
+    await (await searchInput(wrapper)).setValue('杭')
     await vi.advanceTimersByTimeAsync(0)
     await Promise.resolve()
     await nextTick()
@@ -80,7 +81,7 @@ it('keeps a selected remote label after a later search replaces the results', as
     await wrapper.setProps({ modelValue: 'hz' })
     expect(wrapper.get('.zt-select__value').text()).toBe('远程杭州')
 
-    await wrapper.get('input').setValue('上海')
+    await (await searchInput(wrapper)).setValue('上海')
     await vi.advanceTimersByTimeAsync(0)
     await Promise.resolve()
     await nextTick()
@@ -104,14 +105,14 @@ it('keeps a selected remote tag removable after a later result replacement', asy
   })
 
   try {
-    await wrapper.get('input').setValue('杭州')
+    await (await searchInput(wrapper)).setValue('杭州')
     await vi.advanceTimersByTimeAsync(0)
     await Promise.resolve()
     await nextTick()
     await document.querySelector<HTMLElement>('[role="option"]')!.click()
     await wrapper.setProps({ modelValue: ['hz'] })
 
-    await wrapper.get('input').setValue('上海')
+    await (await searchInput(wrapper)).setValue('上海')
     await vi.advanceTimersByTimeAsync(0)
     await Promise.resolve()
     await nextTick()
@@ -140,13 +141,13 @@ it('does not navigate or select old remote results while loading replaces the li
   const combobox = wrapper.get('[role="combobox"]')
 
   try {
-    await wrapper.get('input').setValue('杭州')
+    await (await searchInput(wrapper)).setValue('杭州')
     await vi.advanceTimersByTimeAsync(0)
     await Promise.resolve()
     await nextTick()
     expect(document.querySelector('[role="option"]')?.textContent).toBe('远程杭州')
 
-    await wrapper.get('input').setValue('等待')
+    await (await searchInput(wrapper)).setValue('等待')
     await vi.advanceTimersByTimeAsync(0)
     await nextTick()
     expect(document.querySelector('.zt-select__loading')).not.toBeNull()
@@ -209,7 +210,7 @@ it('repositions when remote results grow beyond the space below the control', as
   })
 
   try {
-    await wrapper.get('input').setValue('城市')
+    await (await searchInput(wrapper)).setValue('城市')
     await vi.advanceTimersByTimeAsync(0)
     await nextTick()
     const dropdown = document.querySelector<HTMLElement>('.zt-select__dropdown')!

@@ -12,6 +12,8 @@ import Example05 from './Example05.vue';
 import Example05Code from './Example05.vue?raw';
 import Example06 from './Example06.vue';
 import Example06Code from './Example06.vue?raw';
+import Example07 from './Example07.vue';
+import Example07Code from './Example07.vue?raw';
 import Methods from './Methods.vue';
 import MethodsCode from './Methods.vue?raw';
 </script>
@@ -30,6 +32,8 @@ import MethodsCode from './Methods.vue?raw';
       desc="设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
       ><Example02
     /></DemoBlock>
+    <h2>年份、月份与范围</h2>
+    <DemoBlock :code="Example07Code" desc="type 支持 year、month、yearrange、monthrange，值分别为 YYYY、YYYY-MM 或两项数组；也可通过 range 开启范围。单击提交单值，范围选满两个端点后提交并自动排序。disabledDate 在年份/月模式下接收该周期第一天的本地 Date。clearable 默认 false，开启后悬停或聚焦显示清空按钮，触屏保持可用。"><Example07 /></DemoBlock>
     <h2>禁用日期、禁用与只读</h2>
     <DemoBlock
       :code="Example03Code"

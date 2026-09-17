@@ -16,6 +16,7 @@ const selectedStores = ref<Array<string | number | boolean>>(['hz-tower', 'sh-gr
       v-model="selectedStores"
       :options="storeOptions"
       multiple
+      filterable
       clearable
       aria-label="活动门店"
       placeholder="选择参与活动的门店"

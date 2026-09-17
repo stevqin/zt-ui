@@ -246,10 +246,13 @@ defineExpose({
       ></ZtPopover
     ><button
       v-if="clearable && modelValue && !disabled && !readonly"
+      aria-label="清空内容"
       type="button"
+      class="zt-mention__clear"
+      @mousedown.prevent
       @click="clear"
     >
-      清空
+      ×
     </button>
   </div>
 </template>

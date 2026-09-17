@@ -125,11 +125,11 @@ defineExpose({ focus, blur, select, clear, input: inputRef })
         @focus="handleFocus"
         @blur="handleBlur"
       >
-      <span v-if="canClear || $slots.suffix || (showWordLimit && maxlength != null)" class="zt-input__suffix">
+      <span v-if="canClear" class="zt-input__clear-slot"><button type="button" class="zt-input__clear" aria-label="清空输入" @mousedown.prevent @click="clear">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8 8 8M16 8l-8 8" /></svg>
+      </button></span>
+      <span v-if="$slots.suffix || (showWordLimit && maxlength != null)" class="zt-input__suffix">
         <span v-if="showWordLimit && maxlength != null" class="zt-input__count">{{ text.length }} / {{ maxlength }}</span>
-        <button v-if="canClear" type="button" class="zt-input__clear" aria-label="清空输入" tabindex="-1" @mousedown.prevent @click="clear">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 8 8 8M16 8l-8 8" /></svg>
-        </button>
         <slot name="suffix" />
       </span>
     </span>

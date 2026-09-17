@@ -1,3 +1,4 @@
+import { searchInput } from './select-test-utils'
 import { compile } from 'sass'
 import { resolve } from 'node:path'
 import { h, nextTick, reactive, ref } from 'vue'
@@ -43,11 +44,11 @@ function key(element: HTMLElement, key: string, extra = {}) {
 describe('Select search completion and committed values', () => {
   it.each([false, true])('keeps the local keyword after search selection (multiple=%s)', async multiple => {
     const wrapper = select({ filterable: true, multiple })
-    await wrapper.get('input').setValue('上')
+    await (await searchInput(wrapper)).setValue('上')
     document.querySelector<HTMLElement>('[role="option"]')!.click()
     await wrapper.setProps({ modelValue: multiple ? ['sh'] : 'sh' })
     expect(wrapper.classes()).toContain('has-keyword')
-    expect(wrapper.get<HTMLInputElement>('input').element.value).toBe('上')
+    expect((await searchInput(wrapper)).element.value).toBe('上')
     expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe(String(multiple))
     if (multiple) {
       expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
@@ -58,7 +59,7 @@ describe('Select search completion and committed values', () => {
   it.each([false, true].flatMap(multiple => ['escape', 'outside', 'blur', 'api'].map(ending => ({ multiple, ending }))))(
     'keeps an unfinished keyword on $ending (multiple=$multiple)', async ({ multiple, ending }) => {
       const wrapper = select({ filterable: true, multiple, modelValue: multiple ? ['hz'] : 'hz' })
-      const input = wrapper.get<HTMLInputElement>('input')
+      const input = await searchInput(wrapper)
       input.element.focus()
     await input.setValue('上')
     if (ending === 'escape') key(input.element, 'Escape')
@@ -78,7 +79,7 @@ describe('Select search completion and committed values', () => {
 
   it.each([false, true])('clears both the model and search text (multiple=%s)', async multiple => {
     const wrapper = select({ filterable: true, multiple, modelValue: multiple ? ['hz'] : 'hz', clearable: true })
-    await wrapper.get('input').setValue('上')
+    await (await searchInput(wrapper)).setValue('上')
     await wrapper.get('[aria-label="清空选择"]').trigger('click')
     await wrapper.setProps({ modelValue: multiple ? [] : null })
     expect(wrapper.get<HTMLInputElement>('input').element.value).toBe('')
@@ -89,11 +90,11 @@ describe('Select search completion and committed values', () => {
 
   it('keeps the keyword and visible tags when a filtered selected option is toggled off', async () => {
     const wrapper = select({ multiple: true, filterable: true, modelValue: ['hz', 'sh'] })
-    await wrapper.get('input').setValue('上')
+    await (await searchInput(wrapper)).setValue('上')
     document.querySelector<HTMLElement>('[role="option"]')!.click()
     await wrapper.setProps({ modelValue: ['hz'] })
     expect(wrapper.classes()).toContain('has-keyword')
-    expect(wrapper.get<HTMLInputElement>('input').element.value).toBe('上')
+    expect((await searchInput(wrapper)).element.value).toBe('上')
     expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
     expect(getComputedStyle(wrapper.get('.zt-select__tags').element).opacity).not.toBe('0')
     expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
@@ -103,7 +104,7 @@ describe('Select search completion and committed values', () => {
     vi.useFakeTimers()
     const remoteMethod = vi.fn(async () => [{ label: '上海', value: 'sh' }])
     const wrapper = select({ remote: true, remoteMethod, debounce: 0 })
-    const input = wrapper.get<HTMLInputElement>('input')
+    const input = await searchInput(wrapper)
 
     await input.setValue('上')
     await vi.runAllTimersAsync()
@@ -156,7 +157,7 @@ describe('Select search completion and committed values', () => {
 
   it.each(['ArrowDown', 'ArrowUp', 'Enter', 'Escape', 'Tab', 'Backspace'])('leaves composing %s to the IME', async pressed => {
     const wrapper = select({ multiple: true, modelValue: ['hz'] })
-    const input = wrapper.get<HTMLInputElement>('input')
+    const input = await searchInput(wrapper)
     await input.trigger('keydown', { key: 'ArrowDown' })
     const active = input.attributes('aria-activedescendant')
     const event = key(input.element, pressed, { isComposing: true })
@@ -371,17 +372,19 @@ describe('Select inside default overlay focus and keyboard ownership', () => {
 })
 
 describe('Select overflow interaction and viewport geometry', () => {
-  it('accepts wheel scrolling over default tags and opens when their label is clicked', async () => {
+  it('allows native vertical scrolling over wrapped tags and opens when their label is clicked', async () => {
     const wrapper = select({ multiple: true, modelValue: ['hz', 'sh'] })
     const tags = wrapper.get<HTMLElement>('.zt-select__tags').element
-    Object.defineProperties(tags, { scrollWidth: { value: 400 }, clientWidth: { value: 150 } })
+    Object.defineProperties(tags, {
+      scrollWidth: { value: 150 }, clientWidth: { value: 150 },
+      scrollHeight: { value: 400 }, clientHeight: { value: 68 },
+    })
     expect(getComputedStyle(tags).pointerEvents).toBe('auto')
-    expect(getComputedStyle(tags).overflowX).toBe('auto')
-    expect(getComputedStyle(tags).getPropertyValue('touch-action')).toBe('pan-x')
+    expect(getComputedStyle(tags).overflowY).toBe('auto')
     const wheel = new WheelEvent('wheel', { deltaY: 80, bubbles: true, cancelable: true })
     tags.dispatchEvent(wheel)
-    expect(tags.scrollLeft).toBe(80)
-    expect(wheel.defaultPrevented).toBe(true)
+    expect(tags.scrollLeft).toBe(0)
+    expect(wheel.defaultPrevented).toBe(false)
     tags.click()
     await nextTick()
     expect(wrapper.get('input').attributes('aria-expanded')).toBe('true')
@@ -402,7 +405,7 @@ describe('Select overflow interaction and viewport geometry', () => {
 
   it('keeps input focus through a native pointer click on a default tag label', async () => {
     const wrapper = select({ multiple: true, modelValue: ['hz'] })
-    const input = wrapper.get<HTMLInputElement>('input')
+    const input = await searchInput(wrapper)
     input.element.focus()
     const tags = wrapper.get<HTMLElement>('.zt-select__tags').element
     const down = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
@@ -444,12 +447,12 @@ describe('Select missing remote methods and falsy failures', () => {
   it.each([false, true])('keeps the remote keyword after committing a selection (multiple=%s)', async multiple => {
     vi.useFakeTimers()
     const wrapper = select({ multiple, remote: true, remoteMethod: async () => options, debounce: 0 })
-    await wrapper.get('input').setValue('城市')
+    await (await searchInput(wrapper)).setValue('城市')
     await vi.runAllTimersAsync()
     document.querySelector<HTMLElement>('[role="option"]')!.click()
     await wrapper.setProps({ modelValue: multiple ? ['hz'] : 'hz' })
     expect(wrapper.classes()).toContain('has-keyword')
-    expect(wrapper.get<HTMLInputElement>('input').element.value).toBe('城市')
+    expect((await searchInput(wrapper)).element.value).toBe('城市')
     expect(wrapper.get('input').attributes('aria-expanded')).toBe(String(multiple))
     if (multiple) {
       expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
@@ -468,7 +471,7 @@ describe('Select missing remote methods and falsy failures', () => {
     vi.useFakeTimers()
     const method: ZtSelectRemoteMethod = async () => options
     const wrapper = select({ remote: true, remoteMethod: method, debounce: 0 })
-    await wrapper.get('input').setValue('城市')
+    await (await searchInput(wrapper)).setValue('城市')
     await vi.runAllTimersAsync()
     expect(document.querySelectorAll('[role="option"]')).toHaveLength(2)
     await wrapper.setProps({ remoteMethod: undefined })
@@ -498,12 +501,12 @@ describe('Select missing remote methods and falsy failures', () => {
   it.each([null, undefined, false, 0, ''])('shows failure UI for rejection reason %s', async reason => {
     vi.useFakeTimers()
     const wrapper = select({ remote: true, remoteMethod: () => Promise.reject(reason), debounce: 0 })
-    await wrapper.get('input').setValue('失败')
+    await (await searchInput(wrapper)).setValue('失败')
     await vi.runAllTimersAsync()
     expect(document.querySelector('.zt-select__error')?.textContent).toBe('加载失败，请重试')
     expect(wrapper.emitted('remote-error')).toEqual([[reason]])
     await wrapper.setProps({ remoteMethod: async () => options })
-    await wrapper.get('input').setValue('恢复')
+    await (await searchInput(wrapper)).setValue('恢复')
     await vi.runAllTimersAsync()
     expect(document.querySelector('.zt-select__error')).toBeNull()
     expect(document.querySelectorAll('[role="option"]')).toHaveLength(2)

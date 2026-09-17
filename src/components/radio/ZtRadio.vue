@@ -2,6 +2,7 @@
 import { useZtSize } from '../config-provider/context'
 import { computed, inject } from 'vue'
 import type { ZtRadioProps } from './types'
+import { ztFormItemKey } from '../form/context'
 import { radioGroupKey } from './types'
 import './radio.scss'
 
@@ -19,9 +20,10 @@ const emit = defineEmits<{
 
 const group = inject(radioGroupKey, null)
 
+const formItem = inject(ztFormItemKey, undefined)
 const isGroup = computed(() => !!group)
-const isDisabled = computed(() => group?.disabled.value ?? props.disabled)
-const actualSize = useZtSize(props, () => group?.size.value)
+const isDisabled = computed(() => props.disabled || group?.disabled.value || formItem?.disabled.value || false)
+const actualSize = useZtSize(props, () => group?.size.value ?? formItem?.size.value)
 const actualStatus = computed(() => group?.status.value ?? props.status)
 
 const isChecked = computed(() => {
@@ -52,9 +54,9 @@ function handleChange() {
 
 <template>
   <label :class="classes" v-bind="$attrs">
-    <span class="zt-radio__input" @click.prevent="handleChange">
+    <span class="zt-radio__input">
       <span class="zt-radio__inner" />
-      <input type="radio" :checked="isChecked" :disabled="isDisabled" :name="name" tabindex="-1" />
+      <input type="radio" :checked="isChecked" :disabled="isDisabled" :name="group?.name.value ?? name" @change="handleChange" />
     </span>
     <span class="zt-radio__label">
       <slot>{{ label }}</slot>

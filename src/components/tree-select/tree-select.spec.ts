@@ -76,5 +76,5 @@ it('validates an unopened Form field on blur', async () => {
     .get('.zt-tree-select')
     .trigger('focusout', { relatedTarget: document.body });
   await flushPromises();
-  expect(w.get('.zt-form-item__error').text()).toBe('请选择节点');
+  expect(document.getElementById(w.get('[role=combobox]').attributes('aria-describedby') || '')?.textContent).toBe('请选择节点');
 });

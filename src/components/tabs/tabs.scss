@@ -1,1 +1,173 @@
-@use '../../styles/tokens' as glass;.zt-tabs{@include glass.tokens;color:var(--glass-ink);font:var(--glass-size-default)/1.5 var(--glass-font);&__nav-wrap{min-width:0;overflow:hidden}&__nav{display:flex;align-items:stretch;border-bottom:1px solid var(--glass-line);overflow:auto;scrollbar-width:none}&__tab{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;padding:10px 16px;border:0;border-bottom:2px solid transparent;background:none;color:var(--glass-muted);font:inherit;white-space:nowrap;cursor:pointer;&.is-active{color:var(--glass-accent);border-bottom-color:currentColor}&.is-disabled{opacity:.45;cursor:not-allowed}&:focus-visible{outline:2px solid var(--glass-accent);outline-offset:-3px}}&__close,&__add{display:inline-grid;place-items:center;padding:2px!important;border:0!important;border-radius:50%;background:transparent;color:inherit;font-size:11px;cursor:pointer}&__content{min-width:0;padding:16px 0}&--card &__tab,&--border-card &__tab{border:1px solid var(--glass-line);border-bottom:0;border-radius:glass.radius(8px) glass.radius(8px) 0 0;&.is-active{background:var(--glass-selected)}}&--bottom{display:flex;flex-direction:column-reverse}&--bottom &__nav{border-top:1px solid var(--glass-line);border-bottom:0}&--bottom &__tab{border-top:2px solid transparent;border-bottom:0;&.is-active{border-top-color:currentColor}}&--left,&--right{display:grid;grid-template-columns:auto minmax(0,1fr);gap:16px}&--right{grid-template-columns:minmax(0,1fr) auto}.zt-tabs__nav-wrap{grid-row:1}.zt-tabs__content{grid-row:1}&--right &__nav-wrap{grid-column:2}&--right &__content{grid-column:1}&--left &__nav,&--right &__nav{flex-direction:column;border-bottom:0;border-right:1px solid var(--glass-line)}&--right &__nav{border-right:0;border-left:1px solid var(--glass-line)}&--left &__tab,&--right &__tab{border-bottom:0;border-right:2px solid transparent;&.is-active{border-right-color:currentColor}}&--right &__tab{border-right:0;border-left:2px solid transparent;&.is-active{border-left-color:currentColor}}&--success{--glass-accent:var(--glass-success)}&--warning{--glass-accent:var(--glass-warning)}&--danger{--glass-accent:var(--glass-danger)}&--info{--glass-accent:var(--glass-info)}&--default{--glass-accent:var(--glass-ink)}&.is-stretch &__tab{flex:1;justify-content:center}&--mini{font-size:var(--glass-size-mini)}&--small{font-size:var(--glass-size-small)}&--medium{font-size:var(--glass-size-medium)}&--large{font-size:var(--glass-size-large)}}
+@use '../../styles/tokens' as glass;
+
+.zt-tabs {
+  @include glass.tokens;
+  --tabs-ink: var(--glass-accent-ink);
+  --tabs-soft: var(--glass-accent-soft);
+  --tabs-line: var(--glass-accent-line);
+  --tabs-height: 34px;
+  --tabs-padding: 15px;
+  --tabs-gap: 6px;
+  --tabs-close: 20px;
+  color: var(--glass-ink);
+  font: var(--glass-size-default)/1.5 var(--glass-font);
+
+  &__nav-wrap { min-width: 0; overflow: hidden; }
+  &__nav {
+    display: flex;
+    align-items: stretch;
+    border-bottom: 1px solid var(--glass-line);
+    overflow: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--tabs-gap);
+    flex: 0 0 auto;
+    min-height: var(--tabs-height);
+    box-sizing: border-box;
+    padding: 3px var(--tabs-padding);
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: none;
+    color: var(--glass-muted);
+    font: inherit;
+    white-space: nowrap;
+    cursor: pointer;
+    &.is-active { color: var(--tabs-ink); border-bottom-color: currentColor; }
+    &.is-disabled { opacity: .45; cursor: not-allowed; }
+    &:focus-visible { outline: 2px solid var(--tabs-ink); outline-offset: -3px; }
+  }
+  &__close, &__add {
+    display: inline-grid;
+    place-items: center;
+    flex: none;
+    width: var(--tabs-close);
+    height: var(--tabs-close);
+    box-sizing: border-box;
+    padding: 2px;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    &:hover { background: var(--tabs-soft); color: var(--tabs-ink); }
+    &:focus-visible { outline: 2px solid var(--tabs-ink); outline-offset: -2px; }
+  }
+  &__add { align-self: center; margin: 0 5px; }
+  &__content { min-width: 0; padding: 16px 0; }
+
+  &--card &__tab, &--border-card &__tab {
+    border: 1px solid var(--glass-line);
+    border-bottom: 0;
+    border-radius: glass.radius(8px) glass.radius(8px) 0 0;
+    &.is-active { background: var(--tabs-soft); }
+  }
+  &--bottom { display: flex; flex-direction: column-reverse; }
+  &--bottom &__nav { border-top: 1px solid var(--glass-line); border-bottom: 0; }
+  &--bottom &__tab {
+    border-top: 2px solid transparent; border-bottom: 0;
+    &.is-active { border-top-color: currentColor; }
+  }
+  &--left, &--right { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; }
+  &--right { grid-template-columns: minmax(0, 1fr) auto; }
+  .zt-tabs__nav-wrap, .zt-tabs__content { grid-row: 1; }
+  &--right &__nav-wrap { grid-column: 2; }
+  &--right &__content { grid-column: 1; }
+  &--left &__nav, &--right &__nav { flex-direction: column; border-bottom: 0; border-right: 1px solid var(--glass-line); }
+  &--right &__nav { border-right: 0; border-left: 1px solid var(--glass-line); }
+  &--left &__tab, &--right &__tab {
+    border-bottom: 0; border-right: 2px solid transparent;
+    &.is-active { border-right-color: currentColor; }
+  }
+  &--right &__tab {
+    border-right: 0; border-left: 2px solid transparent;
+    &.is-active { border-left-color: currentColor; }
+  }
+  @each $status in default, success, warning, danger, info {
+    &--status-#{$status} {
+      --tabs-ink: var(--glass-#{$status}-ink);
+      --tabs-soft: var(--glass-#{$status}-soft);
+      --tabs-line: var(--glass-#{$status}-line);
+    }
+  }
+  &.is-stretch &__tab { flex: 1; justify-content: center; }
+  @each $size, $height, $padding, $gap, $close in
+    (mini, 26px, 10px, 4px, 16px),
+    (small, 30px, 13px, 5px, 18px),
+    (medium, 36px, 17px, 7px, 22px),
+    (large, 42px, 20px, 8px, 24px) {
+    &--#{$size} {
+      font-size: var(--glass-size-#{$size});
+      --tabs-height: #{$height};
+      --tabs-padding: #{$padding};
+      --tabs-gap: #{$gap};
+      --tabs-close: #{$close};
+    }
+  }
+
+  // One glass dock with softly raised, independent tab islands.
+  &--island { margin-bottom: 5px; }
+
+  &--island &__nav-wrap {
+    padding: 2px;
+    border: 1px solid var(--glass-island-line);
+    border-radius: glass.radius(18px);
+    background: var(--glass-island);
+    box-shadow: var(--glass-shadow);
+    -webkit-backdrop-filter: blur(18px) saturate(145%);
+    backdrop-filter: blur(18px) saturate(145%);
+  }
+  &--island &__nav {
+    gap: 3px;
+    padding: 1px;
+    border: 0;
+  }
+  // Compact docks should not add more height than the mini controls need.
+  &--island.zt-tabs--mini &__nav-wrap {
+    padding: 1px;
+    border-radius: glass.radius(15px);
+  }
+  &--island.zt-tabs--mini &__nav { padding: 1px; gap: 2px; }
+  &--island.zt-tabs--medium &__nav-wrap,
+  &--island.zt-tabs--large &__nav-wrap { padding: 3px; }
+  &--island.zt-tabs--large &__nav { padding: 2px; gap: 4px; }
+  &--island &__tab {
+    position: relative;
+    border: 1px solid transparent;
+    border-radius: glass.radius(13px);
+    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+    &:hover:not(.is-disabled) { color: var(--tabs-ink); background: rgba(255, 255, 255, .6); }
+    &.is-active {
+      color: var(--tabs-ink);
+      border-color: var(--tabs-line);
+      background: linear-gradient(165deg, rgba(255, 255, 255, .96), rgba(255, 255, 255, .15)), var(--tabs-soft);
+      box-shadow: 0 2px 5px rgba(35, 55, 75, .13), inset 0 1px 1px #fff, inset 0 -1px 1px rgba(255, 255, 255, .7);
+    }
+  }
+  &--island &__close {
+    width: 0;
+    padding: 0;
+    margin-left: calc(-1 * var(--tabs-gap));
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: width 140ms ease, margin-left 140ms ease, opacity 140ms ease;
+  }
+  &--island &__tab.is-active &__close {
+    width: var(--tabs-close);
+    padding: 2px;
+    margin-left: 0;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    &--island &__tab, &--island &__close { transition: none; }
+  }
+}

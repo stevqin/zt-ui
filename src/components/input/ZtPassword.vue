@@ -85,7 +85,6 @@ defineExpose({
         class="zt-password__toggle"
         :aria-label="visible ? '隐藏密码' : '显示密码'"
         :disabled="effectiveDisabled"
-        tabindex="-1"
         @mousedown.prevent
         @click="toggleVisibility"
       >

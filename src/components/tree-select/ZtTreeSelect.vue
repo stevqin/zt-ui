@@ -17,6 +17,7 @@ const props = withDefaults(defineProps<ZtTreeSelectProps>(), {
   placeholder: '请选择',
   collapseTags: 3,
   teleported: true,
+  clearable: false,
 });
 const emit = defineEmits<{
   'update:modelValue': [value: ZtTreeSelectValue];
@@ -136,7 +137,7 @@ watch(disabled, (v) => {
     ref="host"
     @focusout="blur"
     class="zt-tree-select"
-    :class="`zt-tree-select--${size}`"
+    :class="[`zt-tree-select--${size}`, { 'is-clearable': clearable }]"
     :style="[config.style.value, hierarchyStyle(status)]"
     ><ZtPopover
       v-model:visible="visible"
@@ -204,7 +205,7 @@ watch(disabled, (v) => {
               ><slot v-bind="scope" /></template
           ></ZtTree></div></template></ZtPopover
     ><button
-      v-if="clearable && keys.length"
+      v-if="clearable && keys.length && !disabled"
       type="button"
       class="zt-hierarchy__clear"
       :disabled="disabled"

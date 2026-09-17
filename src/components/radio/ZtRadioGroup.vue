@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { useZtSize } from '../config-provider/context'
-import { computed, provide, toRef } from 'vue'
+import { computed, provide, toRef, inject, useId } from 'vue'
 import type { ZtRadioGroupProps, RadioGroupContext } from './types'
 import { radioGroupKey } from './types'
+import { ztFormItemKey } from '../form/context'
 import './radio.scss'
 
 defineOptions({ name: 'ZtRadioGroup', inheritAttrs: false })
@@ -10,8 +11,12 @@ defineOptions({ name: 'ZtRadioGroup', inheritAttrs: false })
 const props = withDefaults(defineProps<ZtRadioGroupProps>(), {
   disabled: false,
   status: 'primary',
+  variant: 'default',
+  segmented: false,
 })
-const configSize = useZtSize(props)
+const formItem = inject(ztFormItemKey, undefined)
+const configSize = useZtSize(props, () => formItem?.size.value)
+const groupId = useId()
 
 
 const emit = defineEmits<{
@@ -20,8 +25,9 @@ const emit = defineEmits<{
 }>()
 
 provide<RadioGroupContext>(radioGroupKey, {
+  name: computed(() => props.name ?? `zt-radio-${groupId}`),
   modelValue: toRef(props, 'modelValue'),
-  disabled: computed(() => props.disabled),
+  disabled: computed(() => props.disabled || formItem?.disabled.value || false),
   size: computed(() => configSize.value),
   status: computed(() => props.status),
   change(val) {
@@ -32,7 +38,7 @@ provide<RadioGroupContext>(radioGroupKey, {
 </script>
 
 <template>
-  <div class="zt-radio-group" v-bind="$attrs">
+  <div class="zt-radio-group" :class="[`zt-radio-group--${segmented ? 'segmented' : variant}`, `zt-radio-group--${configSize}`]" role="radiogroup" v-bind="$attrs">
     <slot />
   </div>
 </template>

@@ -1,6 +1,6 @@
 import type { ZtComponentSize } from '../types'
 export type ZtTabName=string|number
-export type ZtTabsType='line'|'card'|'border-card'
+export type ZtTabsType='line'|'card'|'border-card'|'island'
 export type ZtTabsPosition='top'|'right'|'bottom'|'left'
 export type ZtTabsStatus='default'|'primary'|'success'|'warning'|'danger'|'info'
 export interface ZtTabsProps{

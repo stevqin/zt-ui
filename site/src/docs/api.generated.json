@@ -1274,7 +1274,7 @@
       },
       {
         "name": "ZtTabsType",
-        "code": "export type ZtTabsType='line'|'card'|'border-card'",
+        "code": "export type ZtTabsType='line'|'card'|'border-card'|'island'",
         "public": true
       },
       {
@@ -1306,7 +1306,8 @@
     "sections": [
       "基础与禁用",
       "卡片与可编辑",
-      "四向布局与三种外观",
+      "液态玻璃岛",
+      "四向布局",
       "异步切换守卫"
     ]
   },
@@ -4119,6 +4120,33 @@
         "name": "ZtRadioGroup",
         "props": [
           {
+            "name": "segmented",
+            "templateName": "segmented",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "启用连体分段样式，可直接传递 segmented 属性。"
+          },
+          {
+            "name": "variant",
+            "templateName": "variant",
+            "kind": "prop",
+            "type": "'default' | 'segmented'",
+            "required": false,
+            "default": "'default'",
+            "description": "兼容旧版样式配置，新代码使用 segmented 属性；segmented 为 true 时优先启用连体样式。"
+          },
+          {
+            "name": "name",
+            "templateName": "name",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "传递给内部原生表单控件的 name 属性。"
+          },
+          {
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
@@ -4198,7 +4226,7 @@
       },
       {
         "name": "ZtRadioGroupProps",
-        "code": "export interface ZtRadioGroupProps {\n  modelValue?: unknown\n  disabled?: boolean\n  size?: ZtRadioSize\n  status?: ZtRadioStatus\n}",
+        "code": "export interface ZtRadioGroupProps {\n  /** 启用连体分段样式，可直接传递 segmented 属性。 */\n  segmented?: boolean\n  /** @deprecated 请使用 segmented；保留兼容原有用法。 */\n  variant?: 'default' | 'segmented'\n  name?: string\n  modelValue?: unknown\n  disabled?: boolean\n  size?: ZtRadioSize\n  status?: ZtRadioStatus\n}",
         "public": true
       },
       {
@@ -4211,6 +4239,7 @@
       "基础用法",
       "禁用",
       "RadioGroup 组合",
+      "连体分段按钮",
       "颜色状态",
       "带边框",
       "尺寸",
@@ -5317,6 +5346,24 @@
             "description": "是否允许选择多个选项；启用后 v-model 使用数组。"
           },
           {
+            "name": "collapseTags",
+            "templateName": "collapse-tags",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "多选时折叠超出数量的标签，剩余项显示为 +N。"
+          },
+          {
+            "name": "maxCollapseTags",
+            "templateName": "max-collapse-tags",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "1",
+            "description": "开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。"
+          },
+          {
             "name": "filterable",
             "templateName": "filterable",
             "kind": "prop",
@@ -5558,7 +5605,7 @@
       },
       {
         "name": "ZtSelectProps",
-        "code": "export interface ZtSelectProps {\n  /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */\n  virtual?: boolean;\n  /** 虚拟列表行高（px），未设置时跟随 size。 */\n  itemHeight?: number;\n  /** 下拉列表最大高度（px），视口不足时自动缩小。 */\n  height?: number;\n  modelValue?: ZtSelectModelValue;\n  options?: ZtSelectOption[];\n  multiple?: boolean;\n  filterable?: boolean;\n  remote?: boolean;\n  remoteMethod?: ZtSelectRemoteMethod;\n  debounce?: number;\n  clearable?: boolean;\n  placeholder?: string;\n  disabled?: boolean;\n  size?: ZtComponentSize;\n  noDataText?: string;\n  remoteErrorText?: string;\n}",
+        "code": "export interface ZtSelectProps {\n  /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */\n  virtual?: boolean;\n  /** 虚拟列表行高（px），未设置时跟随 size。 */\n  itemHeight?: number;\n  /** 下拉列表最大高度（px），视口不足时自动缩小。 */\n  height?: number;\n  modelValue?: ZtSelectModelValue;\n  options?: ZtSelectOption[];\n  multiple?: boolean;\n  /** 多选时折叠超出数量的标签，剩余项显示为 +N。 */\n  collapseTags?: boolean;\n  /** 开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。 */\n  maxCollapseTags?: number;\n  filterable?: boolean;\n  remote?: boolean;\n  remoteMethod?: ZtSelectRemoteMethod;\n  debounce?: number;\n  clearable?: boolean;\n  placeholder?: string;\n  disabled?: boolean;\n  size?: ZtComponentSize;\n  noDataText?: string;\n  remoteErrorText?: string;\n}",
         "public": true
       },
       {
@@ -5575,6 +5622,7 @@
     "sections": [
       "基础单选与清空",
       "多选与可移除标签",
+      "折叠已选标签",
       "本地筛选",
       "远程用户搜索",
       "业务插槽",
@@ -5732,6 +5780,15 @@
       {
         "name": "ZtFormItem",
         "props": [
+          {
+            "name": "labelPosition",
+            "templateName": "label-position",
+            "kind": "prop",
+            "type": "ZtFormLabelPosition",
+            "required": false,
+            "default": "无默认值",
+            "description": "字段标签位置，默认继承 Form。"
+          },
           {
             "name": "label",
             "templateName": "label",
@@ -5965,7 +6022,7 @@
       },
       {
         "name": "ZtFormItemProps",
-        "code": "export interface ZtFormItemProps {\n  label?: string\n  prop?: ZtFormProp\n  required?: boolean\n  rules?: ZtFormRule | ZtFormRule[]\n  error?: string\n  showMessage?: boolean\n  labelWidth?: number | string | 'auto'\n  size?: ZtComponentSize\n}",
+        "code": "export interface ZtFormItemProps {\n  /** 字段标签位置，默认继承 Form。 */ labelPosition?: ZtFormLabelPosition\n  label?: string\n  prop?: ZtFormProp\n  required?: boolean\n  rules?: ZtFormRule | ZtFormRule[]\n  error?: string\n  showMessage?: boolean\n  labelWidth?: number | string | 'auto'\n  size?: ZtComponentSize\n}",
         "public": true
       },
       {
@@ -6835,6 +6892,24 @@
             "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
+            "name": "subtitle",
+            "templateName": "subtitle",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "标题下方的辅助说明。"
+          },
+          {
+            "name": "closeLabel",
+            "templateName": "close-label",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "关闭按钮的无障碍名称。"
+          },
+          {
             "name": "placement",
             "templateName": "placement",
             "kind": "prop",
@@ -6851,6 +6926,60 @@
             "required": false,
             "default": "420",
             "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
+          },
+          {
+            "name": "width",
+            "templateName": "width",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
+          },
+          {
+            "name": "fullscreenBelow",
+            "templateName": "fullscreen-below",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "0",
+            "description": "Fill the viewport below this breakpoint; 0 disables it."
+          },
+          {
+            "name": "bodyScroll",
+            "templateName": "body-scroll",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "是否由抽屉内容区管理纵向滚动；设为 false 可让内部表格或树独立滚动。"
+          },
+          {
+            "name": "bodyPadding",
+            "templateName": "body-padding",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "22",
+            "description": "内容区内边距，数字按像素处理，也支持 CSS 长度。"
+          },
+          {
+            "name": "loading",
+            "templateName": "loading",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "是否显示加载状态并阻止重复交互。"
+          },
+          {
+            "name": "loadingText",
+            "templateName": "loading-text",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'正在加载…'",
+            "description": "加载遮罩显示的提示文字。"
           },
           {
             "name": "title",
@@ -7035,6 +7164,18 @@
             "kind": "event"
           },
           {
+            "name": "show",
+            "type": "() => void",
+            "description": "组件切换为可见状态后触发。",
+            "kind": "event"
+          },
+          {
+            "name": "hide",
+            "type": "() => void",
+            "description": "关闭过渡结束后触发，与 closed 一致。",
+            "kind": "event"
+          },
+          {
             "name": "close",
             "type": "(reason: ZtOverlayCloseReason) => void",
             "description": "抽屉开始关闭时触发；beforeClose 拒绝时不会触发。",
@@ -7068,19 +7209,31 @@
         "slots": [
           {
             "name": "title",
-            "type": "{ close }",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标题内容。"
           },
           {
+            "name": "header-actions",
+            "type": "无",
+            "kind": "slot",
+            "description": "标题栏右侧的额外操作，位于关闭按钮之前。"
+          },
+          {
+            "name": "content",
+            "type": "无",
+            "kind": "slot",
+            "description": "组件的主要正文内容。"
+          },
+          {
             "name": "default",
-            "type": "{ close }",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           },
           {
             "name": "footer",
-            "type": "{ close, confirm, cancel }",
+            "type": "无",
             "kind": "slot",
             "description": "组件底部的自定义内容。"
           }
@@ -7115,7 +7268,7 @@
       },
       {
         "name": "ZtDrawerProps",
-        "code": "export interface ZtDrawerProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  placement?: ZtDrawerPlacement\n  size?: number | string\n}",
+        "code": "export interface ZtDrawerProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  subtitle?: string\n  closeLabel?: string\n  placement?: ZtDrawerPlacement\n  /** Panel width (left/right) or height (top/bottom), in pixels or CSS units. */\n  size?: number | string\n  /** Width alias for horizontal drawers; takes precedence over size. */\n  width?: number | string\n  /** Fill the viewport below this breakpoint; 0 disables it. */\n  fullscreenBelow?: number\n  bodyScroll?: boolean\n  bodyPadding?: number | string\n  loading?: boolean\n  loadingText?: string\n}",
         "public": true
       },
       {
@@ -7154,6 +7307,15 @@
             "required": false,
             "default": "null",
             "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
+          },
+          {
+            "name": "type",
+            "templateName": "type",
+            "kind": "prop",
+            "type": "ZtDatePickerType",
+            "required": false,
+            "default": "无默认值",
+            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           },
           {
             "name": "range",
@@ -7336,13 +7498,18 @@
         "public": true
       },
       {
+        "name": "ZtDatePickerType",
+        "code": "export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';",
+        "public": true
+      },
+      {
         "name": "ZtDatePickerValue",
         "code": "export type ZtDatePickerValue = string | [string, string] | null;",
         "public": true
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** Local calendar value: YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -7379,6 +7546,7 @@
     "sections": [
       "基础用法",
       "范围选择",
+      "年份、月份与范围",
       "禁用日期、禁用与只读",
       "五档尺寸",
       "主题颜色",
@@ -7399,6 +7567,15 @@
             "required": false,
             "default": "null",
             "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
+          },
+          {
+            "name": "type",
+            "templateName": "type",
+            "kind": "prop",
+            "type": "ZtDatePickerType",
+            "required": false,
+            "default": "无默认值",
+            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           },
           {
             "name": "range",
@@ -7581,13 +7758,18 @@
         "public": true
       },
       {
+        "name": "ZtDatePickerType",
+        "code": "export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';",
+        "public": true
+      },
+      {
         "name": "ZtDatePickerValue",
         "code": "export type ZtDatePickerValue = string | [string, string] | null;",
         "public": true
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** Local calendar value: YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -9871,6 +10053,15 @@
         "name": "ZtDropdown",
         "props": [
           {
+            "name": "width",
+            "templateName": "width",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "菜单宽度，默认按内容自适应。"
+          },
+          {
             "name": "items",
             "templateName": "items",
             "kind": "prop",
@@ -9964,7 +10155,7 @@
       },
       {
         "name": "ZtDropdownProps",
-        "code": "export interface ZtDropdownProps {\n  /** 有序菜单项，key 必须唯一。 */ items: ZtDropdownItem[];\n  /** click 点击或 hover 悬停。 */ trigger?: 'click' | 'hover';\n  /** 禁用触发器。 */ disabled?: boolean;\n  /** 首选展开位置。 */ placement?: ZtPopoverPlacement;\n  /** 选择后是否关闭。 */ hideOnClick?: boolean;\n  /** 全局尺寸覆盖。 */ size?: ZtComponentSize;\n}",
+        "code": "export interface ZtDropdownProps {\n  /** 菜单宽度，默认按内容自适应。 */ width?: number | string;\n  /** 有序菜单项，key 必须唯一。 */ items: ZtDropdownItem[];\n  /** click 点击或 hover 悬停。 */ trigger?: 'click' | 'hover';\n  /** 禁用触发器。 */ disabled?: boolean;\n  /** 首选展开位置。 */ placement?: ZtPopoverPlacement;\n  /** 选择后是否关闭。 */ hideOnClick?: boolean;\n  /** 全局尺寸覆盖。 */ size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -12168,13 +12359,22 @@
         "name": "ZtDatePickerPanel",
         "props": [
           {
+            "name": "type",
+            "templateName": "type",
+            "kind": "prop",
+            "type": "ZtDatePickerType",
+            "required": false,
+            "default": "无默认值",
+            "description": "Selection granularity. Range suffix is equivalent to range=true."
+          },
+          {
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
             "type": "ZtDatePickerValue",
             "required": false,
             "default": "null",
-            "description": "Local calendar value: YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker."
+            "description": "YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker."
           },
           {
             "name": "size",
@@ -12246,7 +12446,7 @@
             "type": "(date: Date) => boolean",
             "required": false,
             "default": "无默认值",
-            "description": "判断日期是否不可选的函数；返回 true 的日期会被禁用。"
+            "description": "For month/year selection, receives the first local day of the period."
           }
         ],
         "events": [
@@ -12315,13 +12515,18 @@
         "public": true
       },
       {
+        "name": "ZtDatePickerType",
+        "code": "export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';",
+        "public": true
+      },
+      {
         "name": "ZtDatePickerValue",
         "code": "export type ZtDatePickerValue = string | [string, string] | null;",
         "public": true
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** Local calendar value: YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {

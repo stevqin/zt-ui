@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Collapsed from './Collapsed.vue';
+import CollapsedCode from './Collapsed.vue?raw';
 import DemoBlock from '@/components/DemoBlock.vue';
 import Example01 from './Example01.vue';
 import Example01Code from './Example01.vue?raw';
@@ -37,9 +39,12 @@ import VirtualCode from './Virtual.vue?raw';
     <h2>多选与可移除标签</h2>
     <DemoBlock
       :code="Example02Code"
-      desc="multiple 输出去重后的值数组，标签可单独移除，也可一次清空。"
+      desc="multiple 输出去重后的值数组；配合 filterable 时，搜索框固定在下拉面板顶部，打开后自动聚焦。搜索框内的清空按钮只清除关键词，已选标签保持不变。"
       ><Example02
     /></DemoBlock>
+
+    <h2>折叠已选标签</h2>
+    <DemoBlock :code="CollapsedCode" desc="collapse-tags 开启折叠；max-collapse-tags 指定展示数量（默认 1），其余以 +N 展示，已选值保持完整。"><Collapsed /></DemoBlock>
 
     <h2>本地筛选</h2>
     <DemoBlock

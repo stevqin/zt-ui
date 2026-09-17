@@ -1,10 +1,12 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { h, nextTick } from 'vue'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import ZtDrawer from '../src/components/drawer/ZtDrawer.vue'
 import { resetOverlayManager } from '../src/components/overlay/overlayManager'
 
 afterEach(() => {
+  vi.useRealTimers()
+  vi.unstubAllGlobals()
   resetOverlayManager()
   document.body.innerHTML = ''
 })
@@ -41,6 +43,94 @@ describe('ZtDrawer', () => {
     }
     expect(panel.style.width).toBe('')
     expect(panel.style.height).toBe('460px')
+  })
+
+  it('normalizes numeric strings and supports width and custom body layouts', async () => {
+    const wrapper = mount(ZtDrawer, { attachTo: document.body, props: { modelValue: true, size: '760' } })
+    const panel = document.querySelector<HTMLElement>('.zt-drawer__panel')!
+    expect(panel.style.width).toBe('760px')
+    await wrapper.setProps({ width: '680', bodyScroll: false, bodyPadding: 12 })
+    expect(panel.style.width).toBe('680px')
+    const body = document.querySelector<HTMLElement>('.zt-drawer__body')!
+    expect(body.classList.contains('zt-drawer__body--custom-scroll')).toBe(true)
+    expect(body.style.padding).toBe('12px')
+    await wrapper.setProps({ width: '80vw', bodyPadding: '12px 20px' })
+    expect(panel.style.width).toBe('80vw')
+    expect(body.style.padding).toBe('12px 20px')
+    wrapper.unmount()
+  })
+
+  it('blocks escape, imperative close and confirm while loading or saving', async () => {
+    const wrapper = mount(ZtDrawer, { attachTo: document.body, props: { modelValue: true, loading: true, loadingText: '读取权限', showFooter: true } })
+    await nextTick()
+    expect(document.querySelector('[role="status"]')?.textContent).toContain('读取权限')
+    for (const state of [{ loading: true, confirmLoading: false }, { loading: false, confirmLoading: true }]) {
+      await wrapper.setProps(state)
+      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }))
+      await wrapper.vm.close()
+      ;(document.querySelector('.zt-drawer__confirm') as HTMLButtonElement).click()
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+      expect(wrapper.emitted('confirm')).toBeUndefined()
+    }
+    await wrapper.setProps({ confirmLoading: false })
+    ;(document.querySelector('.zt-drawer__confirm') as HTMLButtonElement).click()
+    expect(wrapper.emitted('confirm')).toHaveLength(1)
+    await wrapper.vm.close()
+    expect(wrapper.emitted('update:modelValue')?.[0]).toEqual([false])
+    wrapper.unmount()
+  })
+
+  it('supports responsive fullscreen width and releases the media listener', async () => {
+    const listeners = new Set<() => void>()
+    const media = { matches: true, addEventListener: (_: string, fn: () => void) => listeners.add(fn), removeEventListener: (_: string, fn: () => void) => listeners.delete(fn) }
+    vi.stubGlobal('matchMedia', vi.fn(() => media))
+    const wrapper = mount(ZtDrawer, { attachTo: document.body, props: { modelValue: true, fullscreenBelow: 768 } })
+    expect(window.matchMedia).toHaveBeenCalledWith('(max-width: 767.98px)')
+    expect(document.querySelector('.zt-drawer--narrow')).not.toBeNull()
+    media.matches = false
+    listeners.forEach(fn => fn())
+    await nextTick()
+    expect(document.querySelector('.zt-drawer--narrow')).toBeNull()
+    wrapper.unmount()
+    expect(listeners.size).toBe(0)
+    vi.unstubAllGlobals()
+  })
+
+  it('supports Portal header/content slots and preserves guarded close and root attrs', async () => {
+    const wrapper = mount(ZtDrawer, {
+      attachTo: document.body,
+      attrs: { 'data-owner': 'permissions', class: 'custom-drawer' },
+      props: { modelValue: true, subtitle: '选择可访问菜单', closeLabel: '关闭权限', beforeClose: () => false },
+      slots: {
+        'header-actions': ({ confirm }: any) => h('button', { class: 'header-action', onClick: confirm }, '保存'),
+        content: ({ close }: any) => h('button', { class: 'custom-content', onClick: () => close('cancel') }, '取消'),
+        footer: '<div class="custom-footer">页脚</div>',
+      },
+    })
+    expect(document.querySelector('.zt-drawer__heading')?.textContent).toContain('选择可访问菜单')
+    expect(document.querySelector('.zt-drawer__close')?.getAttribute('aria-label')).toBe('关闭权限')
+    expect(document.querySelector('.custom-drawer')?.getAttribute('data-owner')).toBe('permissions')
+    expect(document.querySelector('.custom-footer')).not.toBeNull()
+    ;(document.querySelector('.header-action') as HTMLElement).click()
+    expect(wrapper.emitted('confirm')).toHaveLength(1)
+    ;(document.querySelector('.custom-content') as HTMLElement).click()
+    await Promise.resolve()
+    expect(wrapper.emitted('close')).toBeUndefined()
+    wrapper.unmount()
+  })
+
+  it('emits show and hide aliases after the enter and leave transitions', async () => {
+    vi.useFakeTimers()
+    const wrapper = mount(ZtDrawer, { attachTo: document.body, props: { modelValue: true }, global: { stubs: { transition: false } } })
+    await vi.runAllTimersAsync()
+    expect(wrapper.emitted('show')).toHaveLength(1)
+    expect(wrapper.emitted('opened')).toHaveLength(1)
+    await wrapper.setProps({ modelValue: false })
+    await vi.runAllTimersAsync()
+    expect(wrapper.emitted('hide')).toHaveLength(1)
+    expect(wrapper.emitted('closed')).toHaveLength(1)
+    wrapper.unmount()
+    vi.useRealTimers()
   })
 
   it('renders an accessible dialog and custom slots', () => {

@@ -8,6 +8,7 @@ export interface ZtDropdownItem {
   /** 文字图标或符号。 */ icon?: string;
 }
 export interface ZtDropdownProps {
+  /** 菜单宽度，默认按内容自适应。 */ width?: number | string;
   /** 有序菜单项，key 必须唯一。 */ items: ZtDropdownItem[];
   /** click 点击或 hover 悬停。 */ trigger?: 'click' | 'hover';
   /** 禁用触发器。 */ disabled?: boolean;

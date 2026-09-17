@@ -2,20 +2,40 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { calendarDate } from './date'
 
-const props = defineProps<{ modelValue: Date }>()
+const props = withDefaults(defineProps<{
+  modelValue: Date
+  mode?: 'date' | 'month' | 'year'
+  periodDisabled?: (date: Date) => boolean
+  selected?: (date: Date) => boolean
+  inRange?: (date: Date) => boolean
+}>(), { mode: 'date' })
 const emit = defineEmits<{
   'update:modelValue': [value: Date]
   select: []
+  pick: [date: Date]
+  hover: [date: Date | null]
   'view-change': []
 }>()
 const root = ref<HTMLElement>()
-const view = ref<'date' | 'year' | 'month'>('date')
-const decade = ref(0)
-const focused = ref(0)
+const view = ref<'date' | 'year' | 'month'>(props.mode)
+const decade = ref(Math.floor(props.modelValue.getFullYear() / 10) * 10)
+const focused = ref(props.mode === 'year' ? props.modelValue.getFullYear() : props.modelValue.getMonth())
+watch(() => props.modelValue, value => {
+  if (props.mode === 'year') {
+    decade.value = Math.floor(value.getFullYear() / 10) * 10
+    focused.value = value.getFullYear()
+  }
+})
 watch(view, async () => { await nextTick(); emit('view-change') })
 const year = computed(() => props.modelValue.getFullYear())
 const month = computed(() => props.modelValue.getMonth())
 const years = computed(() => Array.from({ length: 12 }, (_, index) => decade.value - 1 + index))
+const periodDate = (value: number) => view.value === 'year' ? calendarDate(value, 0, 1) : calendarDate(year.value, value, 1)
+const disabledChoice = (value: number) => view.value === 'year'
+  ? !yearAllowed(value) || (props.mode === 'year' && Boolean(props.periodDisabled?.(periodDate(value))))
+  : props.mode === 'month' && Boolean(props.periodDisabled?.(periodDate(value)))
+const selectedChoice = (value: number) => props.mode === view.value ? Boolean(props.selected?.(periodDate(value))) : value === (view.value === 'year' ? year.value : month.value)
+const inRangeChoice = (value: number) => props.mode === view.value && Boolean(props.inRange?.(periodDate(value)))
 const yearAllowed = (value: number) => value >= 1 && value <= 9999
 const canMoveMonth = (offset: number) => yearAllowed(calendarDate(year.value, month.value + offset, 1).getFullYear())
 
@@ -53,11 +73,14 @@ function pageYears(direction: number) {
   void focusChoice()
 }
 function pickYear(value: number) {
-  if (!yearAllowed(value)) return
+  if (disabledChoice(value)) return
+  if (props.mode === 'year') { emit('pick', calendarDate(value, 0, 1)); return }
   emit('update:modelValue', calendarDate(value, month.value, 1))
   showMonths()
 }
 function pickMonth(value: number) {
+  if (disabledChoice(value)) return
+  if (props.mode === 'month') { emit('pick', calendarDate(year.value, value, 1)); return }
   retainFocus()
   emit('update:modelValue', calendarDate(year.value, value, 1))
   view.value = 'date'
@@ -88,6 +111,11 @@ function keydown(event: KeyboardEvent) {
   else if (offset !== undefined) next = current + offset
   else return
   event.preventDefault()
+  const step = offset ?? (event.key === 'End' ? -1 : 1)
+  for (let tries = 0; tries < 10000 && disabledChoice(next); tries++) {
+    next += step
+    if (view.value === 'year' ? !yearAllowed(next) : next < 0 || next > 11) return
+  }
   if (view.value === 'year') {
     if (!yearAllowed(next)) return
     if (next < decade.value - 1 || next > decade.value + 10) decade.value = Math.floor(next / 10) * 10
@@ -121,15 +149,15 @@ function keydown(event: KeyboardEvent) {
     <slot v-if="view === 'date'" />
     <template v-else>
       <p class="zt-date-picker__navigation-hint">{{ view === 'year' ? '选择年份' : '选择月份' }}</p>
-      <div class="zt-date-picker__period-grid" :aria-label="view === 'year' ? '年份' : '月份'" role="group">
+      <div class="zt-date-picker__period-grid" :aria-label="view === 'year' ? '年份' : '月份'" role="group" @mouseleave="emit('hover', null)">
         <template v-if="view === 'year'">
-          <button v-for="item in years" :key="item" type="button" :data-year="item" :aria-label="`${item}年`" :aria-pressed="item === year" :disabled="!yearAllowed(item)" :tabindex="item === focused ? 0 : -1" :class="{ 'is-selected': item === year, 'is-adjacent': item < decade || item > decade + 9 }" @focus="focused = item" @click="pickYear(item)">{{ yearAllowed(item) ? item : '—' }}</button>
+          <button v-for="item in years" :key="item" type="button" :data-year="item" :aria-label="`${item}年`" :aria-pressed="selectedChoice(item)" :disabled="disabledChoice(item)" :tabindex="item === focused ? 0 : -1" :class="{ 'is-selected': selectedChoice(item), 'is-in-range': inRangeChoice(item), 'is-adjacent': item < decade || item > decade + 9 }" @mouseenter="emit('hover', periodDate(item))" @focus="focused = item" @click="pickYear(item)">{{ yearAllowed(item) ? item : '—' }}</button>
         </template>
         <template v-else>
-          <button v-for="item in 12" :key="item" type="button" :data-month="item - 1" :aria-label="`${item}月`" :aria-pressed="item - 1 === month" :tabindex="item - 1 === focused ? 0 : -1" :class="{ 'is-selected': item - 1 === month }" @focus="focused = item - 1" @click="pickMonth(item - 1)">{{ item }}月</button>
+          <button v-for="item in 12" :key="item" type="button" :data-month="item - 1" :aria-label="`${item}月`" :aria-pressed="selectedChoice(item - 1)" :disabled="disabledChoice(item - 1)" :tabindex="item - 1 === focused ? 0 : -1" :class="{ 'is-selected': selectedChoice(item - 1), 'is-in-range': inRangeChoice(item - 1) }" @mouseenter="emit('hover', periodDate(item - 1))" @focus="focused = item - 1" @click="pickMonth(item - 1)">{{ item }}月</button>
         </template>
       </div>
-      <button type="button" class="zt-date-picker__back" @click="returnToDates">返回日期</button>
+      <button v-if="mode === 'date'" type="button" class="zt-date-picker__back" @click="returnToDates">返回日期</button>
     </template>
   </div>
 </template>
