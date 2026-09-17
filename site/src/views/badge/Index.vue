@@ -1,45 +1,55 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ZtBadge, ZtButton } from '@ztechjs/zt-ui'
-import DemoBlock from '@/components/DemoBlock.vue'
-import { sfc } from '@/utils/exampleCode'
-
-const count = ref(12)
-const imports = `import { ZtBadge, ZtButton } from '@ztechjs/zt-ui'`
-const codeBasic = sfc(`import { ref } from 'vue'\n${imports}\n\nconst count = ref(12)`, `<ZtBadge :value="count"><ZtButton size="small">消息</ZtButton></ZtBadge>\n<ZtBadge :value="200"><ZtButton size="small">消息</ZtButton></ZtBadge>\n<ZtBadge :value="0" show-zero><ZtButton size="small">消息</ZtButton></ZtBadge>`)
-const codeSize = sfc(imports, `<ZtBadge value="8" size="mini" />
-<ZtBadge value="8" size="small" />
-<ZtBadge value="8" />
-<ZtBadge value="8" size="medium" />
-<ZtBadge value="8" size="large" />`)
-const codeDot = sfc(imports, `<ZtBadge is-dot><ZtButton size="small">消息</ZtButton></ZtBadge>\n<ZtBadge is-dot><span>数据查询</span></ZtBadge>`)
-const codeStatus = sfc(imports, `<ZtBadge :value="1" status="primary"><ZtButton size="small">Primary</ZtButton></ZtBadge>\n<ZtBadge :value="2" status="success"><ZtButton size="small">Success</ZtButton></ZtBadge>\n<ZtBadge :value="3" status="warning"><ZtButton size="small">Warning</ZtButton></ZtBadge>\n<ZtBadge :value="4" status="danger"><ZtButton size="small">Danger</ZtButton></ZtBadge>\n<ZtBadge :value="5" status="info"><ZtButton size="small">Info</ZtButton></ZtBadge>`)
-const codeText = sfc(imports, `<ZtBadge value="new"><ZtButton size="small">消息</ZtButton></ZtBadge>\n<ZtBadge value="hot"><ZtButton size="small">评论</ZtButton></ZtBadge>`)
-const codeOffset = sfc(imports, `<ZtBadge :value="1" :offset="[-6, -2]"><ZtButton size="small">消息</ZtButton></ZtBadge>\n<ZtBadge is-dot :offset="[-4, -4]"><ZtButton size="small">消息</ZtButton></ZtBadge>`)
-const codeHidden = sfc(imports, `<ZtBadge :value="12" hidden><ZtButton size="small">隐藏</ZtButton></ZtBadge>\n<ZtBadge is-dot hidden><ZtButton size="small">隐藏</ZtButton></ZtBadge>`)
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import Example03 from './Example03.vue';
+import Example03Code from './Example03.vue?raw';
+import Example04 from './Example04.vue';
+import Example04Code from './Example04.vue?raw';
+import Example05 from './Example05.vue';
+import Example05Code from './Example05.vue?raw';
+import Example06 from './Example06.vue';
+import Example06Code from './Example06.vue?raw';
+import Example07 from './Example07.vue';
+import Example07Code from './Example07.vue?raw';
+import Zero from './Zero.vue';
+import ZeroCode from './Zero.vue?raw';
 </script>
 
 <template>
   <div class="doc-section">
-    <h1>Badge 徽标</h1><p>出现在按钮、图标旁的数字或状态标记。</p>
+    <h1>Badge 徽标</h1>
+    <p>出现在按钮、图标旁的数字或状态标记。</p>
     <h2>基础用法</h2>
-    <DemoBlock :code="codeBasic" desc="数字超过 max 时显示 max+；show-zero 可显示 0。"><div class="demo-row badge-row"><ZtBadge :value="count"><ZtButton size="small">消息</ZtButton></ZtBadge><ZtBadge :value="200"><ZtButton size="small">消息</ZtButton></ZtBadge><ZtBadge :value="0" show-zero><ZtButton size="small">消息</ZtButton></ZtBadge></div></DemoBlock>
+    <DemoBlock :code="Example01Code" desc="数字超过 max 时显示 max+；show-zero 可显示 0。"
+      ><Example01
+    /></DemoBlock>
     <h2>尺寸</h2>
-    <DemoBlock :code="codeSize" desc="size 提供 mini、small、default、medium、large 五档尺寸。"><div class="demo-row badge-row"><ZtBadge value="8" size="mini" /><ZtBadge value="8" size="small" /><ZtBadge value="8" /><ZtBadge value="8" size="medium" /><ZtBadge value="8" size="large" /></div></DemoBlock>
+    <DemoBlock :code="Example02Code" desc="size 提供 mini、small、default、medium、large 五档尺寸。"
+      ><Example02
+    /></DemoBlock>
     <h2>小红点</h2>
-    <DemoBlock :code="codeDot" desc="设置 is-dot 以小圆点标注。"><div class="demo-row badge-row"><ZtBadge is-dot><ZtButton size="small">消息</ZtButton></ZtBadge><ZtBadge is-dot><span>数据查询</span></ZtBadge></div></DemoBlock>
+    <DemoBlock :code="Example03Code" desc="设置 is-dot 以小圆点标注。"><Example03 /></DemoBlock>
     <h2>颜色状态</h2>
-    <DemoBlock :code="codeStatus" desc="通过 status 设置徽标颜色。"><div class="demo-row badge-row"><ZtBadge :value="1" status="primary"><ZtButton size="small">Primary</ZtButton></ZtBadge><ZtBadge :value="2" status="success"><ZtButton size="small">Success</ZtButton></ZtBadge><ZtBadge :value="3" status="warning"><ZtButton size="small">Warning</ZtButton></ZtBadge><ZtBadge :value="4" status="danger"><ZtButton size="small">Danger</ZtButton></ZtBadge><ZtBadge :value="5" status="info"><ZtButton size="small">Info</ZtButton></ZtBadge></div></DemoBlock>
+    <DemoBlock :code="Example04Code" desc="通过 status 设置徽标颜色。"><Example04 /></DemoBlock>
     <h2>自定义内容</h2>
-    <DemoBlock :code="codeText" desc="value 也可以是字符串。"><div class="demo-row badge-row"><ZtBadge value="new"><ZtButton size="small">消息</ZtButton></ZtBadge><ZtBadge value="hot"><ZtButton size="small">评论</ZtButton></ZtBadge></div></DemoBlock>
+    <DemoBlock :code="Example05Code" desc="value 也可以是字符串。"><Example05 /></DemoBlock>
     <h2>自定义偏移</h2>
-    <DemoBlock :code="codeOffset" desc="offset 使用 [x, y] 控制徽标位置。"><div class="demo-row badge-row"><ZtBadge :value="1" :offset="[-6, -2]"><ZtButton size="small">消息</ZtButton></ZtBadge><ZtBadge is-dot :offset="[-4, -4]"><ZtButton size="small">消息</ZtButton></ZtBadge></div></DemoBlock>
+    <DemoBlock :code="Example06Code" desc="offset 使用 [x, y] 控制徽标位置。"
+      ><Example06
+    /></DemoBlock>
     <h2>隐藏徽标</h2>
-    <DemoBlock :code="codeHidden" desc="设置 hidden 隐藏徽标。"><div class="demo-row badge-row"><ZtBadge :value="12" hidden><ZtButton size="small">隐藏</ZtButton></ZtBadge><ZtBadge is-dot hidden><ZtButton size="small">隐藏</ZtButton></ZtBadge></div></DemoBlock>
+    <DemoBlock :code="Example07Code" desc="设置 hidden 隐藏徽标。"><Example07 /></DemoBlock>
 
-    </div>
+    <h2>零值、最大值与截断</h2>
+    <DemoBlock :code="ZeroCode" desc=""><Zero /></DemoBlock>
+  </div>
 </template>
 
 <style scoped>
-.badge-row { gap: 24px !important; }
+.badge-row {
+  gap: 24px !important;
+}
 </style>

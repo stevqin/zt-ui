@@ -1,2 +1,22 @@
-<script setup lang="ts">import{ref}from'vue';import{ZtCollapse,ZtCollapseItem}from'@ztechjs/zt-ui';import DemoBlock from'@/components/DemoBlock.vue';import{sfc}from'@/utils/exampleCode';const open=ref(['guide']),single=ref('one');const code=sfc("import { ref } from 'vue'\nimport { ZtCollapse, ZtCollapseItem } from '@ztechjs/zt-ui'",'<ZtCollapse v-model="open">\n  <ZtCollapseItem name="guide" title="使用说明">内容</ZtCollapseItem>\n</ZtCollapse>');</script>
-<template><div class="doc-section"><h1>Collapse 折叠面板</h1><p>收纳可分组内容，支持多开、手风琴、禁用和懒渲染。</p><h2>多面板</h2><DemoBlock :code="code"><ZtCollapse v-model="open"><ZtCollapseItem name="guide" title="使用说明">默认展开的内容。</ZtCollapseItem><ZtCollapseItem name="api" title="接口约定" lazy>首次打开后再渲染。</ZtCollapseItem><ZtCollapseItem name="disabled" title="不可用" disabled>禁用内容</ZtCollapseItem></ZtCollapse></DemoBlock><h2>手风琴</h2><DemoBlock :code="code"><ZtCollapse v-model="single" accordion><ZtCollapseItem name="one" title="第一项">第一项内容</ZtCollapseItem><ZtCollapseItem name="two" title="第二项">第二项内容</ZtCollapseItem></ZtCollapse></DemoBlock></div></template>
+<script setup lang="ts">
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import CustomTitle from './CustomTitle.vue';
+import CustomTitleCode from './CustomTitle.vue?raw';
+</script>
+
+<template>
+  <div class="doc-section">
+    <h1>Collapse 折叠面板</h1>
+    <p>收纳可分组内容，支持多开、手风琴、禁用和懒渲染。</p>
+    <h2>多面板</h2>
+    <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
+    <h2>手风琴</h2>
+    <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
+    <h2>自定义标题、禁用与懒渲染</h2>
+    <DemoBlock :code="CustomTitleCode" desc=""><CustomTitle /></DemoBlock>
+  </div>
+</template>

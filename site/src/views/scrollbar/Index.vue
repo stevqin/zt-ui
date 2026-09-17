@@ -1,14 +1,66 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ZtButton, ZtScrollbar, ZtText } from '@ztechjs/zt-ui'
-import type { ZtScrollbarInstance } from '@ztechjs/zt-ui'
-import DemoBlock from '@/components/DemoBlock.vue'
-import { sfc } from '@/utils/exampleCode'
-const scrollbar=ref<ZtScrollbarInstance>(),position=ref('0, 0')
-const basicCode=sfc("import { ZtScrollbar } from '@ztechjs/zt-ui'",'<ZtScrollbar :height="220" aria-label="项目列表">\n  <div v-for="item in 20" :key="item" class="row">项目 {{ item }}</div>\n</ZtScrollbar>')
-const horizontalCode=sfc("import { ZtScrollbar } from '@ztechjs/zt-ui'",'<ZtScrollbar :max-height="180" always aria-label="横向卡片">\n  <div class="wide-content">横向内容</div>\n</ZtScrollbar>')
-const nativeCode=sfc("import { ZtScrollbar } from '@ztechjs/zt-ui'",'<ZtScrollbar :height="150" native aria-label="系统滚动条">长内容</ZtScrollbar>')
-const methodCode=sfc("import { ref } from 'vue'\nimport { ZtButton, ZtScrollbar } from '@ztechjs/zt-ui'\nimport type { ZtScrollbarInstance } from '@ztechjs/zt-ui'\nconst scrollbar = ref<ZtScrollbarInstance>()",'<ZtButton @click="scrollbar?.setScrollTop(240)">滚动到 240px</ZtButton>\n<ZtScrollbar ref="scrollbar" :height="160">内容</ZtScrollbar>')
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import Example03 from './Example03.vue';
+import Example03Code from './Example03.vue?raw';
+import Example04 from './Example04.vue';
+import Example04Code from './Example04.vue?raw';
+import Resize from './Resize.vue';
+import ResizeCode from './Resize.vue?raw';
 </script>
-<template><div class="doc-section"><h1>Scrollbar 滚动条</h1><p>保留浏览器原生滚动、触摸惯性和键盘操作，同时提供跨平台一致的轨道与滑块样式。</p><h2>固定高度</h2><DemoBlock :code="basicCode"><ZtScrollbar :height="220" aria-label="项目列表"><div v-for="item in 20" :key="item" class="scroll-row">项目 {{item}}<span>最近更新</span></div></ZtScrollbar></DemoBlock><h2>横向滚动与常显轨道</h2><DemoBlock :code="horizontalCode"><ZtScrollbar :max-height="180" always aria-label="横向卡片"><div class="wide-content"><article v-for="item in 8" :key="item">卡片 {{item}}</article></div></ZtScrollbar></DemoBlock><h2>原生模式</h2><DemoBlock :code="nativeCode"><ZtScrollbar :height="150" native aria-label="系统滚动条"><div v-for="item in 12" :key="item" class="scroll-row">系统项目 {{item}}</div></ZtScrollbar></DemoBlock><h2>滚动事件与实例方法</h2><DemoBlock :code="methodCode"><div class="method-actions"><ZtButton size="small" @click="scrollbar?.setScrollTop(240)">滚动到 240px</ZtButton><ZtText>当前位置：{{position}}</ZtText></div><ZtScrollbar ref="scrollbar" :height="160" aria-label="可编程滚动区域" @scroll="value=>position=`${Math.round(value.scrollTop)}, ${Math.round(value.scrollLeft)}`"><div v-for="item in 18" :key="item" class="scroll-row">记录 {{item}}</div></ZtScrollbar></DemoBlock></div></template>
-<style scoped>.scroll-row{display:flex;justify-content:space-between;padding:10px 12px;border-bottom:1px solid var(--zt-border)}.scroll-row span{color:var(--zt-text-muted);font-size:12px}.wide-content{display:flex;gap:12px;width:max-content;padding:8px}.wide-content article{display:grid;place-items:center;width:150px;height:100px;border:1px solid var(--zt-border);border-radius:var(--zt-radius);background:var(--zt-surface-soft)}.method-actions{display:flex;align-items:center;gap:14px;margin-bottom:12px}</style>
+
+<template>
+  <div class="doc-section">
+    <h1>Scrollbar 滚动条</h1>
+    <p>保留浏览器原生滚动、触摸惯性和键盘操作，同时提供跨平台一致的轨道与滑块样式。</p>
+    <h2>固定高度</h2>
+    <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
+    <h2>横向滚动与常显轨道</h2>
+    <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
+    <h2>原生模式</h2>
+    <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
+    <h2>滚动事件与实例方法</h2>
+    <DemoBlock :code="Example04Code"><Example04 /></DemoBlock>
+    <h2>动态内容与完整滚动方法</h2>
+    <DemoBlock :code="ResizeCode" desc="noresize 关闭自动尺寸监听，此处增加内容后显式调用 update。"
+      ><Resize
+    /></DemoBlock>
+  </div>
+</template>
+
+<style scoped>
+.scroll-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--zt-border);
+}
+.scroll-row span {
+  color: var(--zt-text-muted);
+  font-size: 12px;
+}
+.wide-content {
+  display: flex;
+  gap: 12px;
+  width: max-content;
+  padding: 8px;
+}
+.wide-content article {
+  display: grid;
+  place-items: center;
+  width: 150px;
+  height: 100px;
+  border: 1px solid var(--zt-border);
+  border-radius: var(--zt-radius);
+  background: var(--zt-surface-soft);
+}
+.method-actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+</style>

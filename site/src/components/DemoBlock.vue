@@ -4,18 +4,22 @@ import { computed, onBeforeUnmount, ref, useId } from 'vue'
 const props = defineProps<{
   code: string
   desc?: string
+  codeOnly?: boolean
 }>()
 
 const sourceId = `demo-source-${useId()}`
-const expanded = ref(false)
+const expanded = ref(props.codeOnly ?? false)
 const copyState = ref<'idle' | 'copied' | 'failed'>('idle')
 let resetTimer: ReturnType<typeof setTimeout> | undefined
 
-const copyLabel = computed(() => ({
-  idle: '复制代码',
-  copied: '已复制',
-  failed: '复制失败',
-}[copyState.value]))
+const copyLabel = computed(
+  () =>
+    ({
+      idle: '复制代码',
+      copied: '已复制',
+      failed: '复制失败',
+    })[copyState.value],
+)
 
 function fallbackCopy(value: string) {
   const textarea = document.createElement('textarea')
@@ -39,7 +43,9 @@ async function copyCode() {
   } catch {
     copyState.value = 'failed'
   }
-  resetTimer = setTimeout(() => { copyState.value = 'idle' }, 1800)
+  resetTimer = setTimeout(() => {
+    copyState.value = 'idle'
+  }, 1800)
 }
 
 onBeforeUnmount(() => {
@@ -49,8 +55,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="doc-demo">
-    <div class="doc-demo__preview">
+    <div v-if="!codeOnly" class="doc-demo__preview">
       <slot />
+    </div>
+    <div v-else class="doc-demo__desc">
+      <strong>接入代码</strong> · 需要项目接口配置，不在本站执行。
     </div>
 
     <div v-if="desc || $slots.desc" class="doc-demo__desc">
@@ -58,8 +67,25 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="doc-demo__actions">
-      <button type="button" class="doc-demo__toggle" :aria-expanded="expanded" :aria-controls="sourceId" @click="expanded = !expanded">
-        <svg :class="{ 'is-rotated': expanded }" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+      <button
+        type="button"
+        class="doc-demo__toggle"
+        :aria-expanded="expanded"
+        :aria-controls="sourceId"
+        @click="expanded = !expanded"
+      >
+        <svg
+          :class="{ 'is-rotated': expanded }"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
         {{ expanded ? '隐藏代码' : '查看代码' }}
       </button>
       <button
@@ -69,11 +95,29 @@ onBeforeUnmount(() => {
         :aria-label="copyLabel"
         @click="copyCode"
       >
-        <svg v-if="copyState !== 'copied'" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg
+          v-if="copyState !== 'copied'"
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
           <rect x="8" y="8" width="12" height="12" rx="2" />
           <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2" />
         </svg>
-        <svg v-else width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+        <svg
+          v-else
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+        >
           <path d="m5 12 4 4L19 6" />
         </svg>
         <span aria-live="polite">{{ copyLabel }}</span>
@@ -94,7 +138,9 @@ onBeforeUnmount(() => {
 <style scoped>
 .code-expand-enter-active,
 .code-expand-leave-active {
-  transition: max-height 280ms ease, opacity 200ms ease;
+  transition:
+    max-height 280ms ease,
+    opacity 200ms ease;
   overflow: hidden;
 }
 .code-expand-enter-from,

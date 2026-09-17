@@ -1,2 +1,22 @@
-<script setup lang="ts">import{ZtButton,ZtResult}from'@ztechjs/zt-ui';import DemoBlock from'@/components/DemoBlock.vue';import{sfc}from'@/utils/exampleCode';const code=sfc("import { ZtButton, ZtResult } from '@ztechjs/zt-ui'",'<ZtResult status="success" title="提交成功" sub-title="数据已经保存">\n  <template #extra><ZtButton>返回</ZtButton></template>\n</ZtResult>');</script>
-<template><div class="doc-section"><h1>Result 结果</h1><p>对完整任务给出明确结果和下一步操作。</p><h2>成功结果</h2><DemoBlock :code="code"><ZtResult status="success" title="提交成功" sub-title="数据已经保存，可以安全返回列表。"><template #extra><ZtButton status="primary">返回列表</ZtButton></template></ZtResult></DemoBlock><h2>异常状态</h2><DemoBlock :code="code"><ZtResult status="404" title="页面不存在" sub-title="请检查地址，或返回文档首页。" /></DemoBlock></div></template>
+<script setup lang="ts">
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import Slots from './Slots.vue';
+import SlotsCode from './Slots.vue?raw';
+</script>
+
+<template>
+  <div class="doc-section">
+    <h1>Result 结果</h1>
+    <p>对完整任务给出明确结果和下一步操作。</p>
+    <h2>成功结果</h2>
+    <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
+    <h2>异常状态</h2>
+    <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
+    <h2>自定义图标与内容插槽</h2>
+    <DemoBlock :code="SlotsCode" desc=""><Slots /></DemoBlock>
+  </div>
+</template>

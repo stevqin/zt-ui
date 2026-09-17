@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { components } from '../docs/catalog'
@@ -26,7 +26,7 @@ describe('overlay documentation pages', () => {
     const coded = (source.match(/<DemoBlock\s+:code=/g) ?? []).length
     expect(demos).toBeGreaterThanOrEqual(3)
     expect(coded).toBe(demos)
-    expect(source).toContain("import { sfc } from '@/utils/exampleCode'")
+    expect(source).toContain('.vue?raw')
     const reference = api[page]!
     expect(reference.components[0]?.props.length).toBeGreaterThan(0)
     expect(reference.components[0]?.events.length).toBeGreaterThan(0)
@@ -35,7 +35,7 @@ describe('overlay documentation pages', () => {
   })
 
   it('documents the Modal fullscreen control and draggable header', () => {
-    const source = read('src/views/modal/Index.vue')
+    const source = readdirSync(resolve(process.cwd(), 'src/views/modal')).filter(file=>file.endsWith('.vue')).map(file=>read('src/views/modal/'+file)).join('\n')
     expect(source).toContain('show-fullscreen-button')
     expect(source).toContain('v-model:fullscreen')
     expect(source).toContain('draggable')

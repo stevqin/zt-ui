@@ -1,79 +1,77 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { ZtDateTimePicker, ZtSwitch } from '@ztechjs/zt-ui'
-import type { ZtDatePickerValue, ZtDatePickerHoliday } from '@ztechjs/zt-ui'
-import DemoBlock from '@/components/DemoBlock.vue'
-import { sfc } from '@/utils/exampleCode'
-const value = ref<ZtDatePickerValue>(null)
-const rangeValue = ref<ZtDatePickerValue>(null)
-const limited = ref<ZtDatePickerValue>(null)
-const sizes = ['mini', 'small', 'default', 'medium', 'large'] as const
-const disabledDate = (date: Date) => date.getDay() === 0 || date.getDay() === 6
-const codeBasic = sfc(`import { ref } from 'vue'
-import { ZtDateTimePicker } from '@ztechjs/zt-ui'
-import type { ZtDatePickerValue } from '@ztechjs/zt-ui'
-const value = ref<ZtDatePickerValue>(null)`, `<ZtDateTimePicker v-model="value" clearable />`)
-const codeRange = sfc(`import { ref } from 'vue'
-import { ZtDateTimePicker } from '@ztechjs/zt-ui'
-import type { ZtDatePickerValue } from '@ztechjs/zt-ui'
-const rangeValue = ref<ZtDatePickerValue>(null)`, `<ZtDateTimePicker v-model="rangeValue" range clearable />`)
-const codeDisabled = sfc(`import { ref } from 'vue'
-import { ZtDateTimePicker } from '@ztechjs/zt-ui'
-import type { ZtDatePickerValue } from '@ztechjs/zt-ui'
-const limited = ref<ZtDatePickerValue>(null)
-const disabledDate = (date: Date) => date.getDay() === 0 || date.getDay() === 6`, `<ZtDateTimePicker v-model="limited" :disabled-date="disabledDate" />
-<ZtDateTimePicker model-value="2026-09-16 09:30:00" disabled />
-<ZtDateTimePicker model-value="2026-09-16 09:30:00" readonly />`)
-const codeSizes = sfc(`import { ZtDateTimePicker } from '@ztechjs/zt-ui'`, sizes.map(size => `<ZtDateTimePicker size="${size}" />`).join('\n'))
-
-const statuses = ['default', 'primary', 'success', 'warning', 'danger', 'info'] as const
-const holidayValue = ref<ZtDatePickerValue>('2026-01-01 09:00:00')
-const showHolidays = ref(true)
-const holidays: ZtDatePickerHoliday[] = [
-  { key: '2026-01-01', value: '元旦' },
-  { key: '2026-01-15', value: '公司纪念日（示例）' },
-]
-const codeThemes = sfc(`import { ZtDateTimePicker } from '@ztechjs/zt-ui'`, statuses.map(status => `<ZtDateTimePicker status="${status}" model-value="2026-01-01 09:00:00" />`).join('\n'))
-const codeHolidays = sfc(`import { ref } from 'vue'
-import { ZtDateTimePicker, ZtSwitch } from '@ztechjs/zt-ui'
-import type { ZtDatePickerValue, ZtDatePickerHoliday } from '@ztechjs/zt-ui'
-const holidayValue = ref<ZtDatePickerValue>('2026-01-01 09:00:00')
-const showHolidays = ref(true)
-const holidays: ZtDatePickerHoliday[] = [
-  { key: '2026-01-01', value: '元旦' },
-  { key: '2026-01-15', value: '公司纪念日（示例）' },
-]`, `<ZtSwitch v-model="showHolidays" active-text="标识节假日" />
-<ZtDateTimePicker v-model="holidayValue" :holidays="holidays" :show-holidays="showHolidays" status="success" clearable />`)
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import Example03 from './Example03.vue';
+import Example03Code from './Example03.vue?raw';
+import Example04 from './Example04.vue';
+import Example04Code from './Example04.vue?raw';
+import Example05 from './Example05.vue';
+import Example05Code from './Example05.vue?raw';
+import Example06 from './Example06.vue';
+import Example06Code from './Example06.vue?raw';
+import Methods from './Methods.vue';
+import MethodsCode from './Methods.vue?raw';
 </script>
+
 <template>
   <div class="doc-section">
     <h1>DateTimePicker 日期时间选择器</h1>
-    <p>使用本地日历值 YYYY-MM-DD HH:mm:ss，不进行时区转换。支持单值和范围选择、清空、禁用日期及表单校验。</p>
+    <p>
+      使用本地日历值 YYYY-MM-DD
+      HH:mm:ss，不进行时区转换。支持单值和范围选择、清空、禁用日期及表单校验。
+    </p>
     <h2>基础用法</h2>
-    <DemoBlock :code="codeBasic" desc="空字符串和 null 显示占位提示。选择日期和时间后点击确定提交；时间精确到秒。同一天范围的结束时间不能早于开始时间。">
-      <div class="date-demo-stack"><ZtDateTimePicker v-model="value" clearable /><span>当前值：{{ value ?? '未选择' }}</span></div>
-    </DemoBlock>
+    <DemoBlock
+      :code="Example01Code"
+      desc="空字符串和 null 显示占位提示。选择日期和时间后点击确定提交；时间精确到秒。同一天范围的结束时间不能早于开始时间。"
+      ><Example01
+    /></DemoBlock>
     <h2>范围选择</h2>
-    <DemoBlock :code="codeRange" desc="设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。">
-      <div class="date-demo-stack"><ZtDateTimePicker v-model="rangeValue" range clearable /><span>当前范围：{{ rangeValue ?? '未选择' }}</span></div>
-    </DemoBlock>
+    <DemoBlock
+      :code="Example02Code"
+      desc="设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+      ><Example02
+    /></DemoBlock>
     <h2>禁用日期、禁用与只读</h2>
-    <DemoBlock :code="codeDisabled" desc="此示例禁用周末。disabledDate 限制可选择的端点，范围中间可以包含禁用日期。">
-      <div class="date-demo-stack"><ZtDateTimePicker v-model="limited" :disabled-date="disabledDate" /><ZtDateTimePicker model-value="2026-09-16 09:30:00" disabled /><ZtDateTimePicker model-value="2026-09-16 09:30:00" readonly /></div>
-    </DemoBlock>
+    <DemoBlock
+      :code="Example03Code"
+      desc="此示例禁用周末。disabledDate 限制可选择的端点，范围中间可以包含禁用日期。"
+      ><Example03
+    /></DemoBlock>
     <h2>五档尺寸</h2>
-    <DemoBlock :code="codeSizes"><div class="date-demo-stack"><ZtDateTimePicker v-for="size in sizes" :key="size" :size="size" /></div></DemoBlock>
+    <DemoBlock :code="Example04Code"><Example04 /></DemoBlock>
     <h2>主题颜色</h2>
-    <DemoBlock :code="codeThemes" desc="status 统一控制焦点边框、选中日期、范围底色和确认按钮，默认 primary。">
-      <div class="date-demo-stack"><ZtDateTimePicker v-for="status in statuses" :key="status" :status="status" model-value="2026-01-01 09:00:00" :placeholder="status" /></div>
-    </DemoBlock>
+    <DemoBlock
+      :code="Example05Code"
+      desc="status 统一控制焦点边框、选中日期、范围底色和确认按钮，默认 primary。"
+      ><Example05
+    /></DemoBlock>
     <h2>节假日标识</h2>
-    <DemoBlock :code="codeHolidays" desc="holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；长名称悬停查看。支持单值和范围，标识不改变可选状态，也不会自动禁用周末。">
-      <div class="date-demo-stack"><ZtSwitch v-model="showHolidays" active-text="标识节假日" /><ZtDateTimePicker v-model="holidayValue" :holidays="holidays" :show-holidays="showHolidays" status="success" clearable /></div>
-    </DemoBlock>
-    </div>
+    <DemoBlock
+      :code="Example06Code"
+      desc="holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；长名称悬停查看。支持单值和范围，标识不改变可选状态，也不会自动禁用周末。"
+      ><Example06
+    /></DemoBlock>
+
+    <h2>事件反馈与实例方法</h2>
+    <DemoBlock :code="MethodsCode" desc=""><Methods /></DemoBlock>
+  </div>
 </template>
+
 <style scoped>
-.date-demo-stack { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; width: 100%; }
-.date-demo-stack > span { color: #737d8b; font-size: 12px; overflow-wrap: anywhere; }
+.date-demo-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+  width: 100%;
+}
+.date-demo-stack > span {
+  color: #737d8b;
+  font-size: 12px;
+  overflow-wrap: anywhere;
+}
 </style>

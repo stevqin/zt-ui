@@ -1,2 +1,27 @@
-<script setup lang="ts">import{ref}from'vue';import{ZtButton,ZtTabPane,ZtTabs}from'@ztechjs/zt-ui';import DemoBlock from'@/components/DemoBlock.vue';import{sfc}from'@/utils/exampleCode';const active=ref('overview'),cards=ref('a');const code=sfc("import { ref } from 'vue'\nimport { ZtTabs, ZtTabPane } from '@ztechjs/zt-ui'\nconst active=ref('overview')",'<ZtTabs v-model="active">\n  <ZtTabPane name="overview" label="概览">概览内容</ZtTabPane>\n  <ZtTabPane name="disabled" label="已禁用" disabled />\n  <ZtTabPane name="detail" label="详情" lazy>详情内容</ZtTabPane>\n</ZtTabs>');</script>
-<template><div class="doc-section"><h1>Tabs 标签页</h1><p>在同一层级切换相关内容，支持键盘导航、异步切换守卫、增删和四向布局。</p><h2>基础与禁用</h2><DemoBlock :code="code"><ZtTabs v-model="active"><ZtTabPane name="overview" label="概览">概览内容</ZtTabPane><ZtTabPane name="disabled" label="已禁用" disabled>不可选择</ZtTabPane><ZtTabPane name="detail" label="详情" lazy>详情内容</ZtTabPane></ZtTabs></DemoBlock><h2>卡片与可编辑</h2><DemoBlock :code="code"><ZtTabs v-model="cards" type="card" editable status="success"><ZtTabPane name="a" label="订单" closable>订单内容</ZtTabPane><ZtTabPane name="b" label="客户">客户内容</ZtTabPane></ZtTabs></DemoBlock></div></template>
+<script setup lang="ts">
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import Layouts from './Layouts.vue';
+import LayoutsCode from './Layouts.vue?raw';
+import Guard from './Guard.vue';
+import GuardCode from './Guard.vue?raw';
+</script>
+
+<template>
+  <div class="doc-section">
+    <h1>Tabs 标签页</h1>
+    <p>在同一层级切换相关内容，支持键盘导航、异步切换守卫、增删和四向布局。</p>
+    <h2>基础与禁用</h2>
+    <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
+    <h2>卡片与可编辑</h2>
+    <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
+    <h2>四向布局与三种外观</h2>
+    <DemoBlock :code="LayoutsCode" desc=""><Layouts /></DemoBlock>
+
+    <h2>异步切换守卫</h2>
+    <DemoBlock :code="GuardCode" desc=""><Guard /></DemoBlock>
+  </div>
+</template>

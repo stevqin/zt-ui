@@ -10,9 +10,10 @@
     "build": "npm run typecheck && vite build",
     "preview": "vite preview",
     "docs:api": "node scripts/generate-api.mjs",
-    "prebuild": "npm run docs:api",
+    "prebuild": "npm run docs:api && npm run docs:examples",
     "predev": "npm run docs:api",
-    "pretest": "npm run docs:api"
+    "pretest": "npm run docs:api && npm run docs:examples",
+    "docs:examples": "node scripts/audit-examples.mjs"
   },
   "dependencies": {
     "@ztechjs/zt-ui": "file:..",
@@ -23,6 +24,7 @@
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.5.0",
     "happy-dom": "20.8.9",
+    "prettier": "^3.9.7",
     "sass": "^1.89.2",
     "typescript": "^5.9.3",
     "vite": "^6.3.5",

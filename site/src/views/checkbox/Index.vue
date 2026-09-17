@@ -1,47 +1,49 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { ZtCheckbox, ZtCheckboxGroup } from '@ztechjs/zt-ui'
-import DemoBlock from '@/components/DemoBlock.vue'
-import { sfc } from '@/utils/exampleCode'
-
-const checked = ref(true)
-const unchecked = ref(false)
-const group = ref(['A'])
-const statusGroup = ref(['A', 'B'])
-const bordered = ref(['阅读'])
-const cities = ['上海', '杭州', '宁波', '南京']
-const selectedCities = ref(['上海', '杭州'])
-const allChecked = computed(() => selectedCities.value.length === cities.length)
-const indeterminate = computed(() => selectedCities.value.length > 0 && !allChecked.value)
-function toggleAll(value: boolean) { selectedCities.value = value ? [...cities] : [] }
-
-const imports = `import { ref } from 'vue'\nimport { ZtCheckbox, ZtCheckboxGroup } from '@ztechjs/zt-ui'`
-const codeBasic = sfc(`${imports}\n\nconst first = ref(false)\nconst second = ref(true)`, `<ZtCheckbox v-model="first">选项一</ZtCheckbox>\n<ZtCheckbox v-model="second">选项二（默认选中）</ZtCheckbox>`)
-const codeDisabled = sfc(`${imports}\n\nconst checked = ref(true)\nconst unchecked = ref(false)`, `<ZtCheckbox v-model="checked" disabled>禁用已选</ZtCheckbox>\n<ZtCheckbox v-model="unchecked" disabled>禁用未选</ZtCheckbox>`)
-const codeGroup = sfc(`${imports}\n\nconst value = ref(['A'])`, `<ZtCheckboxGroup v-model="value">\n  <ZtCheckbox value="A">选项 A</ZtCheckbox>\n  <ZtCheckbox value="B">选项 B</ZtCheckbox>\n  <ZtCheckbox value="C">选项 C</ZtCheckbox>\n</ZtCheckboxGroup>`)
-const codeStatus = sfc(`${imports}\n\nconst value = ref(['A', 'B'])`, `<ZtCheckboxGroup v-model="value" status="primary"><ZtCheckbox value="A">Primary</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox></ZtCheckboxGroup>\n<ZtCheckboxGroup v-model="value" status="success"><ZtCheckbox value="A">Success</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox></ZtCheckboxGroup>\n<ZtCheckboxGroup v-model="value" status="danger"><ZtCheckbox value="A">Danger</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox></ZtCheckboxGroup>`)
-const codeIndeterminate = sfc(`import { computed, ref } from 'vue'\nimport { ZtCheckbox, ZtCheckboxGroup } from '@ztechjs/zt-ui'\n\nconst options = ['上海', '杭州', '宁波', '南京']\nconst selected = ref(['上海', '杭州'])\nconst all = computed(() => selected.value.length === options.length)\nconst partial = computed(() => selected.value.length > 0 && !all.value)\nfunction toggleAll(value: boolean) { selected.value = value ? [...options] : [] }`, `<ZtCheckbox :model-value="all" :indeterminate="partial" @change="toggleAll">全选</ZtCheckbox>\n<ZtCheckboxGroup v-model="selected">\n  <ZtCheckbox v-for="item in options" :key="item" :value="item">{{ item }}</ZtCheckbox>\n</ZtCheckboxGroup>`)
-const codeBorder = sfc(`${imports}\n\nconst value = ref(['阅读'])`, `<ZtCheckboxGroup v-model="value" size="small">\n  <ZtCheckbox value="阅读" border>阅读</ZtCheckbox>\n  <ZtCheckbox value="旅行" border>旅行</ZtCheckbox>\n  <ZtCheckbox value="编程" border>编程</ZtCheckbox>\n</ZtCheckboxGroup>`)
-const codeSize = sfc(`${imports}\n\nconst value = ref(['选中'])`, `<ZtCheckboxGroup v-model="value" size="mini"><ZtCheckbox value="选中" border>Mini</ZtCheckbox></ZtCheckboxGroup>\n<ZtCheckboxGroup v-model="value" size="small"><ZtCheckbox value="选中" border>Small</ZtCheckbox></ZtCheckboxGroup>\n<ZtCheckboxGroup v-model="value" size="medium"><ZtCheckbox value="选中" border>Medium</ZtCheckbox></ZtCheckboxGroup>\n<ZtCheckboxGroup v-model="value" size="large"><ZtCheckbox value="选中" border>Large</ZtCheckbox></ZtCheckboxGroup>`)
+import DemoBlock from '@/components/DemoBlock.vue';
+import Example01 from './Example01.vue';
+import Example01Code from './Example01.vue?raw';
+import Example02 from './Example02.vue';
+import Example02Code from './Example02.vue?raw';
+import Example03 from './Example03.vue';
+import Example03Code from './Example03.vue?raw';
+import Example04 from './Example04.vue';
+import Example04Code from './Example04.vue?raw';
+import Example05 from './Example05.vue';
+import Example05Code from './Example05.vue?raw';
+import Example06 from './Example06.vue';
+import Example06Code from './Example06.vue?raw';
+import Example07 from './Example07.vue';
+import Example07Code from './Example07.vue?raw';
+import Limits from './Limits.vue';
+import LimitsCode from './Limits.vue?raw';
 </script>
 
 <template>
   <div class="doc-section">
-    <h1>Checkbox 多选框</h1><p>在一组备选项中进行多选。</p>
+    <h1>Checkbox 多选框</h1>
+    <p>在一组备选项中进行多选。</p>
     <h2>基础用法</h2>
-    <DemoBlock :code="codeBasic" desc="使用 v-model 绑定布尔值。"><div class="demo-row"><ZtCheckbox v-model="unchecked">选项一</ZtCheckbox><ZtCheckbox v-model="checked">选项二（默认选中）</ZtCheckbox></div></DemoBlock>
+    <DemoBlock :code="Example01Code" desc="使用 v-model 绑定布尔值。"><Example01 /></DemoBlock>
     <h2>禁用</h2>
-    <DemoBlock :code="codeDisabled" desc="设置 disabled 禁用。"><div class="demo-row"><ZtCheckbox v-model="checked" disabled>禁用已选</ZtCheckbox><ZtCheckbox v-model="unchecked" disabled>禁用未选</ZtCheckbox></div></DemoBlock>
+    <DemoBlock :code="Example02Code" desc="设置 disabled 禁用。"><Example02 /></DemoBlock>
     <h2>CheckboxGroup 组合</h2>
-    <DemoBlock :code="codeGroup" desc="CheckboxGroup 使用数组统一管理多选。"><div class="demo-row"><ZtCheckboxGroup v-model="group"><ZtCheckbox value="A">选项 A</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox><ZtCheckbox value="C">选项 C</ZtCheckbox></ZtCheckboxGroup></div></DemoBlock>
+    <DemoBlock :code="Example03Code" desc="CheckboxGroup 使用数组统一管理多选。"
+      ><Example03
+    /></DemoBlock>
     <h2>颜色状态</h2>
-    <DemoBlock :code="codeStatus" desc="通过 CheckboxGroup 的 status 设置选中颜色。"><div class="demo-row"><ZtCheckboxGroup v-model="statusGroup" status="primary"><ZtCheckbox value="A">Primary</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox></ZtCheckboxGroup></div><div class="demo-row"><ZtCheckboxGroup v-model="statusGroup" status="success"><ZtCheckbox value="A">Success</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox></ZtCheckboxGroup></div><div class="demo-row"><ZtCheckboxGroup v-model="statusGroup" status="danger"><ZtCheckbox value="A">Danger</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox></ZtCheckboxGroup></div></DemoBlock>
+    <DemoBlock :code="Example04Code" desc="通过 CheckboxGroup 的 status 设置选中颜色。"
+      ><Example04
+    /></DemoBlock>
     <h2>半选状态</h2>
-    <DemoBlock :code="codeIndeterminate" desc="indeterminate 常用于全选逻辑。"><div class="demo-row"><ZtCheckbox :model-value="allChecked" :indeterminate="indeterminate" @change="toggleAll">全选</ZtCheckbox></div><div class="demo-row"><ZtCheckboxGroup v-model="selectedCities"><ZtCheckbox v-for="city in cities" :key="city" :value="city">{{ city }}</ZtCheckbox></ZtCheckboxGroup></div></DemoBlock>
+    <DemoBlock :code="Example05Code" desc="indeterminate 常用于全选逻辑。"><Example05 /></DemoBlock>
     <h2>带边框</h2>
-    <DemoBlock :code="codeBorder" desc="设置 border 展示带边框样式。"><div class="demo-row"><ZtCheckboxGroup v-model="bordered" size="small"><ZtCheckbox value="阅读" border>阅读</ZtCheckbox><ZtCheckbox value="旅行" border>旅行</ZtCheckbox><ZtCheckbox value="编程" border>编程</ZtCheckbox></ZtCheckboxGroup></div></DemoBlock>
+    <DemoBlock :code="Example06Code" desc="设置 border 展示带边框样式。"><Example06 /></DemoBlock>
     <h2>尺寸</h2>
-    <DemoBlock :code="codeSize" desc="支持 mini、small、default、medium、large。"><div class="demo-row"><ZtCheckboxGroup v-model="bordered" size="mini"><ZtCheckbox value="阅读" border>Mini</ZtCheckbox></ZtCheckboxGroup><ZtCheckboxGroup v-model="bordered" size="small"><ZtCheckbox value="阅读" border>Small</ZtCheckbox></ZtCheckboxGroup><ZtCheckboxGroup v-model="bordered" size="medium"><ZtCheckbox value="阅读" border>Medium</ZtCheckbox></ZtCheckboxGroup><ZtCheckboxGroup v-model="bordered" size="large"><ZtCheckbox value="阅读" border>Large</ZtCheckbox></ZtCheckboxGroup></div></DemoBlock>
+    <DemoBlock :code="Example07Code" desc="支持 mini、small、default、medium、large。"
+      ><Example07
+    /></DemoBlock>
 
-    </div>
+    <h2>组内数量限制与事件</h2>
+    <DemoBlock :code="LimitsCode" desc=""><Limits /></DemoBlock>
+  </div>
 </template>
