@@ -4,20 +4,12 @@ import { ZtPagination } from '@ztechjs/zt-ui';
 
 <template>
   <div class="pagination-stack">
-    <ZtPagination size="mini" layout="prev, pager, next" :total="100" /><ZtPagination
-      size="small"
-      layout="prev, pager, next"
-      :total="100"
-    /><ZtPagination layout="prev, pager, next" :total="100" /><ZtPagination
-      size="medium"
-      background
-      layout="prev, pager, next"
-      :total="100"
-    /><ZtPagination size="large" layout="prev, pager, next" :total="100" /><ZtPagination
-      disabled
-      layout="prev, pager, next"
-      :total="100"
-    />
+    <ZtPagination size="mini" layout="sizes, prev, pager, next, jumper" :total="100" />
+    <ZtPagination size="small" layout="sizes, prev, pager, next, jumper" :total="100" />
+    <ZtPagination size="default" layout="sizes, prev, pager, next, jumper" :total="100" />
+    <ZtPagination size="medium" background layout="sizes, prev, pager, next, jumper" :total="100" />
+    <ZtPagination size="large" layout="sizes, prev, pager, next, jumper" :total="100" />
+    <ZtPagination disabled layout="sizes, prev, pager, next, jumper" :total="100" />
   </div>
 </template>
 

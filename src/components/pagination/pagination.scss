@@ -2,6 +2,7 @@
 
 .zt-pagination {
   @include glass.tokens;
+  --zt-pagination-control-height: 32px;
   --zt-pagination-ink: var(--glass-accent);
   --zt-pagination-soft: var(--glass-accent-soft);
   --zt-pagination-line: var(--glass-accent-line);
@@ -52,7 +53,7 @@
     align-items: center;
     justify-content: center;
     min-width: 32px;
-    height: 32px;
+    height: var(--zt-pagination-control-height);
     padding: 0 8px;
     border: 1px solid transparent;
     border-radius: glass.radius(9px);
@@ -80,7 +81,7 @@
   &__total { white-space: nowrap; }
 
   &__jumper input {
-    height: 32px;
+    height: var(--zt-pagination-control-height);
     border: 1px solid var(--glass-default-line);
     border-radius: glass.radius(9px);
     background: var(--zt-surface, rgba(255,255,255,.9));
@@ -93,7 +94,11 @@
     &:disabled { background: var(--zt-surface-soft, #f5f6f8); color: var(--zt-text-muted, #aeb3bb); cursor: not-allowed; }
   }
 
-  &__sizes { width: 126px; flex-shrink: 0; }
+  .zt-pagination__sizes {
+    --zt-select-height: var(--zt-pagination-control-height);
+    width: 126px;
+    flex-shrink: 0;
+  }
 
   &__jumper {
     display: inline-flex;
@@ -131,41 +136,45 @@
   }
 
   &--mini {
+    --zt-pagination-control-height: 22px;
     gap: 4px;
     font-size: var(--glass-size-mini);
     .zt-pagination__group, .zt-pagination__pager { gap: 2px; }
-    .zt-pagination__button { min-width: 22px; height: 22px; padding: 0 4px; border-radius: glass.radius(6px); font-size: 11px; }
+    .zt-pagination__button { min-width: 22px; padding: 0 4px; border-radius: glass.radius(6px); font-size: 11px; }
     .zt-pagination__button svg { width: 12px; height: 12px; }
-    .zt-pagination__jumper input { height: 22px; border-radius: glass.radius(6px); }
+    .zt-pagination__jumper input { border-radius: glass.radius(6px); }
     .zt-pagination__sizes { width: 112px; }
     .zt-pagination__jumper input { width: 42px; }
   }
 
   &--small {
+    --zt-pagination-control-height: 26px;
     gap: 5px;
     font-size: var(--glass-size-small);
 
     .zt-pagination__group, .zt-pagination__pager { gap: 3px; }
-    .zt-pagination__button { min-width: 26px; height: 26px; padding: 0 6px; border-radius: glass.radius(7px); font-size: 12px; }
+    .zt-pagination__button { min-width: 26px; padding: 0 6px; border-radius: glass.radius(7px); font-size: 12px; }
     .zt-pagination__button svg { width: 14px; height: 14px; }
-    .zt-pagination__jumper input { height: 26px; border-radius: glass.radius(7px); }
+    .zt-pagination__jumper input { border-radius: glass.radius(7px); }
   }
 
   &--medium {
+    --zt-pagination-control-height: 35px;
     gap: 9px;
     font-size: var(--glass-size-medium);
-    .zt-pagination__button { min-width: 35px; height: 35px; padding: 0 9px; border-radius: glass.radius(10px); font-size: 14px; }
+    .zt-pagination__button { min-width: 35px; padding: 0 9px; border-radius: glass.radius(10px); font-size: 14px; }
     .zt-pagination__button svg { width: 17px; height: 17px; }
-    .zt-pagination__jumper input { height: 35px; border-radius: glass.radius(10px); }
+    .zt-pagination__jumper input { border-radius: glass.radius(10px); }
   }
 
   &--large {
+    --zt-pagination-control-height: 38px;
     gap: 10px;
     font-size: var(--glass-size-large);
 
-    .zt-pagination__button { min-width: 38px; height: 38px; border-radius: glass.radius(11px); font-size: 14px; }
+    .zt-pagination__button { min-width: 38px; border-radius: glass.radius(11px); font-size: 14px; }
     .zt-pagination__button svg { width: 18px; height: 18px; }
-    .zt-pagination__jumper input { height: 38px; border-radius: glass.radius(11px); }
+    .zt-pagination__jumper input { border-radius: glass.radius(11px); }
   }
 
   &.is-disabled { color: var(--zt-text-muted, #aeb3bb); }

@@ -173,7 +173,6 @@
     border-radius: 0;
     box-shadow: none;
     transition: background-color 160ms, color 160ms;
-    & + .zt-radio { border-left: 1px solid var(--glass-default-line); }
     &:first-child { border-radius: inherit; border-top-right-radius: 0; border-bottom-right-radius: 0; }
     &:last-child { border-radius: inherit; border-top-left-radius: 0; border-bottom-left-radius: 0; }
     &:only-child { border-radius: inherit; }
