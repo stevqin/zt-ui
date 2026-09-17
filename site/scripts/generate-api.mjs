@@ -1,6 +1,9 @@
 import ts from 'typescript'
 import { parse as parseSfc } from 'vue/compiler-sfc'
 import { methods as methodOverrides } from './api-overrides.mjs'
+import { metadataKeys, rowMetadata, sharedDescription } from './api/metadata/index.mjs'
+import { normalizeDefault, normalizeEventType, toTemplateName } from './api/normalize.mjs'
+import { validateApiDocuments } from './api/validate.mjs'
 import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { resolve, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -31,6 +34,12 @@ const config = {
  button:['button','ZtButton'], tag:['tag','ZtTag'], badge:['badge','ZtBadge'], radio:['radio','ZtRadio','ZtRadioGroup'], checkbox:['checkbox','ZtCheckbox','ZtCheckboxGroup'], switch:['switch','ZtSwitch'], input:['input','ZtInput'], password:['input','ZtPassword'], 'input-number':['input-number','ZtInputNumber'], select:['select','ZtSelect'], form:['form','ZtForm','ZtFormItem','ZtFormGroup'], steps:['steps','ZtSteps','ZtStep'], pagination:['pagination','ZtPagination'], modal:['modal','ZtModal'], drawer:['drawer','ZtDrawer'], 'date-picker':['date-picker','ZtDatePicker'], 'date-time-picker':['date-picker','ZtDateTimePicker'], 'vtable-grid':['vtable-grid','ZtVTableGrid'],
 }
 const output = {}
+const usedMetadata = new Set()
+const metaFor = (id, owner, section, name) => {
+ const key=`${id}.${owner}.${section}.${name}`
+ if(metadataKeys.has(key)) usedMetadata.add(key)
+ return rowMetadata(id,owner,section,name)
+}
 for(const [id,[dir,...names]] of Object.entries(config)) {
  const page=readFileSync(resolve(root,`site/src/views/${id}/Index.vue`),'utf8')
  const descriptions=new Map()
@@ -68,7 +77,10 @@ for(const [id,[dir,...names]] of Object.entries(config)) {
   const type=checker.getTypeAtLocation(declaration)
   const props=checker.getPropertiesOfType(type).map(symbol=>{
    const node=symbol.valueDeclaration??symbol.declarations[0]
-   return {name:symbol.name, type:node.type?.getText()??checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol,node)),required:!(symbol.flags&ts.SymbolFlags.Optional),default:defaults[symbol.name]??(symbol.name==='size' && !['ZtDrawer'].includes(name)?'default（可继承）':'未设置'),description:descriptions.get(name+'.'+symbol.name)??(symbol.name==='modelValue'?descriptions.get(name+'.v-model'):undefined)??ts.displayPartsToString(symbol.getDocumentationComment(checker))}
+   const required=!(symbol.flags&ts.SymbolFlags.Optional)
+   const metadata=metaFor(id,name,'props',symbol.name)
+   const inherited=symbol.name==='size' && name!=='ZtDrawer' ? 'default' : undefined
+   return {name:symbol.name,templateName:toTemplateName(symbol.name),kind:'prop',type:metadata.type??node.type?.getText()??checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol,node)),required,default:normalizeDefault({required,defaultValue:metadata.defaultValue??defaults[symbol.name],inherit:metadata.inherit??inherited,runtimeDefault:metadata.runtimeDefault,parentDefault:metadata.parentDefault}),description:metadata.description??descriptions.get(name+'.'+symbol.name)??(symbol.name==='modelValue'?descriptions.get(name+'.v-model'):undefined)??ts.displayPartsToString(symbol.getDocumentationComment(checker))??sharedDescription('props',symbol.name)}
   })
   const slotMap=new Map()
   const template=parseSfc(content).descriptor.template?.ast
@@ -82,15 +94,15 @@ for(const [id,[dir,...names]] of Object.entries(config)) {
    for(const child of node.children??[]) visitTemplate(child)
   }
   visitTemplate(template)
-  const slots=[...slotMap.values()]
+  const slots=[...slotMap.values()].map(row=>{const metadata=metaFor(id,name,'slots',row.name);return{...row,kind:'slot',type:metadata.type??row.type,description:metadata.description??sharedDescription('slots',row.name)}})
 
   const instance=declarations.get(name+'Instance')
   if(instance) {const it=checker.getTypeAtLocation(instance);for(const m of methods){const symbol=it.getProperty(m.name); if(symbol){const d=symbol.valueDeclaration??symbol.declarations[0];m.type=d.type?.getText()??checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol,d))}}}
   for(const m of methods) if(!m.type){const fn=source.statements.find(n=>ts.isFunctionDeclaration(n)&&n.name?.text===m.name);m.type=fn?`(${fn.parameters.map(p=>p.getText(source)).join(', ')})${fn.type?': '+fn.type.getText(source):''}`:'通过组件 ref 访问'}
   for (const method of methods) method.type = methodOverrides[name]?.[method.name] ?? method.type
-  if(name==='ZtConfigProvider') for(const p of props) p.default=({size:'继承父级 / default',theme:'继承父级 / light',borderRadius:'继承父级 / 11'})[p.name]
-  if(name==='ZtVTableGrid') {const p=props.find(p=>p.name==='pageSize');p.default='200';p.description='优先使用 pageSize，其次 pagination.pageSize，均未设置时为 200。支持 v-model:page-size。'}
-  docs.push({name,props,events,slots,methods})
+  events=events.map(row=>{const metadata=metaFor(id,name,'events',row.name);return{...row,kind:'event',type:metadata.type??normalizeEventType(row.type),description:metadata.description??sharedDescription('events',row.name)}})
+  const exposes=methods.map(row=>{const metadata=metaFor(id,name,'exposes',row.name);const kind=metadata.kind??(row.type.includes('=>')||row.type.startsWith('(')?'method':'property');return{...row,kind,type:metadata.type??row.type,description:metadata.description??sharedDescription('exposes',row.name)}})
+  docs.push({name,props,events,slots,exposes})
  }
  const types=[...declarations].filter(([,n])=>n.getSourceFile().fileName===resolve(root,`src/components/${dir}/types.ts`)).map(([name,n])=>({name,code:n.getText()}))
  // Include referenced shared types (theme, size, overlay contracts).
@@ -99,5 +111,9 @@ for(const [id,[dir,...names]] of Object.entries(config)) {
  const sections=[...page.matchAll(/<h[23]>([^<]+)<\/h[23]>/g)].map(m=>m[1])
  output[id]={components:docs,types:types.map(t=>({...t,public:publicTypes.has(t.name)})),sections}
 }
+const stale=[...metadataKeys].filter(key=>!usedMetadata.has(key))
+if(stale.length) throw new Error(`API metadata does not match source:\n${stale.join('\n')}`)
+const errors=validateApiDocuments(output)
+if(errors.length) throw new Error(`API documentation validation failed:\n${errors.join('\n')}`)
 writeFileSync(resolve(root,'site/src/docs/api.generated.json'),JSON.stringify(output,null,2)+'\n')
 console.log(`API reference generated for ${Object.keys(output).length} component pages`)

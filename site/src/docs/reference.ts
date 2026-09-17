@@ -1,6 +1,7 @@
 import data from './api.generated.json'
-export type ApiRow = { name: string; type: string; description?: string; default?: string; required?: boolean }
-export type ApiDocument = { components: { name: string; props: ApiRow[]; events: ApiRow[]; slots: ApiRow[]; methods: ApiRow[] }[]; types: { name: string; code: string; public: boolean }[]; sections: string[] }
+export type ApiRowKind = 'prop' | 'event' | 'slot' | 'method' | 'property'
+export type ApiRow = { name: string; templateName?: string; kind: ApiRowKind; type: string; description: string; default?: string; required?: boolean }
+export type ApiDocument = { components: { name: string; props: ApiRow[]; events: ApiRow[]; slots: ApiRow[]; exposes: ApiRow[] }[]; types: { name: string; code: string; public: boolean }[]; sections: string[] }
 export const api = data as Record<string, ApiDocument>
 export const descriptions: Record<string, string> = {
  modelValue: '通过 v-model 绑定的当前值，值类型见左侧。', disabled: '禁用此组件或组合内的控件。', size: '组件尺寸；继承关系参见通用约定。', status: '组件的颜色或状态，支持值见类型定义。',
