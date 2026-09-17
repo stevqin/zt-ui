@@ -36,9 +36,5 @@ const codeHit = sfc(tagImport, `<ZtTag hit>默认</ZtTag>\n<ZtTag hit status="pr
     <h2>边框描边</h2>
     <DemoBlock :code="codeHit" desc="hit 为 light 主题增加描边。"><div class="demo-row"><ZtTag hit>默认</ZtTag><ZtTag hit status="primary">主要</ZtTag><ZtTag hit status="success">成功</ZtTag><ZtTag hit status="danger">危险</ZtTag></div></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>status</code></td><td><code>default | primary | success | warning | danger | info</code></td><td><code>default</code></td><td>颜色</td></tr><tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr><tr><td><code>effect</code></td><td><code>light | dark | plain</code></td><td><code>light</code></td><td>主题</td></tr><tr><td><code>closable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>可关闭</td></tr><tr><td><code>round</code></td><td><code>boolean</code></td><td><code>false</code></td><td>圆角</td></tr><tr><td><code>hit</code></td><td><code>boolean</code></td><td><code>false</code></td><td>描边</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>

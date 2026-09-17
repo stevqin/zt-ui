@@ -11,7 +11,7 @@
             "type": "ZtIconName",
             "required": false,
             "default": "无默认值",
-            "description": "内置图标名称。默认插槽和 component 的优先级更高。"
+            "description": "传递给内部原生表单控件的 name 属性。"
           },
           {
             "name": "component",
@@ -29,7 +29,7 @@
             "type": "ZtComponentSize | number | string",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "五档预设尺寸、像素数值或 CSS 长度，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "color",
@@ -47,7 +47,7 @@
             "type": "ZtIconStatus",
             "required": false,
             "default": "'default'",
-            "description": "图标主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "rotate",
@@ -83,14 +83,14 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "图标的无障碍名称；未设置时视为装饰内容。"
+            "description": "展示给用户的标签文字；选项组件可同时将其作为选项值。"
           }
         ],
         "events": [],
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -124,8 +124,7 @@
       "内置图标",
       "尺寸",
       "主题颜色",
-      "旋转、自定义颜色与组件",
-      "API"
+      "旋转、自定义颜色与组件"
     ]
   },
   "link": {
@@ -194,7 +193,7 @@
             "type": "ZtLinkStatus",
             "required": false,
             "default": "'default'",
-            "description": "链接主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -203,7 +202,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "链接尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "disabled",
@@ -212,7 +211,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用导航、点击事件和键盘聚焦。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "underline",
@@ -253,19 +252,19 @@
         "slots": [
           {
             "name": "icon",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义状态或装饰图标。"
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           },
           {
             "name": "suffix",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域尾部的内容。"
           }
@@ -308,8 +307,7 @@
     "sections": [
       "基础用法",
       "状态颜色",
-      "尺寸与图标",
-      "API"
+      "尺寸与图标"
     ]
   },
   "text": {
@@ -333,7 +331,7 @@
             "type": "ZtTextStatus",
             "required": false,
             "default": "'default'",
-            "description": "文本主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -342,7 +340,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "文本尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "weight",
@@ -378,14 +376,14 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "原生 title；截断纯文本未设置时自动生成。"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           }
         ],
         "events": [],
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -424,8 +422,7 @@
       "状态颜色",
       "尺寸与字重",
       "文本省略",
-      "语义标签",
-      "API"
+      "语义标签"
     ]
   },
   "scrollbar": {
@@ -539,7 +536,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "轨道密度尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           }
         ],
         "events": [
@@ -553,7 +550,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -618,8 +615,7 @@
       "固定高度",
       "横向滚动与常显轨道",
       "原生模式",
-      "滚动事件与实例方法",
-      "API"
+      "滚动事件与实例方法"
     ]
   },
   "popover": {
@@ -643,7 +639,7 @@
             "type": "ZtPopoverTrigger",
             "required": false,
             "default": "'click'",
-            "description": "触发方式。"
+            "description": "打开浮层的交互方式，例如 click、hover 或 focus。"
           },
           {
             "name": "placement",
@@ -652,7 +648,7 @@
             "type": "ZtPopoverPlacement",
             "required": false,
             "default": "'bottom'",
-            "description": "首选出现方位，空间不足时自动翻转。"
+            "description": "浮层相对触发元素的首选方位；空间不足时会自动调整。"
           },
           {
             "name": "width",
@@ -661,7 +657,7 @@
             "type": "number|string",
             "required": false,
             "default": "无默认值",
-            "description": "浮层宽度，数值按像素处理。"
+            "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
           },
           {
             "name": "offset",
@@ -679,7 +675,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用全部打开交互。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "showArrow",
@@ -724,7 +720,7 @@
             "type": "number",
             "required": false,
             "default": "1000",
-            "description": "浮层层级。"
+            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
           },
           {
             "name": "persistent",
@@ -771,13 +767,13 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           },
           {
             "name": "content",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的主要正文内容。"
           }
@@ -835,8 +831,7 @@
     "sections": [
       "基础用法",
       "触发方式",
-      "手动控制",
-      "API"
+      "手动控制"
     ]
   },
   "popconfirm": {
@@ -860,7 +855,7 @@
             "type": "string",
             "required": true,
             "default": "必填",
-            "description": "确认标题。"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "description",
@@ -869,7 +864,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "补充说明。"
+            "description": "主内容之外的补充说明文字。"
           },
           {
             "name": "status",
@@ -878,7 +873,7 @@
             "type": "ZtPopconfirmStatus",
             "required": false,
             "default": "'warning'",
-            "description": "语义主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "icon",
@@ -905,7 +900,7 @@
             "type": "string",
             "required": false,
             "default": "'确定'",
-            "description": "确认按钮文字。"
+            "description": "内置确认按钮的文字。"
           },
           {
             "name": "cancelText",
@@ -914,7 +909,7 @@
             "type": "string",
             "required": false,
             "default": "'取消'",
-            "description": "取消按钮文字。"
+            "description": "内置取消按钮的文字。"
           },
           {
             "name": "buttonSize",
@@ -923,7 +918,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "'small'",
-            "description": "按钮尺寸。"
+            "description": "确认与取消按钮的尺寸。"
           },
           {
             "name": "confirmLoading",
@@ -932,7 +927,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "外部确认加载状态。"
+            "description": "确认按钮是否显示加载状态并阻止重复提交。"
           },
           {
             "name": "confirmDisabled",
@@ -941,7 +936,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用确认按钮。"
+            "description": "是否禁用内置确认按钮。"
           },
           {
             "name": "cancelDisabled",
@@ -977,7 +972,7 @@
             "type": "ZtPopoverPlacement",
             "required": false,
             "default": "'top'",
-            "description": "浮层方位。"
+            "description": "浮层相对触发元素的首选方位；空间不足时会自动调整。"
           },
           {
             "name": "disabled",
@@ -986,7 +981,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "整体禁用。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           }
         ],
         "events": [
@@ -1018,7 +1013,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1055,8 +1050,7 @@
     ],
     "sections": [
       "危险操作",
-      "异步确认",
-      "API"
+      "异步确认"
     ]
   },
   "tabs": {
@@ -1071,7 +1065,7 @@
             "type": "ZtTabName",
             "required": false,
             "default": "无默认值",
-            "description": "当前标签名称，支持 v-model。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "type",
@@ -1080,7 +1074,7 @@
             "type": "ZtTabsType",
             "required": false,
             "default": "'line'",
-            "description": "标签外观。"
+            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           },
           {
             "name": "position",
@@ -1143,7 +1137,7 @@
             "type": "ZtTabsStatus",
             "required": false,
             "default": "'primary'",
-            "description": "选中主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -1152,7 +1146,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           }
         ],
         "events": [
@@ -1190,7 +1184,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1207,7 +1201,7 @@
             "type": "ZtTabName",
             "required": true,
             "default": "必填",
-            "description": "标签唯一名称。"
+            "description": "传递给内部原生表单控件的 name 属性。"
           },
           {
             "name": "label",
@@ -1216,7 +1210,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "标签文字。"
+            "description": "展示给用户的标签文字；选项组件可同时将其作为选项值。"
           },
           {
             "name": "disabled",
@@ -1225,7 +1219,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用选择。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "closable",
@@ -1250,7 +1244,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1297,8 +1291,7 @@
     ],
     "sections": [
       "基础与禁用",
-      "卡片与可编辑",
-      "API"
+      "卡片与可编辑"
     ]
   },
   "breadcrumb": {
@@ -1322,7 +1315,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "ariaLabel",
@@ -1331,14 +1324,14 @@
             "type": "string",
             "required": false,
             "default": "'面包屑'",
-            "description": "导航的无障碍名称。"
+            "description": "传递给主要交互元素的无障碍名称。"
           }
         ],
         "events": [],
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1373,7 +1366,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用导航。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "target",
@@ -1389,13 +1382,13 @@
         "slots": [
           {
             "name": "separator",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义分隔符。"
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1422,8 +1415,7 @@
     ],
     "sections": [
       "基础用法",
-      "自定义分隔",
-      "API"
+      "自定义分隔"
     ]
   },
   "segmented": {
@@ -1438,7 +1430,7 @@
             "type": "ZtSegmentedValue",
             "required": false,
             "default": "无默认值",
-            "description": "当前值，支持 v-model。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "options",
@@ -1447,7 +1439,7 @@
             "type": "Array<ZtSegmentedValue | ZtSegmentedOption>",
             "required": true,
             "default": "必填",
-            "description": "字符串、数字、布尔值或完整选项。"
+            "description": "可选项数据；字段结构由对应选项类型声明。"
           },
           {
             "name": "disabled",
@@ -1456,7 +1448,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "整体禁用。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "block",
@@ -1474,7 +1466,7 @@
             "type": "ZtSegmentedStatus",
             "required": false,
             "default": "'primary'",
-            "description": "选中主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -1483,7 +1475,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "ariaLabel",
@@ -1492,7 +1484,7 @@
             "type": "string",
             "required": false,
             "default": "'分段控制器'",
-            "description": "无障碍名称。"
+            "description": "传递给主要交互元素的无障碍名称。"
           }
         ],
         "events": [
@@ -1547,8 +1539,7 @@
     ],
     "sections": [
       "对象选项",
-      "全宽与主题",
-      "API"
+      "全宽与主题"
     ]
   },
   "descriptions": {
@@ -1563,7 +1554,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "标题。"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "column",
@@ -1608,26 +1599,26 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           }
         ],
         "events": [],
         "slots": [
           {
             "name": "title",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标题内容。"
           },
           {
             "name": "extra",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "标题或结果区域的附加操作。"
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1644,7 +1635,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "标签文字。"
+            "description": "展示给用户的标签文字；选项组件可同时将其作为选项值。"
           },
           {
             "name": "span",
@@ -1678,13 +1669,13 @@
         "slots": [
           {
             "name": "label",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标签内容。"
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1710,8 +1701,7 @@
       }
     ],
     "sections": [
-      "带边框的详情",
-      "API"
+      "带边框的详情"
     ]
   },
   "collapse": {
@@ -1726,7 +1716,7 @@
             "type": "ZtCollapseName|ZtCollapseName[]",
             "required": false,
             "default": "无默认值",
-            "description": "展开的面板名称，支持 v-model。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "accordion",
@@ -1744,7 +1734,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           }
         ],
         "events": [
@@ -1764,7 +1754,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1781,7 +1771,7 @@
             "type": "ZtCollapseName",
             "required": true,
             "default": "必填",
-            "description": "面板唯一名称。"
+            "description": "传递给内部原生表单控件的 name 属性。"
           },
           {
             "name": "title",
@@ -1790,7 +1780,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "标题。"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "disabled",
@@ -1799,7 +1789,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用面板。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "lazy",
@@ -1815,13 +1805,13 @@
         "slots": [
           {
             "name": "title",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标题内容。"
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -1853,8 +1843,7 @@
     ],
     "sections": [
       "多面板",
-      "手风琴",
-      "API"
+      "手风琴"
     ]
   },
   "result": {
@@ -1869,7 +1858,7 @@
             "type": "ZtResultStatus",
             "required": false,
             "default": "'info'",
-            "description": "结果状态或 HTTP 状态。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "title",
@@ -1878,7 +1867,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "主标题。"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "subTitle",
@@ -1903,25 +1892,25 @@
         "slots": [
           {
             "name": "icon",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义状态或装饰图标。"
           },
           {
             "name": "title",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标题内容。"
           },
           {
             "name": "sub-title",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义结果副标题。"
           },
           {
             "name": "extra",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "标题或结果区域的附加操作。"
           }
@@ -1948,8 +1937,7 @@
     ],
     "sections": [
       "成功结果",
-      "异常状态",
-      "API"
+      "异常状态"
     ]
   },
   "image": {
@@ -2018,7 +2006,7 @@
             "type": "number",
             "required": false,
             "default": "0",
-            "description": "预览初始索引。"
+            "description": "打开图片预览时首先显示的图片索引。"
           },
           {
             "name": "infinite",
@@ -2027,7 +2015,7 @@
             "type": "boolean",
             "required": false,
             "default": "true",
-            "description": "是否循环预览。"
+            "description": "图片预览到边界后是否循环切换。"
           },
           {
             "name": "hideOnClickModal",
@@ -2054,7 +2042,7 @@
             "type": "number",
             "required": false,
             "default": "2000",
-            "description": "预览层级。"
+            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
           }
         ],
         "events": [
@@ -2092,13 +2080,13 @@
         "slots": [
           {
             "name": "placeholder",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "没有值时的自定义占位内容。"
           },
           {
             "name": "error",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "加载失败时的自定义错误状态。"
           }
@@ -2124,7 +2112,7 @@
             "type": "number",
             "required": false,
             "default": "0",
-            "description": "初始索引。"
+            "description": "打开图片预览时首先显示的图片索引。"
           },
           {
             "name": "infinite",
@@ -2133,7 +2121,7 @@
             "type": "boolean",
             "required": false,
             "default": "true",
-            "description": "是否循环。"
+            "description": "图片预览到边界后是否循环切换。"
           },
           {
             "name": "zoomRate",
@@ -2142,7 +2130,7 @@
             "type": "number",
             "required": false,
             "default": "1.2",
-            "description": "缩放倍率。"
+            "description": "每次缩放操作使用的倍率。"
           },
           {
             "name": "minScale",
@@ -2151,7 +2139,7 @@
             "type": "number",
             "required": false,
             "default": ".2",
-            "description": "最小缩放。"
+            "description": "图片预览允许缩小到的最小比例。"
           },
           {
             "name": "maxScale",
@@ -2160,7 +2148,7 @@
             "type": "number",
             "required": false,
             "default": "7",
-            "description": "最大缩放。"
+            "description": "图片预览允许放大到的最大比例。"
           },
           {
             "name": "hideOnClickModal",
@@ -2187,7 +2175,7 @@
             "type": "number",
             "required": false,
             "default": "2000",
-            "description": "层级。"
+            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
           }
         ],
         "events": [
@@ -2227,8 +2215,7 @@
     ],
     "sections": [
       "适应与预览",
-      "错误后备",
-      "API"
+      "错误后备"
     ]
   },
   "avatar": {
@@ -2270,7 +2257,7 @@
             "type": "ZtAvatarSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "头像尺寸。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "shape",
@@ -2297,7 +2284,7 @@
             "type": "ZtAvatarStatus",
             "required": false,
             "default": "'default'",
-            "description": "状态主题。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "icon",
@@ -2326,7 +2313,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -2368,8 +2355,7 @@
     ],
     "sections": [
       "尺寸与形状",
-      "状态与后备",
-      "API"
+      "状态与后备"
     ]
   },
   "upload": {
@@ -2393,7 +2379,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "上传地址。默认请求使用 multipart/form-data；未配置地址或自定义请求时仅选择文件。"
+            "description": "接收上传请求的接口地址。"
           },
           {
             "name": "method",
@@ -2402,7 +2388,7 @@
             "type": "string",
             "required": false,
             "default": "'POST'",
-            "description": "请求方法。"
+            "description": "上传请求使用的 HTTP 方法；自定义 request 时由请求函数决定。"
           },
           {
             "name": "name",
@@ -2411,7 +2397,7 @@
             "type": "string",
             "required": false,
             "default": "'file'",
-            "description": "multipart 文件字段名。"
+            "description": "传递给内部原生表单控件的 name 属性。"
           },
           {
             "name": "headers",
@@ -2420,7 +2406,7 @@
             "type": "Record<string,string>",
             "required": false,
             "default": "{}",
-            "description": "附加请求头。"
+            "description": "上传请求附带的请求头；使用封装后的 request 时可由请求拦截器统一注入。"
           },
           {
             "name": "data",
@@ -2465,7 +2451,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "允许一次选择多个文件；false 时批量拖入只取第一个文件。"
+            "description": "是否允许选择多个选项；启用后 v-model 使用数组。"
           },
           {
             "name": "limit",
@@ -2662,13 +2648,13 @@
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           },
           {
             "name": "tip",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "上传或输入控件下方的提示内容。"
           },
@@ -2777,8 +2763,7 @@
       "表单联动",
       "接入真实接口",
       "请求与校验约定",
-      "事件与插槽",
-      "API"
+      "事件与插槽"
     ]
   },
   "input-otp": {
@@ -2793,7 +2778,7 @@
             "type": "string | null",
             "required": false,
             "default": "''",
-            "description": "输入值。使用字符串以保留开头的 0。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "length",
@@ -2829,7 +2814,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "默认继承 Form / ConfigProvider 的尺寸。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -2838,7 +2823,7 @@
             "type": "ZtInputOtpStatus",
             "required": false,
             "default": "'default'",
-            "description": "主题或校验状态，error 为 danger 的别名。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "disabled",
@@ -2847,7 +2832,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用输入，可继承 Form。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "readonly",
@@ -2856,7 +2841,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "只读。"
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
           },
           {
             "name": "separator",
@@ -2883,7 +2868,7 @@
             "type": "string",
             "required": false,
             "default": "'one-time-code'",
-            "description": "浏览器自动填充提示，默认 one-time-code。"
+            "description": "传递给原生输入框的 autocomplete 提示，例如 username 或 current-password。"
           },
           {
             "name": "autofocus",
@@ -2994,8 +2979,7 @@
       "主题颜色",
       "禁用与只读",
       "表单联动",
-      "键盘与自动填充",
-      "API"
+      "键盘与自动填充"
     ]
   },
   "menu": {
@@ -3010,7 +2994,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "当前选中叶子项的 key，支持 v-model。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "items",
@@ -3055,7 +3039,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用全部交互。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "size",
@@ -3064,7 +3048,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -3073,7 +3057,7 @@
             "type": "ZtMenuStatus",
             "required": false,
             "default": "'primary'",
-            "description": "选中项的主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "mode",
@@ -3127,7 +3111,7 @@
             "type": "number | string",
             "required": false,
             "default": "无默认值",
-            "description": "default 尺寸下的展开基准宽度；其他 size 加上对应偏移（mini -60、small -32、medium +28、large +56px）。支持数字、CSS 长度及 v-model:width；拖动回传基准值。"
+            "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
           },
           {
             "name": "collapsedWidth",
@@ -3190,7 +3174,7 @@
             "type": "string",
             "required": false,
             "default": "'菜单'",
-            "description": "菜单的无障碍名称。"
+            "description": "传递给主要交互元素的无障碍名称。"
           }
         ],
         "events": [
@@ -3300,8 +3284,7 @@
       "两栏复杂菜单",
       "横向导航",
       "路由模式",
-      "键盘导航",
-      "API"
+      "键盘导航"
     ]
   },
   "slider": {
@@ -3316,7 +3299,7 @@
             "type": "ZtSliderValue",
             "required": false,
             "default": "0",
-            "description": "当前数值；range 时使用 [起点, 终点]。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "min",
@@ -3325,7 +3308,7 @@
             "type": "number",
             "required": false,
             "default": "0",
-            "description": "最小值。"
+            "description": "允许的最小值或组合中最少选中数量；语义由组件类型决定。"
           },
           {
             "name": "max",
@@ -3334,7 +3317,7 @@
             "type": "number",
             "required": false,
             "default": "100",
-            "description": "最大值，必须大于 min；否则禁用交互。"
+            "description": "允许的最大值或组合中最多选中数量；语义由组件类型决定。"
           },
           {
             "name": "step",
@@ -3352,7 +3335,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "双滑块范围选择，不允许交叉。"
+            "description": "是否启用范围选择；启用后 v-model 使用开始值和结束值组成的元组。"
           },
           {
             "name": "disabled",
@@ -3361,7 +3344,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用交互。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "size",
@@ -3370,7 +3353,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 Form 或 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -3379,7 +3362,7 @@
             "type": "ZtSliderStatus",
             "required": false,
             "default": "'primary'",
-            "description": "主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "showTooltip",
@@ -3406,7 +3389,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "控件的无障碍名称，范围模式会附加起点或终点。"
+            "description": "传递给主要交互元素的无障碍名称。"
           }
         ],
         "events": [
@@ -3460,8 +3443,7 @@
       "范围选择",
       "小数步长",
       "主题、尺寸与禁用",
-      "交互与表单",
-      "API"
+      "交互与表单"
     ]
   },
   "progress": {
@@ -3485,7 +3467,7 @@
             "type": "ZtProgressStatus",
             "required": false,
             "default": "'primary'",
-            "description": "主题颜色。"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -3494,7 +3476,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸，默认继承 ConfigProvider。"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "showText",
@@ -3530,7 +3512,7 @@
             "type": "string",
             "required": false,
             "default": "'进度'",
-            "description": "无障碍名称。"
+            "description": "传递给主要交互元素的无障碍名称。"
           }
         ],
         "events": [],
@@ -3566,8 +3548,7 @@
       "可调进度",
       "状态颜色",
       "不确定进度",
-      "尺寸与格式化",
-      "API"
+      "尺寸与格式化"
     ]
   },
   "config-provider": {
@@ -3607,7 +3588,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -3636,10 +3617,7 @@
       "基础用法",
       "动态配置体验",
       "嵌套与局部覆盖",
-      "配置优先级",
-      "API",
-      "Props",
-      "Slots"
+      "配置优先级"
     ]
   },
   "button": {
@@ -3654,7 +3632,7 @@
             "type": "ZtButtonStatus",
             "required": false,
             "default": "'default'",
-            "description": "颜色状态"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -3663,7 +3641,7 @@
             "type": "ZtButtonSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "circle",
@@ -3681,7 +3659,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "loading",
@@ -3690,7 +3668,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "加载态"
+            "description": "是否显示加载状态并阻止重复交互。"
           },
           {
             "name": "loadingText",
@@ -3708,7 +3686,7 @@
             "type": "ZtButtonType",
             "required": false,
             "default": "'button'",
-            "description": "原生 button type"
+            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           }
         ],
         "events": [
@@ -3722,7 +3700,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -3762,11 +3740,7 @@
       "尺寸",
       "圆形按钮",
       "加载态",
-      "禁用态",
-      "API",
-      "Props",
-      "Events",
-      "Slots"
+      "禁用态"
     ]
   },
   "tag": {
@@ -3781,7 +3755,7 @@
             "type": "ZtTagStatus",
             "required": false,
             "default": "'default'",
-            "description": "颜色"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -3790,7 +3764,7 @@
             "type": "ZtTagSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "effect",
@@ -3840,7 +3814,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -3881,9 +3855,7 @@
       "尺寸",
       "圆角",
       "可关闭",
-      "边框描边",
-      "API",
-      "Props"
+      "边框描边"
     ]
   },
   "badge": {
@@ -3907,7 +3879,7 @@
             "type": "number",
             "required": false,
             "default": "99",
-            "description": "最大值"
+            "description": "允许的最大值或组合中最多选中数量；语义由组件类型决定。"
           },
           {
             "name": "isDot",
@@ -3934,7 +3906,7 @@
             "type": "ZtBadgeStatus",
             "required": false,
             "default": "'danger'",
-            "description": "颜色"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "size",
@@ -3943,7 +3915,7 @@
             "type": "ZtBadgeSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "type",
@@ -3952,7 +3924,7 @@
             "type": "'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'",
             "required": false,
             "default": "无默认值",
-            "description": "兼容的类型字段；具体可选值见左侧类型。"
+            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           },
           {
             "name": "offset",
@@ -3977,7 +3949,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -4014,9 +3986,7 @@
       "颜色状态",
       "自定义内容",
       "自定义偏移",
-      "隐藏徽标",
-      "API",
-      "Props"
+      "隐藏徽标"
     ]
   },
   "radio": {
@@ -4031,7 +4001,7 @@
             "type": "unknown",
             "required": false,
             "default": "无默认值",
-            "description": "绑定值"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "label",
@@ -4040,7 +4010,7 @@
             "type": "unknown",
             "required": false,
             "default": "无默认值",
-            "description": "选项值"
+            "description": "展示给用户的标签文字；选项组件可同时将其作为选项值。"
           },
           {
             "name": "disabled",
@@ -4049,7 +4019,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "size",
@@ -4058,7 +4028,7 @@
             "type": "ZtRadioSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -4067,7 +4037,7 @@
             "type": "ZtRadioStatus",
             "required": false,
             "default": "'primary'",
-            "description": "颜色"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "border",
@@ -4105,7 +4075,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -4169,7 +4139,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -4210,10 +4180,7 @@
       "RadioGroup 组合",
       "颜色状态",
       "带边框",
-      "尺寸",
-      "API",
-      "Radio Props",
-      "Events"
+      "尺寸"
     ]
   },
   "checkbox": {
@@ -4228,7 +4195,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "单独使用时的状态"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "label",
@@ -4237,7 +4204,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "控件旁展示的标签；在选项组件中也可作为选项值。"
+            "description": "展示给用户的标签文字；选项组件可同时将其作为选项值。"
           },
           {
             "name": "value",
@@ -4255,7 +4222,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "indeterminate",
@@ -4273,7 +4240,7 @@
             "type": "ZtCheckboxSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -4282,7 +4249,7 @@
             "type": "ZtCheckboxStatus",
             "required": false,
             "default": "'primary'",
-            "description": "颜色"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "border",
@@ -4329,7 +4296,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -4364,7 +4331,7 @@
             "type": "number",
             "required": false,
             "default": "0",
-            "description": "组合中至少需要选中的项目数量。"
+            "description": "允许的最小值或组合中最少选中数量；语义由组件类型决定。"
           },
           {
             "name": "max",
@@ -4373,7 +4340,7 @@
             "type": "number",
             "required": false,
             "default": "Infinity",
-            "description": "组合中最多允许选中的项目数量。"
+            "description": "允许的最大值或组合中最多选中数量；语义由组件类型决定。"
           },
           {
             "name": "size",
@@ -4411,7 +4378,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -4453,9 +4420,7 @@
       "颜色状态",
       "半选状态",
       "带边框",
-      "尺寸",
-      "API",
-      "Checkbox Props"
+      "尺寸"
     ]
   },
   "switch": {
@@ -4470,7 +4435,7 @@
             "type": "boolean | string | number",
             "required": false,
             "default": "false",
-            "description": "绑定值"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "disabled",
@@ -4479,7 +4444,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "loading",
@@ -4488,7 +4453,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "加载中"
+            "description": "是否显示加载状态并阻止重复交互。"
           },
           {
             "name": "size",
@@ -4497,7 +4462,7 @@
             "type": "ZtSwitchSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -4506,7 +4471,7 @@
             "type": "ZtSwitchStatus",
             "required": false,
             "default": "'primary'",
-            "description": "开启颜色"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "activeText",
@@ -4600,9 +4565,7 @@
       "颜色状态",
       "尺寸",
       "禁用与加载",
-      "自定义值",
-      "API",
-      "Props"
+      "自定义值"
     ]
   },
   "input": {
@@ -4617,7 +4580,7 @@
             "type": "string | number | null",
             "required": false,
             "default": "''",
-            "description": "绑定值，输入时输出字符串"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "type",
@@ -4626,7 +4589,7 @@
             "type": "string",
             "required": false,
             "default": "'text'",
-            "description": "原生 input 类型"
+            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           },
           {
             "name": "size",
@@ -4635,7 +4598,7 @@
             "type": "ZtInputSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -4644,7 +4607,7 @@
             "type": "ZtInputStatus",
             "required": false,
             "default": "'default'",
-            "description": "校验状态"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "disabled",
@@ -4653,7 +4616,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用或只读"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "readonly",
@@ -4662,7 +4625,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用或只读"
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
           },
           {
             "name": "autocomplete",
@@ -4680,7 +4643,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示清空按钮"
+            "description": "是否显示清空操作；清空后的值遵循组件的空值约定。"
           },
           {
             "name": "maxlength",
@@ -4689,7 +4652,7 @@
             "type": "number",
             "required": false,
             "default": "无默认值",
-            "description": "最大字符数"
+            "description": "允许输入的最大字符数。"
           },
           {
             "name": "showWordLimit",
@@ -4698,7 +4661,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示字数，需要 maxlength"
+            "description": "是否在设置 maxlength 后显示已输入字符数。"
           }
         ],
         "events": [
@@ -4742,25 +4705,25 @@
         "slots": [
           {
             "name": "prepend",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入控件外侧前置内容。"
           },
           {
             "name": "prefix",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域前部的内容。"
           },
           {
             "name": "suffix",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域尾部的内容。"
           },
           {
             "name": "append",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域或正文尾部的附加内容。"
           }
@@ -4832,11 +4795,7 @@
       "组合插槽",
       "校验状态",
       "尺寸",
-      "禁用与只读",
-      "API",
-      "Props",
-      "Events",
-      "Slots"
+      "禁用与只读"
     ]
   },
   "password": {
@@ -4860,7 +4819,7 @@
             "type": "string | number | null",
             "required": false,
             "default": "''",
-            "description": "密码值"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "size",
@@ -4869,7 +4828,7 @@
             "type": "ZtInputSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -4878,7 +4837,7 @@
             "type": "ZtInputStatus",
             "required": false,
             "default": "'default'",
-            "description": "校验状态"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "disabled",
@@ -4887,7 +4846,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用或只读"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "readonly",
@@ -4896,7 +4855,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用或只读"
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
           },
           {
             "name": "autocomplete",
@@ -4914,7 +4873,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "允许清空"
+            "description": "是否显示清空操作；清空后的值遵循组件的空值约定。"
           },
           {
             "name": "maxlength",
@@ -4982,25 +4941,25 @@
         "slots": [
           {
             "name": "prepend",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入控件外侧前置内容。"
           },
           {
             "name": "prefix",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域前部的内容。"
           },
           {
             "name": "suffix",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域尾部的内容。"
           },
           {
             "name": "append",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域或正文尾部的附加内容。"
           }
@@ -5065,10 +5024,7 @@
       "清空与隐藏切换按钮",
       "校验状态",
       "尺寸",
-      "禁用与只读",
-      "API",
-      "Props",
-      "Events"
+      "禁用与只读"
     ]
   },
   "input-number": {
@@ -5083,7 +5039,7 @@
             "type": "number | null",
             "required": false,
             "default": "null",
-            "description": "绑定数值"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "min",
@@ -5092,7 +5048,7 @@
             "type": "number",
             "required": false,
             "default": "Number.NEGATIVE_INFINITY",
-            "description": "数值范围"
+            "description": "允许的最小值或组合中最少选中数量；语义由组件类型决定。"
           },
           {
             "name": "max",
@@ -5101,7 +5057,7 @@
             "type": "number",
             "required": false,
             "default": "Number.POSITIVE_INFINITY",
-            "description": "数值范围"
+            "description": "允许的最大值或组合中最多选中数量；语义由组件类型决定。"
           },
           {
             "name": "step",
@@ -5137,7 +5093,7 @@
             "type": "ZtInputNumberSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "disabled",
@@ -5146,7 +5102,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用或只读"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "readonly",
@@ -5155,7 +5111,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用或只读"
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
           },
           {
             "name": "controls",
@@ -5259,10 +5215,7 @@
       "精度与严格步进",
       "控制按钮布局",
       "尺寸",
-      "禁用与只读",
-      "API",
-      "Props",
-      "Events"
+      "禁用与只读"
     ]
   },
   "select": {
@@ -5286,7 +5239,7 @@
             "type": "ZtSelectOption[]",
             "required": false,
             "default": "[]",
-            "description": "本地选项或远程初始选项"
+            "description": "可选项数据；字段结构由对应选项类型声明。"
           },
           {
             "name": "multiple",
@@ -5295,7 +5248,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "多选、筛选、远程与清空能力"
+            "description": "是否允许选择多个选项；启用后 v-model 使用数组。"
           },
           {
             "name": "filterable",
@@ -5304,7 +5257,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "多选、筛选、远程与清空能力"
+            "description": "是否允许输入关键词筛选可选项。"
           },
           {
             "name": "remote",
@@ -5313,7 +5266,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "多选、筛选、远程与清空能力"
+            "description": "是否由远程查询提供筛选结果；通常与 remoteMethod 配合使用。"
           },
           {
             "name": "remoteMethod",
@@ -5322,7 +5275,7 @@
             "type": "ZtSelectRemoteMethod",
             "required": false,
             "default": "无默认值",
-            "description": "远程搜索函数"
+            "description": "远程筛选函数，接收当前关键词并返回选项或 Promise。"
           },
           {
             "name": "debounce",
@@ -5331,7 +5284,7 @@
             "type": "number",
             "required": false,
             "default": "300",
-            "description": "远程搜索防抖毫秒数"
+            "description": "触发远程筛选前的防抖等待时间，单位为毫秒。"
           },
           {
             "name": "clearable",
@@ -5340,7 +5293,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "多选、筛选、远程与清空能力"
+            "description": "是否显示清空操作；清空后的值遵循组件的空值约定。"
           },
           {
             "name": "placeholder",
@@ -5349,7 +5302,7 @@
             "type": "string",
             "required": false,
             "default": "'请选择'",
-            "description": "空值、无数据与远程失败提示"
+            "description": "当前无值时在输入区域显示的提示文字。"
           },
           {
             "name": "disabled",
@@ -5358,7 +5311,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用组件"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "size",
@@ -5367,7 +5320,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "控件尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "noDataText",
@@ -5376,7 +5329,7 @@
             "type": "string",
             "required": false,
             "default": "'暂无数据'",
-            "description": "空值、无数据与远程失败提示"
+            "description": "筛选完成但没有可用选项时显示的文字。"
           },
           {
             "name": "remoteErrorText",
@@ -5385,7 +5338,7 @@
             "type": "string",
             "required": false,
             "default": "'加载失败，请重试'",
-            "description": "空值、无数据与远程失败提示"
+            "description": "远程筛选请求失败时显示的文字。"
           }
         ],
         "events": [
@@ -5447,7 +5400,7 @@
         "slots": [
           {
             "name": "prefix",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "输入区域前部的内容。"
           },
@@ -5465,7 +5418,7 @@
           },
           {
             "name": "loading",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "加载期间的自定义内容。"
           },
@@ -5477,13 +5430,13 @@
           },
           {
             "name": "empty",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "没有可展示数据时的自定义空状态。"
           },
           {
             "name": "footer",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件底部的自定义内容。"
           }
@@ -5560,11 +5513,7 @@
       "远程用户搜索",
       "业务插槽",
       "禁用状态",
-      "五档尺寸",
-      "API",
-      "Props",
-      "Events",
-      "Slots 与方法"
+      "五档尺寸"
     ]
   },
   "form": {
@@ -5597,7 +5546,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "表单及子控件尺寸"
+            "description": "控制表单及其子控件的尺寸；子控件显式设置的 size 优先。"
           },
           {
             "name": "disabled",
@@ -5606,7 +5555,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "行内布局或整体禁用"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "inline",
@@ -5674,7 +5623,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -5722,7 +5671,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "标签和模型路径，支持嵌套路径"
+            "description": "展示给用户的标签文字；选项组件可同时将其作为选项值。"
           },
           {
             "name": "prop",
@@ -5785,7 +5734,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "覆盖表单默认配置"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           }
         ],
         "events": [],
@@ -5798,7 +5747,7 @@
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -5846,7 +5795,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "分组标题与说明，也支持同名插槽"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "description",
@@ -5855,7 +5804,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "分组标题与说明，也支持同名插槽"
+            "description": "主内容之外的补充说明文字。"
           },
           {
             "name": "disabled",
@@ -5864,7 +5813,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "边框样式或整组禁用"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "bordered",
@@ -5880,19 +5829,19 @@
         "slots": [
           {
             "name": "title",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标题内容。"
           },
           {
             "name": "description",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义说明内容。"
           },
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -5979,13 +5928,7 @@
       "行内表单",
       "表单分组",
       "异步自定义校验",
-      "尺寸与整体禁用",
-      "API",
-      "Form Props",
-      "Form Methods",
-      "FormItem Props",
-      "FormGroup Props",
-      "Rule Options"
+      "尺寸与整体禁用"
     ]
   },
   "steps": {
@@ -6063,7 +6006,7 @@
             "type": "ZtStepsSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "步骤条尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           }
         ],
         "events": [
@@ -6077,7 +6020,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -6094,7 +6037,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "步骤标题"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "description",
@@ -6103,7 +6046,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "步骤说明"
+            "description": "主内容之外的补充说明文字。"
           },
           {
             "name": "icon",
@@ -6121,26 +6064,26 @@
             "type": "ZtStepStatus",
             "required": false,
             "default": "无默认值",
-            "description": "覆盖当前步骤状态"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           }
         ],
         "events": [],
         "slots": [
           {
             "name": "icon",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义状态或装饰图标。"
           },
           {
             "name": "title",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义标题内容。"
           },
           {
             "name": "description",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "自定义说明内容。"
           }
@@ -6192,12 +6135,7 @@
       "自定义图标",
       "竖向布局",
       "简洁布局",
-      "尺寸",
-      "API",
-      "Steps Props",
-      "Steps Events",
-      "Step Props",
-      "Slots"
+      "尺寸"
     ]
   },
   "pagination": {
@@ -6212,7 +6150,7 @@
             "type": "ZtPaginationStatus",
             "required": false,
             "default": "'primary'",
-            "description": "主题颜色"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "currentPage",
@@ -6266,7 +6204,7 @@
             "type": "number[]",
             "required": false,
             "default": "[10, 20, 30, 40, 50, 100]",
-            "description": "每页条数选项"
+            "description": "每页条数下拉选项；仅在 layout 包含 sizes 时显示。"
           },
           {
             "name": "layout",
@@ -6275,7 +6213,7 @@
             "type": "string",
             "required": false,
             "default": "'prev, pager, next, jumper, ->, total'",
-            "description": "模块排列方式"
+            "description": "分页器子模块及排列顺序，以逗号分隔。"
           },
           {
             "name": "size",
@@ -6284,7 +6222,7 @@
             "type": "ZtPaginationSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "组件尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "small",
@@ -6302,7 +6240,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "按钮背景样式"
+            "description": "是否为页码按钮显示填充背景。"
           },
           {
             "name": "disabled",
@@ -6311,7 +6249,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用分页"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "hideOnSinglePage",
@@ -6320,7 +6258,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "单页时隐藏"
+            "description": "总页数只有一页时是否隐藏分页器。"
           },
           {
             "name": "prevText",
@@ -6388,7 +6326,7 @@
         "slots": [
           {
             "name": "default",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           }
@@ -6425,11 +6363,7 @@
       "完整功能",
       "尺寸与禁用",
       "左右对齐与插槽",
-      "单页隐藏",
-      "API",
-      "Props",
-      "Events",
-      "Slots"
+      "单页隐藏"
     ]
   },
   "modal": {
@@ -6444,7 +6378,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示状态"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "width",
@@ -6453,7 +6387,7 @@
             "type": "number | string",
             "required": false,
             "default": "560",
-            "description": "宽度"
+            "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
           },
           {
             "name": "top",
@@ -6498,7 +6432,7 @@
             "type": "ZtModalSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "内容密度"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "title",
@@ -6507,7 +6441,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "标题"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "ariaLabel",
@@ -6516,7 +6450,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "弹层或控件的无障碍名称。"
+            "description": "传递给主要交互元素的无障碍名称。"
           },
           {
             "name": "showHeader",
@@ -6543,7 +6477,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "默认底部"
+            "description": "是否渲染内置底部操作区域。"
           },
           {
             "name": "showCancelButton",
@@ -6597,7 +6531,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "遮罩关闭"
+            "description": "点击遮罩时是否请求关闭弹层。"
           },
           {
             "name": "escClosable",
@@ -6606,7 +6540,7 @@
             "type": "boolean",
             "required": false,
             "default": "true",
-            "description": "Escape 关闭"
+            "description": "是否允许按 Escape 请求关闭弹层。"
           },
           {
             "name": "lockScroll",
@@ -6660,7 +6594,7 @@
             "type": "ZtBeforeClose",
             "required": false,
             "default": "无默认值",
-            "description": "关闭拦截"
+            "description": "关闭前守卫；返回 false 或拒绝 Promise 可阻止关闭。"
           }
         ],
         "events": [
@@ -6810,11 +6744,7 @@
       "底部操作与加载",
       "遮罩与关闭拦截",
       "全屏与拖拽",
-      "尺寸",
-      "API",
-      "Props",
-      "Events",
-      "Slots"
+      "尺寸"
     ]
   },
   "drawer": {
@@ -6829,7 +6759,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示状态"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "placement",
@@ -6838,7 +6768,7 @@
             "type": "ZtDrawerPlacement",
             "required": false,
             "default": "'right'",
-            "description": "方向"
+            "description": "浮层相对触发元素的首选方位；空间不足时会自动调整。"
           },
           {
             "name": "size",
@@ -6847,7 +6777,7 @@
             "type": "number | string",
             "required": false,
             "default": "420",
-            "description": "宽度或高度"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "title",
@@ -6856,7 +6786,7 @@
             "type": "string",
             "required": false,
             "default": "''",
-            "description": "标题"
+            "description": "组件主标题；标题插槽存在时由插槽内容覆盖。"
           },
           {
             "name": "ariaLabel",
@@ -6865,7 +6795,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "弹层或控件的无障碍名称。"
+            "description": "传递给主要交互元素的无障碍名称。"
           },
           {
             "name": "showHeader",
@@ -6892,7 +6822,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "默认底部"
+            "description": "是否渲染内置底部操作区域。"
           },
           {
             "name": "showCancelButton",
@@ -6946,7 +6876,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "遮罩关闭"
+            "description": "点击遮罩时是否请求关闭弹层。"
           },
           {
             "name": "escClosable",
@@ -7009,7 +6939,7 @@
             "type": "ZtBeforeClose",
             "required": false,
             "default": "无默认值",
-            "description": "关闭拦截"
+            "description": "关闭前守卫；返回 false 或拒绝 Promise 可阻止关闭。"
           }
         ],
         "events": [
@@ -7134,11 +7064,7 @@
     "sections": [
       "基础用法",
       "出现方向",
-      "尺寸与底部操作",
-      "API",
-      "Props",
-      "Events",
-      "Slots"
+      "尺寸与底部操作"
     ]
   },
   "date-picker": {
@@ -7153,7 +7079,7 @@
             "type": "ZtDatePickerValue",
             "required": false,
             "default": "null",
-            "description": "YYYY-MM-DD；范围为两个同格式字符串。清空返回 null。无效值显示占位提示。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "range",
@@ -7162,7 +7088,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "范围选择"
+            "description": "是否启用范围选择；启用后 v-model 使用开始值和结束值组成的元组。"
           },
           {
             "name": "holidays",
@@ -7171,7 +7097,7 @@
             "type": "readonly ZtDatePickerHoliday[]",
             "required": false,
             "default": "[]",
-            "description": "key 是 YYYY-MM-DD 日期，value 是节日名；重复日期使用最后一项，无效日期和空名称忽略"
+            "description": "节假日映射，键为日期字符串，值为日历中显示的节日名称。"
           },
           {
             "name": "showHolidays",
@@ -7189,7 +7115,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "随单值、范围模式提供中文默认提示"
+            "description": "当前无值时在输入区域显示的提示文字。"
           },
           {
             "name": "size",
@@ -7198,7 +7124,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "控制输入框和日历面板尺寸；默认继承 FormItem 尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -7207,7 +7133,7 @@
             "type": "ZtDatePickerStatus",
             "required": false,
             "default": "'primary'",
-            "description": "颜色主题，默认 primary；兼容原 error 校验状态，danger 仅代表红色主题"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "disabled",
@@ -7216,7 +7142,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用 / 只读"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "readonly",
@@ -7225,7 +7151,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用 / 只读"
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
           },
           {
             "name": "clearable",
@@ -7234,7 +7160,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示清空按钮"
+            "description": "是否显示清空操作；清空后的值遵循组件的空值约定。"
           },
           {
             "name": "disabledDate",
@@ -7243,7 +7169,7 @@
             "type": "(date: Date) => boolean",
             "required": false,
             "default": "无默认值",
-            "description": "返回 true 禁止选择该日期"
+            "description": "判断日期是否不可选的函数；返回 true 的日期会被禁用。"
           }
         ],
         "events": [
@@ -7377,10 +7303,7 @@
       "禁用日期、禁用与只读",
       "五档尺寸",
       "主题颜色",
-      "节假日标识",
-      "API",
-      "事件",
-      "方法与键盘"
+      "节假日标识"
     ]
   },
   "date-time-picker": {
@@ -7395,7 +7318,7 @@
             "type": "ZtDatePickerValue",
             "required": false,
             "default": "null",
-            "description": "YYYY-MM-DD HH:mm:ss；范围为两个同格式字符串。清空返回 null。无效值显示占位提示。"
+            "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
             "name": "range",
@@ -7404,7 +7327,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "范围选择"
+            "description": "是否启用范围选择；启用后 v-model 使用开始值和结束值组成的元组。"
           },
           {
             "name": "holidays",
@@ -7413,7 +7336,7 @@
             "type": "readonly ZtDatePickerHoliday[]",
             "required": false,
             "default": "[]",
-            "description": "key 是 YYYY-MM-DD 日期，value 是节日名；重复日期使用最后一项，无效日期和空名称忽略"
+            "description": "节假日映射，键为日期字符串，值为日历中显示的节日名称。"
           },
           {
             "name": "showHolidays",
@@ -7431,7 +7354,7 @@
             "type": "string",
             "required": false,
             "default": "无默认值",
-            "description": "随单值、范围模式提供中文默认提示"
+            "description": "当前无值时在输入区域显示的提示文字。"
           },
           {
             "name": "size",
@@ -7440,7 +7363,7 @@
             "type": "ZtComponentSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "控制输入框和日历面板尺寸；默认继承 FormItem 尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "status",
@@ -7449,7 +7372,7 @@
             "type": "ZtDatePickerStatus",
             "required": false,
             "default": "'primary'",
-            "description": "颜色主题，默认 primary；兼容原 error 校验状态，danger 仅代表红色主题"
+            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
           },
           {
             "name": "disabled",
@@ -7458,7 +7381,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用 / 只读"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "readonly",
@@ -7467,7 +7390,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "禁用 / 只读"
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
           },
           {
             "name": "clearable",
@@ -7476,7 +7399,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示清空按钮"
+            "description": "是否显示清空操作；清空后的值遵循组件的空值约定。"
           },
           {
             "name": "disabledDate",
@@ -7485,7 +7408,7 @@
             "type": "(date: Date) => boolean",
             "required": false,
             "default": "无默认值",
-            "description": "返回 true 禁止选择该日期"
+            "description": "判断日期是否不可选的函数；返回 true 的日期会被禁用。"
           }
         ],
         "events": [
@@ -7619,10 +7542,7 @@
       "禁用日期、禁用与只读",
       "五档尺寸",
       "主题颜色",
-      "节假日标识",
-      "API",
-      "事件",
-      "方法与键盘"
+      "节假日标识"
     ]
   },
   "vtable-grid": {
@@ -7718,7 +7638,7 @@
             "type": "ZtVTableGridSize",
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
-            "description": "表格高度和五档整体尺寸"
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
             "name": "loading",
@@ -7727,7 +7647,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "外部加载态、自动查询和禁用状态"
+            "description": "是否显示加载状态并阻止重复交互。"
           },
           {
             "name": "autoLoad",
@@ -7745,7 +7665,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "外部加载态、自动查询和禁用状态"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
             "name": "checkbox",
@@ -7963,7 +7883,7 @@
           },
           {
             "name": "empty",
-            "type": "—",
+            "type": "无",
             "kind": "slot",
             "description": "没有可展示数据时的自定义空状态。"
           },
@@ -8251,12 +8171,7 @@
       "单元格编辑与批量保存",
       "汇总与列设置",
       "加载、空状态与禁用",
-      "实例方法与延迟加载",
-      "API",
-      "Props",
-      "Column",
-      "Events",
-      "Slots 与 Expose"
+      "实例方法与延迟加载"
     ]
   }
 }

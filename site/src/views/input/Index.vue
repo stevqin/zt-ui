@@ -27,13 +27,7 @@ const codeStates = sfc(`${imports}\n\nconst value = ref('不可编辑的内容')
     <h2>尺寸</h2><DemoBlock :code="codeSize" desc="支持 mini、small、default、medium、large 五档尺寸。"><div class="input-demo"><ZtInput model-value="Mini" size="mini" /><ZtInput model-value="Small" size="small" /><ZtInput model-value="Default" size="default" /><ZtInput model-value="Medium" size="medium" /><ZtInput model-value="Large" size="large" /></div></DemoBlock>
     <h2>禁用与只读</h2><DemoBlock :code="codeStates" desc="disabled 禁止操作，readonly 保留可聚焦和复制能力。"><div class="input-demo"><ZtInput model-value="禁用内容" disabled /><ZtInput model-value="只读内容" readonly /></div></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>v-model</code></td><td><code>string | number | null</code></td><td><code>''</code></td><td>绑定值，输入时输出字符串</td></tr><tr><td><code>type</code></td><td><code>string</code></td><td><code>text</code></td><td>原生 input 类型</td></tr><tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr><tr><td><code>status</code></td><td><code>default | success | warning | error</code></td><td><code>default</code></td><td>校验状态</td></tr><tr><td><code>clearable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>显示清空按钮</td></tr><tr><td><code>disabled / readonly</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用或只读</td></tr><tr><td><code>maxlength</code></td><td><code>number</code></td><td>—</td><td>最大字符数</td></tr><tr><td><code>showWordLimit</code></td><td><code>boolean</code></td><td><code>false</code></td><td>显示字数，需要 maxlength</td></tr>
-    </tbody></table>
-    <h3>Events</h3><table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>input / change</code></td><td><code>value</code></td><td>输入或提交内容</td></tr><tr><td><code>focus / blur</code></td><td><code>FocusEvent</code></td><td>获得或失去焦点</td></tr><tr><td><code>clear</code></td><td>—</td><td>点击清空按钮</td></tr></tbody></table>
-    <h3>Slots</h3><table class="doc-table"><thead><tr><th>插槽</th><th>说明</th></tr></thead><tbody><tr><td><code>prefix / suffix</code></td><td>输入区内部前后内容</td></tr><tr><td><code>prepend / append</code></td><td>输入区外部前后内容</td></tr></tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>.input-demo { display: grid; gap: 12px; width: min(100%, 440px); } .input-demo > span { color: #6b7280; font-size: 13px; }</style>

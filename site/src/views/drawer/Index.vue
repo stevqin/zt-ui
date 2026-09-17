@@ -28,13 +28,7 @@ const codeFooter = sfc(`${imports}\n\nconst visible = ref(false)\nconst saving =
     <h2>尺寸与底部操作</h2>
     <DemoBlock :code="codeFooter" desc="size 控制宽度或高度，并支持默认确认/取消区域。"><div class="demo-row"><ZtButton @click="footerVisible = true">编辑筛选</ZtButton></div><ZtDrawer v-model="footerVisible" title="编辑筛选" :size="520" show-footer mask-closable :confirm-loading="saving" @confirm="save"><div class="drawer-form"><label>品牌<select><option>全部品牌</option><option>玖姿</option><option>尹默</option></select></label><label>状态<select><option>全部状态</option><option>在售</option><option>停售</option></select></label></div></ZtDrawer></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>v-model</code></td><td><code>boolean</code></td><td><code>false</code></td><td>显示状态</td></tr><tr><td><code>title</code></td><td><code>string</code></td><td>—</td><td>标题</td></tr><tr><td><code>placement</code></td><td><code>left | right | top | bottom</code></td><td><code>right</code></td><td>方向</td></tr><tr><td><code>size</code></td><td><code>number | string</code></td><td><code>420</code></td><td>宽度或高度</td></tr><tr><td><code>showFooter</code></td><td><code>boolean</code></td><td><code>false</code></td><td>默认底部</td></tr><tr><td><code>maskClosable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>遮罩关闭</td></tr><tr><td><code>beforeClose</code></td><td><code>(reason) =&gt; boolean | Promise</code></td><td>—</td><td>关闭拦截</td></tr>
-    </tbody></table>
-    <h3>Events</h3><table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>open / opened</code></td><td>—</td><td>开始/完成打开</td></tr><tr><td><code>close / closed</code></td><td><code>reason</code></td><td>开始/完成关闭</td></tr><tr><td><code>confirm / cancel</code></td><td>—</td><td>确认/取消</td></tr></tbody></table>
-    <h3>Slots</h3><table class="doc-table"><thead><tr><th>插槽</th><th>说明</th></tr></thead><tbody><tr><td><code>default</code></td><td>正文</td></tr><tr><td><code>title</code></td><td>标题</td></tr><tr><td><code>footer</code></td><td>底部操作</td></tr></tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>

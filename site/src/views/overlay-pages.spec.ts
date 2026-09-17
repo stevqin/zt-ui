@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { components } from '../docs/catalog'
+import { api } from '../docs/reference'
 
 function read(path: string) {
   return readFileSync(resolve(process.cwd(), path), 'utf8')
@@ -26,10 +27,11 @@ describe('overlay documentation pages', () => {
     expect(demos).toBeGreaterThanOrEqual(3)
     expect(coded).toBe(demos)
     expect(source).toContain("import { sfc } from '@/utils/exampleCode'")
-    expect(source).toContain('<h2>API</h2>')
-    expect(source).toContain('<h3>Props</h3>')
-    expect(source).toContain('<h3>Events</h3>')
-    expect(source).toContain('<h3>Slots</h3>')
+    const reference = api[page]!
+    expect(reference.components[0]?.props.length).toBeGreaterThan(0)
+    expect(reference.components[0]?.events.length).toBeGreaterThan(0)
+    expect(reference.components[0]?.slots.length).toBeGreaterThan(0)
+    expect(reference.types.length).toBeGreaterThan(0)
   })
 
   it('documents the Modal fullscreen control and draggable header', () => {

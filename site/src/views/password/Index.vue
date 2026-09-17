@@ -23,10 +23,7 @@ const codeStates = sfc(`${imports}\n\nconst password = ref('secret')`, `<ZtPassw
     <h2>尺寸</h2><DemoBlock :code="codeSize" desc="支持 mini、small、default、medium、large 五档尺寸。"><div class="password-demo"><ZtPassword model-value="secret" size="mini" /><ZtPassword model-value="secret" size="small" /><ZtPassword model-value="secret" size="default" /><ZtPassword model-value="secret" size="medium" /><ZtPassword model-value="secret" size="large" /></div></DemoBlock>
     <h2>禁用与只读</h2><DemoBlock :code="codeStates" desc="disabled 会禁用输入与显隐操作，readonly 适合仅查看场景。"><div class="password-demo"><ZtPassword model-value="secret" disabled /><ZtPassword model-value="secret" readonly /></div></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody><tr><td><code>v-model</code></td><td><code>string | number | null</code></td><td><code>''</code></td><td>密码值</td></tr><tr><td><code>showToggle</code></td><td><code>boolean</code></td><td><code>true</code></td><td>显示密码显隐按钮</td></tr><tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr><tr><td><code>status</code></td><td><code>default | success | warning | error</code></td><td><code>default</code></td><td>校验状态</td></tr><tr><td><code>clearable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>允许清空</td></tr><tr><td><code>disabled / readonly</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用或只读</td></tr></tbody></table>
-    <h3>Events</h3><table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>visibility-change</code></td><td><code>visible</code></td><td>密码可见状态变化</td></tr><tr><td><code>input / change / clear</code></td><td><code>value</code></td><td>输入、提交或清空</td></tr><tr><td><code>focus / blur</code></td><td><code>FocusEvent</code></td><td>焦点变化</td></tr></tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>.password-demo { display: grid; gap: 12px; width: min(100%, 440px); }</style>

@@ -15,6 +15,5 @@ const formatCode=sfc("import { ZtProgress } from '@ztechjs/zt-ui'",'<ZtProgress 
  <h2>状态颜色</h2><DemoBlock :code="statusCode"><div class="progress-examples"><ZtProgress :percentage="100" status="success" /><ZtProgress :percentage="65" status="warning" /><ZtProgress :percentage="30" status="danger" /></div></DemoBlock>
  <h2>不确定进度</h2><DemoBlock :code="loadingCode" desc="用于尚未获得总量的任务。此时不报告虚假的百分比，系统减少动画偏好会停用循环动画。"><ZtProgress indeterminate aria-label="文件上传" /></DemoBlock>
  <h2>尺寸与格式化</h2><DemoBlock :code="formatCode"><ZtProgress :percentage="75" :format="value => `已完成 ${value}%`" size="large" /></DemoBlock>
- <h2>API</h2><p>percentage 自动限制到 0–100，非有限数按 0 处理；不会自动把 100% 改成 success，请根据业务结果设置 status。默认插槽可接收 percentage 并替换可见文本，format 同时影响辅助技术读数。</p><p><RouterLink to="/api/progress">查看完整 Props、Slots 和类型定义 →</RouterLink></p>
-</div></template>
+ </div></template>
 <style scoped>.progress-examples{display:grid;gap:22px}</style>

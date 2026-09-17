@@ -20,7 +20,7 @@ describe('documentation coverage and search',()=>{
  })
  it('keeps component-specific descriptions and computed table defaults accurate',()=>{
   const form=api.form!.components.find(c=>c.name==='ZtForm')!
-  expect(form.props.find(p=>p.name==='size')!.description).toBe('表单及子控件尺寸')
+  expect(form.props.find(p=>p.name==='size')!.description).toContain('表单及其子控件')
   expect(form.props.find(p=>p.name==='disabled')!.description).not.toContain('整组')
   const group=api.checkbox!.components.find(c=>c.name==='ZtCheckboxGroup')!
   expect(group.props.find(p=>p.name==='modelValue')!.description).not.toBe('单独使用时的状态')
@@ -31,7 +31,7 @@ describe('documentation coverage and search',()=>{
  it('resolves all scenario component links',()=>{for(const s of scenarios)for(const id of s.components)expect(api[id],s.id+': '+id).toBeDefined()})
  it('finds Chinese scenarios and API names with direct anchors',()=>{
   expect(searchDocs('表单录入').some(r=>r.path==='/scenarios/form-entry')).toBe(true)
-  expect(searchDocs('holidays')[0]!.path).toBe('/api/date-picker#ztdatepicker-props-holidays')
+  expect(searchDocs('holidays')[0]!.path).toBe('/date-picker#ztdatepicker-props-holidays')
   expect(searchDocs('DatePicker holidays').some(r=>r.path.includes('ztdatepicker-props-holidays'))).toBe(true)
   expect(searchDocs('无法匹配的文档')).toEqual([])
   expect(searchDocs(' ')).toEqual([])

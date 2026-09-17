@@ -37,11 +37,7 @@ const codeHidden = sfc(imports, `<ZtBadge :value="12" hidden><ZtButton size="sma
     <h2>隐藏徽标</h2>
     <DemoBlock :code="codeHidden" desc="设置 hidden 隐藏徽标。"><div class="demo-row badge-row"><ZtBadge :value="12" hidden><ZtButton size="small">隐藏</ZtButton></ZtBadge><ZtBadge is-dot hidden><ZtButton size="small">隐藏</ZtButton></ZtBadge></div></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>value</code></td><td><code>string | number</code></td><td>—</td><td>显示值</td></tr><tr><td><code>max</code></td><td><code>number</code></td><td><code>99</code></td><td>最大值</td></tr><tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr><tr><td><code>isDot</code></td><td><code>boolean</code></td><td><code>false</code></td><td>圆点模式</td></tr><tr><td><code>hidden</code></td><td><code>boolean</code></td><td><code>false</code></td><td>隐藏</td></tr><tr><td><code>status</code></td><td><code>default | primary | success | warning | danger | info</code></td><td><code>danger</code></td><td>颜色</td></tr><tr><td><code>offset</code></td><td><code>[number, number]</code></td><td>—</td><td>偏移量</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>

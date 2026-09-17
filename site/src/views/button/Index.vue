@@ -157,29 +157,5 @@ const codeDisabled = sfc(buttonImport, `<ZtButton disabled>默认</ZtButton>
       </div>
     </DemoBlock>
 
-    <h2>API</h2>
-    <h3>Props</h3>
-    <table class="doc-table">
-      <thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead>
-      <tbody>
-        <tr><td><code>status</code></td><td><code>'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'</code></td><td><code>'default'</code></td><td>颜色状态</td></tr>
-        <tr><td><code>size</code></td><td><code>'mini' | 'small' | 'default' | 'medium' | 'large'</code></td><td><code>'default'</code></td><td>尺寸</td></tr>
-        <tr><td><code>circle</code></td><td><code>boolean</code></td><td><code>false</code></td><td>圆形按钮</td></tr>
-        <tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用</td></tr>
-        <tr><td><code>loading</code></td><td><code>boolean</code></td><td><code>false</code></td><td>加载态</td></tr>
-        <tr><td><code>loadingText</code></td><td><code>string</code></td><td><code>'正在处理…'</code></td><td>加载文案</td></tr>
-        <tr><td><code>type</code></td><td><code>'button' | 'submit' | 'reset'</code></td><td><code>'button'</code></td><td>原生 button type</td></tr>
-      </tbody>
-    </table>
-    <h3>Events</h3>
-    <table class="doc-table">
-      <thead><tr><th>事件名</th><th>参数</th><th>说明</th></tr></thead>
-      <tbody><tr><td><code>click</code></td><td><code>(event: MouseEvent)</code></td><td>点击事件，loading 或 disabled 时不触发</td></tr></tbody>
-    </table>
-    <h3>Slots</h3>
-    <table class="doc-table">
-      <thead><tr><th>插槽</th><th>说明</th></tr></thead>
-      <tbody><tr><td><code>default</code></td><td>按钮内容。loading 时若未提供内容，显示 loadingText</td></tr></tbody>
-    </table>
-  </div>
+    </div>
 </template>

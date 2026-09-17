@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { sfc } from '../utils/exampleCode'
 import { components } from '../docs/catalog'
+import { api } from '../docs/reference'
 
 const pages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'input', 'password', 'input-number', 'select', 'form', 'badge', 'steps', 'pagination', 'vtable-grid']
 const selectCodeNames = ['codeBasic', 'codeMultiple', 'codeFilterable', 'codeRemote', 'codeSlots', 'codeDisabled', 'codeSizes']
@@ -62,8 +63,11 @@ describe('site example coverage', () => {
   it('documents the shared five-level size contract for every density-aware component', () => {
     const sizePages = ['button', 'tag', 'radio', 'checkbox', 'switch', 'input', 'password', 'input-number', 'form', 'badge', 'steps', 'pagination', 'modal', 'vtable-grid']
     for (const page of sizePages) {
-      const source = readFileSync(resolve(process.cwd(), `src/views/${page}/Index.vue`), 'utf8')
-      for (const size of ['mini', 'small', 'default', 'medium', 'large']) expect(source, `${page}: ${size}`).toContain(size)
+      const sizeProp = api[page].components.flatMap(owner => owner.props).find(prop => prop.name === 'size')
+      expect(sizeProp, page).toBeDefined()
+      const sizeType = api[page].types.find(type => type.name === sizeProp?.type)
+      expect(`${sizeProp?.type} ${sizeType?.code ?? ''}`, page).toContain('ZtComponentSize')
+      expect(sizeProp?.default, page).toContain('ConfigProvider')
     }
   })
 
@@ -152,7 +156,9 @@ describe('site example coverage', () => {
       "summary: 'sum'", "summary: 'min'", "summary: 'max'", 'calculate:', 'formatter:',
       '#form', '#toolbar-left', '#toolbar-right', '#empty', '#pager-left', '#edit-actions',
       'query(true)', 'reload()', 'resize()', 'setRecords(', 'getTableInstance()', 'getSelectedRows',
-      'getSelectedKeys', 'setSelectedKeys', 'clearSelection', 'getChanges', 'saveChanges', 'cancelChanges', 'exportCsv',
+      'getSelectedKeys', 'setSelectedKeys', 'clearSelection', 'getChanges', 'exportCsv',
     ]) expect(source, capability).toContain(capability)
+    const exposes=api['vtable-grid'].components[0].exposes.map(row=>row.name)
+    for(const method of ['saveChanges','cancelChanges','getChanges','getSelectedRows','getSelectedKeys','setSelectedKeys','clearSelection','exportCsv']) expect(exposes).toContain(method)
   })
 })

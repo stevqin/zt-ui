@@ -8,7 +8,8 @@ const entries: SearchResult[] = [
  ...components.flatMap(c => [
   {title:`${c.name} ${c.title}`,detail:c.description,path:c.path},
   ...api[c.path.slice(1)]!.sections.map(title=>({title,detail:`${c.name} · 示例章节`,path:`${c.path}#${slug(title)}`})),
-  ...api[c.path.slice(1)]!.components.flatMap(entry=>['props','events','slots','methods'].flatMap(kind=>entry[kind as 'props'].map(row=>({title:row.name,detail:`${entry.name} · ${kind} · ${row.description??row.type}`,path:`/api${c.path}#${slug(entry.name+'-'+kind+'-'+row.name)}`})))),
+  ...api[c.path.slice(1)]!.components.flatMap(entry=>['props','events','slots','exposes'].flatMap(kind=>entry[kind as 'props'].map(row=>({title:row.name,detail:`${entry.name} · ${kind} · ${row.description}`,path:`${c.path}#${slug(entry.name+'-'+kind+'-'+row.name)}`})))),
+  ...api[c.path.slice(1)]!.types.map(type=>({title:type.name,detail:`${c.name} · 类型声明`,path:`${c.path}#types`})),
  ]),
 ]
 export function searchDocs(query: string): SearchResult[] {

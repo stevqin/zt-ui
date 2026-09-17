@@ -77,17 +77,5 @@ const codeSize = sfc(`${imports}\n\nconst value = ref('1')`, `<ZtRadioGroup v-mo
       <div class="demo-row"><ZtRadioGroup v-model="sized" size="mini"><ZtRadio label="1" border>Mini</ZtRadio></ZtRadioGroup><ZtRadioGroup v-model="sized" size="small"><ZtRadio label="1" border>Small</ZtRadio></ZtRadioGroup><ZtRadioGroup v-model="sized" size="medium"><ZtRadio label="1" border>Medium</ZtRadio></ZtRadioGroup><ZtRadioGroup v-model="sized" size="large"><ZtRadio label="1" border>Large</ZtRadio></ZtRadioGroup></div>
     </DemoBlock>
 
-    <h2>API</h2>
-    <h3>Radio Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>v-model</code></td><td><code>unknown</code></td><td>—</td><td>绑定值</td></tr>
-      <tr><td><code>label</code></td><td><code>unknown</code></td><td>—</td><td>选项值</td></tr>
-      <tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用</td></tr>
-      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr>
-      <tr><td><code>status</code></td><td><code>default | primary | success | warning | danger | info</code></td><td><code>primary</code></td><td>颜色</td></tr>
-      <tr><td><code>border</code></td><td><code>boolean</code></td><td><code>false</code></td><td>边框样式</td></tr>
-    </tbody></table>
-    <h3>Events</h3>
-    <table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>change</code></td><td><code>value</code></td><td>选中值变化</td></tr></tbody></table>
-  </div>
+    </div>
 </template>

@@ -89,7 +89,7 @@ for(const [id,[dir,...names]] of Object.entries(config)) {
    if(node.type===1 && node.tag==='slot'){
     const name=node.props.find(p=>p.type===6&&p.name==='name')?.value?.content??'default'
     const args=node.props.filter(p=>p.type===7&&p.name==='bind'&&p.arg?.content).map(p=>p.arg.content)
-    slotMap.set(name,{name,type:args.length?`{ ${args.join(', ')} }`:'—'})
+    slotMap.set(name,{name,type:args.length?`{ ${args.join(', ')} }`:'无'})
    }
    for(const child of node.children??[]) visitTemplate(child)
   }

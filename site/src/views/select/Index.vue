@@ -358,33 +358,7 @@ const city = ref('hangzhou')`, `<ZtSelect v-model="city" :options="options" size
       </div>
     </DemoBlock>
 
-    <h2>API</h2>
-    <h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>v-model</code></td><td><code>ZtSelectModelValue</code></td><td><code>null</code></td><td>单选值、多选值数组或空值</td></tr>
-      <tr><td><code>options</code></td><td><code>ZtSelectOption[]</code></td><td><code>[]</code></td><td>本地选项或远程初始选项</td></tr>
-      <tr><td><code>multiple / filterable / remote / clearable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>多选、筛选、远程与清空能力</td></tr>
-      <tr><td><code>remoteMethod</code></td><td><code>(keyword) =&gt; Promise&lt;ZtSelectOption[]&gt;</code></td><td>—</td><td>远程搜索函数</td></tr>
-      <tr><td><code>debounce</code></td><td><code>number</code></td><td><code>300</code></td><td>远程搜索防抖毫秒数</td></tr>
-      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>控件尺寸</td></tr>
-      <tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用组件</td></tr>
-      <tr><td><code>placeholder / noDataText / remoteErrorText</code></td><td><code>string</code></td><td>内置中文文案</td><td>空值、无数据与远程失败提示</td></tr>
-    </tbody></table>
-    <h3>Events</h3>
-    <table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>change</code></td><td><code>ZtSelectModelValue</code></td><td>选择值变化</td></tr>
-      <tr><td><code>visible-change</code></td><td><code>boolean</code></td><td>下拉层打开或关闭</td></tr>
-      <tr><td><code>search</code></td><td><code>string</code></td><td>搜索关键词变化</td></tr>
-      <tr><td><code>clear / remove-tag</code></td><td>— / <code>ZtSelectValue</code></td><td>清空或移除多选标签</td></tr>
-      <tr><td><code>remote-error</code></td><td><code>unknown</code></td><td>当前远程请求失败</td></tr>
-      <tr><td><code>focus / blur</code></td><td><code>FocusEvent</code></td><td>焦点变化</td></tr>
-    </tbody></table>
-    <h3>Slots 与方法</h3>
-    <table class="doc-table"><thead><tr><th>类型</th><th>名称</th><th>说明</th></tr></thead><tbody>
-      <tr><td>插槽</td><td><code>prefix / option / selected / tag / empty / loading / footer</code></td><td>定制输入区、选项、状态和下拉底部</td></tr>
-      <tr><td>方法</td><td><code>focus / blur / open / close</code></td><td>控制焦点和下拉层</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>

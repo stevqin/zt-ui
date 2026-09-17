@@ -316,11 +316,13 @@ const datetimeRange = ref<ZtDatePickerValue>(null)
 
 ### 文档站维护
 
-`site/` 按“设计基础 → 组件全景 → 场景方案 → API 参考”组织阅读路径。组件体系分为基础、布局、表单、数据展示、导航、反馈、浮层与媒体八类；已稳定组件提供示例和 API，规划组件只出现在路线图中，避免把尚未交付的能力误当成公开接口。
+`site/` 按“设计基础 → 组件全景 → 场景方案 → 组件文档”组织阅读路径。组件体系分为基础、布局、表单、数据展示、导航、反馈、浮层与媒体八类；已稳定组件在同一页面连续呈现介绍、示例、API 和类型定义，规划组件只出现在路线图中，避免把尚未交付的能力误当成公开接口。
 
-`site/src/docs/catalog.ts` 是组件分组、状态、路线图与场景关联的单一数据源。场景示例位于 `site/src/views/scenarios/`，并通过 `?raw` 提供可复制的完整源码。新增组件时应先确定所属分组和状态，再补充示例、API 与至少一个真实场景；规划项达到公开质量后才移入稳定组件列表。
+`site/src/docs/catalog.ts` 是组件分组、状态、路线图与场景关联的单一数据源。组件详情使用 `/:component`，API 锚点为 `/:component#api`，类型定义为 `/:component#types`；`/api` 只提供完整索引。旧的 `/api/:component` 路由已移除。场景示例位于 `site/src/views/scenarios/`，并通过 `?raw` 提供可复制的完整源码。
 
-在 `site/` 中运行 `npm run dev`、`npm test` 或 `npm run build` 会先执行 API 同步。生成器从组件的 Props、Emits、Slots、Expose 及 TypeScript 定义生成 `site/src/docs/api.generated.json`；无法自动推断的实例方法签名维护在 `site/scripts/api-overrides.mjs`。运行 `npm run docs:api` 可手动刷新。更新组件时同时检查中文说明、默认值与场景回归测试。
+在 `site/` 中运行 `npm run dev`、`npm test` 或 `npm run build` 会先执行 API 同步。生成器从 Props、Emits、Slots、Expose 及 TypeScript 定义生成 `site/src/docs/api.generated.json`；中文语义、默认值和继承关系维护在 `site/scripts/api/metadata/`，无法自动推断的实例方法签名维护在 `site/scripts/api-overrides.mjs`。运行 `npm run docs:api` 可手动刷新。生成阶段会拒绝缺失说明、含糊类型、无效元数据键和未明确的默认值。
+
+新增或修改组件时，应同步补充完整示例和元数据，并确认 Attributes、Events、Slots、Exposes、Types 只展示实际存在的内容。桌面端 API 使用可扫描表格，移动端自动切换为带字段标签的卡片；两种布局都必须在 light、dark 主题下检查。
 
 
 ### ConfigProvider 全局配置

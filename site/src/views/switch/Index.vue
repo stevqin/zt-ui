@@ -33,14 +33,5 @@ const codeCustom = sfc(`${imports}\n\nconst value = ref('1')`, `<ZtSwitch v-mode
     <h2>自定义值</h2>
     <DemoBlock :code="codeCustom" desc="active-value 和 inactive-value 可使用字符串或数字。"><div class="demo-row"><ZtSwitch v-model="custom" active-value="1" inactive-value="0" active-text="是" inactive-text="否" /><span>值：{{ custom }}</span></div></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>v-model</code></td><td><code>boolean | string | number</code></td><td><code>false</code></td><td>绑定值</td></tr>
-      <tr><td><code>status</code></td><td><code>default | primary | success | warning | danger | info</code></td><td><code>primary</code></td><td>开启颜色</td></tr>
-      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr>
-      <tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用</td></tr>
-      <tr><td><code>loading</code></td><td><code>boolean</code></td><td><code>false</code></td><td>加载中</td></tr>
-      <tr><td><code>activeValue / inactiveValue</code></td><td><code>boolean | string | number</code></td><td><code>true / false</code></td><td>自定义值</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>

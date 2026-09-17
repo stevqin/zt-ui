@@ -28,6 +28,5 @@ const statusCode=sfc("import { ZtInputOtp } from '@ztechjs/zt-ui'\nimport type {
  <h2>禁用与只读</h2><DemoBlock :code="statesCode"><div class="otp-examples"><ZtInputOtp model-value="012345" disabled aria-label="禁用验证码"/><ZtInputOtp model-value="012345" readonly aria-label="只读验证码"/></div></DemoBlock>
  <h2>表单联动</h2><DemoBlock :code="formCode" desc="继承 Form 的尺寸与禁用状态，输入变化和失焦分别触发 change / blur 校验。complete 表示填满，不代表验证码验证成功。"><FormExample/></DemoBlock>
  <h2>键盘与自动填充</h2><p>Tab 聚焦整个验证码字段，← / → 移动到相邻格，Home / End 跳到首格或末尾。点击已有格可替换字符；Backspace / Delete 删除后会将后续字符前移。Ctrl / Command + A 可全选；完整验证码粘贴到任意格都会替换整个值。</p><p>默认 autocomplete="one-time-code"；自动填充取决于浏览器、设备和短信格式。组件不会自动发送验证码或提交表单。length 变化和外部 v-model 更新不会触发 complete。</p>
- <h2>API</h2><p><RouterLink to="/api/input-otp">查看完整 Props、Events、Methods 和类型定义 →</RouterLink></p>
-</div></template>
+ </div></template>
 <style scoped>.otp-feedback{display:flex;align-items:center;gap:16px;margin-top:16px;color:var(--zt-text-muted);font-size:13px}.otp-examples{display:flex;flex-direction:column;gap:20px}.otp-examples>div{display:flex;flex-direction:column;align-items:flex-start;gap:8px}.otp-examples>div>span{color:var(--zt-text-muted);font-size:12px}</style>

@@ -429,46 +429,7 @@ const grid = ref<ZtVTableGridInstance<Product> | null>(null)`, `<ZtButton @click
       <div class="example-stack"><div class="grid-controls"><ZtButton status="primary" @click="apiGrid?.query(true)">query</ZtButton><ZtButton @click="apiGrid?.reload()">reload</ZtButton><ZtButton @click="apiGrid?.resize()">resize</ZtButton><ZtButton @click="replaceApiRecords">setRecords</ZtButton><ZtButton @click="inspectTable">getTableInstance</ZtButton><ZtButton @click="downloadFromApi">exportCsv</ZtButton></div><ZtVTableGrid ref="apiGrid" :columns="baseColumns" :proxy-config="proxyConfig" :form-data="{ keyword: '' }" :auto-load="false" :pagination="false" height="280px" /></div>
     </DemoBlock>
 
-    <h2>API</h2>
-    <h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>columns</code></td><td><code>ZtVTableGridColumn[]</code></td><td>列配置，支持固定、排序、编辑、格式化和汇总</td></tr>
-      <tr><td><code>records / proxyConfig</code></td><td><code>Row[] / async function</code></td><td>本地数据或远程查询函数</td></tr>
-      <tr><td><code>formData</code></td><td><code>FormData</code></td><td>传给远程查询的表单对象</td></tr>
-      <tr><td><code>pagination</code></td><td><code>boolean | object</code></td><td>分页开关和页容量配置</td></tr>
-      <tr><td><code>currentPage / pageSize</code></td><td><code>number</code></td><td>支持 v-model 的页码和页容量</td></tr>
-      <tr><td><code>rowKey</code></td><td><code>keyof Row | function</code></td><td>行唯一键字段或计算函数</td></tr>
-      <tr><td><code>height / size</code></td><td><code>CSSLength / ZtComponentSize</code></td><td>表格高度和五档整体尺寸</td></tr>
-      <tr><td><code>loading / autoLoad / disabled</code></td><td><code>boolean</code></td><td>外部加载态、自动查询和禁用状态</td></tr>
-      <tr><td><code>checkbox / reserveCheckbox</code></td><td><code>boolean</code></td><td>选择列和跨页选择</td></tr>
-      <tr><td><code>showActionsColumn / actionButtons</code></td><td><code>boolean / array | function</code></td><td>操作列及其显示、禁用、状态和处理函数</td></tr>
-      <tr><td><code>editable / batchSave</code></td><td><code>boolean / async function</code></td><td>单元格编辑与批量保存</td></tr>
-      <tr><td><code>summary</code></td><td><code>boolean | object</code></td><td>只读汇总行</td></tr>
-      <tr><td><code>columnSettings</code></td><td><code>boolean | object</code></td><td>列显隐、排序和持久化</td></tr>
-      <tr><td><code>toolbar</code></td><td><code>string[] | false</code></td><td>新建、导入、导出、列设置、刷新</td></tr>
-      <tr><td><code>tableOptions</code></td><td><code>Record&lt;string, unknown&gt;</code></td><td>其他 VTable ListTable 配置</td></tr>
-    </tbody></table>
-
-    <h3>Column</h3>
-    <table class="doc-table"><thead><tr><th>能力</th><th>配置</th></tr></thead><tbody>
-      <tr><td>布局</td><td><code>width / minWidth / maxWidth / fixed / visible</code></td></tr>
-      <tr><td>原生显示</td><td><code>title / formatter / style / headerStyle / cellType / headerType</code>，并透传其他 VTable 列选项</td></tr>
-      <tr><td>排序</td><td><code>sort: boolean | comparator</code></td></tr>
-      <tr><td>编辑器</td><td><code>true / text / textarea / date / number / email / url / select</code></td></tr>
-      <tr><td>汇总</td><td><code>sum / avg / count / min / max / calculate / formatter</code></td></tr>
-      <tr><td>导出</td><td><code>copyFormatter(row)</code></td></tr>
-    </tbody></table>
-
-    <h3>Events</h3>
-    <table class="doc-table"><thead><tr><th>事件</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>update:currentPage / update:pageSize</code></td><td>分页双向绑定</td></tr><tr><td><code>loaded / error</code></td><td>查询完成或失败</td></tr><tr><td><code>page-change / sort-change</code></td><td>分页或排序变化</td></tr><tr><td><code>selection-change</code></td><td>已选记录变化</td></tr><tr><td><code>action / create / import / export</code></td><td>操作栏和工具栏事件</td></tr><tr><td><code>cell-change / save / save-error</code></td><td>编辑和保存事件</td></tr><tr><td><code>row-click / row-dblclick</code></td><td>行点击事件</td></tr><tr><td><code>column-settings-change</code></td><td>列显隐或顺序变化</td></tr>
-    </tbody></table>
-
-    <h3>Slots 与 Expose</h3>
-    <table class="doc-table"><thead><tr><th>名称</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>form</code></td><td>查询区，参数含 formData、query、reload</td></tr><tr><td><code>toolbar-left / toolbar-right</code></td><td>工具栏扩展区域</td></tr><tr><td><code>empty / pager-left / edit-actions</code></td><td>空状态、分页左侧和编辑操作</td></tr><tr><td><code>query / reload / resize / setRecords / getTableInstance</code></td><td>查询、数据和底层表格控制方法</td></tr><tr><td><code>getSelectedRows / getSelectedKeys / setSelectedKeys / clearSelection</code></td><td>选择状态方法</td></tr><tr><td><code>getChanges / saveChanges / cancelChanges / exportCsv</code></td><td>编辑和导出方法</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>

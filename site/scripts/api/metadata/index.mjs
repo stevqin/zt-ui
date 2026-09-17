@@ -9,11 +9,19 @@ import media from './media.mjs'
 import generatedProps from './generated-props.mjs'
 import { eventDescriptions, exposeDescriptions, propDescriptions, slotDescriptions } from './shared.mjs'
 
-export const metadata = Object.assign({}, generatedProps, foundation, layout, form, data, navigation, feedback, overlay, media)
+const curatedMetadata = Object.assign({}, foundation, layout, form, data, navigation, feedback, overlay, media)
+export const metadata = Object.assign({}, generatedProps, curatedMetadata)
 export const metadataKeys = new Set(Object.keys(metadata))
 
 export function rowMetadata(id, owner, section, name) {
-  return metadata[`${id}.${owner}.${section}.${name}`] ?? {}
+  const key = `${id}.${owner}.${section}.${name}`
+  const generated = generatedProps[key] ?? {}
+  const shared = sharedDescription(section, name)
+  return {
+    ...generated,
+    ...(shared ? { description: shared } : {}),
+    ...(curatedMetadata[key] ?? {}),
+  }
 }
 
 export function sharedDescription(section, name) {

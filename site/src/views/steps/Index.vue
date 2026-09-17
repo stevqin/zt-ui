@@ -108,38 +108,7 @@ const codeSize = sfc(stepsImport, `<ZtSteps size="mini" :active="1" simple>...</
       </div>
     </DemoBlock>
 
-    <h2>API</h2>
-    <h3>Steps Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>active</code></td><td><code>number</code></td><td><code>0</code></td><td>当前步骤索引</td></tr>
-      <tr><td><code>direction</code></td><td><code>horizontal | vertical</code></td><td><code>horizontal</code></td><td>排列方向</td></tr>
-      <tr><td><code>alignCenter</code></td><td><code>boolean</code></td><td><code>false</code></td><td>居中排列</td></tr>
-      <tr><td><code>simple</code></td><td><code>boolean</code></td><td><code>false</code></td><td>简洁箭头布局</td></tr>
-      <tr><td><code>space</code></td><td><code>number | string</code></td><td>—</td><td>步骤宽度，数字单位为 px</td></tr>
-      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>步骤条尺寸</td></tr>
-      <tr><td><code>finishStatus</code></td><td><code>ZtStepStatus</code></td><td><code>finish</code></td><td>已完成步骤状态</td></tr>
-      <tr><td><code>processStatus</code></td><td><code>ZtStepStatus</code></td><td><code>process</code></td><td>当前步骤状态</td></tr>
-    </tbody></table>
-
-    <h3>Steps Events</h3>
-    <table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>change</code></td><td><code>(current, previous)</code></td><td>active 变化时触发</td></tr></tbody></table>
-
-    <h3>Step Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>title</code></td><td><code>string</code></td><td>—</td><td>步骤标题</td></tr>
-      <tr><td><code>description</code></td><td><code>string</code></td><td>—</td><td>步骤说明</td></tr>
-      <tr><td><code>icon</code></td><td><code>string | Component</code></td><td>—</td><td>自定义图标或组件</td></tr>
-      <tr><td><code>status</code></td><td><code>wait | process | finish | error | success</code></td><td>自动计算</td><td>覆盖当前步骤状态</td></tr>
-    </tbody></table>
-
-    <h3>Slots</h3>
-    <table class="doc-table"><thead><tr><th>组件</th><th>插槽</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>ZtSteps</code></td><td><code>default</code></td><td>步骤内容</td></tr>
-      <tr><td><code>ZtStep</code></td><td><code>icon</code></td><td>步骤图标</td></tr>
-      <tr><td><code>ZtStep</code></td><td><code>title</code></td><td>步骤标题</td></tr>
-      <tr><td><code>ZtStep</code></td><td><code>description</code></td><td>步骤说明</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>

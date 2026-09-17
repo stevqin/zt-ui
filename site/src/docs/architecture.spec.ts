@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { componentGroups, componentPlan, components, foundations, roadmapPhases } from './catalog'
 import { searchDocs } from './search'
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
 
 describe('documentation information architecture', () => {
   it('organizes the system into eight durable capability groups', () => {
@@ -38,5 +40,11 @@ describe('documentation information architecture', () => {
   it('makes planned components discoverable without publishing fake API pages', () => {
     expect(searchDocs('Skeleton')[0]).toMatchObject({ path: '/roadmap#p0' })
     expect(components.some(component => component.name === 'Skeleton')).toBe(false)
+  })
+
+  it('uses component pages as the only component detail route', () => {
+    const routes = readFileSync(resolve(process.cwd(), 'src/router/index.ts'), 'utf8')
+    expect(routes).not.toContain("path: '/api/:component")
+    expect(routes).toContain("path: '/api'")
   })
 })

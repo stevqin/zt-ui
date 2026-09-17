@@ -23,7 +23,7 @@ watch(example,async value=>{code.value='';if(value){const loaded=await value.cod
   <div class="related-links"><RouterLink v-for="id in scene.components" :key="id" :to="'/'+id">{{components.find(c=>c.path==='/'+id)?.name}}</RouterLink></div>
   <h2>交互示例</h2><DemoBlock v-if="code" :key="scene.id" :code="code" desc="数据仅用于本地演示，不会向服务端提交。复制代码后在已引入 Zt UI 样式的 Vue 项目中使用。"><component :is="example.component" /></DemoBlock>
   <h2>实现要点</h2><ul class="doc-points"><li v-for="point in scene.points" :key="point">{{point}}</li></ul>
-  <h2>相关 API</h2><div class="component-grid"><RouterLink v-for="id in scene.components" :key="id" :to="'/api/'+id" class="component-card"><strong>{{components.find(c=>c.path==='/'+id)?.name}} <span>↗</span></strong><p>{{components.find(c=>c.path==='/'+id)?.description}}</p></RouterLink></div>
+  <h2>相关 API</h2><div class="component-grid"><RouterLink v-for="id in scene.components" :key="id" :to="'/'+id+'#api'" class="component-card"><strong>{{components.find(c=>c.path==='/'+id)?.name}} <span>↗</span></strong><p>{{components.find(c=>c.path==='/'+id)?.description}}</p></RouterLink></div>
  </article>
  <article v-else class="doc-section">
   <div class="page-kicker">PATTERN LIBRARY / 场景方案</div><div class="page-title-row"><div><h1>从业务任务出发，<br>组合完整界面。</h1><p class="page-lead">组件页回答单个能力怎么用；场景页展示状态、校验、分页与反馈怎样协同。每个方案都可直接操作、复制并继续查看相关 API。</p></div><div class="component-count"><strong>{{scenarios.length}}</strong><span>PATTERNS</span><strong>{{new Set(scenarios.flatMap(s=>s.components)).size}}</strong><span>COMPONENTS</span></div></div>

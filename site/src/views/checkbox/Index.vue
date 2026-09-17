@@ -43,9 +43,5 @@ const codeSize = sfc(`${imports}\n\nconst value = ref(['选中'])`, `<ZtCheckbox
     <h2>尺寸</h2>
     <DemoBlock :code="codeSize" desc="支持 mini、small、default、medium、large。"><div class="demo-row"><ZtCheckboxGroup v-model="bordered" size="mini"><ZtCheckbox value="阅读" border>Mini</ZtCheckbox></ZtCheckboxGroup><ZtCheckboxGroup v-model="bordered" size="small"><ZtCheckbox value="阅读" border>Small</ZtCheckbox></ZtCheckboxGroup><ZtCheckboxGroup v-model="bordered" size="medium"><ZtCheckbox value="阅读" border>Medium</ZtCheckbox></ZtCheckboxGroup><ZtCheckboxGroup v-model="bordered" size="large"><ZtCheckbox value="阅读" border>Large</ZtCheckbox></ZtCheckboxGroup></div></DemoBlock>
 
-    <h2>API</h2><h3>Checkbox Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>v-model</code></td><td><code>boolean</code></td><td><code>false</code></td><td>单独使用时的状态</td></tr><tr><td><code>value</code></td><td><code>unknown</code></td><td>—</td><td>组内选项值</td></tr><tr><td><code>disabled</code></td><td><code>boolean</code></td><td><code>false</code></td><td>禁用</td></tr><tr><td><code>indeterminate</code></td><td><code>boolean</code></td><td><code>false</code></td><td>半选</td></tr><tr><td><code>border</code></td><td><code>boolean</code></td><td><code>false</code></td><td>边框</td></tr><tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>尺寸</td></tr><tr><td><code>status</code></td><td><code>default | primary | success | warning | danger | info</code></td><td><code>primary</code></td><td>颜色</td></tr>
-    </tbody></table>
-  </div>
+    </div>
 </template>

@@ -29,7 +29,6 @@ const routes = [
   { path: '/scenarios', component: () => import('../views/Scenarios.vue'), meta: { title: '场景指南' } },
   { path: '/scenarios/:scene(form-entry|query-filter|data-list|overlay-edit|status-flow)', component: () => import('../views/Scenarios.vue'), meta: { title: '场景指南' } },
   { path: '/api', component: () => import('../views/Api.vue'), meta: { title: 'API 手册' } },
-  { path: '/api/:component(icon|link|text|scrollbar|popover|popconfirm|tabs|breadcrumb|segmented|descriptions|collapse|result|image|avatar|upload|input-otp|menu|slider|progress|config-provider|button|tag|badge|radio|checkbox|switch|input|password|input-number|select|form|steps|pagination|modal|drawer|date-picker|date-time-picker|vtable-grid)', component: () => import('../views/Api.vue'), meta: { title: 'API 手册' } },
   { path: '/:pathMatch(.*)*', component: () => import('../views/NotFound.vue'), meta: { title: '页面未找到' } },
   {
     path: '/',

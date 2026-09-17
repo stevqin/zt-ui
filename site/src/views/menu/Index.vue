@@ -30,7 +30,6 @@ const colorCode=sfc("import { ZtMenu } from '@ztechjs/zt-ui'\nimport type { ZtMe
  <h2>横向导航</h2><DemoBlock :code="horizontalCode" desc="mode=horizontal 支持多级下拉菜单；menu-trigger 默认为 hover，可设为 click。继承全局 size 和主题，空间不足时横向滚动；横向模式不使用整栏折叠和宽度拖动。"><Horizontal /></DemoBlock>
  <h2>路由模式</h2><DemoBlock :code="routingCode" desc="应用 app.use(router) 后设置 router 即可自动跳转，默认以叶子项 key 为路径；route 可设置路径字符串或命名路由对象，支持 params、query、hash。无需手动处理 select 跳转。"><Routing /></DemoBlock><p>高亮跟随实际路由：普通路径按 path 匹配，带 query 或 hash 的目标按 fullPath 精确匹配。导航守卫取消跳转时保留当前高亮；异常通过 route-error 返回。显式 href 保留普通链接行为，Ctrl / Command 点击路由链接可在新标签页打开。未启用 router 时仍使用 v-model 控制选择。</p>
  <h2>键盘导航</h2><p>横向菜单使用 ← / → 切换主项，↓ 进入子菜单；浮层中 ↑ / ↓ 移动、→ 进入下一级、← / Escape 返回上一级。Enter / Space 激活，点击外部或移出悬停区域会关闭浮层。</p><p>Tab 进入菜单后，↑ / ↓ 在可见且启用的菜单项之间移动；Home / End 跳到首尾；→ 展开并进入子菜单；← / Escape 收起或返回上级。Enter / Space 激活当前项。禁用父项会同时禁用后代。</p>
- <h2>API</h2><p>双栏模式中 activeKey 选择业务模块，modelValue 记录叶子项；模块切换不触发 select。collapsed 折叠后保留模块入口，点击模块会浮出子菜单，选择叶子项后自动关闭并保持折叠。width 为展开宽度，collapsedWidth 为折叠宽度，railWidth 为双栏左栏宽度；resizable 提供拖动及键盘调整，minWidth / maxWidth 限制调整范围。</p><p>key 需在整棵菜单中唯一。items 支持 label、description、icon、href、disabled、children 和 type: 'group'。使用 expandedKeys 时为受控展开状态，否则由 defaultExpandedKeys 初始化。</p><p><RouterLink to="/api/menu">查看完整 Props、Events 和类型定义 →</RouterLink></p>
-</div></template>
+ </div></template>
 
 <style scoped>.menu-palettes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}.menu-palettes p{margin:0 0 6px!important}@media(max-width:600px){.menu-palettes{grid-template-columns:1fr}}</style>

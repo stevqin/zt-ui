@@ -67,14 +67,7 @@ const size = ref<ZtComponentSize>('default')`, `<ZtButton @click="size = 'mini';
     <h2>尺寸</h2>
     <DemoBlock :code="codeSize" desc="size 提供五档密度，同时调整标题栏、正文、底部和内置按钮。"><div class="demo-row"><ZtButton v-for="size in modalSizes" :key="size" :size="size" @click="openSize(size)">{{ size }}</ZtButton></div><ZtModal v-model="sizeVisible" :size="modalSize" title="尺寸示例" show-footer><p>当前尺寸：{{ modalSize }}</p></ZtModal></DemoBlock>
 
-    <h2>API</h2><h3>Props</h3>
-    <table class="doc-table"><thead><tr><th>属性</th><th>类型</th><th>默认值</th><th>说明</th></tr></thead><tbody>
-      <tr><td><code>size</code></td><td><code>mini | small | default | medium | large</code></td><td><code>default</code></td><td>内容密度</td></tr>
-      <tr><td><code>v-model</code></td><td><code>boolean</code></td><td><code>false</code></td><td>显示状态</td></tr><tr><td><code>v-model:fullscreen</code></td><td><code>boolean</code></td><td><code>false</code></td><td>全屏状态</td></tr><tr><td><code>title</code></td><td><code>string</code></td><td>—</td><td>标题</td></tr><tr><td><code>width</code></td><td><code>number | string</code></td><td><code>560</code></td><td>宽度</td></tr><tr><td><code>top</code></td><td><code>number | string</code></td><td>—</td><td>顶部偏移</td></tr><tr><td><code>showFullscreenButton</code></td><td><code>boolean</code></td><td><code>false</code></td><td>显示 header 全屏按钮</td></tr><tr><td><code>draggable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>允许拖动 header</td></tr><tr><td><code>showFooter</code></td><td><code>boolean</code></td><td><code>false</code></td><td>默认底部</td></tr><tr><td><code>maskClosable</code></td><td><code>boolean</code></td><td><code>false</code></td><td>遮罩关闭</td></tr><tr><td><code>escClosable</code></td><td><code>boolean</code></td><td><code>true</code></td><td>Escape 关闭</td></tr><tr><td><code>beforeClose</code></td><td><code>(reason) =&gt; boolean | Promise</code></td><td>—</td><td>关闭拦截</td></tr>
-    </tbody></table>
-    <h3>Events</h3><table class="doc-table"><thead><tr><th>事件</th><th>参数</th><th>说明</th></tr></thead><tbody><tr><td><code>open / opened</code></td><td>—</td><td>开始/完成打开</td></tr><tr><td><code>close / closed</code></td><td><code>reason</code></td><td>开始/完成关闭</td></tr><tr><td><code>confirm / cancel</code></td><td>—</td><td>确认/取消</td></tr><tr><td><code>update:fullscreen / fullscreen-change</code></td><td><code>boolean</code></td><td>全屏状态变化</td></tr></tbody></table>
-    <h3>Slots</h3><table class="doc-table"><thead><tr><th>插槽</th><th>说明</th></tr></thead><tbody><tr><td><code>default</code></td><td>正文</td></tr><tr><td><code>title</code></td><td>标题</td></tr><tr><td><code>footer</code></td><td>底部操作</td></tr></tbody></table>
-  </div>
+    </div>
 </template>
 
 <style scoped>
