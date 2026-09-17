@@ -1,0 +1,4 @@
+@use '../../styles/tokens' as glass;
+.zt-entry { @include glass.tokens; width:100%; min-width:0; color:var(--glass-default-ink); font:14px/1.5 var(--glass-font); .zt-popover__reference {display:block} }
+.zt-entry__list {max-height:260px;overflow:auto;min-width:180px;color:var(--glass-default-ink);font:14px/1.5 var(--glass-font)}
+.zt-entry__option {padding:8px 10px;border-radius:glass.radius(6px);cursor:pointer;overflow-wrap:anywhere;&[aria-selected=true]{background:var(--zt-entry-soft,var(--glass-accent-soft));color:var(--zt-entry-ink,var(--glass-accent))}&[aria-disabled=true]{opacity:.45;cursor:not-allowed}}

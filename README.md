@@ -13,22 +13,16 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 
 ## Components
 
-- Button
-- Tag
-- Radio and RadioGroup
-- Checkbox and CheckboxGroup
-- Switch
-- Input
-- Password
-- InputNumber
-- Select
-- Form, FormItem, and FormGroup
-- Badge
-- Steps and Step
-- Pagination
-- VTableGrid
-- Modal
-- Drawer
+The [documentation site](https://stevqin.github.io/zt-ui/) contains **81 component pages and 336 executable examples**, including their complete Vue source and API references.
+
+- Foundation and layout: ConfigProvider, Icon, Text, Link, Button, Typography, Layout, Row, Col, Space, Divider, Splitter, Scrollbar, Affix.
+- Forms: Form, Input, Password, InputNumber, InputOtp, Radio, Checkbox, Switch, Select, Segmented, Slider, DatePicker, DateTimePicker, DatePickerPanel, TimePicker, TimeSelect, ColorPicker, ColorPickerPanel, Upload, Autocomplete, InputTag, Mention, Rate, Cascader, TreeSelect, Transfer.
+- Data: Table, VTableGrid, Tree, Pagination, Card, Empty, Statistic, Timeline, Calendar, Descriptions, Collapse, InfiniteScroll.
+- Navigation: Menu, Tabs, Breadcrumb, Steps, Dropdown, Anchor, Backtop, PageHeader.
+- Feedback and overlays: Tag, Badge, Progress, Result, Skeleton, Alert, Loading, Message, Notification, Modal, Drawer, Popover, Popconfirm, Tooltip, MessageBox, Tour.
+- Media: Image, Avatar, Carousel, Watermark, QRCode.
+
+Select and Tree support virtual rendering. Message, Notification, MessageBox and Loading include imperative services and setup-scoped helpers that inherit ConfigProvider settings and clean up on unmount.
 
 ## Sizes
 

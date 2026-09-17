@@ -1,0 +1,2 @@
+@use '../../styles/tokens' as glass;
+.zt-mention {textarea{box-sizing:border-box;width:100%;min-height:68px;resize:vertical;padding:8px 11px;font:inherit;color:inherit;background:var(--zt-surface,white);border:1px solid var(--glass-default-line);border-radius:glass.radius(11px);&:focus{outline:2px solid var(--glass-accent-soft);border-color:var(--glass-accent)}&:disabled{opacity:.5;cursor:not-allowed}}button{border:0;background:none;color:var(--glass-accent);cursor:pointer}&--mini{font-size:11px}&--small{font-size:12px}&--medium{font-size:15px}&--large{font-size:16px}}

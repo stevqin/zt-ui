@@ -1,0 +1,474 @@
+[
+  {
+    "id": "layout",
+    "name": "Layout",
+    "title": "页面布局",
+    "group": "layout",
+    "description": "页面容器及页头、侧栏、内容和页脚的响应式结构。",
+    "directory": "layout",
+    "owners": [
+      "ZtLayout",
+      "ZtHeader",
+      "ZtAside",
+      "ZtMain",
+      "ZtFooter"
+    ]
+  },
+  {
+    "id": "row",
+    "name": "Row",
+    "title": "栅格行",
+    "group": "layout",
+    "description": "控制栅格排列、方向对齐与水平垂直间距。",
+    "directory": "row",
+    "owners": [
+      "ZtRow"
+    ]
+  },
+  {
+    "id": "col",
+    "name": "Col",
+    "title": "栅格列",
+    "group": "layout",
+    "description": "24 列栅格、偏移及五个响应式断点。",
+    "directory": "col",
+    "owners": [
+      "ZtCol"
+    ]
+  },
+  {
+    "id": "space",
+    "name": "Space",
+    "title": "间距",
+    "group": "layout",
+    "description": "排列内容并统一间距、换行与分隔。",
+    "directory": "space",
+    "owners": [
+      "ZtSpace"
+    ]
+  },
+  {
+    "id": "divider",
+    "name": "Divider",
+    "title": "分割线",
+    "group": "layout",
+    "description": "水平或垂直分隔内容并提供标题位置。",
+    "directory": "divider",
+    "owners": [
+      "ZtDivider"
+    ]
+  },
+  {
+    "id": "card",
+    "name": "Card",
+    "title": "卡片",
+    "group": "data",
+    "description": "具有标题、操作、正文和页脚的内容容器。",
+    "directory": "card",
+    "owners": [
+      "ZtCard"
+    ]
+  },
+  {
+    "id": "splitter",
+    "name": "Splitter",
+    "title": "分割面板",
+    "group": "layout",
+    "description": "使用指针和键盘调整面板大小与折叠状态。",
+    "directory": "splitter",
+    "owners": [
+      "ZtSplitter"
+    ]
+  },
+  {
+    "id": "typography",
+    "name": "Typography",
+    "title": "排版",
+    "group": "foundation",
+    "description": "语义标题、段落、文字修饰与复制反馈。",
+    "directory": "typography",
+    "owners": [
+      "ZtTypography"
+    ]
+  },
+  {
+    "id": "empty",
+    "name": "Empty",
+    "title": "空状态",
+    "group": "data",
+    "description": "展示无数据说明、图片和下一步操作。",
+    "directory": "empty",
+    "owners": [
+      "ZtEmpty"
+    ]
+  },
+  {
+    "id": "skeleton",
+    "name": "Skeleton",
+    "title": "骨架屏",
+    "group": "feedback",
+    "description": "加载期间通过占位形状维持内容布局。",
+    "directory": "skeleton",
+    "owners": [
+      "ZtSkeleton",
+      "ZtSkeletonItem"
+    ]
+  },
+  {
+    "id": "statistic",
+    "name": "Statistic",
+    "title": "统计数值",
+    "group": "data",
+    "description": "展示格式化数值、精度、分组和前后缀。",
+    "directory": "statistic",
+    "owners": [
+      "ZtStatistic"
+    ]
+  },
+  {
+    "id": "alert",
+    "name": "Alert",
+    "title": "警告提示",
+    "group": "feedback",
+    "description": "页面内的持续提示、语义颜色与关闭操作。",
+    "directory": "alert",
+    "owners": [
+      "ZtAlert"
+    ]
+  },
+  {
+    "id": "loading",
+    "name": "Loading",
+    "title": "加载",
+    "group": "feedback",
+    "description": "区域及全屏加载遮罩、滚动锁定和命令式调用。",
+    "directory": "loading",
+    "owners": [
+      "ZtLoading"
+    ]
+  },
+  {
+    "id": "message",
+    "name": "Message",
+    "title": "全局消息",
+    "group": "feedback",
+    "description": "短暂操作反馈、消息合并与实例关闭。",
+    "directory": "message",
+    "owners": []
+  },
+  {
+    "id": "notification",
+    "name": "Notification",
+    "title": "通知",
+    "group": "feedback",
+    "description": "支持标题、自定义操作与四角堆叠的通知。",
+    "directory": "notification",
+    "owners": []
+  },
+  {
+    "id": "message-box",
+    "name": "MessageBox",
+    "title": "消息确认",
+    "group": "overlay",
+    "description": "命令式提示、确认和带异步校验的输入框。",
+    "directory": "message-box",
+    "owners": []
+  },
+  {
+    "id": "tooltip",
+    "name": "Tooltip",
+    "title": "文字提示",
+    "group": "overlay",
+    "description": "提供支持悬停和键盘聚焦的简短辅助说明。",
+    "directory": "tooltip",
+    "owners": [
+      "ZtTooltip"
+    ]
+  },
+  {
+    "id": "dropdown",
+    "name": "Dropdown",
+    "title": "下拉菜单",
+    "group": "navigation",
+    "description": "紧凑操作列表、分组、禁用与键盘导航。",
+    "directory": "dropdown",
+    "owners": [
+      "ZtDropdown"
+    ]
+  },
+  {
+    "id": "tree",
+    "name": "Tree",
+    "title": "树形控件",
+    "group": "data",
+    "description": "层级展开、选择、勾选、懒加载及虚拟滚动。",
+    "directory": "tree",
+    "owners": [
+      "ZtTree"
+    ]
+  },
+  {
+    "id": "cascader",
+    "name": "Cascader",
+    "title": "级联选择",
+    "group": "form",
+    "description": "路径选择、多选、搜索及按需加载层级数据。",
+    "directory": "cascader",
+    "owners": [
+      "ZtCascader"
+    ]
+  },
+  {
+    "id": "tree-select",
+    "name": "TreeSelect",
+    "title": "树选择",
+    "group": "form",
+    "description": "下拉树单选、多选与父子节点联动。",
+    "directory": "tree-select",
+    "owners": [
+      "ZtTreeSelect"
+    ]
+  },
+  {
+    "id": "transfer",
+    "name": "Transfer",
+    "title": "穿梭框",
+    "group": "form",
+    "description": "在双栏集合中搜索、勾选并批量移动选项。",
+    "directory": "transfer",
+    "owners": [
+      "ZtTransfer"
+    ]
+  },
+  {
+    "id": "autocomplete",
+    "name": "Autocomplete",
+    "title": "自动补全",
+    "group": "form",
+    "description": "文本录入与同步或异步建议，支持键盘选择。",
+    "directory": "autocomplete",
+    "owners": [
+      "ZtAutocomplete"
+    ]
+  },
+  {
+    "id": "input-tag",
+    "name": "InputTag",
+    "title": "标签输入",
+    "group": "form",
+    "description": "多值文本输入、粘贴拆分、去重和数量限制。",
+    "directory": "input-tag",
+    "owners": [
+      "ZtInputTag"
+    ]
+  },
+  {
+    "id": "mention",
+    "name": "Mention",
+    "title": "提及",
+    "group": "form",
+    "description": "在文本中按触发符搜索和插入候选项。",
+    "directory": "mention",
+    "owners": [
+      "ZtMention"
+    ]
+  },
+  {
+    "id": "rate",
+    "name": "Rate",
+    "title": "评分",
+    "group": "form",
+    "description": "支持半星、只读、自定义图标及键盘操作。",
+    "directory": "rate",
+    "owners": [
+      "ZtRate"
+    ]
+  },
+  {
+    "id": "time-select",
+    "name": "TimeSelect",
+    "title": "时间选项",
+    "group": "form",
+    "description": "按开始、结束和步长生成可选时间列表。",
+    "directory": "time-select",
+    "owners": [
+      "ZtTimeSelect"
+    ]
+  },
+  {
+    "id": "time-picker",
+    "name": "TimePicker",
+    "title": "时间选择器",
+    "group": "form",
+    "description": "选择时间点或时间范围并限制可选时间。",
+    "directory": "time-picker",
+    "owners": [
+      "ZtTimePicker"
+    ]
+  },
+  {
+    "id": "color-picker",
+    "name": "ColorPicker",
+    "title": "颜色选择器",
+    "group": "form",
+    "description": "自定义色盘、透明度、预设和颜色格式输入。",
+    "directory": "color-picker",
+    "owners": [
+      "ZtColorPicker"
+    ]
+  },
+  {
+    "id": "date-picker-panel",
+    "name": "DatePickerPanel",
+    "title": "日期面板",
+    "group": "form",
+    "description": "可直接嵌入页面的日期与范围选择面板。",
+    "directory": "date-picker",
+    "owners": [
+      "ZtDatePickerPanel"
+    ]
+  },
+  {
+    "id": "color-picker-panel",
+    "name": "ColorPickerPanel",
+    "title": "颜色面板",
+    "group": "form",
+    "description": "直接嵌入页面的色盘与透明度选择。",
+    "directory": "color-picker-panel",
+    "owners": [
+      "ZtColorPickerPanel"
+    ]
+  },
+  {
+    "id": "table",
+    "name": "Table",
+    "title": "基础表格",
+    "group": "data",
+    "description": "基于原生表格的排序、选择、展开和固定列。",
+    "directory": "table",
+    "owners": [
+      "ZtTable"
+    ]
+  },
+  {
+    "id": "timeline",
+    "name": "Timeline",
+    "title": "时间线",
+    "group": "data",
+    "description": "按时间展示事件、状态与自定义节点。",
+    "directory": "timeline",
+    "owners": [
+      "ZtTimeline"
+    ]
+  },
+  {
+    "id": "calendar",
+    "name": "Calendar",
+    "title": "日历",
+    "group": "data",
+    "description": "月周视图、日期选择、节假日和日程插槽。",
+    "directory": "calendar",
+    "owners": [
+      "ZtCalendar"
+    ]
+  },
+  {
+    "id": "anchor",
+    "name": "Anchor",
+    "title": "锚点",
+    "group": "navigation",
+    "description": "定位章节并同步指定滚动容器的阅读位置。",
+    "directory": "anchor",
+    "owners": [
+      "ZtAnchor"
+    ]
+  },
+  {
+    "id": "affix",
+    "name": "Affix",
+    "title": "固钉",
+    "group": "layout",
+    "description": "在指定滚动容器内固定内容并保留占位。",
+    "directory": "affix",
+    "owners": [
+      "ZtAffix"
+    ]
+  },
+  {
+    "id": "backtop",
+    "name": "Backtop",
+    "title": "回到顶部",
+    "group": "navigation",
+    "description": "达到滚动阈值后提供快速回顶操作。",
+    "directory": "backtop",
+    "owners": [
+      "ZtBacktop"
+    ]
+  },
+  {
+    "id": "page-header",
+    "name": "PageHeader",
+    "title": "页头",
+    "group": "navigation",
+    "description": "返回入口、面包屑、页面标题及操作区域。",
+    "directory": "page-header",
+    "owners": [
+      "ZtPageHeader"
+    ]
+  },
+  {
+    "id": "infinite-scroll",
+    "name": "InfiniteScroll",
+    "title": "无限滚动",
+    "group": "data",
+    "description": "触底加载、防止重复请求并反馈完成或失败。",
+    "directory": "infinite-scroll",
+    "owners": [
+      "ZtInfiniteScroll"
+    ]
+  },
+  {
+    "id": "carousel",
+    "name": "Carousel",
+    "title": "走马灯",
+    "group": "media",
+    "description": "轮播内容、触摸滑动与可暂停自动播放。",
+    "directory": "carousel",
+    "owners": [
+      "ZtCarousel"
+    ]
+  },
+  {
+    "id": "tour",
+    "name": "Tour",
+    "title": "漫游引导",
+    "group": "overlay",
+    "description": "逐步定位界面元素并提供上下文操作说明。",
+    "directory": "tour",
+    "owners": [
+      "ZtTour"
+    ]
+  },
+  {
+    "id": "watermark",
+    "name": "Watermark",
+    "title": "水印",
+    "group": "media",
+    "description": "提供可配置文本、图片及响应式背景水印。",
+    "directory": "watermark",
+    "owners": [
+      "ZtWatermark"
+    ]
+  },
+  {
+    "id": "qrcode",
+    "name": "QRCode",
+    "title": "二维码",
+    "group": "media",
+    "description": "从文本生成可配置二维码并支持下载。",
+    "directory": "qrcode",
+    "owners": [
+      "ZtQRCode"
+    ]
+  }
+]

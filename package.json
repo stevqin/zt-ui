@@ -59,12 +59,14 @@
   },
   "devDependencies": {
     "@types/node": "^22.20.2",
+    "@types/qrcode": "^1.5.6",
     "@visactor/vtable": "^1.26.8",
     "@visactor/vtable-editors": "^1.26.8",
     "@visactor/vue-vtable": "^1.26.8",
     "@vitejs/plugin-vue": "^5.2.4",
     "@vue/test-utils": "^2.5.0",
     "happy-dom": "20.8.9",
+    "jsqr": "^1.4.0",
     "sass": "^1.89.2",
     "typescript": "^5.8.3",
     "vite": "^6.3.5",
@@ -72,5 +74,8 @@
     "vitest": "^3.2.7",
     "vue": "^3.5.13",
     "vue-tsc": "^2.2.10"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.4"
   }
 }

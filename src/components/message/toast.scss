@@ -1,0 +1,5 @@
+@use '../../styles/tokens.scss' as *;
+.zt-toast{@include tokens;position:fixed;z-index:4000;display:flex;gap:12px;align-items:flex-start;max-width:calc(100vw - 32px);padding:14px 18px;background:var(--glass-default-soft);color:var(--glass-ink);border:1px solid var(--glass-line);border-radius:var(--zt-radius,11px);box-shadow:var(--glass-shadow);font-family:var(--glass-font);line-height:1.6;transition:top .18s,bottom .18s;.zt-toast__body{min-width:0;overflow-wrap:anywhere;flex:1}strong{display:block}button{border:0;background:none;color:inherit;font-size:20px;cursor:pointer}button:focus-visible{outline:2px solid var(--glass-accent)}.zt-toast__icon{color:var(--glass-accent);font-weight:700}}
+.zt-message{left:50%;transform:translateX(-50%);width:max-content}.zt-notification{width:340px}.zt-toast--top-right,.zt-toast--bottom-right{right:16px}.zt-toast--top-left,.zt-toast--bottom-left{left:16px}
+@each $s in success,warning{.zt-toast--#{$s} .zt-toast__icon{color:var(--glass-#{$s}-ink)}}.zt-toast--error .zt-toast__icon{color:var(--glass-danger-ink)}
+@media(prefers-reduced-motion:reduce){.zt-toast{transition:none}}

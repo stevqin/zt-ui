@@ -16,12 +16,16 @@ import Example07 from './Example07.vue';
 import Example07Code from './Example07.vue?raw';
 import Methods from './Methods.vue';
 import MethodsCode from './Methods.vue?raw';
+import Virtual from './Virtual.vue';
+import VirtualCode from './Virtual.vue?raw';
 </script>
 
 <template>
   <div class="doc-section select-doc">
     <h1>Select 选择器</h1>
-    <p>从结构化选项中选择一个或多个值，支持本地筛选、远程搜索、键盘操作和业务化插槽。</p>
+    <p>
+      从结构化选项中选择一个或多个值，支持本地筛选、远程搜索、键盘操作和业务化插槽。
+    </p>
 
     <h2>基础单选与清空</h2>
     <DemoBlock
@@ -74,6 +78,12 @@ import MethodsCode from './Methods.vue?raw';
 
     <h2>外部控制与无匹配结果</h2>
     <DemoBlock :code="MethodsCode" desc=""><Methods /></DemoBlock>
+    <h2>万级选项虚拟滚动</h2>
+    <DemoBlock
+      :code="VirtualCode"
+      desc="virtual 只挂载可见选项；自定义选项需保持 itemHeight 指定的固定行高。"
+      ><Virtual
+    /></DemoBlock>
   </div>
 </template>
 

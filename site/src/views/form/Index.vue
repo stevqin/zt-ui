@@ -16,6 +16,8 @@ import Example07 from './Example07.vue';
 import Example07Code from './Example07.vue?raw';
 import FieldControl from './FieldControl.vue';
 import FieldControlCode from './FieldControl.vue?raw';
+import ExpandedControls from './ExpandedControls.vue';
+import ExpandedControlsCode from './ExpandedControls.vue?raw';
 </script>
 
 <template>
@@ -38,7 +40,9 @@ import FieldControlCode from './FieldControl.vue?raw';
       ><Example02
     /></DemoBlock>
     <h2>标签布局</h2>
-    <DemoBlock :code="Example03Code" desc="label-position 支持 left、right 和 top。"
+    <DemoBlock
+      :code="Example03Code"
+      desc="label-position 支持 left、right 和 top。"
       ><Example03
     /></DemoBlock>
     <h2>行内表单</h2>
@@ -58,12 +62,16 @@ import FieldControlCode from './FieldControl.vue?raw';
       ><Example06
     /></DemoBlock>
     <h2>尺寸与整体禁用</h2>
-    <DemoBlock :code="Example07Code" desc="Form 的 size 和 disabled 自动传递给输入控件。"
+    <DemoBlock
+      :code="Example07Code"
+      desc="Form 的 size 和 disabled 自动传递给输入控件。"
       ><Example07
     /></DemoBlock>
 
     <h2>字段级规则、外部错误与实例方法</h2>
     <DemoBlock :code="FieldControlCode" desc=""><FieldControl /></DemoBlock>
+    <h2>扩展表单组件统一校验</h2>
+    <DemoBlock :code="ExpandedControlsCode"><ExpandedControls /></DemoBlock>
   </div>
 </template>
 
