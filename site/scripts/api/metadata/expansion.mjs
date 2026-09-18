@@ -1,6 +1,6 @@
 export default {
   'form.ZtForm.props.underline': {
-    description: '为支持的输入、选择和日期时间控件启用下边框外观；嵌套 Form 独立决定外观，弹出面板中的辅助控件保留原样。',
+    description: '为 15 个输入、选择和日期时间控件提供默认下边框外观；组件显式 underline 优先，嵌套 Form 独立决定外观，弹出面板中的辅助控件保留普通边框。',
     defaultValue: 'false',
   },
   'drawer.ZtDrawer.props.width': {

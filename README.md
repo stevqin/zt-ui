@@ -13,7 +13,7 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 
 ## Components
 
-The [documentation site](https://stevqin.github.io/zt-ui/) contains **79 component pages, one external feedback guide, and 338 executable examples**, including their complete Vue source and API references.
+The [documentation site](https://stevqin.github.io/zt-ui/) contains **79 component pages, one external feedback guide, and 339 executable examples**, including their complete Vue source and API references.
 
 - Foundation and layout: ConfigProvider, Icon, Text, Link, Button, Typography, Layout, Row, Col, Space, Divider, Splitter, Scrollbar, Affix.
 - Forms: Form, Input, Password, InputNumber, InputOtp, Radio, Checkbox, Switch, Select, SelectBox, Segmented, Slider, DatePicker, DateTimePicker, DatePickerPanel, TimePicker, TimeSelect, ColorPicker, ColorPickerPanel, Upload, Autocomplete, InputTag, Mention, Rate, Cascader, TreeSelect, Transfer.
@@ -31,6 +31,18 @@ Imperative Message, Notification, MessageBox and fullscreen Loading belong to [@
 Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Input, Password, InputNumber, Select, SelectBox, Form, Badge, Steps, Pagination, Modal, Drawer, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children; Form passes it to registered input controls.
 
 Drawer uses `width` for left/right panels and `height` for top/bottom panels (both default to 420px). Its `size` controls density and scopes descendant controls, like Modal. Icon uses an independent number or CSS length (default `1em`); Alert has one fixed density.
+
+## Appearance and demo contracts
+
+以下 15 个控件公开 `underline?: boolean`：`ZtInput`、`ZtPassword`、`ZtInputNumber`、`ZtInputTag`、`ZtInputOtp`、`ZtSelect`、`ZtSelectBox`、`ZtAutocomplete`、`ZtCascader`、`ZtTreeSelect`、`ZtDatePicker`、`ZtDateTimePicker`、`ZtTimePicker`、`ZtTimeSelect`、`ZtMention`。显式 `:underline="true"` 启用下边框，`:underline="false"` 强制普通边框；省略时继承最近 Form 的 underline。嵌套 Form 建立独立边界；控件内部及弹出面板中的辅助控件保持普通边框。Button、Upload、Rate、Switch、Slider、Segmented、Radio、Checkbox、Transfer、ColorPicker 不使用此表单外观。
+
+RadioGroup 使用 `segmented` 切换分段样式，Pagination 使用 `size` 控制密度，Badge 使用 `status` 设置颜色。视觉主题 `danger` 与校验状态 `error` 含义不同；FormItem 校验错误优先于同一表面的装饰颜色。
+
+Button 的深度由 ConfigProvider 圆角基准决定：小于 4px 使用纯色与边框，无深度渐变或外阴影；4–8px（含两个端点）使用轻微内高光和低透明度的一像素阴影；大于 8px 使用克制的渐变与更明显的按压层次。适用于全部五档尺寸与六种视觉主题；禁用和加载减少强调，键盘焦点仍清晰，减少动画偏好会关闭位移。
+
+Tooltip 的 `width` / `height` 接受数字（px）和字符串（CSS 长度）。省略时按内容大小展示，宽度为 `max-content` 并受视口最大宽度约束，短文本紧凑、长文本换行。显式 width / height 固定外框尺寸，超过视口时受边界约束；指定高度后只有内容区滚动，箭头保持固定。Popover 提供相同的长度换算和 height 能力；尺寸或内容变化会重新定位，空间不足时自动调整方位。
+
+文档站仅为主组件支持六种视觉主题的页面显示统一状态控制器。Button 和 Tag 保留完整颜色矩阵；Steps 和 Result 使用业务状态，不显示该控制器；仅提供校验状态（如 Input、Password）的页面也不使用它。桌面右侧面板显示三列两行色块与文字，选中项同时有背景、轮廓和勾选标记。小屏显示右下角“状态 · primary”胶囊，点击打开底部面板；方向键切换，Escape 关闭并恢复焦点。选择跨页保存，不支持所选状态的页面使用声明的默认值。控制器同步本页适用示例；复制源码使用普通 `status` 绑定，不依赖文档站 Provider。
 
 ## Installation
 
@@ -182,6 +194,8 @@ Search requests carry `{ mode: 'search', keyword, page, pageSize }`; pages start
 
 The clear button and the exposed `clear()` method only work when `clearable=true`. They immediately reset the model, draft and search, emit `change` and `clear`, and retain focus. An open panel stays open. `width` accepts pixels or a CSS length, and the selected summary stays on one line. All five sizes, themes and corner radii inherit from ConfigProvider. See the [SelectBox examples](https://stevqin.github.io/zt-ui/#/select-box) for a fully local mock API and all states.
 
+SelectBox 默认向下展开，下方不足且上方空间更多时向上翻转；滚动、窗口尺寸、分页与远程结果变化都会重新测量。搜索、摘要、分页和确认区域固定，选项列表是唯一纵向滚动区域，面板本身不滚动，也不增加页面溢出。加载、空列表、请求失败、批量粘贴和仅看已选模式遵循同一约束。若视口高度小于固定区域所需高度，则约束并裁剪面板；不启用整面板滚动，也不覆盖触发器，因此极小高度下部分操作暂不可见。
+
 ## Imperative feedback
 
 ```bash
@@ -332,11 +346,11 @@ const datetimeRange = ref<ZtDatePickerValue>(null)
 日期值为本地 `YYYY-MM-DD`，日期时间为本地 `YYYY-MM-DD HH:mm:ss`，不做时区转换。
 范围值为 `[开始值, 结束值]`，清空返回 `null`，`''` 和 `null` 显示 placeholder。
 日期选择完成即提交；日期时间在点击“确定”后提交，Esc / 取消 / 点击外部会丢弃草稿。
-支持 `range`、`placeholder`、`clearable`、`disabled`、`readonly`、`disabledDate(date)`、五档 `size` 和颜色主题 `status`（default / primary / success / warning / danger / info，默认 primary；兼容原 error 校验状态）。
+支持 `range`、`placeholder`、`clearable`、`disabled`、`readonly`、`disabledDate(date)`、五档 `size` 和颜色主题 `status`（default / primary / success / warning / danger / info，默认 primary；error 表示校验错误）。
 `disabledDate` 限制起止端点，区间内部允许包含禁用日期。时间精确到秒，年份 1–9999。
 事件：`update:modelValue`、`change`、`clear`、`visible-change`、`focus`、`blur`；实例方法：`focus`、`blur`、`open`、`close`、`clear`。
 
-分页 `status` 支持 `default / primary / success / warning / danger / info`，默认 `primary`，保持原有蓝色高亮。
+分页 `status` 支持 `default / primary / success / warning / danger / info`，默认 `primary`，使用蓝色高亮。
 
 
 日期组件的节假日标识由业务传入，不内置年度节假日或调休表：

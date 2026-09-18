@@ -1,7 +1,7 @@
 import type { ZtComponentSize } from '../types';
 import type { ZtButtonStatus } from '../button/types';
 
-/** error is retained as a validation-state alias for backwards compatibility. */
+/** danger denotes the visual theme; error denotes field validation failure. */
 export type ZtDatePickerStatus = ZtButtonStatus | 'error';
 export type ZtDateTimePickerStatus = ZtDatePickerStatus;
 
@@ -15,7 +15,7 @@ export interface ZtDatePickerHoliday {
 export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';
 export type ZtDatePickerValue = string | [string, string] | null;
 export interface ZtDatePickerProps {
-  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */
   underline?: boolean;
   /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */
   modelValue?: ZtDatePickerValue;

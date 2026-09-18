@@ -16,8 +16,8 @@ export interface ZtPopoverProps {
   /** 浮层是否显示，支持 v-model:visible。 */ visible?: boolean;
   /** 触发方式。 */ trigger?: ZtPopoverTrigger;
   /** 首选出现方位，空间不足时自动翻转。 */ placement?: ZtPopoverPlacement;
-  /** 浮层宽度，数值按像素处理。 */ width?: number | string;
-  /** 浮层外层高度，数值按像素处理；内容超出时内部滚动。 */ height?: number | string;
+  /** 浮层外框宽度，数字转换为 px，字符串作为 CSS 长度，受视口边界约束。 */ width?: number | string;
+  /** 浮层外框高度，数字转换为 px，字符串作为 CSS 长度；省略时按内容高度展示，指定高度后仅内容区滚动，受视口边界约束。 */ height?: number | string;
   /** 浮层与触发器的间距。 */ offset?: number;
   /** 禁用全部打开交互。 */ disabled?: boolean;
   /** 是否显示指向触发器的箭头。 */ showArrow?: boolean;

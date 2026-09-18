@@ -12,6 +12,8 @@ import ClearableCode from './Clearable.vue?raw'
 
 <template>
   <div class="component-examples">
+    <p>默认向下展开，下方不足且上方空间更多时向上翻转；窗口缩放、页面滚动、分页和远程结果变化都会重新测量。搜索、摘要、分页和确认区域固定，选项列表是唯一纵向滚动区域，面板本身不滚动，也不增加页面溢出。加载、空列表、请求失败、批量粘贴和仅看已选遵循同一约束。</p>
+    <p>若视口高度小于固定区域所需高度，则约束并裁剪面板，不启用整面板滚动，也不覆盖触发器；极小高度下部分操作暂不可见。underline 显式 true / false 优先，省略时继承最近 Form。</p>
     <h3>本地搜索与分页</h3>
     <DemoBlock :code="Example01Code" desc="列表全选仅影响当前页可用项，跨页保留选择；查看可切换至已选列表。本地搜索先过滤完整 options，再分页。"><Example01 /></DemoBlock>
     <h3>远程分页与自定义选项</h3>

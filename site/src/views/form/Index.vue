@@ -24,6 +24,7 @@ import ExpandedControlsCode from './ExpandedControls.vue?raw';
 
 <template>
   <div class="component-examples form-doc">
+    <p>Input、Password、InputNumber、InputTag、InputOtp、Select、SelectBox、Autocomplete、Cascader、TreeSelect、DatePicker、DateTimePicker、TimePicker、TimeSelect、Mention 均公开 underline。组件显式 :underline="true" 强制启用，:underline="false" 恢复普通边框；省略时继承最近 Form。嵌套 Form 建立独立边界，内部及弹出面板辅助控件保持普通边框。</p>
     <h3>全组件校验场景</h3>
     <DemoBlock
       :code="integratedValidationCode"

@@ -110,6 +110,19 @@ describe('shared component documentation reading flow', () => {
           )
         expect(shell.findAll('.api-reference')).toHaveLength(1)
         expect(wrapper.findAll('.api-reference')).toHaveLength(1)
+        const apiAnchor = shell.findAll('[id="api"]')
+        expect(apiAnchor, `${component.path} has one canonical API anchor`).toHaveLength(1)
+        expect(apiAnchor[0]!.element.tagName).toBe('SECTION')
+        expect(apiAnchor[0]!.attributes('aria-labelledby')).toBe('api-title')
+        expect(shell.findAll('[id="api-title"]')).toHaveLength(1)
+        expect(shell.get('#api-title').text()).toBe('API')
+        if (shell.find('.api-types').exists()) {
+          expect(shell.findAll('[id="types"]')).toHaveLength(1)
+          expect(shell.get('#types').element.tagName).toBe('SECTION')
+          expect(shell.get('#types').attributes('aria-labelledby')).toBe('types-title')
+          expect(shell.findAll('[id="types-title"]')).toHaveLength(1)
+          expect(shell.get('#types-title').text()).toBe('Types')
+        }
         expect(shell.findAll('.doc-demo')).toHaveLength(
           component.page.examples.length,
         )
