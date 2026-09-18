@@ -5,6 +5,7 @@ import type { ZtTooltipProps } from './types';
 defineOptions({ name: 'ZtTooltip' });
 const props = withDefaults(defineProps<ZtTooltipProps>(), {
   content: '',
+  width: 'max-content',
   disabled: false,
   placement: 'top',
   openDelay: 200,
@@ -78,6 +79,9 @@ onBeforeUnmount(() => clearTimeout(timer));
     :visible="open"
     trigger="manual"
     :placement="placement"
+    :width="width"
+    :height="height"
+    @update:visible="value => { if (!value && open) escape() }"
     :disabled="disabled"
     :show-arrow="showArrow"
     :restore-focus="false"

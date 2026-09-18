@@ -41,15 +41,20 @@ const config = useZtConfig(),
   parentOverlay = inject(overlayContextKey, undefined),
   reference = ref<HTMLElement>(),
   popup = ref<HTMLElement>(),
+  content = ref<HTMLElement>(),
   opened = ref(props.visible),
   layer = ref(props.zIndex),
   actualPlacement = ref<ZtPopoverPlacement>(props.placement),
   position = ref({ top: 0, left: 0, arrowX: 0, arrowY: 0 });
 let openTimer: number | undefined,
   closeTimer: number | undefined,
-  unregister: (() => void) | undefined;
+  unregister: (() => void) | undefined,
+  resizeObserver: ResizeObserver | undefined;
 const width = computed(() =>
   typeof props.width === 'number' ? `${props.width}px` : props.width,
+);
+const height = computed(() =>
+  typeof props.height === 'number' ? `${props.height}px` : props.height,
 );
 const popupStyle = computed<CSSProperties>(() => ({
   ...config.style.value,
@@ -57,6 +62,7 @@ const popupStyle = computed<CSSProperties>(() => ({
   top: `${position.value.top}px`,
   left: `${position.value.left}px`,
   width: width.value,
+  height: height.value,
   zIndex: Math.max(props.zIndex, layer.value),
   '--zt-popover-arrow-x': `${position.value.arrowX}px`,
   '--zt-popover-arrow-y': `${position.value.arrowY}px`,
@@ -108,6 +114,8 @@ async function setVisible(value: boolean) {
   if (value) {
     bind();
     await nextTick();
+    if (!opened.value) return;
+    observeSize();
     updatePosition();
     emit('after-enter');
   } else {
@@ -169,6 +177,16 @@ function key(event: KeyboardEvent) {
     void setVisible(false);
   }
 }
+function observeSize() {
+  resizeObserver?.disconnect();
+  if (typeof ResizeObserver === 'undefined') return;
+  resizeObserver = new ResizeObserver(() => {
+    if (opened.value) updatePosition();
+  });
+  for (const element of [reference.value, popup.value, content.value]) {
+    if (element) resizeObserver.observe(element);
+  }
+}
 function bind() {
   document.addEventListener('pointerdown', outside, true);
   document.addEventListener('keydown', key, true);
@@ -176,6 +194,8 @@ function bind() {
   window.addEventListener('scroll', updatePosition, true);
 }
 function unbind() {
+  resizeObserver?.disconnect();
+  resizeObserver = undefined;
   document.removeEventListener('pointerdown', outside, true);
   document.removeEventListener('keydown', key, true);
   window.removeEventListener('resize', updatePosition);
@@ -186,6 +206,11 @@ watch(
   (value) => {
     if (value !== opened.value) void setVisible(value);
   },
+);
+watch(
+  () => [props.width, props.height, props.placement, props.offset, props.showArrow],
+  () => { if (opened.value) updatePosition(); },
+  { flush: 'post' },
 );
 onMounted(() => {
   unregister = parentOverlay?.registerBranch({
@@ -198,7 +223,11 @@ onMounted(() => {
   });
   if (opened.value) {
     bind();
-    void nextTick(updatePosition);
+    void nextTick(() => {
+      if (!opened.value) return;
+      observeSize();
+      updatePosition();
+    });
   }
 });
 onBeforeUnmount(() => {
@@ -231,7 +260,7 @@ defineExpose({
         v-show="opened"
         ref="popup"
         class="zt-popover"
-        :class="[`zt-popover--${actualPlacement}`, {'zt-popover--content-width': width === 'max-content'}]"
+        :class="[`zt-popover--${actualPlacement}`, {'zt-popover--sized-width': width !== undefined}]"
         :style="popupStyle"
         role="dialog"
         tabindex="-1"
@@ -240,7 +269,7 @@ defineExpose({
         @focusout="focusOut"
       >
         <span v-if="showArrow" class="zt-popover__arrow" />
-        <div class="zt-popover__content">
+        <div ref="content" class="zt-popover__content">
           <slot name="content" />
         </div></div></Transition
   ></Teleport>
