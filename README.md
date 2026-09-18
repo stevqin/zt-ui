@@ -38,7 +38,7 @@ Drawer uses `width` for left/right panels and `height` for top/bottom panels (bo
 
 RadioGroup 使用 `segmented` 切换分段样式，Pagination 使用 `size` 控制密度，Badge 使用 `status` 设置颜色。视觉主题 `danger` 与校验状态 `error` 含义不同；FormItem 校验错误优先于同一表面的装饰颜色。
 
-Button 的深度由 ConfigProvider 圆角基准决定：小于 4px 使用纯色与边框，无深度渐变或外阴影；4–8px（含两个端点）使用轻微内高光和低透明度的一像素阴影；大于 8px 使用克制的渐变与更明显的按压层次。适用于全部五档尺寸与六种视觉主题；禁用和加载减少强调，键盘焦点仍清晰，减少动画偏好会关闭位移。
+Button 的深度由 ConfigProvider 圆角基准决定：小于 5px 使用纯色与边框，无深度渐变或外阴影；5–8px（含两个端点）使用轻微内高光和低透明度的一像素阴影；大于 8px 使用克制的渐变与更明显的按压层次。适用于全部五档尺寸与六种视觉主题；禁用和加载减少强调，键盘焦点仍清晰，减少动画偏好会关闭位移。
 
 Tooltip 的 `width` / `height` 接受数字（px）和字符串（CSS 长度）。省略时按内容大小展示，宽度为 `max-content` 并受视口最大宽度约束，短文本紧凑、长文本换行。显式 width / height 固定外框尺寸，超过视口时受边界约束；指定高度后只有内容区滚动，箭头保持固定。Popover 提供相同的长度换算和 height 能力；尺寸或内容变化会重新定位，空间不足时自动调整方位。
 

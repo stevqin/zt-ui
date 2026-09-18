@@ -52,7 +52,7 @@ describe('published UI/API contracts', () => {
   });
   it('defines the exact Button radius bands and state feedback', () => {
     for (const text of [readme, page('button'), page('config-provider')]) {
-      for (const band of ['小于 4px', '4–8px', '大于 8px']) expect(text).toContain(band);
+      for (const band of ['小于 5px', '5–8px', '大于 8px']) expect(text).toContain(band);
       expect(text).toContain('禁用');
     }
   });

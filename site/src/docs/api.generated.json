@@ -3626,7 +3626,7 @@
             "type": "number",
             "required": false,
             "default": "11",
-            "description": "全局圆角基准，单位为 px；0 表示直角。Button 深度随基准变化：小于 4px 扁平，4–8px 轻微，大于 8px 更明显。"
+            "description": "全局圆角基准，单位为 px；0 表示直角。Button 深度随基准变化：小于 5px 扁平，5–8px 轻微，大于 8px 更明显。"
           }
         ],
         "events": [],

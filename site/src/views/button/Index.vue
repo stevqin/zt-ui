@@ -16,7 +16,7 @@ import NativeFormCode from './NativeForm.vue?raw';
 
 <template>
   <div class="component-examples">
-    <p>按钮深度随 ConfigProvider 的 borderRadius 基准变化：小于 4px 为纯色与边框，无深度渐变和外阴影；4–8px（含端点）只有轻微内高光和低透明度的一像素阴影；大于 8px 使用克制渐变与更明显的按压层次。全部五档尺寸和六色主题使用同一规则，禁用和加载减少强调；焦点轮廓始终可见，减少动画偏好关闭位移。</p>
+    <p>按钮深度随 ConfigProvider 的 borderRadius 基准变化：小于 5px 为纯色与边框，无深度渐变和外阴影；5–8px（含端点）只有轻微内高光和低透明度的一像素阴影；大于 8px 使用克制渐变与更明显的按压层次。全部五档尺寸和六色主题使用同一规则，禁用和加载减少强调；焦点轮廓始终可见，减少动画偏好关闭位移。</p>
     <h3>基础用法</h3>
     <p>使用 <code>status</code> 设置颜色状态。</p>
     <DemoBlock

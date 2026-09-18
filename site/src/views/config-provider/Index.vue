@@ -10,7 +10,7 @@ import Example03Code from './Example03.vue?raw';
 
 <template>
   <article class="component-examples">
-    <p>Button 深度使用相同圆角基准：小于 4px 为扁平纯色，4–8px（含端点）为轻微高光与一像素阴影，大于 8px 为渐变与更明显的按压层次。禁用和加载减少强调，焦点轮廓保留。</p>
+    <p>Button 深度使用相同圆角基准：小于 5px 为扁平纯色，5–8px（含端点）为轻微高光与一像素阴影，大于 8px 为渐变与更明显的按压层次。禁用和加载减少强调，焦点轮廓保留。</p>
     <h3>基础用法</h3>
     <DemoBlock
       :code="Example01Code"

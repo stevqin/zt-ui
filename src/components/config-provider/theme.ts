@@ -21,7 +21,7 @@ const dark: Record<string, string> = {
 // These provider-owned tokens must all be emitted, including `none`, so a
 // nested flat provider cannot inherit an outer provider's raised treatment.
 function buttonDepth(radius: number): Record<string, string> {
-  const flat = radius < 4
+  const flat = radius < 5
   const raised = radius > 8
   return {
     '--zt-button-depth-image': raised ? 'linear-gradient(165deg, rgba(255,255,255,.12), rgba(0,0,0,.06))' : 'none',

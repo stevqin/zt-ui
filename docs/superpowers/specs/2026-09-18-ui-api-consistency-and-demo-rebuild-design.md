@@ -87,8 +87,8 @@ When neither side can fit the desired panel height, the panel uses the larger si
 
 Button depth derives from the resolved radius token and requires no new prop:
 
-- Radius below `4px`: flat treatment. Remove gradients and outer depth shadows; use solid fills, borders, and color changes for hover/active feedback.
-- Radius from `4px` through `8px`: very light depth. Use no obvious gradient, at most a subtle inner highlight and low-opacity one-pixel shadow.
+- Radius below `5px`: flat treatment. Remove gradients and outer depth shadows; use solid fills, borders, and color changes for hover/active feedback.
+- Radius from `5px` through `8px`: very light depth. Use no obvious gradient, at most a subtle inner highlight and low-opacity one-pixel shadow.
 - Radius above `8px`: pronounced depth. A restrained gradient and clearer shadow/pressed transition are allowed.
 
 The thresholds apply to every size and six-color visual status. Disabled and loading states reduce emphasis consistently. Focus-visible remains clearly distinguishable and reduced-motion disables movement without removing state feedback.

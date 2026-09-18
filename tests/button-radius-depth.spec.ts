@@ -7,7 +7,7 @@ import { ZtButton, ZtConfigProvider } from '../src'
 
 const wrappers: VueWrapper[] = []
 const style = document.createElement('style')
-const radii = [[0, 'flat'], [3, 'flat'], [4, 'subtle'], [8, 'subtle'], [9, 'raised'], [16, 'raised']] as const
+const radii = [[0, 'flat'], [3, 'flat'], [4, 'flat'], [5, 'subtle'], [8, 'subtle'], [9, 'raised'], [16, 'raised']] as const
 const sizes = ['mini', 'small', 'default', 'medium', 'large'] as const
 const statuses = ['default', 'primary', 'success', 'warning', 'danger', 'info'] as const
 beforeAll(async () => {
@@ -179,12 +179,12 @@ it('nested providers override all inherited depth and reactively restore the par
   const buttons = wrapper.findAll('button')
   depth(buttons[0]!.element, 'flat'); depth(buttons[1]!.element, 'raised'); depth(buttons[2]!.element, 'flat')
   await wrapper.setProps({ borderRadius: 4 })
-  depth(buttons[0]!.element, 'subtle'); depth(buttons[1]!.element, 'raised'); depth(buttons[2]!.element, 'subtle')
+  depth(buttons[0]!.element, 'flat'); depth(buttons[1]!.element, 'raised'); depth(buttons[2]!.element, 'flat')
 })
 it('nested flat and subtle providers reset a raised ancestor, including circle buttons', () => {
   const wrapper = mount(ZtConfigProvider, {
     attachTo: document.body, props: { borderRadius: 16, theme: 'dark' },
-    slots: { default: () => [0, 4].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () => h(ZtButton, { circle: true }))) },
+    slots: { default: () => [4, 5].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () => h(ZtButton, { circle: true }))) },
   })
   wrappers.push(wrapper)
   depth(wrapper.findAll('button')[0]!.element, 'flat')
@@ -206,7 +206,7 @@ it.each([
         [`--zt-${token}-button`]: 'rgb(128, 0, 128)',
         [`--zt-${token}-button-hover`]: 'rgb(96, 0, 96)',
       },
-    }, [0, 4, 9].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () =>
+    }, [4, 5, 9].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () =>
       [false, true].map(circle => h(ZtButton, { status, circle }))))),
   }, { attachTo: document.body })
   wrappers.push(wrapper)
@@ -232,7 +232,7 @@ it.each([
         [`--zt-${token}-button`]: 'linear-gradient(90deg, #800080, #400040)',
         [`--zt-${token}-button-hover`]: 'linear-gradient(90deg, #600060, #300030)',
       },
-    }, [0, 4, 9].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () =>
+    }, [4, 5, 9].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () =>
       [false, true].map(circle => h(ZtButton, { status, circle,
         disabled: state.value === 'disabled', loading: state.value === 'loading' }))))),
   }, { attachTo: document.body })
