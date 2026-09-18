@@ -108,6 +108,27 @@ afterEach(() => {
 })
 
 describe('useAnchoredDropdown', () => {
+  it('inherits and propagates the parent overlay layer for teleported popup descendants', async () => {
+    const parentLayer = ref(3000)
+    const parentOverlay: OverlayContext = {
+      layer: parentLayer,
+      interactive: ref(true),
+      registerBranch: () => () => undefined,
+    }
+    const wrapper = mount(createHarness([]), {
+      attachTo: document.body,
+      global: { provide: { [overlayContextKey as symbol]: parentOverlay } },
+    })
+    await wrapper.get('.trigger').trigger('click')
+    expect(document.querySelector<HTMLElement>('.popup')!.style.zIndex).toBe('3001')
+    expect((wrapper.vm as any).dropdown.overlayContext.layer.value).toBe(3001)
+    parentLayer.value = 4000
+    await nextTick()
+    expect(document.querySelector<HTMLElement>('.popup')!.style.zIndex).toBe('4001')
+    expect((wrapper.vm as any).dropdown.overlayContext.layer.value).toBe(4001)
+    wrapper.unmount()
+  })
+
   it('positions within the viewport and reacts to scroll, resize, and observed size changes', async () => {
     vi.stubGlobal('innerWidth', 400)
     vi.stubGlobal('innerHeight', 600)

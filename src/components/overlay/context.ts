@@ -12,6 +12,8 @@ export interface OverlayBranch {
 }
 
 export interface OverlayContext {
+  /** Layer occupied by this overlay, so teleported children can render above it. */
+  layer?: Readonly<Ref<number>>
   interactive: Readonly<Ref<boolean>>
   registerBranch: (branch: OverlayBranch) => () => void
 }

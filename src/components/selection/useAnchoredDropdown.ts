@@ -19,6 +19,8 @@ export interface UseAnchoredDropdownOptions {
   trigger: Ref<HTMLElement | undefined>
   popup: Ref<HTMLElement | undefined>
   minWidth?: Ref<number | undefined>
+  layer?: Readonly<Ref<number>>
+  tabThroughPopup?: boolean
   close: () => void
   focus: () => void
 }
@@ -46,6 +48,7 @@ export function useAnchoredDropdown(
   options: UseAnchoredDropdownOptions,
 ): AnchoredDropdown {
   const parentOverlay = inject(overlayContextKey, undefined)
+  const layer = computed(() => options.layer?.value ?? Math.max(2000, (parentOverlay?.layer?.value ?? 0) + 1))
   const placement = ref<'top' | 'bottom'>('bottom')
   const geometry = ref<PopupGeometry>()
   const childBranches = new Set<OverlayBranch>()
@@ -56,6 +59,7 @@ export function useAnchoredDropdown(
 
   const popupStyle = computed<CSSProperties>(() => ({
     position: 'fixed',
+    zIndex: layer.value,
     top: geometry.value ? `${geometry.value.top}px` : undefined,
     left: geometry.value ? `${geometry.value.left}px` : undefined,
     width: geometry.value ? `${geometry.value.width}px` : undefined,
@@ -79,6 +83,7 @@ export function useAnchoredDropdown(
   }
 
   const overlayContext: OverlayContext = {
+    layer,
     interactive: computed(() =>
       options.visible.value && parentOverlay?.interactive.value !== false,
     ),
@@ -234,6 +239,7 @@ export function useAnchoredDropdown(
     trigger: options.trigger,
     popup: options.popup,
     visible: options.visible,
+    tabThroughPopup: options.tabThroughPopup,
     close,
     focus: options.focus,
   })

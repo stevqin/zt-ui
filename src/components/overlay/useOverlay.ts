@@ -53,6 +53,7 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   const branches = new Set<OverlayBranch>()
 
   provide(overlayContextKey, {
+    layer,
     interactive: computed(() => active.value && visible.value && isTop.value),
     registerBranch(branch) {
       branches.add(branch)

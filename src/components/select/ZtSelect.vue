@@ -65,6 +65,7 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 const formItem = inject(ztFormItemKey, undefined);
 const overlay = inject(overlayContextKey, undefined);
+const inheritedOverlayLayer = computed(() => overlay?.layer?.value);
 const instance = getCurrentInstance();
 const rootElement = ref<HTMLElement>();
 const controlElement = ref<HTMLElement>();
@@ -605,6 +606,8 @@ function updateDropdownPosition() {
 }
 
 function resolveDropdownZIndex() {
+  const inheritedLayer = inheritedOverlayLayer.value;
+  if (inheritedLayer !== undefined && Number.isFinite(inheritedLayer)) return Math.max(2000, Math.floor(inheritedLayer) + 1);
   const overlay = rootElement.value?.closest<HTMLElement>(
     '.zt-modal, .zt-drawer',
   );

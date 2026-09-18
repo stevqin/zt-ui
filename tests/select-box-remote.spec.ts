@@ -1,7 +1,8 @@
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import { computed, ref } from 'vue'
+import { computed, h, ref } from 'vue'
 import ZtSelectBox from '../src/components/select-box/ZtSelectBox.vue'
+import ZtModal from '../src/components/modal/ZtModal.vue'
 import SelectBoxPanel from '../src/components/select-box/SelectBoxPanel.vue'
 import { ztFormItemKey } from '../src/components/form/context'
 import type { ZtSelectBoxProps, ZtSelectBoxRemoteResult } from '../src/components/select-box/types'
@@ -208,5 +209,50 @@ describe('SelectBox paged remote search', () => {
     expect(remoteMethod).toHaveBeenCalledTimes(2)
     await click('.zt-select-box-panel__confirm')
     expect(w.find('.zt-select-box__summary').text()).toBe('华东')
+  })
+})
+
+
+describe('SelectBox in elevated modal overlays', () => {
+  async function modalBox() {
+    const modal = mount(ZtModal, {
+      attachTo: document.body,
+      props: { modelValue: true, zIndex: 3000, showHeader: false },
+      slots: { default: () => [h(ZtSelectBox, { options }), h('button', { class: 'after-select-box' }, '后续操作')] },
+    })
+    wrappers.push(modal)
+    await flushPromises()
+    const selectBox = modal.findComponent(ZtSelectBox)
+    await open(selectBox)
+    return selectBox
+  }
+  it('traverses panel controls with Tab while retaining its pending selection before returning to the modal', async () => {
+    const w = await modalBox()
+    await click('.zt-select-box-panel__option')
+    const searchElement = document.querySelector<HTMLInputElement>('input[aria-label="搜索选项"]')!
+    searchElement.focus()
+    function tab() { document.activeElement!.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true })) }
+    tab(); await flushPromises()
+    expect(document.querySelector('.zt-select-box__popup')).not.toBeNull()
+    expect(document.activeElement?.getAttribute('aria-label')).toBe('列表全选')
+    expect(rows()[0]?.getAttribute('aria-checked')).toBe('true')
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    tab(); await flushPromises()
+    expect(document.activeElement?.classList.contains('zt-select-box-panel__view-selected')).toBe(true)
+    const confirm = document.querySelector<HTMLElement>('.zt-select-box-panel__confirm')!
+    confirm.focus(); tab(); await flushPromises()
+    expect(document.activeElement?.classList.contains('after-select-box')).toBe(true)
+    expect(document.querySelector('.zt-select-box__popup')).toBeNull()
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+  })
+  it.each(['sizes', 'separator'])('places nested %s Select above the modal and SelectBox popup', async mode => {
+    await modalBox()
+    if (mode === 'separator') await click('.zt-select-box-panel__mode')
+    await click(mode === 'sizes' ? '.zt-pagination__sizes [role="combobox"]' : '.zt-select-box-panel__separator [role="combobox"]')
+    const modal = document.querySelector<HTMLElement>('.zt-modal')!
+    const selectBox = document.querySelector<HTMLElement>('.zt-select-box__popup')!
+    const nested = document.querySelector<HTMLElement>('[role="listbox"]')!
+    expect(Number(selectBox.style.zIndex)).toBeGreaterThan(Number(modal.style.zIndex))
+    expect(Number(nested.style.zIndex)).toBeGreaterThan(Number(selectBox.style.zIndex))
   })
 })

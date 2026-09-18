@@ -60,7 +60,7 @@ function close() {
   draft.cancel()
   remoteSearch.reset()
 }
-const dropdown = useAnchoredDropdown({ visible, trigger: triggerElement, popup: popupElement, minWidth: computed(() => 480), close, focus })
+const dropdown = useAnchoredDropdown({ visible, trigger: triggerElement, popup: popupElement, minWidth: computed(() => 480), layer: popupZIndex, tabThroughPopup: true, close, focus })
 provide(overlayContextKey, dropdown.overlayContext)
 const popupStyle = computed(() => ({ ...providerStyle.value, ...dropdown.popupStyle.value, zIndex: popupZIndex.value }))
 const searchMethod = computed(() => {
