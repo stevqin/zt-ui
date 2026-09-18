@@ -17,6 +17,7 @@ import {
 } from 'vue';
 import { ztFormItemKey } from '../form/context';
 import { overlayContextKey } from '../overlay/context';
+import { resolvePopupZIndex } from '../overlay/resolvePopupZIndex';
 import {
   filterSelectOptions,
   isOptionSelected,
@@ -67,7 +68,6 @@ const emit = defineEmits<{
 const attrs = useAttrs();
 const formItem = inject(ztFormItemKey, undefined);
 const overlay = inject(overlayContextKey, undefined);
-const inheritedOverlayLayer = computed(() => overlay?.layer?.value);
 const instance = getCurrentInstance();
 const rootElement = ref<HTMLElement>();
 const controlElement = ref<HTMLElement>();
@@ -319,7 +319,7 @@ function setVisible(next: boolean) {
     visible.value === next
   )
     return;
-  if (next) dropdownZIndex.value = resolveDropdownZIndex();
+  if (next) dropdownZIndex.value = resolvePopupZIndex(rootElement.value, overlay?.layer?.value);
   visible.value = next;
   if (next && panelSearch.value) {
     void nextTick(() => {
@@ -571,7 +571,7 @@ function handleTagsWheel(event: WheelEvent) {
 }
 
 function measureDropdownHeight(dropdown: HTMLElement) {
-  dropdownZIndex.value = resolveDropdownZIndex();
+  dropdownZIndex.value = resolvePopupZIndex(rootElement.value, overlay?.layer?.value);
   const list = optionsElement.value;
   const footerHeight =
     dropdown
@@ -586,21 +586,6 @@ function measureDropdownHeight(dropdown: HTMLElement) {
   return list?.scrollHeight
     ? Math.min(props.height, list.scrollHeight) + dropdownChromeHeight.value
     : Math.max(dropdown.scrollHeight + borderHeight, dropdown.getBoundingClientRect().height);
-}
-
-function resolveDropdownZIndex() {
-  const inheritedLayer = inheritedOverlayLayer.value;
-  const inheritedZIndex = inheritedLayer !== undefined && Number.isFinite(inheritedLayer)
-    ? Math.max(2000, Math.floor(inheritedLayer) + 1)
-    : 2000;
-  const containingOverlay = rootElement.value?.closest<HTMLElement>(
-    '.zt-modal, .zt-drawer-surface, .zt-select__dropdown',
-  );
-  if (!containingOverlay) return inheritedZIndex;
-  const layer = Number.parseFloat(
-    containingOverlay.style.zIndex || getComputedStyle(containingOverlay).zIndex,
-  );
-  return Number.isFinite(layer) ? Math.max(inheritedZIndex, Math.floor(layer) + 1) : inheritedZIndex;
 }
 
 function optionId(index: number) {

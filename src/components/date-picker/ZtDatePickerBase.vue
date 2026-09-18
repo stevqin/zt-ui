@@ -14,6 +14,7 @@ import {
 } from 'vue';
 import { ztFormItemKey } from '../form/context';
 import { overlayContextKey } from '../overlay/context';
+import { resolvePopupZIndex } from '../overlay/resolvePopupZIndex';
 import {
   addDays,
   calendarDate,
@@ -198,16 +199,10 @@ function updatePosition() {
   const above = rect.top - 14;
   const upward = below < panel.height && above > below;
   const available = Math.max(0, upward ? above : below);
-  const parent = root.value.closest<HTMLElement>('.zt-modal, .zt-drawer-surface');
-  const layer = parent
-    ? Number.parseFloat(parent.style.zIndex || getComputedStyle(parent).zIndex)
-    : 0;
   position.value = {
     top: `${Math.max(8, upward ? rect.top - Math.min(panel.height, available) - 6 : rect.bottom + 6)}px`,
     left: `${Math.max(8, Math.min(rect.left, window.innerWidth - panel.width - 8))}px`,
-    zIndex: Number.isFinite(layer)
-      ? Math.max(2000, Math.floor(layer) + 1)
-      : 2000,
+    zIndex: resolvePopupZIndex(root.value, overlay?.layer?.value),
     maxHeight: `${available}px`,
   };
 }
