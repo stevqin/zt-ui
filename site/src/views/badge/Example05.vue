@@ -11,6 +11,8 @@ const demoStatus = useDemoStatus<ZtBadgeStatus>('danger');
       ><ZtButton size="small">消息</ZtButton></ZtBadge
     ><ZtBadge :status="demoStatus" value="hot"
       ><ZtButton size="small">评论</ZtButton></ZtBadge
+    ><ZtBadge :status="demoStatus" value="普通圆角" :circle="false"
+      ><ZtButton size="small">继承圆角</ZtButton></ZtBadge
     >
   </div>
 </template>

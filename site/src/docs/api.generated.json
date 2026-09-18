@@ -3937,6 +3937,15 @@
             "description": "圆点模式"
           },
           {
+            "name": "circle",
+            "templateName": "circle",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "圆形数字徽标；单字符为正圆，多字符扩展为胶囊形，默认 true。false 时继承全局圆角。"
+          },
+          {
             "name": "hidden",
             "templateName": "hidden",
             "kind": "prop",
@@ -4007,7 +4016,7 @@
       },
       {
         "name": "ZtBadgeProps",
-        "code": "export interface ZtBadgeProps {\n  value?: string | number\n  max?: number\n  isDot?: boolean\n  hidden?: boolean\n  status?: ZtBadgeStatus\n  size?: ZtBadgeSize\n  offset?: [number, number]\n  showZero?: boolean\n}",
+        "code": "export interface ZtBadgeProps {\n  value?: string | number\n  max?: number\n  isDot?: boolean\n  /** 圆形数字徽标；单字符为正圆，多字符扩展为胶囊形，默认 true。false 时继承全局圆角。 */\n  circle?: boolean\n  hidden?: boolean\n  status?: ZtBadgeStatus\n  size?: ZtBadgeSize\n  offset?: [number, number]\n  showZero?: boolean\n}",
         "public": true
       },
       {

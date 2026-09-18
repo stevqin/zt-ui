@@ -177,7 +177,7 @@
         "title": "自定义内容",
         "kind": "live",
         "file": "src/views/badge/Example05.vue",
-        "description": "value 也可以是字符串。"
+        "description": "circle 默认为 true，单字符为正圆、多字符扩展为胶囊形且不受全局圆角影响；设为 false 后继承全局圆角。value 也可以是字符串。"
       },
       {
         "title": "自定义偏移",

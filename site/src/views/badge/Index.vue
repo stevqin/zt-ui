@@ -33,7 +33,7 @@ import ZeroCode from './Zero.vue?raw';
     <h3>颜色状态</h3>
     <DemoBlock :code="Example04Code" desc="通过 status 设置徽标颜色。"><Example04 /></DemoBlock>
     <h3>自定义内容</h3>
-    <DemoBlock :code="Example05Code" desc="value 也可以是字符串。"><Example05 /></DemoBlock>
+    <DemoBlock :code="Example05Code" desc="circle 默认为 true，单字符为正圆、多字符扩展为胶囊形且不受全局圆角影响；设为 false 后继承全局圆角。value 也可以是字符串。"><Example05 /></DemoBlock>
     <h3>自定义偏移</h3>
     <DemoBlock :code="Example06Code" desc="offset 使用 [x, y] 控制徽标位置。"
       ><Example06
