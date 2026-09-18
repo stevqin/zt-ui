@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {
+  Teleport,
   computed,
   nextTick,
   onBeforeUnmount,
@@ -16,6 +17,7 @@ const choices = computed(() => context?.metadata.value.supported ?? []);
 const mobile = ref(typeof window !== 'undefined' && window.innerWidth <= 1280);
 const opened = ref(false);
 const root = ref<HTMLElement>();
+const overlayHost = ref<HTMLElement>();
 const pill = ref<HTMLButtonElement>();
 const panelId = `demo-status-${useId()}`;
 async function resize() {
@@ -111,6 +113,9 @@ function containModalFocus(event: FocusEvent) {
   }
 }
 onMounted(() => {
+  // Moving to the document-level theme root makes the controller a sibling
+  // of the fixed layout: its backdrop covers the header and inherits theme tokens.
+  overlayHost.value = root.value?.closest<HTMLElement>('.doc-site') ?? document.body;
   window.addEventListener('resize', resize);
   window.addEventListener('keydown', modalKeydown, true);
   document.addEventListener('focus', containModalFocus, true);
@@ -124,6 +129,7 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
+  <Teleport :to="overlayHost" :disabled="!mobile || !opened || !overlayHost">
   <div
     v-if="enabled"
     ref="root"
@@ -195,4 +201,5 @@ onBeforeUnmount(() => {
       <p class="demo-status__hint">同步本页示例</p>
     </section>
   </div>
+  </Teleport>
 </template>

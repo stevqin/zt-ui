@@ -24,7 +24,7 @@ function fixture(path = '/radio', width = 1440) {
         computed(() => components.find((c) => c.path === path)!.visualStatus!),
         store,
       );
-      return () => [h(DemoStatusController), h(Sample), h(Sample)];
+      return () => h('div', { class: 'doc-site' }, [h(DemoStatusController), h(Sample), h(Sample)]);
     },
   });
   const wrapper = mount(host, { attachTo: document.body });
@@ -133,10 +133,10 @@ describe('status modal ownership with the actual document search', () => {
           ),
           store,
         );
-        return () => [
+        return () => h('div', { class: 'doc-site' }, [
           h(DocSearch),
           showController.value ? h(DemoStatusController) : null,
-        ];
+        ]);
       },
     });
     const router = createRouter({
@@ -226,4 +226,46 @@ describe('status modal ownership with the actual document search', () => {
       wrapper.get('[aria-label="搜索文档"]').element,
     );
   });
+});
+
+it('renders the mobile modal outside the fixed layout while retaining the theme scope and lifecycle', async () => {
+  window.innerWidth = 390;
+  const show = ref(true);
+  const store = createDemoStatusStore();
+  const host = defineComponent({
+    setup() {
+      provideDemoStatus(computed(() => components.find(c => c.path === '/radio')!.visualStatus), store);
+      return () => h('div', { class: 'doc-site', 'data-zt-theme': 'dark' }, [
+        h('header', { class: 'doc-header' }, h('button', { id: 'header-control' }, 'Header')),
+        h('div', { class: 'doc-layout', style: 'position:fixed' }, [show.value ? h(DemoStatusController) : null]),
+      ]);
+    },
+  });
+  const wrapper = mount(host, { attachTo: document.body });
+  wrappers.push(wrapper);
+  await wrapper.get('.demo-status__pill').trigger('click');
+  const modal = wrapper.get('[aria-modal="true"]').element;
+  expect(modal.closest('.doc-layout')).toBeNull();
+  expect(modal.closest('.doc-site')?.getAttribute('data-zt-theme')).toBe('dark');
+  expect(modal.closest('.demo-status')?.parentElement).toBe(wrapper.element);
+  await wrapper.get('[data-status="success"]').trigger('click');
+  window.innerWidth = 1440;
+  window.dispatchEvent(new Event('resize'));
+  await nextTick();
+  expect(wrapper.get('[role="region"]').element.closest('.doc-layout')).not.toBeNull();
+  expect(document.activeElement?.getAttribute('data-status')).toBe('success');
+  window.innerWidth = 390;
+  window.dispatchEvent(new Event('resize'));
+  await nextTick();
+  const pill = wrapper.get('.demo-status__pill');
+  await pill.trigger('click');
+  await wrapper.get('[aria-label="关闭状态面板"]').trigger('click');
+  expect(document.activeElement).toBe(pill.element);
+  expect(pill.element.closest('.doc-layout')).not.toBeNull();
+  await pill.trigger('click');
+  show.value = false;
+  await nextTick();
+  expect(document.querySelector('.demo-status__backdrop')).toBeNull();
+  wrapper.get<HTMLButtonElement>('#header-control').element.focus();
+  expect(document.activeElement?.id).toBe('header-control');
 });

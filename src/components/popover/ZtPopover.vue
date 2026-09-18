@@ -2,16 +2,18 @@
 import {
   Teleport,
   computed,
+  defineComponent,
   inject,
   nextTick,
   onBeforeUnmount,
   onMounted,
+  provide,
   ref,
   watch,
   type CSSProperties,
 } from 'vue';
 import { useZtConfig } from '../config-provider/context';
-import { overlayContextKey } from '../overlay/context';
+import { overlayContextKey, type OverlayBranch } from '../overlay/context';
 import { placePopover } from './position';
 import type { ZtPopoverPlacement, ZtPopoverProps } from './types';
 import './popover.scss';
@@ -48,8 +50,55 @@ const config = useZtConfig(),
   position = ref({ top: 0, left: 0, arrowX: 0, arrowY: 0 });
 let openTimer: number | undefined,
   closeTimer: number | undefined,
-  unregister: (() => void) | undefined,
   resizeObserver: ResizeObserver | undefined;
+// Use the same branch graph as anchored dropdowns and Modal focus scopes.
+// Only popup-slot descendants belong to this transient branch; trigger content
+// retains the surrounding context even while this popup is closed.
+const childBranches = new Set<OverlayBranch>();
+const childRegistrations = new Set<() => void>();
+const currentBranch: OverlayBranch = {
+  trigger: reference,
+  popup,
+  visible: opened,
+  close: () => void setVisible(false),
+  focus: focusReference,
+  tabThroughPopup: true,
+};
+const unregister = parentOverlay?.registerBranch(currentBranch);
+const PopupScope = defineComponent({
+  name: 'ZtPopoverPopupScope',
+  setup(_, { slots }) {
+    provide(overlayContextKey, {
+      layer,
+      interactive: computed(() => opened.value && parentOverlay?.interactive.value !== false),
+      registerBranch(branch) {
+        const ownsBranch = !branch.owner;
+        if (ownsBranch) branch.owner = currentBranch;
+        childBranches.add(branch);
+        const unregisterParent = parentOverlay?.registerBranch(branch);
+        const unregisterChild = () => {
+          childBranches.delete(branch);
+          unregisterParent?.();
+          if (ownsBranch) branch.owner = undefined;
+          childRegistrations.delete(unregisterChild);
+        };
+        childRegistrations.add(unregisterChild);
+        return unregisterChild;
+      },
+    });
+    return () => slots.default?.();
+  },
+});
+function closeChildren() {
+  for (const branch of [...childBranches].reverse()) {
+    if (branch.visible.value) branch.close();
+  }
+}
+function containsTarget(target: Node | null) {
+  return !!target && (reference.value?.contains(target) || popup.value?.contains(target)
+    || [...childBranches].some(branch => branch.visible.value
+      && (branch.trigger.value?.contains(target) || branch.popup.value?.contains(target))));
+}
 const width = computed(() =>
   typeof props.width === 'number' ? `${props.width}px` : props.width,
 );
@@ -105,10 +154,13 @@ function updatePosition() {
   };
 }
 async function setVisible(value: boolean) {
-  if ((props.disabled && value) || opened.value === value) return;
+  if ((value && (props.disabled || parentOverlay?.interactive.value === false)) || opened.value === value) return;
   clearTimers();
   if (value) emit('before-enter');
-  else emit('before-leave');
+  else {
+    emit('before-leave');
+    closeChildren();
+  }
   opened.value = value;
   emit('update:visible', value);
   if (value) {
@@ -157,8 +209,7 @@ function focusIn() {
 function focusOut(event: FocusEvent) {
   if (
     props.trigger === 'focus' &&
-    !reference.value?.contains(event.relatedTarget as Node) &&
-    !popup.value?.contains(event.relatedTarget as Node)
+    !containsTarget(event.relatedTarget as Node)
   )
     void setVisible(false);
 }
@@ -166,14 +217,18 @@ function outside(event: PointerEvent) {
   const target = event.target as Node;
   if (
     props.trigger !== 'manual' &&
-    !reference.value?.contains(target) &&
-    !popup.value?.contains(target)
+    !containsTarget(target)
   )
     void setVisible(false);
 }
 function key(event: KeyboardEvent) {
+  if (event.defaultPrevented || event.isComposing || parentOverlay?.interactive.value === false) return;
+  // Ancestors register their document listener first. Leave this event to the
+  // deepest visible child (including Tooltip's own manual trigger handler).
+  if ([...childBranches].some(branch => branch.visible.value)) return;
   if (event.key === 'Escape' && props.trigger !== 'manual') {
     event.preventDefault();
+    event.stopImmediatePropagation();
     void setVisible(false);
   }
 }
@@ -212,15 +267,12 @@ watch(
   () => { if (opened.value) updatePosition(); },
   { flush: 'post' },
 );
+watch(
+  () => parentOverlay?.interactive.value,
+  interactive => { if (interactive === false) void setVisible(false); },
+  { flush: 'sync' },
+);
 onMounted(() => {
-  unregister = parentOverlay?.registerBranch({
-    trigger: reference,
-    popup,
-    visible: computed(() => opened.value),
-    close: () => void setVisible(false),
-    focus: focusReference,
-    tabThroughPopup: true,
-  });
   if (opened.value) {
     bind();
     void nextTick(() => {
@@ -232,8 +284,10 @@ onMounted(() => {
 });
 onBeforeUnmount(() => {
   clearTimers();
+  closeChildren();
   unbind();
   unregister?.();
+  for (const unregisterChild of [...childRegistrations]) unregisterChild();
 });
 defineExpose({
   show: () => void setVisible(true),
@@ -270,7 +324,7 @@ defineExpose({
       >
         <span v-if="showArrow" class="zt-popover__arrow" />
         <div ref="content" class="zt-popover__content">
-          <slot name="content" />
+          <PopupScope><slot name="content" /></PopupScope>
         </div></div></Transition
   ></Teleport>
 </template>
