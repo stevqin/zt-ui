@@ -68,7 +68,8 @@ describe.each([false, true])('feedback CSS coexistence (production build=%s)', p
       })
       wrappers.push(wrapper)
       const css = getComputedStyle(wrapper.get('button').element)
-      expect(css.backgroundImage).toBe('none')
+      // Happy DOM reports the shorthand-reset image as initial (equivalent to none).
+      expect(css.backgroundImage).toMatch(/^(none|initial)$/)
       expect(css.boxShadow).toBe('none')
       expect(css.backgroundColor).not.toBe('')
     })

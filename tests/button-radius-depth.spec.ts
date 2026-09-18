@@ -22,7 +22,9 @@ beforeAll(async () => {
   if (!css || css.type !== 'asset') throw new Error('Library CSS was not emitted')
   // Happy DOM cannot activate pointer pseudo-classes. Class substitution retains
   // selector specificity and tests the actual emitted cascade and token resolution.
-  style.textContent = String(css.source).replaceAll(':hover', '.test-hover').replaceAll(':active', '.test-active').replaceAll(':focus-visible', '.test-focus-visible')
+  // A test-only child projects the depth pseudo-element for Happy DOM, which
+  // cannot compute pseudo-element styles. Real-browser verification uses ::before.
+  style.textContent = String(css.source).replaceAll(':hover', '.test-hover').replaceAll(':active', '.test-active').replaceAll(':focus-visible', '.test-focus-visible').replace(/::?before/g, ' > .test-depth')
   // Keep the emitted Button/provider rules, including media/keyframes, for the
   // large matrix. Full-library coexistence is separately covered in feedback-css.
   // PostCSS preserves declarations; Happy DOM's CSSOM reserializes shorthand vars incorrectly.
@@ -65,18 +67,28 @@ function normalizeInitialResets(wrapper: VueWrapper) {
     }
   }
 }
+function depthImage(button: Element): string {
+  let surface = button.querySelector('.test-depth')
+  if (!surface) {
+    surface = document.createElement('span')
+    surface.className = 'test-depth'
+    button.append(surface)
+  }
+  return getComputedStyle(surface).backgroundImage
+}
 function depth(button: Element, band: string) {
   const css = getComputedStyle(button)
+  const image = depthImage(button)
   expect(css.backgroundColor, 'solid fill').not.toBe('')
   if (band === 'flat') {
-    expect(css.backgroundImage).toBe('none')
+    expect(image).toBe('none')
     expect(css.boxShadow).toBe('none')
   } else if (band === 'subtle') {
-    expect(css.backgroundImage).toBe('none')
+    expect(image).toBe('none')
     expect(css.boxShadow).toMatch(/0 1px 0/)
     expect(css.boxShadow).not.toMatch(/0 [2-9]px/)
   } else {
-    expect(css.backgroundImage).toContain('linear-gradient')
+    expect(image).toContain('linear-gradient')
     expect(css.boxShadow).toMatch(/0 [2-9]px/)
   }
 }
@@ -123,6 +135,7 @@ describe.each(['light', 'dark'] as const)('production Button depth (%s)', theme 
           expect(Number(getComputedStyle(button).opacity)).toBe(0.5)
           expect(getComputedStyle(button).backgroundColor).toBe(idleColors.get(button))
           expect(getComputedStyle(button).boxShadow).toBe('none')
+          expect(depthImage(button), 'disabled depth layer').toBe('none')
           expect(getComputedStyle(button).transform).toBe('none')
           await component.trigger('click')
           expect(component.emitted('click')).toBeUndefined()
@@ -205,5 +218,40 @@ it.each([
     button.element.classList.add('test-hover')
     expect(getComputedStyle(button.element).backgroundColor).toBe('rgb(96, 0, 96)')
     depth(button.element, band)
+  }
+})
+
+it.each([
+  ['primary', 'accent'], ['success', 'success'], ['warning', 'warning'],
+  ['danger', 'danger'], ['info', 'info'],
+] as const)('%s preserves inherited gradient fills independently of depth and disabled/loading state', async (status, token) => {
+  const state = ref('')
+  const wrapper = mount({
+    render: () => h('div', {
+      style: {
+        [`--zt-${token}-button`]: 'linear-gradient(90deg, #800080, #400040)',
+        [`--zt-${token}-button-hover`]: 'linear-gradient(90deg, #600060, #300030)',
+      },
+    }, [0, 4, 9].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () =>
+      [false, true].map(circle => h(ZtButton, { status, circle,
+        disabled: state.value === 'disabled', loading: state.value === 'loading' }))))),
+  }, { attachTo: document.body })
+  wrappers.push(wrapper)
+  const buttons = wrapper.findAll('button')
+  for (const [index, button] of buttons.entries()) {
+    expect(getComputedStyle(button.element).backgroundImage).toContain('#800080')
+    depth(button.element, ['flat', 'subtle', 'raised'][Math.floor(index / 2)]!)
+    button.element.classList.add('test-hover')
+    expect(getComputedStyle(button.element).backgroundImage).toContain('#600060')
+  }
+  for (const value of ['disabled', 'loading']) {
+    state.value = value
+    await nextTick()
+    for (const button of buttons) {
+      expect(getComputedStyle(button.element).backgroundImage).toContain('#800080')
+      expect(depthImage(button.element)).toBe('none')
+      expect(getComputedStyle(button.element).boxShadow).toBe('none')
+      if (value === 'loading') expect(button.find('.zt-button__spinner').exists()).toBe(true)
+    }
   }
 })
