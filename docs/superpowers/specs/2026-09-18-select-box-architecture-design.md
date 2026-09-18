@@ -114,29 +114,49 @@ SelectBox 保持多选组件定位，`modelValue` 使用 `ZtSelectValue[]`。公
 - 确认与取消；
 - 加载、空数据和错误状态。
 
-SelectBox 远程搜索使用独立的分页契约：
+SelectBox 远程搜索同时支持分页查询与批量精确匹配，两类请求使用可判别联合类型：
 
 ```ts
-export interface ZtSelectBoxRemoteParams {
+export type ZtSelectBoxRemoteRequest =
+  | {
+      mode: 'search'
+      keyword: string
+      /** 从 1 开始的页码。 */
+      page: number
+      pageSize: number
+    }
+  | {
+      mode: 'batch'
+      /** 已去除空白并去重的粘贴文本。 */
+      keywords: string[]
+    }
+
+export interface ZtSelectBoxBatchMatch {
+  /** 必须是本次请求中的原始 keyword。 */
   keyword: string
-  /** 从 1 开始的页码。 */
-  page: number
-  pageSize: number
+  option: ZtSelectOption
 }
 
-export interface ZtSelectBoxRemoteResult {
-  /** 当前页选项。 */
-  options: ZtSelectOption[]
-  /** 当前关键词下的全部匹配数量。 */
-  total: number
-}
+export type ZtSelectBoxRemoteResult =
+  | {
+      mode: 'search'
+      /** 当前页选项。 */
+      options: ZtSelectOption[]
+      /** 当前关键词下的全部匹配数量。 */
+      total: number
+    }
+  | {
+      mode: 'batch'
+      /** 全部精确匹配结果，不分页。 */
+      matches: ZtSelectBoxBatchMatch[]
+    }
 
 export type ZtSelectBoxRemoteMethod = (
-  params: ZtSelectBoxRemoteParams,
+  request: ZtSelectBoxRemoteRequest,
 ) => Promise<ZtSelectBoxRemoteResult>
 ```
 
-远程模式下 `remoteMethod` 必须使用该契约，不接受只返回数组的旧签名。页码为从 1 开始的整数；`pageSize` 来自面板分页器。返回的 `options` 仅代表当前页，分页器使用 `total` 计算总页数。
+远程模式下 `remoteMethod` 必须使用该契约，不接受只返回数组的旧签名。普通查询收到 `mode: 'search'`：页码为从 1 开始的整数，`pageSize` 来自面板分页器，返回的 `options` 仅代表当前页，分页器使用 `total` 计算总页数。批量粘贴收到 `mode: 'batch'`：服务端必须一次返回全部精确匹配记录，不能只返回当前分页中的数据。
 
 分页配置属于 SelectBox 公共 props：
 
@@ -191,13 +211,36 @@ export type ZtSelectBoxRemoteMethod = (
 
 ### 远程模式
 
-关键词变化先输出 `search`，将页码重置为 1，再由 `useRemoteOptions` 按 `debounce` 调用 `remoteMethod({ keyword, page: 1, pageSize })`。用户点击页码时立即使用新页码请求，不额外等待搜索防抖；改变每页条数时先输出 `update:pageSize`，再重置到第 1 页并立即请求。服务端返回的 `options` 直接作为当前页内容，不能再次执行客户端切片；`total` 直接传给分页器。
+关键词变化先输出 `search`，将页码重置为 1，再由 `useRemoteOptions` 按 `debounce` 调用 `remoteMethod({ mode: 'search', keyword, page: 1, pageSize })`。用户点击页码时立即使用新页码请求，不额外等待搜索防抖；改变每页条数时先输出 `update:pageSize`，再重置到第 1 页并立即请求。服务端返回的 `options` 直接作为当前页内容，不能再次执行客户端切片；`total` 直接传给分页器。
 
 SelectBox 按选项值维护已见选项的标签缓存，使用户翻页或改变关键词后，已选摘要仍能显示原标签。新响应中相同值的标签覆盖缓存中的旧标签，但响应不能移除其他页已选项的标签。
 
 加载期间面板使用 `ZtLoading`；失败时保留当前草稿和上一次成功结果，显示错误状态并输出 `remote-error`。旧请求的完成、失败或加载结束均不能覆盖最新请求状态。若服务端返回负数或非有限的 `total`，组件按 `0` 处理；当前页因总数缩小而超界时，回到最后一个有效页并重新请求一次。
 
 清空选择时清空关键词、将页码重置为 1，并按当前 `pageSize` 请求空关键词结果；模型值和草稿的清空不等待该请求完成。
+
+### 批量粘贴匹配
+
+批量粘贴按用户选定的分隔符解析。组件记录非空原始条目数，再对去除首尾空白后的文本去重。提示中的“粘贴数量”使用原始非空条目数；存在重复项时同时显示去重后的数量，避免用户误解统计结果。
+
+本地模式使用完整的 `options` 匹配，不能只使用当前筛选结果或当前页。远程模式点击“确定”时调用：
+
+```ts
+remoteMethod({ mode: 'batch', keywords })
+```
+
+服务端按选项名称或值的字符串形式进行精确匹配，并返回每个命中关键词对应的完整选项。`keyword` 必须来自本次请求，组件忽略请求之外的记录；禁用选项不计入成功匹配，也不自动选择。多个关键词指向同一选项时按选项值去重，一个关键词返回多个可用选项时全部选中。
+
+批量请求期间，复用 `ZtButton` 的 `loading` 状态禁用“确定”按钮并防止重复提交。请求成功后，组件把所有匹配选项加入标签缓存，将其值与现有草稿合并去重，然后按正常确认流程提交并关闭面板。即使只匹配到部分或完全没有匹配，也不阻断提交；已有草稿仍正常提交。
+
+批量确认后使用继承当前 ConfigProvider 的 `useZtMessage` 显示非阻断反馈：
+
+- 全部匹配：成功消息，例如“批量粘贴 8 项，匹配 8 项，已自动勾选 8 项”。
+- 部分匹配：警告消息，例如“批量粘贴 8 项，匹配 5 项，已自动勾选 5 项”。
+- 存在重复：消息补充“去重后 6 项”，匹配数量按命中的唯一关键词数计算，自动勾选数量按新增的唯一选项值计算。
+- 无有效文本：信息消息“没有可匹配的粘贴内容”，不发起远程请求，仍按当前草稿完成确认。
+
+远程批量请求失败时输出 `remote-error`，使用 `ZtMessage.error` 提示“批量匹配失败，请重试”，保留粘贴文本、草稿和打开的面板，不提交模型。批量请求使用独立的请求编号；过期响应不能修改草稿、关闭面板或显示统计消息，也不能与普通分页搜索的加载状态互相覆盖。
 
 ### 提交模型
 
@@ -233,10 +276,10 @@ SelectBox 按选项值维护已见选项的标签缓存，使用户翻页或改�
 
 ## 错误处理
 
-- 远程请求失败只影响当前结果区域，不自动关闭面板或清空已选草稿。
+- 远程分页请求失败只影响当前结果区域，不自动关闭面板或清空已选草稿；远程批量请求失败保留批量粘贴视图以便重试。
 - 当前请求失败时输出 `remote-error` 并显示可辨识的错误状态；过期请求失败不输出用户可见错误。
 - 外部传入不存在于当前选项集合的值仍保留在模型中；若缺少可显示标签，摘要使用该值的字符串形式，避免静默丢值。
-- 批量粘贴无法匹配的文本保持未选中，并在批量粘贴视图展示明确的匹配结果，不让无效文本进入模型。
+- 批量粘贴无法匹配的文本保持未选中；部分匹配不阻断提交，统计结果通过 zt-ui Message 反馈，无效文本不会进入模型。
 
 ## 测试策略
 
@@ -246,6 +289,7 @@ SelectBox 按选项值维护已见选项的标签缓存，使用户翻页或改�
 - 草稿：选择、全选、确认、取消、外部值更新和清空后的事务边界。
 - 点击：标签、插槽内容、选项行空白、面板空白、外部区域和嵌套 Select 浮层。
 - 远程：关键词、页码和每页条数参数，`pageSize` 默认值、外部更新与 `update:pageSize`，`pageSizes` 归一化，搜索与修改每页条数重置页码，翻页即时请求，服务端 `total`，标签缓存、防抖、加载组件、成功、失败、空关键词、越界页修正、请求竞态和卸载清理。
+- 批量粘贴：本地完整选项匹配、远程 `batch` 请求、原始与去重数量、部分匹配继续提交、全部匹配、零匹配、禁用项、重复选项值、一个关键词多结果、按钮 Loading、Message 类型与文本、请求失败重试和竞态响应。
 - 视觉配置：ConfigProvider 的 `size`、`radius`、`theme`，以及显式 props 的覆盖优先级。
 - 公共组件复用：Checkbox、Button、Input、Pagination、Select、Icon、Loading、Scrollbar 和 Text 的关键集成行为。
 - Select 回归：普通单选、多选、搜索、远程搜索、浮层定位和键盘操作，确保移除 SelectBox 分支后行为不变。
