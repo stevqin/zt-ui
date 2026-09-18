@@ -6,7 +6,7 @@ import { beforeAll, expect, it, vi } from 'vitest'
 
 let esm: OutputChunk
 let umd: OutputChunk
-let consumer: { ZtSelectBox: Vue.Component; ZtMessage: typeof import('@ztechjs/zt-alert')['ZtMessage'] }
+let consumer: { ZtSelectBox: Vue.Component; ZtDrawer: Vue.Component; ZtModal: Vue.Component; ZtMessage: typeof import('@ztechjs/zt-alert')['ZtMessage'] }
 function chunks(result: RollupOutput | RollupOutput[]) {
   return (Array.isArray(result) ? result : [result]).flatMap(bundle => bundle.output)
     .filter((output): output is OutputChunk => output.type === 'chunk')
@@ -36,7 +36,7 @@ beforeAll(async () => {
       },
       load(id) {
         if (id === '\0virtual:dist-zt-ui') return esm.code
-        if (id === '\0virtual:consumer') return "export { ZtSelectBox } from 'virtual:dist-zt-ui'; export { ZtMessage } from '@ztechjs/zt-alert';"
+        if (id === '\0virtual:consumer') return "export { ZtSelectBox, ZtDrawer, ZtModal } from 'virtual:dist-zt-ui'; export { ZtMessage } from '@ztechjs/zt-alert';"
       },
     }],
     build: {
@@ -81,4 +81,27 @@ it('externalizes zt-alert in ESM while keeping the UMD feedback runtime self-con
   expect(esm.imports).toContain('@ztechjs/zt-alert')
   expect(umd.imports).not.toContain('@ztechjs/zt-alert')
   expect(umd.code.includes('zt-notice__content')).toBe(true)
+})
+
+it.each(['ZtDrawer', 'ZtModal'] as const)('keeps built %s declarative with local nested popup ownership', async name => {
+  const wrapper = mount(consumer[name], {
+    attachTo: document.body, props: { modelValue: true, zIndex: 6400, showHeader: false },
+    slots: { default: () => Vue.h(consumer.ZtSelectBox, { options: [{ value: 'a', label: 'Alpha' }] }) },
+  })
+  try {
+    await flushPromises()
+    const dialog = document.querySelector<HTMLElement>('[role="dialog"]')!
+    expect(dialog.classList.contains(name === 'ZtDrawer' ? 'zt-drawer-surface__panel' : 'zt-modal__panel')).toBe(true)
+    dialog.querySelector<HTMLElement>('[role="combobox"]')!.click()
+    await flushPromises()
+    const popup = document.querySelector<HTMLElement>('.zt-select-box__popup')!
+    expect(popup.parentElement).toBe(document.body)
+    expect(popup.style.zIndex).toBe('6401')
+    expect(document.activeElement?.getAttribute('aria-label')).toBe('搜索选项')
+    document.querySelector<HTMLElement>('.zt-select-box-panel__cancel')!.click()
+    await flushPromises()
+    expect(document.querySelector('.zt-select-box__popup')).toBeNull()
+    expect(dialog.contains(document.activeElement)).toBe(true)
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  } finally { wrapper.unmount(); document.body.innerHTML = '' }
 })

@@ -1,6 +1,8 @@
 import { mount, flushPromises } from '@vue/test-utils'
 import ZtSelectBox from '../src/components/select-box/ZtSelectBox.vue'
 import SelectBoxPanel from '../src/components/select-box/SelectBoxPanel.vue'
+import ZtDrawer from '../src/components/drawer/ZtDrawer.vue'
+import ZtModal from '../src/components/modal/ZtModal.vue'
 import ZtLoading from '../src/components/loading/ZtLoading.vue'
 import { readFileSync } from 'node:fs'
 import { compile } from 'sass'
@@ -40,6 +42,8 @@ describe('imperative feedback boundary', () => {
     expect('ZtLoadingService' in ztUi).toBe(false)
     expect('useZtLoading' in ztUi).toBe(false)
     expect(ztUi.ZtLoading.name).toBe('ZtLoading')
+    expect(ztUi.ZtDrawer).toBe(ZtDrawer)
+    expect(ztUi.ZtModal).toBe(ZtModal)
   })
 })
 

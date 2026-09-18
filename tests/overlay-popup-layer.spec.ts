@@ -1,88 +1,126 @@
 import { flushPromises, mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
-import { describe, expect, it, vi } from 'vitest'
-import { ZtDrawer as ZtAlertDrawer } from '@ztechjs/zt-alert'
+import { h } from 'vue'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import ZtDrawer from '../src/components/drawer/ZtDrawer.vue'
+import ZtModal from '../src/components/modal/ZtModal.vue'
 import ZtSelect from '../src/components/select/ZtSelect.vue'
 import ZtDatePicker from '../src/components/date-picker/ZtDatePicker.vue'
 import ZtSelectBox from '../src/components/select-box/ZtSelectBox.vue'
+import { resetOverlayManager } from '../src/components/overlay/overlayManager'
 
-describe('popup layers in imperative feedback drawers', () => {
-  it('keeps SelectBox and its nested popup inside a real Drawer with default focus trapping', async () => {
-    vi.useFakeTimers()
-    const bounds = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
-      if (this.classList.contains('zt-drawer__panel')) return new DOMRect(640, 0, 320, 800)
-      if (this.classList.contains('zt-select-box')) return new DOMRect(680, 100, 240, 34)
-      return new DOMRect(0, 0, 300, 300)
+const overlays = [
+  { name: 'Drawer', component: ZtDrawer, selector: '.zt-drawer-surface' },
+  { name: 'Modal', component: ZtModal, selector: '.zt-modal' },
+]
+const controls = [
+  { name: 'Select', component: ZtSelect, trigger: '.zt-select__control', popup: '.zt-select__dropdown' },
+  { name: 'SelectBox', component: ZtSelectBox, trigger: '.zt-select-box', popup: '.zt-select-box__popup' },
+  { name: 'DatePicker', component: ZtDatePicker, trigger: '.zt-date-picker', popup: '.zt-date-picker__panel' },
+]
+afterEach(() => { resetOverlayManager(); vi.restoreAllMocks(); document.body.innerHTML = '' })
+
+describe.each(overlays)('popup layers in local $name', overlay => {
+  it.each(controls)('keeps $name body-teleported above the overlay after resize and scroll', async control => {
+    let top = 100
+    let left = 160
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function (this: HTMLElement) {
+      return this.matches(control.trigger) ? new DOMRect(left, top, 240, 34) : new DOMRect(0, 0, 300, 200)
     })
-    const rects = vi.spyOn(HTMLElement.prototype, 'getClientRects').mockImplementation(function (this: HTMLElement) {
-      return (this.closest('[hidden]') ? [] : [new DOMRect(0, 0, 100, 30)]) as unknown as DOMRectList
+    const wrapper = mount(overlay.component, {
+      attachTo: document.body, props: { modelValue: true, zIndex: 6400, showHeader: false },
+      slots: { default: () => h(control.component, { options: [{ value: 'a', label: 'Alpha' }] }) },
     })
-    const content = document.createElement('div')
-    const wrapper = mount(ZtSelectBox, { attachTo: content, props: { options: [{ value: 'a', label: 'Alpha' }] } })
-    const drawer = ZtAlertDrawer.open({ content, zIndex: 6400 })
     try {
-      await vi.runAllTimersAsync()
-      await wrapper.get('.zt-select-box__trigger').trigger('click')
+      await flushPromises()
+      const child = wrapper.findComponent(control.component)
+      await child.get(control.name === 'SelectBox' ? '[role="combobox"]' : 'input').trigger('click')
+      await flushPromises()
+      const popup = document.querySelector<HTMLElement>(control.popup)!
+      const layer = document.querySelector<HTMLElement>(overlay.selector)!
+      expect(popup.parentElement).toBe(document.body)
+      if (control.name !== 'DatePicker') expect(popup.style.position).toBe('fixed')
+      expect(Number(popup.style.zIndex)).toBe(Number(layer.style.zIndex) + 1)
+      expect(popup.style.top).toBe(control.name === 'DatePicker' ? '140px' : '134px')
+      expect(popup.style.left).toBe('160px')
+      top = 180; left = 200
+      window.dispatchEvent(new Event('resize'))
+      await flushPromises()
+      expect(popup.style.top).toBe(control.name === 'DatePicker' ? '220px' : '214px')
+      expect(popup.style.left).toBe('200px')
+      top = 130
+      layer.querySelector('section')!.dispatchEvent(new Event('scroll'))
+      await flushPromises()
+      expect(popup.style.top).toBe(control.name === 'DatePicker' ? '170px' : '164px')
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    } finally { wrapper.unmount() }
+  })
+
+  it.each(controls.filter(control => control.name !== 'SelectBox').flatMap(control =>
+    [false, true].map(reverse => ({ ...control, reverse })),
+  ))('returns from $name to the correct overlay sibling on Tab (reverse=$reverse)', async control => {
+    const wrapper = mount(overlay.component, {
+      attachTo: document.body, props: { modelValue: true, showHeader: false },
+      slots: { default: () => [h('button', { class: 'before' }, 'Before'), h(control.component, {
+        options: [{ value: 'a', label: 'Alpha' }],
+      }), h('button', { class: 'after' }, 'After')] },
+    })
+    try {
+      await flushPromises()
+      await wrapper.findComponent(control.component).get('input').trigger('click')
+      await flushPromises()
+      const popup = document.querySelector<HTMLElement>(control.popup)!
+      const focusable = [...popup.querySelectorAll<HTMLElement>('button:not([disabled]),[tabindex="0"]')]
+        .filter(element => element.tabIndex >= 0)
+      const edge = control.reverse ? focusable[0] : focusable.at(-1)
+      const target = edge ?? popup
+      if (!edge) popup.tabIndex = -1
+      target.focus()
+      await flushPromises()
+      expect(document.activeElement).toBe(target)
+      target.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: control.reverse, bubbles: true, cancelable: true }))
+      await flushPromises()
+      expect(document.activeElement?.classList.contains(control.reverse ? 'before' : 'after')).toBe(true)
+      expect(document.querySelector(control.popup)).toBeNull()
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    } finally { wrapper.unmount() }
+  })
+
+  it.each([false, true])('keeps nested SelectBox focus in its branch and returns to the overlay (reverse=%s)', async reverse => {
+    const wrapper = mount(overlay.component, {
+      attachTo: document.body, props: { modelValue: true, zIndex: 6400, showHeader: false },
+      slots: { default: () => [h('button', { class: 'before' }, 'Before'), h(ZtSelectBox, {
+        options: [{ value: 'a', label: 'Alpha' }],
+      }), h('button', { class: 'after' }, 'After')] },
+    })
+    try {
+      await flushPromises()
+      const box = wrapper.findComponent(ZtSelectBox)
+      await box.get('[role="combobox"]').trigger('click')
       await flushPromises()
       const popup = document.querySelector<HTMLElement>('.zt-select-box__popup')!
-      expect(popup).not.toBeNull()
       expect(document.activeElement?.getAttribute('aria-label')).toBe('搜索选项')
-      expect(content.closest('.zt-drawer__panel')?.contains(popup)).toBe(true)
-      expect(popup.style.position).toBe('absolute')
-      expect(popup.style.left).toBe('8px')
-      expect(popup.style.top).toBe('134px')
-      expect(popup.style.width).toBe('304px')
       document.querySelector<HTMLElement>('.zt-select-box-panel__mode')!.click()
       await flushPromises()
       const separator = document.querySelector<HTMLInputElement>('.zt-select-box-panel__separator input')!
       separator.focus(); separator.click(); await flushPromises()
       const nested = document.querySelector<HTMLElement>('.zt-select__dropdown')!
+      expect(nested.parentElement).toBe(document.body)
+      expect(Number(nested.style.zIndex)).toBeGreaterThan(Number(popup.style.zIndex))
       nested.tabIndex = -1; nested.focus(); await flushPromises()
       expect(document.activeElement).toBe(nested)
-      expect(content.closest('.zt-drawer__panel')?.contains(nested)).toBe(true)
+      nested.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: reverse, bubbles: true, cancelable: true }))
+      await flushPromises()
+      expect(document.querySelector('.zt-select__dropdown')).toBeNull()
       expect(document.querySelector('.zt-select-box__popup')).toBe(popup)
-      document.querySelector<HTMLElement>('[role="option"]')!.click(); await flushPromises()
-      document.querySelector<HTMLElement>('.zt-select-box-panel__cancel')!.click(); await flushPromises()
+      expect(document.activeElement?.matches(reverse ? 'textarea' : '.zt-select-box-panel__mode')).toBe(true)
+      const edge = document.querySelector<HTMLElement>(reverse ? 'textarea' : '.zt-select-box-panel__confirm')!
+      edge.focus()
+      edge.dispatchEvent(new KeyboardEvent('keydown', { key: 'Tab', shiftKey: reverse, bubbles: true, cancelable: true }))
+      await flushPromises()
+      expect(document.activeElement?.classList.contains(reverse ? 'before' : 'after')).toBe(true)
       expect(document.querySelector('.zt-select-box__popup')).toBeNull()
-      expect(document.activeElement).toBe(wrapper.get('.zt-select-box__trigger').element)
+      expect(box.emitted('update:modelValue')).toBeUndefined()
       expect(wrapper.emitted('update:modelValue')).toBeUndefined()
-    } finally {
-      wrapper.unmount()
-      await drawer.close(); await vi.runAllTimersAsync(); await drawer.closed
-      content.remove(); rects.mockRestore(); bounds.mockRestore(); vi.useRealTimers()
-    }
-  })
-
-  it.each([
-    { name: 'Select', component: ZtSelect, popupSelector: '.zt-select__dropdown' },
-    { name: 'DatePicker', component: ZtDatePicker, popupSelector: '.zt-date-picker__panel' },
-  ])('keeps $name above a real zt-alert Drawer with a custom layer', async ({ component, popupSelector }) => {
-    vi.useFakeTimers()
-    const content = document.createElement('div')
-    const wrapper = mount(component, { attachTo: content })
-    const drawer = ZtAlertDrawer.open({ content, zIndex: 6400, autoFocus: false })
-    try {
-      await vi.runAllTimersAsync()
-      await wrapper.get('input').trigger('click')
-      await nextTick()
-      const overlay = content.closest<HTMLElement>('.zt-drawer')!
-      const popup = document.querySelector<HTMLElement>(popupSelector)!
-      expect(overlay.contains(wrapper.element)).toBe(true)
-      expect(Number(overlay.style.zIndex)).toBeGreaterThanOrEqual(6400)
-      expect(popup.parentElement).toBe(component === ZtSelect ? content.closest('.zt-drawer__panel') : document.body)
-      expect(Number(popup.style.zIndex)).toBe(Number(overlay.style.zIndex) + 1)
-
-      overlay.style.zIndex = '7200'
-      window.dispatchEvent(new Event('resize'))
-      await nextTick()
-      expect(popup.style.zIndex).toBe('7201')
-    } finally {
-      wrapper.unmount()
-      await drawer.close()
-      await vi.runAllTimersAsync()
-      await drawer.closed
-      content.remove()
-      vi.useRealTimers()
-    }
+    } finally { wrapper.unmount() }
   })
 })
