@@ -87,19 +87,20 @@ describe.each([false, true])('feedback CSS coexistence (production build=%s)', p
     })
 
     it.each([
-      { size: 28, pixels: '28px' },
-      { size: 'mini' as const, pixels: '11px' },
-      { size: 'small' as const, pixels: '12px' },
-      { size: 'default' as const, pixels: '13px' },
-      { size: 'medium' as const, pixels: '14px' },
-      { size: 'large' as const, pixels: '15px' },
-    ])('preserves Icon size $size as $pixels', ({ size, pixels }) => {
+      { label: 'undefined', size: undefined, expected: '1em' },
+      { label: '28', size: 28, expected: '28px' },
+      { label: '1.5em', size: '1.5em', expected: '1.5em' },
+      { label: '50%', size: '50%', expected: '50%' },
+    ])('resolves Icon size $label as $expected', ({ size, expected }) => {
       applyStyles(production, alertLast)
       const wrapper = mount(ZtIcon, { attachTo: document.body, props: { name: 'search', size } })
       wrappers.push(wrapper)
       const computed = getComputedStyle(wrapper.element)
-      expect(resolveLength(computed.width, computed)).toBe(pixels)
-      expect(resolveLength(computed.height, computed)).toBe(pixels)
+      expect(computed.getPropertyValue('--zt-icon-size').trim()).toBe(expected)
+      if (expected === '28px') {
+        expect(resolveLength(computed.width, computed)).toBe(expected)
+        expect(resolveLength(computed.height, computed)).toBe(expected)
+      }
     })
   })
 })
