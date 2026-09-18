@@ -658,6 +658,15 @@
             "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
           },
           {
+            "name": "height",
+            "templateName": "height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "浮层外层高度，数值按像素处理；内容超出时内部滚动。"
+          },
+          {
             "name": "offset",
             "templateName": "offset",
             "kind": "prop",
@@ -826,7 +835,7 @@
       },
       {
         "name": "ZtPopoverProps",
-        "code": "export interface ZtPopoverProps {\n  /** 浮层是否显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 触发方式。 */ trigger?: ZtPopoverTrigger;\n  /** 首选出现方位，空间不足时自动翻转。 */ placement?: ZtPopoverPlacement;\n  /** 浮层宽度，数值按像素处理。 */ width?: number | string;\n  /** 浮层与触发器的间距。 */ offset?: number;\n  /** 禁用全部打开交互。 */ disabled?: boolean;\n  /** 是否显示指向触发器的箭头。 */ showArrow?: boolean;\n  /** 是否 Teleport 到 body。 */ teleported?: boolean;\n  /** 打开延迟毫秒数。 */ openDelay?: number;\n  /** 关闭延迟毫秒数。 */ closeDelay?: number;\n  /** 浮层层级。 */ zIndex?: number;\n  /** 关闭时将焦点返回触发器；输入建议类浮层可关闭以保留正常 Tab 顺序。 */ restoreFocus?: boolean;\n  /** 关闭后保留浮层 DOM。 */ persistent?: boolean;\n}",
+        "code": "export interface ZtPopoverProps {\n  /** 浮层是否显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 触发方式。 */ trigger?: ZtPopoverTrigger;\n  /** 首选出现方位，空间不足时自动翻转。 */ placement?: ZtPopoverPlacement;\n  /** 浮层宽度，数值按像素处理。 */ width?: number | string;\n  /** 浮层外层高度，数值按像素处理；内容超出时内部滚动。 */ height?: number | string;\n  /** 浮层与触发器的间距。 */ offset?: number;\n  /** 禁用全部打开交互。 */ disabled?: boolean;\n  /** 是否显示指向触发器的箭头。 */ showArrow?: boolean;\n  /** 是否 Teleport 到 body。 */ teleported?: boolean;\n  /** 打开延迟毫秒数。 */ openDelay?: number;\n  /** 关闭延迟毫秒数。 */ closeDelay?: number;\n  /** 浮层层级。 */ zIndex?: number;\n  /** 关闭时将焦点返回触发器；输入建议类浮层可关闭以保留正常 Tab 顺序。 */ restoreFocus?: boolean;\n  /** 关闭后保留浮层 DOM。 */ persistent?: boolean;\n}",
         "public": true
       },
       {
@@ -9973,6 +9982,24 @@
             "description": "简短纯文本说明。"
           },
           {
+            "name": "width",
+            "templateName": "width",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "'max-content'",
+            "description": "外层宽度；数值按像素处理，默认随内容自适应。"
+          },
+          {
+            "name": "height",
+            "templateName": "height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "外层高度；数值按像素处理，超出内容在内部滚动。"
+          },
+          {
             "name": "disabled",
             "templateName": "disabled",
             "kind": "prop",
@@ -10055,7 +10082,7 @@
     "types": [
       {
         "name": "ZtTooltipProps",
-        "code": "export interface ZtTooltipProps {\n  /** 简短纯文本说明。 */ content?: string;\n  /** 禁用显示与打开行为。 */ disabled?: boolean;\n  /** 首选方位。 */ placement?: ZtPopoverPlacement;\n  /** 鼠标悬停打开延迟毫秒。 */ openDelay?: number;\n  /** 鼠标移出关闭延迟毫秒。 */ closeDelay?: number;\n  /** 控制显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 是否显示箭头。 */ showArrow?: boolean;\n}",
+        "code": "export interface ZtTooltipProps {\n  /** 简短纯文本说明。 */ content?: string;\n  /** 外层宽度；数值按像素处理，默认随内容自适应。 */ width?: number | string;\n  /** 外层高度；数值按像素处理，超出内容在内部滚动。 */ height?: number | string;\n  /** 禁用显示与打开行为。 */ disabled?: boolean;\n  /** 首选方位。 */ placement?: ZtPopoverPlacement;\n  /** 鼠标悬停打开延迟毫秒。 */ openDelay?: number;\n  /** 鼠标移出关闭延迟毫秒。 */ closeDelay?: number;\n  /** 控制显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 是否显示箭头。 */ showArrow?: boolean;\n}",
         "public": true
       },
       {

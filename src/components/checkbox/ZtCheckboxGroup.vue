@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useZtSize } from '../config-provider/context'
-import { computed, provide, toRef } from 'vue'
+import { computed, inject, provide, toRef } from 'vue'
 import type { ZtCheckboxGroupProps, CheckboxGroupContext } from './types'
 import { checkboxGroupKey } from './types'
 import './checkbox.scss'
+import { ztFormItemKey } from '../form/context'
 
 defineOptions({ name: 'ZtCheckboxGroup', inheritAttrs: false })
 
@@ -14,7 +15,9 @@ const props = withDefaults(defineProps<ZtCheckboxGroupProps>(), {
   max: Infinity,
   status: 'primary',
 })
-const configSize = useZtSize(props)
+const formItem = inject(ztFormItemKey, undefined)
+const configSize = useZtSize(props, () => formItem?.size.value)
+const isDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 
 
 const emit = defineEmits<{
@@ -23,6 +26,7 @@ const emit = defineEmits<{
 }>()
 
 function toggle(val: unknown) {
+  if (isDisabled.value) return
   const arr = [...(props.modelValue ?? [])]
   const idx = arr.indexOf(val)
   if (idx === -1) {
@@ -38,7 +42,7 @@ function toggle(val: unknown) {
 
 provide<CheckboxGroupContext>(checkboxGroupKey, {
   modelValue: toRef(props, 'modelValue'),
-  disabled: computed(() => props.disabled),
+  disabled: isDisabled,
   size: computed(() => configSize.value),
   status: computed(() => props.status),
   min: computed(() => props.min),

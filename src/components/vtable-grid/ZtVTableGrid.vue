@@ -4,6 +4,7 @@ import { computed, markRaw, nextTick, onBeforeUnmount, onMounted, ref, shallowRe
 import { register, themes, type ListTable } from '@visactor/vtable'
 import { ZtButton } from '../button'
 import { ZtCheckbox } from '../checkbox'
+import { useAnchoredDropdown } from '../selection/useAnchoredDropdown'
 import { ZtPagination } from '../pagination'
 import { createLatestQueryRunner, normalizePagination, normalizeQueryResult } from './data'
 import { createSelectionStore } from './selection'
@@ -99,6 +100,19 @@ const settingsVersion = ref(0)
 let settings = createColumnSettingsStore(props.columns, columnSettingsOptions())
 const actionMenu = shallowRef<{ row: Row; items: Array<ReturnType<typeof resolveActionButtons<Row>>[number]> } | null>(null)
 const settingsOpen = ref(false)
+const settingsTrigger = ref<InstanceType<typeof ZtButton>>()
+const settingsPanel = ref<HTMLElement>()
+const settingsTriggerElement = computed(() => settingsTrigger.value?.$el as HTMLElement | undefined)
+useAnchoredDropdown({
+  visible: settingsOpen, trigger: settingsTriggerElement, popup: settingsPanel,
+  close: () => { settingsOpen.value = false },
+  focus: () => settingsTriggerElement.value?.focus({ preventScroll: true }),
+  tabThroughPopup: true,
+})
+function closeSettings() {
+  settingsTriggerElement.value?.focus({ preventScroll: true })
+  settingsOpen.value = false
+}
 const summaryValues = ref<Record<string, unknown>>({})
 let querySequence = 0
 
@@ -535,8 +549,8 @@ defineExpose({
         <ZtButton v-if="toolbarItems.includes('import')" :size="configSize" :disabled="disabled" aria-label="导入" @click="toolbarAction('import')">导入</ZtButton>
         <ZtButton v-if="toolbarItems.includes('export')" :size="configSize" :disabled="disabled || actualLoading" aria-label="导出" @click="toolbarAction('export')">导出</ZtButton>
         <div v-if="toolbarItems.includes('columnsetting') && settingsEnabled" class="zt-vtable-grid__settings-wrap">
-          <ZtButton :size="configSize" :disabled="disabled" aria-label="列设置" :aria-expanded="settingsOpen" @click="settingsOpen = !settingsOpen">列设置</ZtButton>
-          <div v-if="settingsOpen" class="zt-vtable-grid__settings" role="dialog" aria-label="列设置" @keydown.esc="settingsOpen = false">
+          <ZtButton ref="settingsTrigger" :size="configSize" :disabled="disabled" aria-label="列设置" :aria-expanded="settingsOpen" @click="settingsOpen = !settingsOpen">列设置</ZtButton>
+          <div v-if="settingsOpen" ref="settingsPanel" class="zt-vtable-grid__settings" role="dialog" aria-label="列设置" @keydown.esc.stop.prevent="closeSettings">
             <div v-for="(column, index) in orderedSettingsColumns" :key="columnKey(column)" class="zt-vtable-grid__settings-row">
               <ZtCheckbox
                 :model-value="isColumnVisible(column)"

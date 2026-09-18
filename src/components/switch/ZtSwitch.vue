@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useZtSize } from '../config-provider/context'
-import { computed } from 'vue'
+import { computed, inject } from 'vue'
+import { ztFormItemKey } from '../form/context'
 import type { ZtSwitchProps } from './types'
 import './switch.scss'
 
@@ -14,7 +15,9 @@ const props = withDefaults(defineProps<ZtSwitchProps>(), {
   activeValue: true,
   inactiveValue: false,
 })
-const configSize = useZtSize(props)
+const formItem = inject(ztFormItemKey, undefined)
+const configSize = useZtSize(props, () => formItem?.size.value)
+const isDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 
 
 const emit = defineEmits<{
@@ -28,7 +31,7 @@ const classes = computed(() => [
   'zt-switch',
   `zt-switch--${props.status}`,
   isChecked.value && 'is-checked',
-  props.disabled && 'is-disabled',
+  isDisabled.value && 'is-disabled',
   props.loading && 'is-loading',
   configSize.value !== 'default' && `zt-switch--${configSize.value}`,
 ])
@@ -39,7 +42,7 @@ const trackStyle = computed(() => {
 })
 
 function toggle() {
-  if (props.disabled || props.loading) return
+  if (isDisabled.value || props.loading) return
   const next = isChecked.value ? props.inactiveValue : props.activeValue
   emit('update:modelValue', next)
   emit('change', next)
@@ -47,7 +50,7 @@ function toggle() {
 </script>
 
 <template>
-  <div :class="classes" :style="trackStyle" role="switch" :aria-checked="isChecked" v-bind="$attrs" @click="toggle">
+  <div :class="classes" :style="trackStyle" v-bind="$attrs" role="switch" :aria-checked="isChecked" :aria-disabled="isDisabled || loading" :aria-busy="loading" :tabindex="isDisabled || loading ? -1 : 0" @click="toggle" @keydown.space.prevent="toggle" @keydown.enter.prevent="toggle">
     <span v-if="inactiveText" class="zt-switch__label zt-switch__label--left" :class="{ 'is-active': !isChecked }">
       {{ inactiveText }}
     </span>

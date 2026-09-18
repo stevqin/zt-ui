@@ -3,6 +3,7 @@ import { useZtSize } from '../config-provider/context'
 import { computed, inject, onMounted, ref, watch } from 'vue'
 import type { ZtCheckboxProps } from './types'
 import { checkboxGroupKey } from './types'
+import { ztFormItemKey } from '../form/context'
 import './checkbox.scss'
 
 defineOptions({ name: 'ZtCheckbox', inheritAttrs: false })
@@ -22,6 +23,7 @@ const emit = defineEmits<{
 }>()
 
 const group = inject(checkboxGroupKey, null)
+const formItem = inject(ztFormItemKey, undefined)
 const isGroup = computed(() => !!group)
 const selfVal = ref(props.modelValue)
 
@@ -46,11 +48,10 @@ const isChecked = computed(() => {
 })
 
 const isDisabled = computed(() => {
-  if (isGroup.value) return group!.disabled.value || props.disabled
-  return props.disabled
+  return props.disabled || group?.disabled.value || formItem?.disabled.value || false
 })
 
-const actualSize = useZtSize(props, () => group?.size.value)
+const actualSize = useZtSize(props, () => group?.size.value ?? formItem?.size.value)
 const actualStatus = computed(() => group?.status.value ?? props.status)
 
 const classes = computed(() => [
@@ -78,9 +79,9 @@ function handleChange() {
 
 <template>
   <label :class="classes" v-bind="$attrs">
-    <span class="zt-checkbox__input" @click.prevent="handleChange">
+    <span class="zt-checkbox__input">
       <span class="zt-checkbox__inner" />
-      <input type="checkbox" :aria-hidden="$attrs.role === 'checkbox' ? true : undefined" :checked="isChecked" :disabled="isDisabled" :name="name" tabindex="-1" />
+      <input type="checkbox" :aria-hidden="$attrs.role === 'checkbox' ? true : undefined" :checked="isChecked" :indeterminate="indeterminate" :disabled="isDisabled" :name="name" :tabindex="$attrs.role === 'checkbox' ? -1 : undefined" @change="handleChange" />
     </span>
     <span v-if="$slots.default || label" class="zt-checkbox__label">
       <slot>{{ label }}</slot>

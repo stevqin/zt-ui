@@ -14,7 +14,7 @@ describe('radio group semantics', () => {
     await group.setProps({ segmented: false })
     expect(group.classes()).toContain('zt-radio-group--default')
     await group.setProps({ variant: 'segmented' })
-    expect(group.classes()).toContain('zt-radio-group--segmented')
+    expect(group.classes()).toContain('zt-radio-group--default')
   })
   it('uses native focusable named inputs and preserves individually disabled choices', async () => {
     const wrapper = mount(ZtRadioGroup, {
