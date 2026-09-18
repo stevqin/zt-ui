@@ -110,9 +110,12 @@
     info: (#6b7280, #4b5563, #374151),
   );
   @each $status, $colors in $statuses {
+    $token: $status;
+    @if $status == primary { $token: accent; }
     &--#{$status} {
-      --button-fill: #{list.nth($colors, 1)};
-      --button-hover: #{list.nth($colors, 2)};
+      // Retain inherited status-color hooks; radius alone owns image/shadow depth.
+      --button-fill: var(--zt-#{$token}-button, #{list.nth($colors, 1)});
+      --button-hover: var(--zt-#{$token}-button-hover, #{list.nth($colors, 2)});
       --button-active: #{list.nth($colors, 3)};
       color: #fff;
       border-color: transparent;

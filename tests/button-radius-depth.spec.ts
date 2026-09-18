@@ -90,14 +90,24 @@ describe.each(['light', 'dark'] as const)('production Button depth (%s)', theme 
       for (const component of buttons) {
         const button = component.element as HTMLButtonElement
         depth(button, band)
+        const idleShadow = getComputedStyle(button).boxShadow
         const idle = getComputedStyle(button).backgroundColor
         idleColors.set(button, idle)
         button.classList.add('test-hover')
         depth(button, band)
+        const hoverShadow = getComputedStyle(button).boxShadow
+        if (band !== 'flat') expect(hoverShadow, 'hover depth changes').not.toBe(idleShadow)
         const hover = getComputedStyle(button).backgroundColor
         expect(hover, 'hover changes color').not.toBe(idle)
         button.classList.add('test-active')
         expect(getComputedStyle(button).backgroundColor, 'pressed color').not.toBe(hover)
+        const pressedShadow = getComputedStyle(button).boxShadow
+        if (band === 'flat') expect(pressedShadow).toBe('none')
+        else {
+          expect(pressedShadow, 'pressed shadow is inset only').toMatch(/^inset 0 1px 2px /)
+          expect(pressedShadow).not.toMatch(/\),\s*\d/)
+          expect(pressedShadow).not.toBe(hoverShadow)
+        }
         expect(getComputedStyle(button).transform).toBe(band === 'flat' ? 'none' : band === 'subtle' ? 'scale(.99)' : 'scale(.97)')
         button.classList.add('test-focus-visible')
         expect(getComputedStyle(button).outlineWidth).toBe('2px')
@@ -171,4 +181,29 @@ it('standalone Buttons retain the default raised treatment', () => {
   const wrapper = mount(ZtButton, { attachTo: document.body, props: { status: 'primary' } })
   wrappers.push(wrapper)
   depth(wrapper.element, 'raised')
+})
+
+it.each([
+  ['primary', 'accent'], ['success', 'success'], ['warning', 'warning'],
+  ['danger', 'danger'], ['info', 'info'],
+] as const)('%s inherits custom idle and hover colors without overriding radius depth', (status, token) => {
+  const wrapper = mount({
+    render: () => h('div', {
+      style: {
+        [`--zt-${token}-button`]: 'rgb(128, 0, 128)',
+        [`--zt-${token}-button-hover`]: 'rgb(96, 0, 96)',
+      },
+    }, [0, 4, 9].map(borderRadius => h(ZtConfigProvider, { borderRadius }, () =>
+      [false, true].map(circle => h(ZtButton, { status, circle }))))),
+  }, { attachTo: document.body })
+  wrappers.push(wrapper)
+  const buttons = wrapper.findAll('button')
+  for (const [index, button] of buttons.entries()) {
+    const band = ['flat', 'subtle', 'raised'][Math.floor(index / 2)]!
+    expect(getComputedStyle(button.element).backgroundColor).toBe('rgb(128, 0, 128)')
+    depth(button.element, band)
+    button.element.classList.add('test-hover')
+    expect(getComputedStyle(button.element).backgroundColor).toBe('rgb(96, 0, 96)')
+    depth(button.element, band)
+  }
 })
