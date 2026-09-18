@@ -89,6 +89,7 @@ const batchMethod = computed(() => {
 })
 // Separate coordinators keep search pages, loading, and request generations independent.
 const remoteBatch = useRemoteOptions<ZtSelectBoxRemoteRequest, ZtSelectBoxRemoteResult>(batchMethod, toRef(props, 'debounce'), () => ({ mode: 'batch', matches: [] }))
+watch(() => [...props.modelValue], () => remoteBatch.reset(), { flush: 'sync' })
 async function matchBatch(keywords: string[]) {
   if (!props.remote || !visible.value || remoteBatch.loading.value) return undefined
   const response = await remoteBatch.run({ mode: 'batch', keywords }, {
@@ -156,10 +157,11 @@ function commit(values: ZtSelectValue[], options: ZtSelectOption[] = []) {
 }
 function clear() {
   if (!canClear.value) return
-  remoteSearch.reset()
-  remoteBatch.reset()
+  // Establish page one before resetting the result; its watcher may correct pages.
   keyword.value = ''
   page.value = 1
+  remoteSearch.reset()
+  remoteBatch.reset()
   draft.values.value = []
   panel.value?.reset()
   emit('update:modelValue', [])
@@ -229,7 +231,7 @@ defineExpose({ focus, blur, open, close, clear })
       <ZtIcon class="zt-select-box__arrow" name="arrow-down" :size="14" />
     </button>
     <button v-if="canClear" type="button" class="zt-select-box__clear" aria-label="清空选择" @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
-    <Teleport to="body">
+    <Teleport :to="dropdown.teleportTarget.value">
       <div v-if="visible" :id="popupId" ref="popupElement" class="zt-select-box__popup" :data-zt-theme="theme" :style="popupStyle" role="dialog" aria-label="选择选项" tabindex="-1" @keydown.esc="handleEscape">
         <SelectBoxPanel ref="panel" :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
           <template v-if="$slots.option" #option="scope"><slot name="option" v-bind="scope" /></template>

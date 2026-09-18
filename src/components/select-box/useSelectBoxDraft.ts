@@ -140,7 +140,9 @@ export function useSelectBoxDraft(
     cache.value.get(value) ?? fallbackOption(value)
   )))
 
-  watch(model, rebuild, { immediate: true, flush: 'sync' })
+  // Snapshot primitive values so parent splice/push/index writes also replace a draft.
+  // Draft edits never touch this source; confirmation returns a separate snapshot.
+  watch(() => [...(model.value ?? [])], rebuild, { immediate: true, flush: 'sync' })
 
   return {
     isOpen,

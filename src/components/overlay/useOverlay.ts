@@ -93,6 +93,34 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     else (elements[0] ?? panel.value)?.focus({ preventScroll: true })
   }
 
+  function focusBeyondBranch(branch: OverlayBranch, event: KeyboardEvent) {
+    const closing: OverlayBranch[] = []
+    const direction = event.shiftKey ? -1 : 1
+    let current = branch
+    while (true) {
+      closing.push(current)
+      const owner = current.owner?.visible.value ? current.owner : undefined
+      if (owner && !owner.tabThroughPopup) {
+        current = owner
+        continue
+      }
+      const elements = focusableElements(owner?.popup.value ?? panel.value)
+      const indices = elements.flatMap((element, index) => current.trigger.value?.contains(element) ? [index] : [])
+      const triggerIndex = event.shiftKey ? indices[0] : indices.at(-1)
+      const nextIndex = triggerIndex === undefined ? (event.shiftKey ? elements.length - 1 : 0) : triggerIndex + direction
+      if (owner && !elements[nextIndex]) {
+        current = owner
+        continue
+      }
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      const next = elements[nextIndex] ?? (event.shiftKey ? elements.at(-1) : elements[0]) ?? panel.value
+      next?.focus()
+      closing.forEach(closed => closed.close())
+      return
+    }
+  }
+
   function handleKeydown(event: KeyboardEvent) {
     if (!active.value || !isTop.value || event.isComposing || event.defaultPrevented) return
 
@@ -121,25 +149,20 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     const last = elements.at(-1)
     const current = document.activeElement
 
-    if (branch?.popup.value?.contains(current)) {
-      if (branch.tabThroughPopup) {
+    if (branch && (branch.popup.value?.contains(current) || branch.owner)) {
+      if (branch.popup.value?.contains(current) && branch.tabThroughPopup) {
         const popupElements = focusableElements(branch.popup.value)
         const currentIndex = popupElements.indexOf(current as HTMLElement)
         const next = currentIndex >= 0 ? popupElements[currentIndex + (event.shiftKey ? -1 : 1)] : undefined
         if (next) {
           event.preventDefault()
+          event.stopImmediatePropagation()
           next.focus()
           return
         }
       }
-      // Tab leaves a popup at its trigger's logical position in the dialog.
-      const triggerIndices = elements.flatMap((element, index) => branch.trigger.value?.contains(element) ? [index] : [])
-      const triggerIndex = (event.shiftKey ? triggerIndices[0] : triggerIndices.at(-1)) ?? -1
-      const nextIndex = (triggerIndex + (event.shiftKey ? -1 : 1) + elements.length) % elements.length
-      event.preventDefault()
-      const next = elements[nextIndex] ?? panel.value
-      next?.focus()
-      branch.close()
+      // Exit one owned popup range at a time before returning to the dialog.
+      focusBeyondBranch(branch, event)
       return
     }
 

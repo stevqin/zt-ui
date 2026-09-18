@@ -693,7 +693,7 @@ defineExpose({ focus, blur, open, close });
       <span class="zt-select__caret" aria-hidden="true" />
     </div>
 
-    <Teleport to="body">
+    <Teleport :to="dropdown.teleportTarget.value">
       <PopupScope v-if="visible">
       <div
         ref="listboxElement"

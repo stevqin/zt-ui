@@ -37,6 +37,7 @@ export interface UseAnchoredDropdownOptions {
 }
 
 export interface AnchoredDropdown {
+  teleportTarget: ComputedRef<HTMLElement | 'body'>
   popupStyle: ComputedRef<CSSProperties>
   placement: Ref<'top' | 'bottom'>
   overlayContext: OverlayContext
@@ -63,6 +64,11 @@ export function useAnchoredDropdown(
   const parentOverlay = inject(overlayContextKey, undefined)
   const layer = computed(() => options.layer?.value ?? Math.max(2000, (parentOverlay?.layer?.value ?? 0) + 1))
   const placement = ref<'top' | 'bottom'>('bottom')
+  // zt-alert has no branch-registration API: its default trap owns panel descendants.
+  // Resolve on opening, because imperative Drawer may move an already mounted trigger.
+  const teleportTarget = computed(() => options.visible.value
+    ? options.trigger.value?.closest<HTMLElement>('.zt-drawer__panel') ?? 'body'
+    : 'body')
   const geometry = ref<PopupGeometry>()
   const childBranches = shallowReactive(new Set<OverlayBranch>())
   const popupBranches = new Set<OverlayBranch>()
@@ -71,9 +77,17 @@ export function useAnchoredDropdown(
   let listening = false
   let focusListening = false
   let disposed = false
+  const currentBranch: OverlayBranch = {
+    trigger: options.trigger,
+    popup: options.popup,
+    visible: options.visible,
+    tabThroughPopup: options.tabThroughPopup,
+    close,
+    focus: options.focus,
+  }
 
   const popupStyle = computed<CSSProperties>(() => ({
-    position: 'fixed',
+    position: teleportTarget.value === 'body' ? 'fixed' : 'absolute',
     zIndex: layer.value,
     top: geometry.value ? `${geometry.value.top}px` : undefined,
     left: geometry.value ? `${geometry.value.left}px` : undefined,
@@ -83,6 +97,8 @@ export function useAnchoredDropdown(
 
   function registerBranch(branch: OverlayBranch, inPopup: boolean) {
     if (disposed) return () => undefined
+    const ownsBranch = inPopup && !branch.owner
+    if (ownsBranch) branch.owner = currentBranch
     childBranches.add(branch)
     if (inPopup) popupBranches.add(branch)
     const unregisterParent = parentOverlay?.registerBranch(branch)
@@ -93,6 +109,7 @@ export function useAnchoredDropdown(
       childBranches.delete(branch)
       popupBranches.delete(branch)
       unregisterParent?.()
+      if (ownsBranch) branch.owner = undefined
       childRegistrations.delete(unregister)
     }
     childRegistrations.add(unregister)
@@ -142,17 +159,22 @@ export function useAnchoredDropdown(
     const triggerRect = trigger.getBoundingClientRect()
     const popupHeight = options.getPopupHeight?.(popup) ?? popup.getBoundingClientRect().height
     const gutter = options.viewportGutter ?? VIEWPORT_GUTTER
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
+    const container = teleportTarget.value === 'body' ? undefined : teleportTarget.value
+    const containerRect = container?.getBoundingClientRect()
+    const originLeft = containerRect ? containerRect.left + container!.clientLeft : 0
+    const originTop = containerRect ? containerRect.top + container!.clientTop : 0
+    const viewportWidth = containerRect ? container!.clientWidth || containerRect.width : window.innerWidth
+    const viewportHeight = containerRect ? container!.clientHeight || containerRect.height : window.innerHeight
     const maximumWidth = Math.max(0, viewportWidth - gutter * 2)
     const desiredWidth = Math.max(triggerRect.width, options.minWidth?.value ?? 0)
-    const width = options.constrainWidth === false
+    const preserveWidth = options.constrainWidth === false && !container
+    const width = preserveWidth
       ? desiredWidth
       : Math.min(maximumWidth, desiredWidth)
-    const viewportTop = gutter
+    const viewportTop = originTop + gutter
     const viewportBottom = Math.max(
       viewportTop,
-      viewportHeight - gutter,
+      originTop + viewportHeight - gutter,
     )
     const triggerTop = Math.max(
       viewportTop,
@@ -168,18 +190,18 @@ export function useAnchoredDropdown(
     const availableHeight = opensAbove ? spaceAbove : spaceBelow
     const visibleHeight = Math.min(popupHeight, availableHeight)
     const furthestLeft = Math.max(
-      gutter,
-      viewportWidth - width - gutter,
+      originLeft + gutter,
+      originLeft + viewportWidth - width - gutter,
     )
 
     placement.value = opensAbove ? 'top' : 'bottom'
     const nextGeometry: PopupGeometry = {
-      top: opensAbove
+      top: (opensAbove
         ? triggerTop - visibleHeight
-        : triggerBottom,
-      left: options.constrainWidth === false
+        : triggerBottom) - originTop + (container?.scrollTop ?? 0),
+      left: (preserveWidth
         ? triggerRect.left
-        : Math.max(gutter, Math.min(triggerRect.left, furthestLeft)),
+        : Math.max(originLeft + gutter, Math.min(triggerRect.left, furthestLeft))) - originLeft + (container?.scrollLeft ?? 0),
       width,
       maxHeight: availableHeight,
     }
@@ -205,6 +227,7 @@ export function useAnchoredDropdown(
     resizeObserver = new ResizeObserver(updatePosition)
     if (options.trigger.value) resizeObserver.observe(options.trigger.value)
     resizeObserver.observe(options.popup.value)
+    if (teleportTarget.value !== 'body') resizeObserver.observe(teleportTarget.value)
   }
 
   function handleDocumentClick(event: MouseEvent) {
@@ -286,14 +309,7 @@ export function useAnchoredDropdown(
     },
     { flush: 'sync' },
   )
-  const unregisterCurrent = parentOverlay?.registerBranch({
-    trigger: options.trigger,
-    popup: options.popup,
-    visible: options.visible,
-    tabThroughPopup: options.tabThroughPopup,
-    close,
-    focus: options.focus,
-  })
+  const unregisterCurrent = parentOverlay?.registerBranch(currentBranch)
 
   function dispose() {
     if (disposed) return
@@ -315,6 +331,7 @@ export function useAnchoredDropdown(
   onBeforeUnmount(dispose)
 
   return {
+    teleportTarget,
     popupStyle,
     placement,
     overlayContext,

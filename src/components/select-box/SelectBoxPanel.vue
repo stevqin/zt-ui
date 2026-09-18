@@ -49,6 +49,8 @@ defineSlots<{
 const size = useZtSize(props)
 const draft = useSelectBoxDraft(toRef(props, 'modelValue'))
 const values = draft.values
+let modelRevision = 0
+watch(() => [...(props.modelValue ?? [])], () => { modelRevision++ }, { flush: 'sync' })
 watch([() => props.options, () => props.knownOptions], ([options, known]) => {
   draft.mergeOptions([...(known ?? []), ...options])
 }, { immediate: true })
@@ -140,6 +142,7 @@ function clickLabel(event: MouseEvent, action: () => void) {
   action()
 }
 async function applyPaste(confirmationTrigger?: EventTarget | null) {
+  const revision = modelRevision
   const patterns: Record<string, RegExp> = { newline: /[\r\n]+/, comma: /[,，]+/, semicolon: /[;；]+/, tab: /\t+/ }
   const entries = pasteText.value.split(patterns[separator.value]!).map(text => text.trim()).filter(Boolean)
   const keywords = [...new Set(entries)]
@@ -160,7 +163,7 @@ async function applyPaste(confirmationTrigger?: EventTarget | null) {
       .filter(option => option.label === token || String(option.value) === token)
       .map(option => ({ keyword: token, option })))
   // Undefined denotes an unsuccessful or invalidated remote request; preserve the draft/input.
-  if (!matches) return false
+  if (!matches || revision !== modelRevision) return false
   const requested = new Set(keywords)
   const matchedKeywords = new Set<string>()
   const matchedOptions = new Map<ZtSelectValue, ZtSelectOption>()
@@ -182,7 +185,9 @@ async function applyPaste(confirmationTrigger?: EventTarget | null) {
 }
 async function confirm(event?: MouseEvent) {
   if (props.disabled || props.batchLoading) return
+  const revision = modelRevision
   if (pasteOpen.value && !await applyPaste(event?.currentTarget)) return
+  if (revision !== modelRevision) return
   emit('confirm', draft.confirm(), [...draft.selectedOptions.value])
 }
 function handleEscape(event: KeyboardEvent) {
