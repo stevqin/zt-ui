@@ -13,6 +13,7 @@ zt-ui 是一套全新的 UI 组件库。本次设计不保留当前试验实现�
 - 删除 `ZtSelect` 中全部 SelectBox 专用分支，使普通 Select 可以独立理解、测试和演进。
 - 保留已经确认的 SelectBox 产品能力与视觉行为，并增加与其他输入组件一致的一键清空能力。
 - 保持面板内部优先复用 zt-ui 已有的 Checkbox、Button、Input、Pagination、Select、Icon、Loading、Scrollbar 和 Text 组件。
+- 将全局命令式反馈统一交给 `@ztechjs/zt-alert`，zt-ui 不再维护重复实现。
 
 ## 非目标
 
@@ -20,6 +21,7 @@ zt-ui 是一套全新的 UI 组件库。本次设计不保留当前试验实现�
 - 不为当前试验性循环架构提供兼容层、弃用周期或双实现开关。
 - 不把 SelectBox 的分页、批量粘贴、确认草稿等能力下沉到普通 Select。
 - 不在本次重构中扩展单选模式、树形选项或虚拟列表。
+- 不用 `@ztechjs/zt-alert` 的全屏 Loading 代替 SelectBox 面板内部的局部加载状态。
 
 ## 方案
 
@@ -233,14 +235,14 @@ remoteMethod({ mode: 'batch', keywords })
 
 批量请求期间，复用 `ZtButton` 的 `loading` 状态禁用“确定”按钮并防止重复提交。请求成功后，组件把所有匹配选项加入标签缓存，将其值与现有草稿合并去重，然后按正常确认流程提交并关闭面板。即使只匹配到部分或完全没有匹配，也不阻断提交；已有草稿仍正常提交。
 
-批量确认后使用继承当前 ConfigProvider 的 `useZtMessage` 显示非阻断反馈：
+批量确认后直接使用 `@ztechjs/zt-alert` 的 `ZtMessage` 显示非阻断反馈：
 
 - 全部匹配：成功消息，例如“批量粘贴 8 项，匹配 8 项，已自动勾选 8 项”。
 - 部分匹配：警告消息，例如“批量粘贴 8 项，匹配 5 项，已自动勾选 5 项”。
 - 存在重复：消息补充“去重后 6 项”，匹配数量按命中的唯一关键词数计算，自动勾选数量按新增的唯一选项值计算。
 - 无有效文本：信息消息“没有可匹配的粘贴内容”，不发起远程请求，仍按当前草稿完成确认。
 
-远程批量请求失败时输出 `remote-error`，使用 `ZtMessage.error` 提示“批量匹配失败，请重试”，保留粘贴文本、草稿和打开的面板，不提交模型。批量请求使用独立的请求编号；过期响应不能修改草稿、关闭面板或显示统计消息，也不能与普通分页搜索的加载状态互相覆盖。
+远程批量请求失败时输出 `remote-error`，使用 `@ztechjs/zt-alert` 的 `ZtMessage.error` 提示“批量匹配失败，请重试”，保留粘贴文本、草稿和打开的面板，不提交模型。批量请求使用独立的请求编号；过期响应不能修改草稿、关闭面板或显示统计消息，也不能与普通分页搜索的加载状态互相覆盖。
 
 ### 提交模型
 
@@ -262,6 +264,37 @@ remoteMethod({ mode: 'batch', keywords })
 触发器和面板使用实色语义背景，避免透明叠加造成雾蒙蒙的观感。颜色、边框、阴影和文字全部使用主题 token。`size` 同时影响触发器高度、左右内边距、图标尺寸、复选框与选项内容间距、面板控件密度；`radius` 同时影响触发器和面板；`theme` 作用于全部子组件。
 
 复选框与选项内容使用紧凑的尺寸 token 间距，不能由插槽内容自行推远。底部按钮使用统一的主次层级：取消为次按钮，确定为主按钮；批量粘贴入口保持工具操作层级，不与确定按钮竞争视觉重点。
+
+## 命令式反馈依赖边界
+
+`@ztechjs/zt-alert` 是 Message、Notification、MessageBox、Dialog、Drawer 和全屏 Loading 等全局命令式反馈的唯一实现。zt-ui 将其声明为正式运行时依赖，并在需要命令式反馈的组件内部直接从该包导入。SelectBox 的批量匹配反馈使用：
+
+```ts
+import { ZtMessage } from '@ztechjs/zt-alert'
+
+ZtMessage.success('批量粘贴 8 项，匹配 8 项，已自动勾选 8 项')
+```
+
+zt-ui 不重新导出 `@ztechjs/zt-alert` 的 API，使用方需要命令式反馈时直接从独立包导入。这能保持 API 归属明确，并避免 zt-ui 与 zt-alert 出现不同的参数、返回值或生命周期语义。
+
+本次实现从 zt-ui 删除以下自建命令式 API、源码、文档和专项测试：
+
+- `ZtMessage`、`useZtMessage`；
+- `ZtNotification`、`useZtNotification`；
+- `ZtMessageBox`、`useZtMessageBox` 及相关异常类型；
+- `ZtLoadingService`、`useZtLoading`。
+
+不提供转发、别名或弃用兼容层。zt-ui 站点不再把 Message、Notification、MessageBox 和全屏 Loading 展示为自身 API，而是链接到 `@ztechjs/zt-alert` 的文档。
+
+以下声明式 Vue 组件继续保留在 zt-ui：
+
+- `ZtLoading`：覆盖某个组件内容区域的局部加载状态；
+- `ZtAlert`：嵌入页面布局的静态反馈；
+- `ZtModal`、`ZtDrawer`：由 Vue 模板和响应式状态控制的结构化浮层。
+
+两类 Loading 的边界必须明确：SelectBox 远程分页搜索使用 zt-ui 的声明式 `ZtLoading`，因为加载只覆盖选项列表；跨页面、锁定焦点和滚动的全屏任务使用 `@ztechjs/zt-alert` 的 `ZtLoading.open()`。组件库文档通过不同的导入来源和示例名称避免混淆。
+
+`@ztechjs/zt-alert/style.css` 必须随使用命令式反馈的应用加载。zt-ui 的构建与发布验证需要确认 SelectBox 的 Message 在仅安装 zt-ui 及其正式依赖的消费项目中具有完整样式，不能依赖开发站点偶然引入的 CSS。
 
 ## 删除旧结构
 
@@ -290,6 +323,7 @@ remoteMethod({ mode: 'batch', keywords })
 - 点击：标签、插槽内容、选项行空白、面板空白、外部区域和嵌套 Select 浮层。
 - 远程：关键词、页码和每页条数参数，`pageSize` 默认值、外部更新与 `update:pageSize`，`pageSizes` 归一化，搜索与修改每页条数重置页码，翻页即时请求，服务端 `total`，标签缓存、防抖、加载组件、成功、失败、空关键词、越界页修正、请求竞态和卸载清理。
 - 批量粘贴：本地完整选项匹配、远程 `batch` 请求、原始与去重数量、部分匹配继续提交、全部匹配、零匹配、禁用项、重复选项值、一个关键词多结果、按钮 Loading、Message 类型与文本、请求失败重试和竞态响应。
+- 命令式反馈边界：SelectBox 从 `@ztechjs/zt-alert` 调用 Message；zt-ui 不再导出自建 Message、Notification、MessageBox 与全屏 Loading 服务；声明式 `ZtLoading` 仍能独立工作；消费构建包含 zt-alert 运行时与样式。
 - 视觉配置：ConfigProvider 的 `size`、`radius`、`theme`，以及显式 props 的覆盖优先级。
 - 公共组件复用：Checkbox、Button、Input、Pagination、Select、Icon、Loading、Scrollbar 和 Text 的关键集成行为。
 - Select 回归：普通单选、多选、搜索、远程搜索、浮层定位和键盘操作，确保移除 SelectBox 分支后行为不变。
