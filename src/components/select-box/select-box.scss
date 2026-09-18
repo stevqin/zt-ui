@@ -91,7 +91,18 @@
   }
   &__option .zt-checkbox__input { flex: 0 0 auto; }
   &__option .zt-checkbox__label { flex: 1; min-width: 0; padding-left: 0; }
-  &__option-content { display: block; color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  // ZtText truncation is inline by default. In an option row it is the flex
+  // content column, so it must consume the complete space after the checkbox.
+  .zt-text.zt-select-box-panel__option-content.is-truncated {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   &__option:hover:not(.is-disabled) { background: var(--zt-surface-soft, var(--glass-accent-soft)); }
   &__option.is-checked { background: var(--glass-accent-soft); }
 

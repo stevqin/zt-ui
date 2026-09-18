@@ -14572,7 +14572,7 @@
             "kind": "prop",
             "type": "number[]",
             "required": false,
-            "default": "[10, 20, 50]",
+            "default": "[10, 20, 50, 100, 200, 500]",
             "description": "分页器可选每页条数；过滤非正整数并去重，自动补入当前有效 pageSize。"
           },
           {

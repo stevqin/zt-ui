@@ -1,7 +1,16 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { compile } from 'sass'
 import { buildPagerItems } from '../src/components/pagination/pagination'
 import ZtPagination from '../src/components/pagination/ZtPagination.vue'
+
+let styles: HTMLStyleElement
+beforeAll(() => {
+  styles = document.createElement('style')
+  styles.textContent = compile('src/components/pagination/pagination.scss').css
+  document.head.append(styles)
+})
+afterAll(() => styles.remove())
 
 describe('buildPagerItems', () => {
   it('returns every page when the page count fits', () => {
@@ -16,6 +25,23 @@ describe('buildPagerItems', () => {
 })
 
 describe('ZtPagination', () => {
+  it.each([
+    ['mini', '104px'],
+    ['small', '112px'],
+    ['default', '120px'],
+    ['medium', '128px'],
+    ['large', '136px'],
+  ] as const)('sizes the page-size selector for the %s density', (size, width) => {
+    const wrapper = mount(ZtPagination, {
+      attachTo: document.body,
+      props: { total: 1000, size, pageSizes: [10, 20, 50, 100, 200, 500], layout: 'sizes' },
+    })
+    try {
+      expect(getComputedStyle(wrapper.get('.zt-pagination').element).getPropertyValue('--zt-pagination-size-select-width').trim()).toBe(width)
+      expect(getComputedStyle(wrapper.get('.zt-pagination__sizes').element).width).toBe(width)
+    } finally { wrapper.unmount() }
+  })
+
   it('uses size as the sole density prop', () => {
     const wrapper = mount(ZtPagination, {
       props: { total: 30, size: 'large', small: true, layout: 'pager' } as any,

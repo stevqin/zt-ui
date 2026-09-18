@@ -165,7 +165,7 @@ export type ZtSelectBoxRemoteMethod = (
 | API | 类型 | 默认值 | 行为 |
 |---|---|---|---|
 | `pageSize` | `number` | `10` | 每页条数的初始值与外部值入口，本地和远程模式共用 |
-| `pageSizes` | `number[]` | `[10, 20, 50]` | 分页器可选的每页条数 |
+| `pageSizes` | `number[]` | `[10, 20, 50, 100, 200, 500]` | 分页器可选的每页条数 |
 
 组件在用户修改每页条数时输出 `update:pageSize`，因此推荐按需要使用以下两种方式：
 

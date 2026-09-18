@@ -1,6 +1,7 @@
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { compile } from 'sass'
+import { h } from 'vue'
 import ZtSelectBox from '../src/components/select-box/ZtSelectBox.vue'
 import type { ZtSelectBoxProps, ZtSelectBoxRemoteResult } from '../src/components/select-box/types'
 
@@ -13,8 +14,8 @@ function rect(left: number, top: number, width: number, height: number): DOMRect
   return { x: left, y: top, left, top, width, height, right: left + width, bottom: top + height, toJSON: () => ({}) }
 }
 const popup = () => document.querySelector<HTMLElement>('.zt-select-box__popup')!
-async function open(props: ZtSelectBoxProps = {}) {
-  const wrapper = mount(ZtSelectBox, { attachTo: document.body, props: { options, ...props } })
+async function open(props: ZtSelectBoxProps = {}, slots = {}) {
+  const wrapper = mount(ZtSelectBox, { attachTo: document.body, props: { options, ...props }, slots })
   wrappers.push(wrapper)
   await wrapper.get('.zt-select-box__trigger').trigger('click')
   await flushPromises()
@@ -26,7 +27,7 @@ async function click(selector: string) {
 }
 beforeAll(() => {
   styles = document.createElement('style')
-  styles.textContent = ['select-box/select-box', 'scrollbar/scrollbar'].map(path => compile(`src/components/${path}.scss`).css).join('\n')
+  styles.textContent = ['select-box/select-box', 'scrollbar/scrollbar', 'text/text'].map(path => compile(`src/components/${path}.scss`).css).join('\n')
   document.head.append(styles)
   return () => styles.remove()
 })
@@ -158,6 +159,18 @@ describe('SelectBox viewport placement', () => {
 })
 
 describe('SelectBox production overflow styles', () => {
+  it('lets custom option content fill the remaining row width while retaining truncation', async () => {
+    await open({}, {
+      option: ({ option }: { option: { label: string } }) => h('span', { class: 'custom-option' }, option.label),
+    })
+    const content = popup().querySelector<HTMLElement>('.zt-select-box-panel__option-content')!
+    const css = getComputedStyle(content)
+    expect(css.display).toBe('block')
+    expect(css.width).toBe('100%')
+    expect(css.minWidth).toBe('0')
+    expect(content.querySelector('.custom-option')).not.toBeNull()
+  })
+
   it('fixes popup, panel and chrome while the option list alone owns vertical scrolling', async () => {
     await open()
     for (const element of [popup(), popup().querySelector<HTMLElement>('.zt-select-box-panel')!]) {

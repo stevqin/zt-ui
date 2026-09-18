@@ -54,6 +54,19 @@ describe('SelectBoxPanel local selection', () => {
     expect(row.find('.zt-checkbox__label .custom-option').text()).toBe('华东/false/false')
   })
 
+  it('offers the complete default page-size set', async () => {
+    const wrapper = panel({ pageSize: 10 })
+    await wrapper.find('.zt-pagination__sizes [role="combobox"]').trigger('click')
+    expect(wrapper.findAll('[role="option"]').map(option => option.text())).toEqual([
+      '10 条/页',
+      '20 条/页',
+      '50 条/页',
+      '100 条/页',
+      '200 条/页',
+      '500 条/页',
+    ])
+  })
+
   it.each(['.zt-checkbox__input', '.zt-checkbox__inner', 'input', '.zt-checkbox__label', '.custom-option', 'row'])('toggles once per click on %s', async target => {
     const wrapper = panel({}, { option: ({ option }: { option: ZtSelectOption }) => h('span', { class: 'custom-option' }, option.label) })
     const row = rows(wrapper)[0]!

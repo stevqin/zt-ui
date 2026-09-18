@@ -18,7 +18,7 @@ const props = withDefaults(defineProps<ZtSelectBoxProps>(), {
   underline: undefined,
   modelValue: () => [], options: () => [], placeholder: '请选择', filterable: true,
   disabled: false, clearable: false, remote: false, debounce: 300, pageSize: 10,
-  pageSizes: () => [10, 20, 50], noDataText: '暂无匹配选项', remoteErrorText: '加载失败，请重新搜索',
+  pageSizes: () => [10, 20, 50, 100, 200, 500], noDataText: '暂无匹配选项', remoteErrorText: '加载失败，请重新搜索',
 })
 const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{

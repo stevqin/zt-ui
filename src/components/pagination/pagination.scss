@@ -3,6 +3,7 @@
 .zt-pagination {
   @include glass.tokens;
   --zt-pagination-control-height: 32px;
+  --zt-pagination-size-select-width: 120px;
   --zt-pagination-ink: var(--glass-accent);
   --zt-pagination-soft: var(--glass-accent-soft);
   --zt-pagination-line: var(--glass-accent-line);
@@ -96,7 +97,7 @@
 
   .zt-pagination__sizes {
     --zt-select-height: var(--zt-pagination-control-height);
-    width: 126px;
+    width: var(--zt-pagination-size-select-width);
     flex-shrink: 0;
   }
 
@@ -137,18 +138,19 @@
 
   &--mini {
     --zt-pagination-control-height: 22px;
+    --zt-pagination-size-select-width: 104px;
     gap: 4px;
     font-size: var(--glass-size-mini);
     .zt-pagination__group, .zt-pagination__pager { gap: 2px; }
     .zt-pagination__button { min-width: 22px; padding: 0 4px; border-radius: glass.radius(6px); font-size: 11px; }
     .zt-pagination__button svg { width: 12px; height: 12px; }
     .zt-pagination__jumper input { border-radius: glass.radius(6px); }
-    .zt-pagination__sizes { width: 112px; }
     .zt-pagination__jumper input { width: 42px; }
   }
 
   &--small {
     --zt-pagination-control-height: 26px;
+    --zt-pagination-size-select-width: 112px;
     gap: 5px;
     font-size: var(--glass-size-small);
 
@@ -160,6 +162,7 @@
 
   &--medium {
     --zt-pagination-control-height: 35px;
+    --zt-pagination-size-select-width: 128px;
     gap: 9px;
     font-size: var(--glass-size-medium);
     .zt-pagination__button { min-width: 35px; padding: 0 9px; border-radius: glass.radius(10px); font-size: 14px; }
@@ -169,6 +172,7 @@
 
   &--large {
     --zt-pagination-control-height: 38px;
+    --zt-pagination-size-select-width: 136px;
     gap: 10px;
     font-size: var(--glass-size-large);
 
