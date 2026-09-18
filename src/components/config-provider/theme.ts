@@ -18,8 +18,21 @@ const dark: Record<string, string> = {
   'panel-bg': '#343c49', 'text': '#dae2ef', 'text-muted': '#a6b1c2',
   'border': '#5c697c', 'shine': 'rgba(255,255,255,.05)', 'highlight-line': '#5c697c',
 }
+// These provider-owned tokens must all be emitted, including `none`, so a
+// nested flat provider cannot inherit an outer provider's raised treatment.
+function buttonDepth(radius: number): Record<string, string> {
+  const flat = radius < 4
+  const raised = radius > 8
+  return {
+    '--zt-button-depth-image': raised ? 'linear-gradient(165deg, rgba(255,255,255,.12), rgba(0,0,0,.06))' : 'none',
+    '--zt-button-depth-shadow': flat ? 'none' : raised ? 'inset 0 1px 0 rgba(255,255,255,.2), 0 3px 8px rgba(0,0,0,.14)' : 'inset 0 1px 0 rgba(255,255,255,.12), 0 1px 0 rgba(0,0,0,.06)',
+    '--zt-button-depth-hover-shadow': flat ? 'none' : raised ? 'inset 0 1px 0 rgba(255,255,255,.2), 0 4px 10px rgba(0,0,0,.18)' : 'inset 0 1px 0 rgba(255,255,255,.12), 0 1px 0 rgba(0,0,0,.09)',
+    '--zt-button-depth-active-shadow': flat ? 'none' : 'inset 0 1px 2px rgba(0,0,0,.12)',
+    '--zt-button-depth-active-transform': flat ? 'none' : raised ? 'scale(.97)' : 'scale(.99)',
+  }
+}
 export function configStyle(theme: ZtTheme, radius: number): CSSProperties {
   // Explicitly reset every theme variable in a nested light provider.
   const values = Object.fromEntries(Object.entries(dark).map(([key,value]) => [`--zt-${key}`, theme === 'dark' ? value : 'initial']))
-  return { ...values, '--zt-radius': `${radius}px`, colorScheme: theme } as CSSProperties
+  return { ...values, ...buttonDepth(radius), '--zt-radius': `${radius}px`, colorScheme: theme } as CSSProperties
 }

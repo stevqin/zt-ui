@@ -44,6 +44,20 @@ describe('ConfigProvider',()=>{
   expect(w.find('button').classes()).toContain('zt-button--large')
   await w.setProps({borderRadius:-1});expect((w.element as HTMLElement).style.getPropertyValue('--zt-radius')).toBe('11px')
  })
+ it('resets inherited Button depth at both boundaries and ignores invalid radii',async()=>{
+  const w=render(()=>h(ZtConfigProvider,{borderRadius:16},()=>h(ZtButton)),{borderRadius:3})
+  const image=()=> (w.element as HTMLElement).style.getPropertyValue('--zt-button-depth-image')
+  const nested=w.findAll('.zt-config-provider')[1]!.element as HTMLElement
+  expect(image()).toBe('none')
+  expect(nested.style.getPropertyValue('--zt-button-depth-image')).toContain('linear-gradient')
+  await w.setProps({borderRadius:8});expect(image()).toBe('none')
+  await w.setProps({borderRadius:9});expect(image()).toContain('linear-gradient')
+  for(const borderRadius of [-1,NaN,Infinity]) {
+   await w.setProps({borderRadius})
+   expect((w.element as HTMLElement).style.getPropertyValue('--zt-radius')).toBe('11px')
+   expect(image()).toContain('linear-gradient')
+  }
+ })
  it.each([ZtSelect,ZtDatePicker,ZtDateTimePicker])('carries reactive configuration to a teleported popup',async component=>{
   const w=render(()=>h(component))
   await w.find('input').trigger('click');await nextTick()

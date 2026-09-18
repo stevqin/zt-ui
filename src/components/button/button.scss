@@ -1,4 +1,15 @@
+@use 'sass:list';
 @use '../../styles/tokens' as glass;
+
+// Standalone Buttons use the default 11px (raised) band. Providers override
+// these inherited defaults as a complete set, including explicit flat values.
+:root {
+  --zt-button-depth-image: linear-gradient(165deg, rgba(255,255,255,.12), rgba(0,0,0,.06));
+  --zt-button-depth-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 3px 8px rgba(0,0,0,.14);
+  --zt-button-depth-hover-shadow: inset 0 1px 0 rgba(255,255,255,.2), 0 4px 10px rgba(0,0,0,.18);
+  --zt-button-depth-active-shadow: inset 0 1px 2px rgba(0,0,0,.12);
+  --zt-button-depth-active-transform: scale(.97);
+}
 
 .zt-button {
   @include glass.tokens;
@@ -79,106 +90,51 @@
     border-radius: glass.radius(14px);
   }
 
-  // ════════════════════════════════════
-  //  Status variants
-  // ════════════════════════════════════
+  // Each status supplies solid state colors. The inherited depth image and
+  // shadows are independent of status, size, and circle geometry.
+  --button-fill: var(--zt-default-button, #ffffffd9);
+  --button-hover: var(--zt-default-button-hover, #fff);
+  --button-active: var(--glass-accent-soft);
+  border: 1px solid var(--glass-default-line);
+  color: var(--glass-default-ink);
+  background-color: var(--button-fill);
+  background-image: var(--zt-button-depth-image);
+  box-shadow: var(--zt-button-depth-shadow);
+  transform: none;
 
-  // ── Primary (blue) ──
-  &--primary {
-    border: 1px solid transparent;
-    background: var(--glass-accent-button);
-    color: #fff;
-    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(var(--glass-accent-rgb),.17);
-
-    &:not(:disabled):hover {
-      background: var(--glass-accent-button-hover);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(.97);
-    }
-  }
-
-  // ── Success (green) ──
-  &--success {
-    border: 1px solid transparent;
-    background: var(--glass-success-button);
-    color: #fff;
-    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(34,197,94,.17);
-
-    &:not(:disabled):hover {
-      background: var(--glass-success-button-hover);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(.97);
+  $statuses: (
+    primary: (#245edb, #1d4fbd, #17409e),
+    success: (#16a34a, #15803d, #166534),
+    warning: (#d97706, #b45309, #92400e),
+    danger: (#dc2626, #b91c1c, #991b1b),
+    info: (#6b7280, #4b5563, #374151),
+  );
+  @each $status, $colors in $statuses {
+    &--#{$status} {
+      --button-fill: #{list.nth($colors, 1)};
+      --button-hover: #{list.nth($colors, 2)};
+      --button-active: #{list.nth($colors, 3)};
+      color: #fff;
+      border-color: transparent;
     }
   }
 
-  // ── Warning (amber) ──
-  &--warning {
-    border: 1px solid transparent;
-    background: var(--glass-warning-button);
-    color: #fff;
-    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(245,158,11,.17);
-
-    &:not(:disabled):hover {
-      background: var(--glass-warning-button-hover);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(.97);
-    }
+  &:not(:disabled):hover {
+    background-color: var(--button-hover);
+    box-shadow: var(--zt-button-depth-hover-shadow);
   }
 
-  // ── Danger (red) ──
-  &--danger {
-    border: 1px solid transparent;
-    background: var(--glass-danger-button);
-    color: #fff;
-    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(239,68,68,.17);
+  &--default:not(:disabled):hover { border-color: var(--glass-accent-line); }
 
-    &:not(:disabled):hover {
-      background: var(--glass-danger-button-hover);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(.97);
-    }
+  &:not(:disabled):active {
+    background-color: var(--button-active);
+    box-shadow: var(--zt-button-depth-active-shadow);
+    transform: var(--zt-button-depth-active-transform);
   }
 
-  // ── Info (gray) ──
-  &--info {
-    border: 1px solid transparent;
-    background: var(--glass-info-button);
-    color: #fff;
-    box-shadow: inset 0 1px 0 var(--zt-shine, rgba(255,255,255,.25)), 0 3px 8px rgba(107,114,128,.17);
-
-    &:not(:disabled):hover {
-      background: var(--glass-info-button-hover);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(.97);
-    }
-  }
-
-  // ════════════════════════════════════
-  //  Status: default (white/gray)
-  // ════════════════════════════════════
-  &--default:not(.zt-button--circle) {
-    border: 1px solid var(--glass-default-line);
-    background: var(--glass-default-button);
-    color: var(--glass-default-ink);
-
-    &:not(:disabled):hover {
-      border-color: var(--glass-accent-line);
-      box-shadow: 0 3px 9px rgba(36,94,219,.1);
-    }
-
-    &:not(:disabled):active {
-      transform: scale(.97);
-    }
+  &:disabled {
+    background-image: none;
+    box-shadow: none;
   }
 
   // ════════════════════════════════════
@@ -217,8 +173,6 @@
     }
 
     &:not(:disabled):hover {
-      box-shadow: 0 3px 8px rgba(0,0,0,.09), inset 0 1px 1px var(--zt-shine, #fff);
-
       > .portal-icon,
       > svg,
       > i {
@@ -226,31 +180,14 @@
       }
     }
 
-    &:not(:disabled):active {
-      transform: scale(.92);
-    }
-
-    // Default circle: gray style when no status color
-    &.zt-button--default {
-      border: 1px solid var(--zt-shine, rgba(255,255,255,.85));
-      background: rgba(0,0,0,.035);
-      color: var(--zt-text, #59616a);
-      box-shadow: inset 0 1px 1px var(--zt-shine, rgba(255,255,255,.9));
-
-      &:not(:disabled):hover {
-        background: var(--glass-accent-soft);
-        color: var(--glass-accent-ink);
-      }
-    }
-
-    // Colored circle: make border transparent, inherit status gradient
-    &:not(.zt-button--default) {
-      border-color: transparent;
+    // Close controls retain distinct hover/pressed colors in flat and reduced-motion modes.
+    &.zt-button--close {
+      --button-hover: rgba(220,38,38,.08);
+      --button-active: rgba(220,38,38,.16);
     }
 
     // Close-specific red hover
     &.zt-button--close:not(:disabled):hover {
-      background: rgba(220,38,38,.08) !important;
       color: var(--zt-danger-ink, #dc2626) !important;
 
       > .portal-icon,
@@ -296,6 +233,7 @@
     &--circle svg,
     &--circle i {
       transition: none !important;
+      transform: none !important;
     }
   }
 }
