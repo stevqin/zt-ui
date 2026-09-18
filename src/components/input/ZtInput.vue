@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import { useZtSize } from '../config-provider/context'
 import { computed, inject, nextTick, ref, useAttrs } from 'vue'
 import { ztFormItemKey } from '../form/context'
@@ -6,6 +7,8 @@ import type { ZtInputProps } from './types'
 import './input.scss'
 
 defineOptions({ name: 'ZtInput', inheritAttrs: false })
+
+const { underline } = useFormControlAppearance()
 
 const props = withDefaults(defineProps<ZtInputProps>(), {
   modelValue: '',
@@ -41,6 +44,7 @@ const describedBy = computed(() => {
 })
 const classes = computed(() => [
   'zt-input',
+  underline.value && 'is-form-underline',
   effectiveSize.value !== 'default' && `zt-input--${effectiveSize.value}`,
   props.status !== 'default' && `zt-input--${props.status}`,
   effectiveDisabled.value && 'is-disabled',

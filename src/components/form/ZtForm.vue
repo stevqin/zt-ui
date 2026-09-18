@@ -3,6 +3,7 @@ import { useZtSize } from '../config-provider/context'
 import { computed, provide, reactive } from 'vue'
 import type { ZtFormContext, ZtFormFieldContext } from './context'
 import { ztFormKey } from './context'
+import { provideFormControlAppearanceRoot } from './useFormControlAppearance'
 import type { ZtFormProps, ZtFormValidationErrors } from './types'
 import './form.scss'
 
@@ -12,6 +13,7 @@ const props = withDefaults(defineProps<ZtFormProps>(), {
   model: () => ({}),
   rules: () => ({}),
   disabled: false,
+  underline: false,
   inline: false,
   labelPosition: 'right',
   labelWidth: 'auto',
@@ -20,6 +22,7 @@ const props = withDefaults(defineProps<ZtFormProps>(), {
   scrollToError: false,
 })
 const configSize = useZtSize(props)
+provideFormControlAppearanceRoot()
 
 
 const emit = defineEmits<{
@@ -51,6 +54,7 @@ function notifyValidate(prop: string, valid: boolean, message: string) {
 
 provide<ZtFormContext>(ztFormKey, {
   model: props.model,
+  underline: computed(() => props.underline),
   rules: computed(() => props.rules),
   size: computed(() => configSize.value),
   disabled: computed(() => props.disabled),

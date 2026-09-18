@@ -22,6 +22,7 @@ export interface ZtFormFieldContext {
 }
 
 export interface ZtFormContext {
+  underline: ComputedRef<boolean>
   model: Record<string, unknown>
   rules: ComputedRef<ZtFormRules>
   size: ComputedRef<ZtComponentSize>

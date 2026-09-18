@@ -1,3 +1,4 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 @use '../../styles/clear-action' as clear;
 
@@ -182,3 +183,47 @@
 .zt-input__clear-slot > .zt-input__clear { position: absolute; right: 0; z-index: 4; background: var(--zt-surface, #fff); }
 .zt-input__clear { @include clear.reveal('.zt-input'); }
 .zt-password__toggle:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: 2px; }
+
+.zt-input.is-form-underline {
+  --zt-input-underline-color: var(--glass-accent);
+  --zt-input-underline-line: var(--glass-default-line);
+
+  // Direct children keep slotted helper controls outlined.
+  > .zt-input__wrapper,
+  > .zt-input__addon { @include underline.surface; }
+  > .zt-input__addon { border-bottom-color: var(--zt-input-underline-line); }
+
+  // Match the existing compound-input radius selectors without styling helpers.
+  &:has(> .zt-input__prepend) > .zt-input__wrapper,
+  &:has(> .zt-input__append) > .zt-input__wrapper { border-radius: 0; }
+
+  &.zt-input--success { --zt-input-underline-line: var(--zt-input-underline-color); --zt-input-underline-color: #22c55e; }
+  &.zt-input--warning { --zt-input-underline-line: var(--zt-input-underline-color); --zt-input-underline-color: #f59e0b; }
+  &.zt-input--error { --zt-input-underline-line: var(--zt-input-underline-color); --zt-input-underline-color: #ef4444; }
+
+  &:focus-within:not(.is-disabled) > .zt-input__wrapper,
+  &:focus-within:not(.is-disabled) > .zt-input__addon {
+    @include underline.focus(var(--zt-input-underline-color));
+  }
+
+  &.is-disabled > .zt-input__wrapper,
+  &.is-disabled > .zt-input__addon { @include underline.disabled; }
+}
+
+// Form validation remains authoritative, including when form.scss loads later.
+.zt-form-item.is-error .zt-input.is-form-underline {
+  --zt-input-underline-line: #ef4444;
+  --zt-input-underline-color: #ef4444;
+}
+.zt-form-item.is-success .zt-input.is-form-underline {
+  --zt-input-underline-line: #22c55e;
+  --zt-input-underline-color: #22c55e;
+}
+.zt-form-item .zt-input.is-form-underline:focus-within:not(.is-disabled) > .zt-input__wrapper,
+.zt-form-item .zt-input.is-form-underline:focus-within:not(.is-disabled) > .zt-input__addon {
+  @include underline.focus(var(--zt-input-underline-color));
+}
+.zt-form-item .zt-input.is-form-underline.is-disabled > .zt-input__wrapper,
+.zt-form-item .zt-input.is-form-underline.is-disabled > .zt-input__addon {
+  @include underline.disabled;
+}

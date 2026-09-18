@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import { computed, inject, nextTick, onMounted, ref, useAttrs, watch } from 'vue'
 import { useZtSize } from '../config-provider/context'
 import { ztFormItemKey } from '../form/context'
 import type { ZtInputOtpProps } from './types'
 import './input-otp.scss'
 defineOptions({name:'ZtInputOtp',inheritAttrs:false})
+const { underline } = useFormControlAppearance()
 const props=withDefaults(defineProps<ZtInputOtpProps>(),{modelValue:'',length:6,integerOnly:true,mask:false,status:'default',disabled:false,readonly:false,separator:'',autocomplete:'one-time-code',autofocus:false})
 const emit=defineEmits<{
  'update:modelValue':[value:string]
@@ -85,7 +87,7 @@ onMounted(()=>{if(props.autofocus)focus()})
 defineExpose({focus,blur,clear,input})
 </script>
 <template>
- <div class="zt-input-otp" :class="[`zt-input-otp--${size}`,`zt-input-otp--${status}`,{'is-disabled':disabled,'is-readonly':readonly},attrs.class]" :style="attrs.style" @pointerdown.prevent="focus()">
+ <div class="zt-input-otp" :class="[`zt-input-otp--${size}`,`zt-input-otp--${status}`,{'is-form-underline':underline,'is-disabled':disabled,'is-readonly':readonly},attrs.class]" :style="attrs.style" @pointerdown.prevent="focus()">
   <input ref="input" v-bind="inputAttrs" class="zt-input-otp__native" :id="String(attrs.id??form?.inputId??'')||undefined" :value="value" :type="mask?'password':'text'" :inputmode="integerOnly?'numeric':'text'" :autocomplete="autocomplete" :name="typeof attrs.name==='string'?attrs.name:undefined" :disabled="disabled" :readonly="readonly" :aria-label="typeof attrs['aria-label']==='string'?attrs['aria-label']:(form?undefined:'一次性密码')" :aria-invalid="status==='danger'?'true':undefined" :aria-describedby="describedBy" :pattern="integerOnly?`[0-9]{${length}}`:undefined" :minlength="length" autocapitalize="off" spellcheck="false" @beforeinput="beforeInput" @input="onInput" @paste="paste" @keydown="keydown" @select="selectCursor" @focus="onFocus" @blur="onBlur" @compositionstart="composing=true" @compositionend="composing=false;onInput($event)" />
   <template v-for="(_,index) in length" :key="index"><span class="zt-input-otp__cell" :class="{'is-active':focused&&cursor===index,'is-filled':characters[index]}" aria-hidden="true" @pointerdown.stop.prevent="focus(index)">{{characters[index]?(mask?'•':characters[index]):''}}</span><span v-if="separator&&index+1===separatorAt&&index+1<length" class="zt-input-otp__separator" aria-hidden="true">{{separator}}</span></template>
  </div>

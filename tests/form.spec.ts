@@ -163,6 +163,18 @@ describe('ZtForm validation', () => {
 })
 
 describe('ZtForm layout', () => {
+  it('defaults to outlined controls and updates underline reactively', async () => {
+    const wrapper = mount(ZtForm, { slots: { default: () => h(ZtInput) } })
+    expect(wrapper.props('underline')).toBe(false)
+    expect(wrapper.find('.is-form-underline').exists()).toBe(false)
+    await wrapper.setProps({ underline: true })
+    expect(wrapper.get('.zt-input').classes()).toContain('is-form-underline')
+    expect(wrapper.attributes('underline')).toBeUndefined()
+    await wrapper.setProps({ underline: false })
+    expect(wrapper.find('.is-form-underline').exists()).toBe(false)
+    wrapper.unmount()
+  })
+
   it('inherits size and disabled state and renders label layout classes', () => {
     const wrapper = mount(ZtForm, {
       props: { model: { name: '' }, size: 'mini', disabled: true, inline: true, labelPosition: 'top' },

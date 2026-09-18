@@ -1,6 +1,15 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 @use '../../styles/clear-action' as clear;
 .zt-mention {textarea{box-sizing:border-box;width:100%;min-height:68px;resize:vertical;padding:8px 11px;font:inherit;color:inherit;background:var(--zt-surface,white);border:1px solid var(--glass-default-line);border-radius:glass.radius(11px);&:focus{outline:2px solid var(--glass-accent-soft);border-color:var(--glass-accent)}&:disabled{opacity:.5;cursor:not-allowed}}button{border:0;background:none;color:var(--glass-accent);cursor:pointer}&--mini{font-size:11px}&--small{font-size:12px}&--medium{font-size:15px}&--large{font-size:16px}}
 
 .zt-mention { position: relative; }
 .zt-mention .zt-mention__clear { position: absolute; right: 6px; top: 6px; z-index: 4; width: 18px; height: 18px; padding: 0; border-radius: 50%; background: var(--zt-surface, #fff); @include clear.reveal('.zt-mention'); }
+
+.zt-mention.is-form-underline {
+  > .zt-popover__reference > textarea {
+    @include underline.surface;
+    &:focus { outline: none; @include underline.focus(var(--zt-entry-ink, var(--glass-accent))); }
+    &:disabled { @include underline.disabled; }
+  }
+}

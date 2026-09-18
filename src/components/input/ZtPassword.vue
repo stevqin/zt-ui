@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import { useZtSize } from '../config-provider/context'
 import { computed, inject, ref } from 'vue'
 import { ztFormItemKey } from '../form/context'
@@ -6,6 +7,8 @@ import ZtInput from './ZtInput.vue'
 import type { ZtPasswordProps } from './types'
 
 defineOptions({ name: 'ZtPassword', inheritAttrs: false })
+
+const { underline } = useFormControlAppearance()
 
 const props = withDefaults(defineProps<ZtPasswordProps>(), {
   modelValue: '',
@@ -35,6 +38,7 @@ const effectiveSize = useZtSize(props, () => formItem?.size.value)
 const effectiveDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
 const classes = computed(() => [
   'zt-password',
+  underline.value && 'is-form-underline',
   effectiveSize.value !== 'default' && `zt-password--${effectiveSize.value}`,
 ])
 

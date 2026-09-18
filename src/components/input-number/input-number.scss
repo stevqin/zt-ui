@@ -1,3 +1,4 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 
 .zt-input-number {
@@ -99,3 +100,19 @@
 }
 
 .zt-input-number__control:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: -3px; }
+
+.zt-input-number.is-form-underline {
+  --zt-number-underline-color: var(--glass-accent);
+  @include underline.surface;
+
+  > .zt-input-number__control { border: 0; background: transparent; }
+
+  &:focus-within:not(.is-disabled) { @include underline.focus(var(--zt-number-underline-color)); }
+  &.is-disabled { @include underline.disabled; }
+}
+.zt-form-item.is-error .zt-input-number.is-form-underline { --zt-number-underline-color: #ef4444; }
+.zt-form-item.is-success .zt-input-number.is-form-underline { --zt-number-underline-color: #22c55e; }
+.zt-form-item .zt-input-number.is-form-underline:focus-within:not(.is-disabled) {
+  @include underline.focus(var(--zt-number-underline-color));
+}
+.zt-form-item .zt-input-number.is-form-underline.is-disabled { @include underline.disabled; }

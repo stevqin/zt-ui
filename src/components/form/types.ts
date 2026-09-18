@@ -27,6 +27,7 @@ export type ZtFormRules = Record<string, ZtFormRule | ZtFormRule[]>
 export type ZtFormValidationErrors = Record<string, string[]>
 
 export interface ZtFormProps {
+  underline?: boolean
   model?: Record<string, unknown>
   rules?: ZtFormRules
   size?: ZtComponentSize

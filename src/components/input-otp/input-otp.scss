@@ -1,3 +1,4 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 .zt-input-otp{
  @include glass.tokens;
@@ -15,3 +16,9 @@
  &.is-disabled &__cell,&.is-readonly &__cell{background:var(--zt-surface-soft,#f5f7fa)}
 }
 @media(prefers-reduced-motion:reduce){.zt-input-otp__cell{transition:none}}
+
+.zt-input-otp.is-form-underline {
+  > .zt-input-otp__cell { @include underline.surface; }
+  > .zt-input-otp__cell.is-active { @include underline.focus(var(--otp-color)); }
+  &.is-disabled > .zt-input-otp__cell { @include underline.disabled; }
+}

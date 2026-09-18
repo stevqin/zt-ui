@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { entryStatusStyle } from '../autocomplete/status';
 import {
   computed,
@@ -18,6 +19,8 @@ import type { ZtMentionOption, ZtMentionProps } from './types';
 import '../autocomplete/entry.scss';
 import './mention.scss';
 defineOptions({ name: 'ZtMention', inheritAttrs: false });
+const { underline } = useFormControlAppearance();
+
 const props = withDefaults(defineProps<ZtMentionProps>(), {
   status: 'primary',
   modelValue: '',
@@ -151,7 +154,7 @@ defineExpose({
 <template>
   <div
     class="zt-entry zt-mention zt-entry-status"
-    :class="[`zt-mention--${size}`, attrs.class]"
+    :class="[`zt-mention--${size}`, { 'is-form-underline': underline }, attrs.class]"
     :style="[
       attrs.style as CSSProperties,
       entryStatusStyle(
