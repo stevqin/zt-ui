@@ -142,10 +142,22 @@ export type ZtSelectBoxRemoteMethod = (
 
 | API | 类型 | 默认值 | 行为 |
 |---|---|---|---|
-| `pageSize` | `number` | `10` | 初始每页条数，本地和远程模式共用 |
+| `pageSize` | `number` | `10` | 每页条数的初始值与外部值入口，本地和远程模式共用 |
 | `pageSizes` | `number[]` | `[10, 20, 50]` | 分页器可选的每页条数 |
 
-当前页由组件内部管理。关键词变化或 `pageSize` 变化时回到第 1 页；点击页码时保留关键词和 `pageSize`。无需额外的页码事件，因为每次远程调用都能收到完整分页参数。
+组件在用户修改每页条数时输出 `update:pageSize`，因此推荐按需要使用以下两种方式：
+
+```vue
+<!-- 固定初始值；用户仍可在组件内部临时切换。 -->
+<ZtSelectBox :page-size="20" />
+
+<!-- 需要保存或观察用户选择时使用。 -->
+<ZtSelectBox v-model:page-size="pageSize" />
+```
+
+不增加含义重复的 `defaultPageSize`。未传 `pageSize` 时使用 `10`；非有限数、零或负数按 `10` 处理，有限小数向下取整并至少为 `1`。`pageSizes` 会过滤非正整数并去重；当前有效 `pageSize` 不在列表中时，组件把它加入可选项，保证分页器能够正确显示当前值。
+
+当前页由组件内部管理。关键词变化、外部 `pageSize` 变化或用户选择新的每页条数时回到第 1 页；点击页码时保留关键词和 `pageSize`。无需额外的页码事件，因为每次远程调用都能收到完整分页参数。
 
 本次新增：
 
@@ -179,7 +191,7 @@ export type ZtSelectBoxRemoteMethod = (
 
 ### 远程模式
 
-关键词变化先输出 `search`，将页码重置为 1，再由 `useRemoteOptions` 按 `debounce` 调用 `remoteMethod({ keyword, page: 1, pageSize })`。用户点击页码时立即使用新页码请求，不额外等待搜索防抖；改变每页条数时重置到第 1 页并立即请求。服务端返回的 `options` 直接作为当前页内容，不能再次执行客户端切片；`total` 直接传给分页器。
+关键词变化先输出 `search`，将页码重置为 1，再由 `useRemoteOptions` 按 `debounce` 调用 `remoteMethod({ keyword, page: 1, pageSize })`。用户点击页码时立即使用新页码请求，不额外等待搜索防抖；改变每页条数时先输出 `update:pageSize`，再重置到第 1 页并立即请求。服务端返回的 `options` 直接作为当前页内容，不能再次执行客户端切片；`total` 直接传给分页器。
 
 SelectBox 按选项值维护已见选项的标签缓存，使用户翻页或改变关键词后，已选摘要仍能显示原标签。新响应中相同值的标签覆盖缓存中的旧标签，但响应不能移除其他页已选项的标签。
 
@@ -233,7 +245,7 @@ SelectBox 按选项值维护已见选项的标签缓存，使用户翻页或改�
 - 清空：按钮显隐、事件顺序和值、表单校验、焦点、打开面板时保持打开、草稿同步、禁用与空值幂等。
 - 草稿：选择、全选、确认、取消、外部值更新和清空后的事务边界。
 - 点击：标签、插槽内容、选项行空白、面板空白、外部区域和嵌套 Select 浮层。
-- 远程：关键词、页码和每页条数参数，搜索与修改每页条数重置页码，翻页即时请求，服务端 `total`，标签缓存、防抖、加载组件、成功、失败、空关键词、越界页修正、请求竞态和卸载清理。
+- 远程：关键词、页码和每页条数参数，`pageSize` 默认值、外部更新与 `update:pageSize`，`pageSizes` 归一化，搜索与修改每页条数重置页码，翻页即时请求，服务端 `total`，标签缓存、防抖、加载组件、成功、失败、空关键词、越界页修正、请求竞态和卸载清理。
 - 视觉配置：ConfigProvider 的 `size`、`radius`、`theme`，以及显式 props 的覆盖优先级。
 - 公共组件复用：Checkbox、Button、Input、Pagination、Select、Icon、Loading、Scrollbar 和 Text 的关键集成行为。
 - Select 回归：普通单选、多选、搜索、远程搜索、浮层定位和键盘操作，确保移除 SelectBox 分支后行为不变。
