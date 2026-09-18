@@ -26,19 +26,22 @@ describe('buildPagerItems', () => {
 
 describe('ZtPagination', () => {
   it.each([
-    ['mini', '104px'],
-    ['small', '112px'],
-    ['default', '120px'],
-    ['medium', '128px'],
-    ['large', '136px'],
-  ] as const)('sizes the page-size selector for the %s density', (size, width) => {
+    ['mini', '78px', '4px', '18px'],
+    ['small', '84px', '5px', '19px'],
+    ['default', '90px', '6px', '20px'],
+    ['medium', '100px', '7px', '22px'],
+    ['large', '128px', '9px', '24px'],
+  ] as const)('sizes the page-size selector for the %s density', (size, width, padding, end) => {
     const wrapper = mount(ZtPagination, {
       attachTo: document.body,
       props: { total: 1000, size, pageSizes: [10, 20, 50, 100, 200, 500], layout: 'sizes' },
     })
     try {
       expect(getComputedStyle(wrapper.get('.zt-pagination').element).getPropertyValue('--zt-pagination-size-select-width').trim()).toBe(width)
-      expect(getComputedStyle(wrapper.get('.zt-pagination__sizes').element).width).toBe(width)
+      const css = getComputedStyle(wrapper.get('.zt-pagination__sizes').element)
+      expect(css.width).toBe(width)
+      expect(css.getPropertyValue('--zt-select-padding').trim()).toBe(padding)
+      expect(css.getPropertyValue('--zt-select-end').trim()).toBe(end)
     } finally { wrapper.unmount() }
   })
 
