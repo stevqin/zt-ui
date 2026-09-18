@@ -20,6 +20,14 @@ export interface UseAnchoredDropdownOptions {
   popup: Ref<HTMLElement | undefined>
   minWidth?: Ref<number | undefined>
   layer?: Readonly<Ref<number>>
+  /** Space reserved around the viewport, including any CSS popup margin. */
+  viewportGutter?: number
+  /** Keep false for controls whose popup must retain the trigger's width and left edge. */
+  constrainWidth?: boolean
+  /** Measure unconstrained content when a previous max-height has clipped the popup. */
+  getPopupHeight?: (popup: HTMLElement) => number
+  /** Consumers with their own blur and keyboard behavior can own focus restoration. */
+  restoreFocus?: boolean
   tabThroughPopup?: boolean
   close: () => void
   focus: () => void
@@ -117,18 +125,19 @@ export function useAnchoredDropdown(
     const popup = options.popup.value
     if (!trigger || !popup) return
     const triggerRect = trigger.getBoundingClientRect()
-    const popupRect = popup.getBoundingClientRect()
+    const popupHeight = options.getPopupHeight?.(popup) ?? popup.getBoundingClientRect().height
+    const gutter = options.viewportGutter ?? VIEWPORT_GUTTER
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
-    const maximumWidth = Math.max(0, viewportWidth - VIEWPORT_GUTTER * 2)
-    const width = Math.min(
-      maximumWidth,
-      Math.max(triggerRect.width, options.minWidth?.value ?? 0),
-    )
-    const viewportTop = VIEWPORT_GUTTER
+    const maximumWidth = Math.max(0, viewportWidth - gutter * 2)
+    const desiredWidth = Math.max(triggerRect.width, options.minWidth?.value ?? 0)
+    const width = options.constrainWidth === false
+      ? desiredWidth
+      : Math.min(maximumWidth, desiredWidth)
+    const viewportTop = gutter
     const viewportBottom = Math.max(
       viewportTop,
-      viewportHeight - VIEWPORT_GUTTER,
+      viewportHeight - gutter,
     )
     const triggerTop = Math.max(
       viewportTop,
@@ -140,26 +149,34 @@ export function useAnchoredDropdown(
     )
     const spaceBelow = viewportBottom - triggerBottom
     const spaceAbove = triggerTop - viewportTop
-    const opensAbove = spaceBelow < popupRect.height && spaceAbove > spaceBelow
+    const opensAbove = spaceBelow < popupHeight && spaceAbove > spaceBelow
     const availableHeight = opensAbove ? spaceAbove : spaceBelow
-    const visibleHeight = Math.min(popupRect.height, availableHeight)
+    const visibleHeight = Math.min(popupHeight, availableHeight)
     const furthestLeft = Math.max(
-      VIEWPORT_GUTTER,
-      viewportWidth - width - VIEWPORT_GUTTER,
+      gutter,
+      viewportWidth - width - gutter,
     )
 
     placement.value = opensAbove ? 'top' : 'bottom'
-    geometry.value = {
+    const nextGeometry: PopupGeometry = {
       top: opensAbove
         ? triggerTop - visibleHeight
         : triggerBottom,
-      left: Math.max(
-        VIEWPORT_GUTTER,
-        Math.min(triggerRect.left, furthestLeft),
-      ),
+      left: options.constrainWidth === false
+        ? triggerRect.left
+        : Math.max(gutter, Math.min(triggerRect.left, furthestLeft)),
       width,
       maxHeight: availableHeight,
     }
+    const previousGeometry = geometry.value
+    // A popup ref can be replaced during a render; unchanged measurements must settle.
+    if (
+      previousGeometry?.top === nextGeometry.top &&
+      previousGeometry.left === nextGeometry.left &&
+      previousGeometry.width === nextGeometry.width &&
+      previousGeometry.maxHeight === nextGeometry.maxHeight
+    ) return
+    geometry.value = nextGeometry
   }
 
   function stopResizeObserver() {
@@ -208,7 +225,7 @@ export function useAnchoredDropdown(
       activeElement !== document.body &&
       activeElement.isConnected &&
       !containsTarget(activeElement)
-    if (restoreFocus && !focusWasTransferred) options.focus()
+    if (restoreFocus && options.restoreFocus !== false && !focusWasTransferred) options.focus()
   }
 
   const stopVisibleWatch = watch(

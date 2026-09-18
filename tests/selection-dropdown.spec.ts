@@ -14,7 +14,7 @@ import {
   type OverlayBranch,
   type OverlayContext,
 } from '../src/components/overlay/context'
-import { useAnchoredDropdown } from '../src/components/selection/useAnchoredDropdown'
+import { useAnchoredDropdown, type UseAnchoredDropdownOptions } from '../src/components/selection/useAnchoredDropdown'
 
 function rectangle(left: number, top: number, width: number, height: number): DOMRect {
   return {
@@ -30,7 +30,7 @@ function rectangle(left: number, top: number, width: number, height: number): DO
   }
 }
 
-function createHarness(order: string[]) {
+function createHarness(order: string[], configuration: Partial<UseAnchoredDropdownOptions> = {}) {
   return defineComponent({
     setup(_, { expose }) {
       const visible = ref(false)
@@ -49,6 +49,7 @@ function createHarness(order: string[]) {
         trigger,
         popup,
         minWidth: ref(200),
+        ...configuration,
         close,
         focus,
       })
@@ -108,6 +109,47 @@ afterEach(() => {
 })
 
 describe('useAnchoredDropdown', () => {
+  it('can reserve a custom gutter, measure natural content, and preserve trigger width and alignment', async () => {
+    vi.stubGlobal('innerWidth', 400)
+    vi.stubGlobal('innerHeight', 300)
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        return this.classList.contains('trigger')
+          ? rectangle(2, 140, 430, 34)
+          : rectangle(0, 0, 430, 20)
+      })
+    const wrapper = mount(createHarness([], {
+      viewportGutter: 14,
+      constrainWidth: false,
+      getPopupHeight: () => 330,
+    }), { attachTo: document.body })
+    try {
+      await wrapper.get('.trigger').trigger('click')
+      const popup = document.querySelector<HTMLElement>('.popup')!
+      expect(popup.style.top).toBe('14px')
+      expect(popup.style.maxHeight).toBe('126px')
+      expect(popup.dataset.placement).toBe('top')
+      expect(popup.style.width).toBe('430px')
+      expect(popup.style.left).toBe('2px')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('can leave focus restoration to the consuming control', async () => {
+    const wrapper = mount(createHarness([], { restoreFocus: false }), { attachTo: document.body })
+    try {
+      await wrapper.get('.trigger').trigger('click')
+      document.querySelector<HTMLElement>('.child-trigger')!.focus()
+      document.body.click()
+      await nextTick()
+      expect(document.querySelector('.popup')).toBeNull()
+      expect(document.activeElement).toBe(document.body)
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
   it('inherits and propagates the parent overlay layer for teleported popup descendants', async () => {
     const parentLayer = ref(3000)
     const parentOverlay: OverlayContext = {

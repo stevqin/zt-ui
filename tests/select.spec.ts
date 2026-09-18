@@ -1,6 +1,6 @@
 import { searchInput } from './select-test-utils'
 import { h, nextTick, reactive } from 'vue'
-import { mount } from '@vue/test-utils'
+import { flushPromises, mount } from '@vue/test-utils'
 import { describe, expect, it, vi } from 'vitest'
 import ZtForm from '../src/components/form/ZtForm.vue'
 import ZtFormItem from '../src/components/form/ZtFormItem.vue'
@@ -13,6 +13,48 @@ const options = [
 ]
 
 describe('ZtSelect single selection', () => {
+  it('keeps exposed open and close idempotent and lets blur leave an open control', async () => {
+    const wrapper = mount(ZtSelect, { attachTo: document.body, props: { options } })
+    const combobox = wrapper.get<HTMLInputElement>('[role="combobox"]')
+    try {
+      wrapper.vm.focus()
+      wrapper.vm.open()
+      wrapper.vm.open()
+      await nextTick()
+      expect(document.activeElement).toBe(combobox.element)
+      expect(combobox.attributes('aria-expanded')).toBe('true')
+
+      wrapper.vm.blur()
+      await nextTick()
+      wrapper.vm.close()
+      expect(document.activeElement).not.toBe(combobox.element)
+      expect(combobox.attributes('aria-expanded')).toBe('false')
+      expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+      expect(wrapper.emitted('change')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('closes on stopped outside clicks and preserves focus on the outside control', async () => {
+    const outside = document.createElement('button')
+    outside.addEventListener('click', event => event.stopPropagation())
+    document.body.append(outside)
+    const wrapper = mount(ZtSelect, { attachTo: document.body, props: { options } })
+    try {
+      await wrapper.get('[role="combobox"]').trigger('click')
+      outside.focus()
+      outside.click()
+      await nextTick()
+      expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+      expect(document.activeElement).toBe(outside)
+      expect(wrapper.emitted('change')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+      outside.remove()
+    }
+  })
+
   it('filters local labels and emits the keyword', async () => {
     const wrapper = mount(ZtSelect, {
       attachTo: document.body,
@@ -140,7 +182,7 @@ describe('ZtSelect single selection', () => {
     const scrollHandler = addWindowEventListener.mock.calls.find(([type]) => type === 'scroll')?.[1]
     const resizeHandler = addWindowEventListener.mock.calls.find(([type]) => type === 'resize')?.[1]
     wrapper.vm.close()
-    expect(removeEventListener).toHaveBeenCalledWith('click', clickHandler)
+    expect(removeEventListener).toHaveBeenCalledWith('click', clickHandler, true)
     expect(removeWindowEventListener).toHaveBeenCalledWith('scroll', scrollHandler, true)
     expect(removeWindowEventListener).toHaveBeenCalledWith('resize', resizeHandler)
     expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
@@ -148,7 +190,7 @@ describe('ZtSelect single selection', () => {
     wrapper.vm.open()
     const reopenedHandler = clickAdds().at(-1)![1]
     wrapper.unmount()
-    expect(removeEventListener).toHaveBeenCalledWith('click', reopenedHandler)
+    expect(removeEventListener).toHaveBeenCalledWith('click', reopenedHandler, true)
     addEventListener.mockRestore()
     removeEventListener.mockRestore()
     addWindowEventListener.mockRestore()
@@ -239,6 +281,60 @@ describe('ZtSelect single selection', () => {
 })
 
 describe('ZtSelect multiple selection', () => {
+  it('keeps collapsed labels titled and removable without losing hidden values', async () => {
+    const wrapper = mount(ZtSelect, {
+      props: {
+        options,
+        multiple: true,
+        collapseTags: true,
+        modelValue: ['hz', 'sh'],
+      },
+    })
+    try {
+      expect(wrapper.classes()).toContain('is-collapsed')
+      expect(wrapper.findAll('.zt-select__tag-label')).toHaveLength(1)
+      expect(wrapper.get('.zt-select__tag-label').attributes('title')).toBe('杭州')
+      expect(wrapper.get('.zt-select__tag-count').text()).toBe('+1')
+      expect(wrapper.get('.zt-select__tag-count').attributes('aria-label')).toBe('另有 1 项已选')
+      await wrapper.get('[aria-label="移除杭州"]').trigger('click')
+      expect(wrapper.emitted('update:modelValue')).toEqual([[['sh']]])
+      expect(wrapper.emitted('remove-tag')).toEqual([['hz']])
+      expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('keeps searchable header focus and selection independent from the readonly trigger', async () => {
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options, multiple: true, filterable: true, modelValue: ['hz'] },
+    })
+    try {
+      const trigger = wrapper.get('[role="combobox"]')
+      expect(trigger.attributes('readonly')).toBeDefined()
+      const search = await searchInput(wrapper)
+      expect(document.activeElement).toBe(search.element)
+      expect(trigger.attributes('aria-haspopup')).toBe('listbox')
+      expect(document.getElementById(trigger.attributes('aria-controls'))?.getAttribute('role')).toBe('listbox')
+      await search.setValue('上')
+      await search.trigger('keydown', { key: 'ArrowDown' })
+      await search.trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('update:modelValue')).toEqual([[['hz', 'sh']]])
+      expect(trigger.attributes('aria-expanded')).toBe('true')
+      expect(wrapper.get('.zt-select__tag-label').text()).toBe('杭州')
+
+      document.querySelector<HTMLButtonElement>('[aria-label="清空搜索"]')!.click()
+      await nextTick()
+      expect(search.element.value).toBe('')
+      expect(document.activeElement).toBe(search.element)
+      expect(document.querySelectorAll('[role="option"]')).toHaveLength(3)
+      expect(wrapper.emitted('search')).toEqual([['上'], ['']])
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
   it('closes with Escape and exposes multiple listbox semantics', async () => {
     const wrapper = mount(ZtSelect, {
       attachTo: document.body,
@@ -315,6 +411,92 @@ describe('ZtSelect multiple selection', () => {
 })
 
 describe('ZtSelect slots and dropdown placement', () => {
+  it('settles popup geometry when Teleport is rendered inline', async () => {
+    const wrapper = mount(ZtSelect, {
+      props: { options },
+      global: { stubs: { teleport: true } },
+    })
+    try {
+      await wrapper.get('[role="combobox"]').trigger('click')
+      expect(wrapper.get('[role="listbox"]').exists()).toBe(true)
+      await wrapper.get('[role="option"]').trigger('click')
+      expect(wrapper.emitted('update:modelValue')).toEqual([['hz']])
+      expect(wrapper.find('[role="listbox"]').exists()).toBe(false)
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('preserves the trigger width and horizontal alignment at the viewport edge', async () => {
+    const width = Object.getOwnPropertyDescriptor(window, 'innerWidth')
+    Object.defineProperty(window, 'innerWidth', { configurable: true, value: 400 })
+    const measure = vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockImplementation(function (this: HTMLElement) {
+        const control = this.classList.contains('zt-select__control')
+        return {
+          x: 2, y: control ? 100 : 0, left: 2, top: control ? 100 : 0,
+          right: 432, bottom: control ? 140 : 180, width: 430, height: control ? 40 : 180,
+          toJSON: () => ({}),
+        }
+      })
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options },
+      attrs: { style: 'width: 430px' },
+    })
+    try {
+      await wrapper.get('[role="combobox"]').trigger('click')
+      const popup = document.querySelector<HTMLElement>('.zt-select__dropdown')!
+      expect((wrapper.element as HTMLElement).style.width).toBe('430px')
+      expect(popup.style.width).toBe('430px')
+      expect(popup.style.left).toBe('2px')
+    } finally {
+      wrapper.unmount()
+      measure.mockRestore()
+      if (width) Object.defineProperty(window, 'innerWidth', width)
+      else Reflect.deleteProperty(window, 'innerWidth')
+    }
+  })
+
+  it('keeps nested teleported Select interactions inside the parent and closes both branches', async () => {
+    const host = document.createElement('div')
+    host.className = 'zt-modal'
+    host.style.zIndex = '4100'
+    document.body.append(host)
+    const wrapper = mount(ZtSelect, {
+      attachTo: host,
+      props: { options },
+      slots: { footer: () => h(ZtSelect, { options, multiple: true }) },
+    })
+    try {
+      const trigger = wrapper.get<HTMLInputElement>('[role="combobox"]')
+      trigger.element.focus()
+      await trigger.trigger('click')
+      const child = wrapper.findAllComponents(ZtSelect).find(candidate => candidate.vm !== wrapper.vm)!
+      const childTrigger = child.get<HTMLInputElement>('[role="combobox"]')
+      childTrigger.element.focus()
+      await childTrigger.trigger('click')
+      const popups = document.querySelectorAll<HTMLElement>('.zt-select__dropdown')
+      expect(popups).toHaveLength(2)
+      expect(popups[0].style.zIndex).toBe('4101')
+      expect(popups[1].style.zIndex).toBe('4102')
+      popups[1].querySelector<HTMLElement>('[role="option"]')!.click()
+      await nextTick()
+      expect(child.emitted('update:modelValue')).toEqual([[['hz']]])
+      expect(wrapper.emitted('blur')).toBeUndefined()
+      expect(wrapper.emitted('change')).toBeUndefined()
+      expect(trigger.attributes('aria-expanded')).toBe('true')
+
+      wrapper.vm.close()
+      await nextTick()
+      expect(document.querySelector('.zt-select__dropdown')).toBeNull()
+      expect(child.emitted('visible-change')).toEqual([[true], [false]])
+    } finally {
+      wrapper.unmount()
+      host.remove()
+    }
+  })
+
   it('renders prefix, selected, option and footer slots with their scopes', async () => {
     const wrapper = mount(ZtSelect, {
       attachTo: document.body,
@@ -725,6 +907,44 @@ describe('ZtSelect Form integration', () => {
     } finally {
       wrapper.unmount()
       outside.remove()
+    }
+  })
+})
+
+describe('ZtSelect remote request isolation', () => {
+  it.each([false, true])('renders only the latest remote response (multiple=%s)', async multiple => {
+    vi.useFakeTimers()
+    const pending = new Map<string, (options: Array<{ label: string; value: string }>) => void>()
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: {
+        multiple,
+        remote: true,
+        debounce: 10,
+        remoteMethod: keyword => new Promise(resolve => { pending.set(keyword, resolve) }),
+      },
+    })
+    try {
+      const input = await searchInput(wrapper)
+      await input.setValue('杭州')
+      await vi.advanceTimersByTimeAsync(10)
+      await input.setValue('上海')
+      await vi.advanceTimersByTimeAsync(10)
+      pending.get('上海')!([{ label: '远程上海', value: 'sh' }])
+      await flushPromises()
+      expect(document.querySelector('[role="option"]')?.textContent).toBe('远程上海')
+
+      pending.get('杭州')!([{ label: '过期杭州', value: 'hz' }])
+      await flushPromises()
+      expect(document.querySelectorAll('[role="option"]')).toHaveLength(1)
+      expect(document.querySelector('[role="option"]')?.textContent).toBe('远程上海')
+      await input.trigger('keydown', { key: 'ArrowDown' })
+      await input.trigger('keydown', { key: 'Enter' })
+      expect(wrapper.emitted('update:modelValue')).toEqual([[multiple ? ['sh'] : 'sh']])
+      expect(wrapper.emitted('remote-error')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+      vi.useRealTimers()
     }
   })
 })

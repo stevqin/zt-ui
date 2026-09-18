@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useZtConfig } from '../config-provider/context';
-const { style: providerStyle } = useZtConfig();
+const { style: providerStyle, theme: providerTheme } = useZtConfig();
 import { useZtSize } from '../config-provider/context';
 import {
   computed,
@@ -8,6 +8,7 @@ import {
   inject,
   nextTick,
   onBeforeUnmount,
+  provide,
   ref,
   toRef,
   useAttrs,
@@ -21,7 +22,7 @@ import {
   multipleValues,
   singleValue,
 } from './options';
-import { useRemoteSearch } from './useRemoteSearch';
+import { useAnchoredDropdown, useRemoteOptions } from '../selection';
 import type {
   ZtSelectModelValue,
   ZtSelectOption,
@@ -77,19 +78,15 @@ const visible = ref(false);
 const keyword = ref('');
 const searching = ref(false);
 const activeIndex = ref(-1);
-const placement = ref<'up' | 'down'>('down');
-const dropdownPosition = ref({ top: 0, left: 0, width: 0 });
 const dropdownZIndex = ref(2000);
-const dropdownMaxHeight = ref<number>();
-const listMaxHeight = ref<number>();
+const dropdownChromeHeight = ref(0);
 const hasRemoteSearch = ref(false);
 const retainedRemoteOptions = ref<ZtSelectOption[]>([]);
-const remoteSearch = useRemoteSearch(
+const remoteSearch = useRemoteOptions(
   toRef(props, 'remoteMethod'),
   toRef(props, 'debounce'),
+  () => [] as ZtSelectOption[],
 );
-let outsideClickListening = false;
-let dropdownResizeObserver: ResizeObserver | undefined;
 const selectId = `zt-select-${instance?.uid ?? Math.random().toString(36).slice(2)}`;
 const listboxId = `${selectId}-listbox`;
 const effectiveSize = useZtSize(props, () => formItem?.size.value);
@@ -99,7 +96,7 @@ const effectiveDisabled = computed(
 const valueOptions = computed(() =>
   props.remote
     ? [
-        ...remoteSearch.options.value,
+        ...remoteSearch.result.value,
         ...retainedRemoteOptions.value,
         ...props.options,
       ]
@@ -146,7 +143,7 @@ const displayedOptions = computed(() => {
   if (props.remote)
     return props.remoteMethod
       ? hasRemoteSearch.value
-        ? remoteSearch.options.value
+        ? remoteSearch.result.value
         : props.options
       : [];
   return props.filterable
@@ -237,17 +234,6 @@ const activeOptionId = computed(() => {
     ? optionId(activeIndex.value)
     : undefined;
 });
-const dropdownStyle = computed(() => ({
-  position: 'fixed' as const,
-  top: `${dropdownPosition.value.top}px`,
-  left: `${dropdownPosition.value.left}px`,
-  width: `${dropdownPosition.value.width}px`,
-  zIndex: dropdownZIndex.value,
-  maxHeight:
-    dropdownMaxHeight.value === undefined
-      ? undefined
-      : `${dropdownMaxHeight.value}px`,
-}));
 const panelSearch = computed(() => props.multiple && (props.filterable || props.remote));
 const inputValue = computed(() =>
   panelSearch.value ? '' : searching.value ? keyword.value : (selectedOption.value?.label ?? ''),
@@ -274,25 +260,38 @@ const classes = computed(() => [
   hasSelection.value && 'has-selection',
   props.clearable && 'has-clear',
   props.multiple && 'is-multiple',
+  props.multiple && props.collapseTags && 'is-collapsed',
 ]);
 const controlAttrs = computed(() => {
   const { class: _class, style: _style, id: _id, ...rest } = attrs;
   return rest;
 });
 
-const unregisterOverlayBranch = overlay?.registerBranch({
-  trigger: rootElement,
-  popup: listboxElement,
+const dropdown = useAnchoredDropdown({
   visible,
+  trigger: controlElement,
+  popup: listboxElement,
+  layer: dropdownZIndex,
+  // The stylesheet supplies a six-pixel trigger gap in addition to the viewport gutter.
+  viewportGutter: 14,
+  constrainWidth: false,
+  getPopupHeight: measureDropdownHeight,
+  restoreFocus: false,
   close,
   focus,
 });
-watch(
-  () => overlay?.interactive.value,
-  (interactive) => {
-    if (interactive === false) close();
-  },
-);
+const dropdownStyle = dropdown.popupStyle;
+const placement = computed(() => dropdown.placement.value === 'top' ? 'up' : 'down');
+const listMaxHeight = computed(() => {
+  const availableHeight = Number.parseFloat(String(dropdownStyle.value.maxHeight));
+  return Number.isFinite(availableHeight)
+    ? Math.max(0, Math.min(props.height, availableHeight - dropdownChromeHeight.value))
+    : props.height;
+});
+provide(overlayContextKey, {
+  ...dropdown.overlayContext,
+  interactive: computed(() => visible.value && !effectiveDisabled.value && overlay?.interactive.value !== false),
+});
 
 function resetSearch() {
   keyword.value = '';
@@ -308,18 +307,12 @@ function setVisible(next: boolean) {
     visible.value === next
   )
     return;
+  if (next) dropdownZIndex.value = resolveDropdownZIndex();
   visible.value = next;
-  if (next) {
-    startOutsideClickListening();
+  if (next && panelSearch.value) {
     void nextTick(() => {
-      if (!visible.value) return;
-      updateDropdownPosition();
-      startDropdownResizeObserver();
-      if (panelSearch.value) searchElement.value?.focus();
+      if (visible.value) searchElement.value?.focus();
     });
-  } else {
-    stopOutsideClickListening();
-    stopDropdownResizeObserver();
   }
   emit('visible-change', next);
 }
@@ -417,7 +410,10 @@ function updateKeyword(value: string) {
   open();
   if (!props.remote) return;
   hasRemoteSearch.value = true;
-  remoteSearch.search(keyword.value, (reason) => emit('remote-error', reason));
+  remoteSearch.schedule(keyword.value, {
+    onError: (reason) => emit('remote-error', reason),
+    clearOnError: true,
+  });
 }
 
 function clearSearch() {
@@ -498,8 +494,7 @@ function handleFocusout(event: FocusEvent) {
   const nextTarget = event.relatedTarget;
   if (
     nextTarget instanceof Node &&
-    (rootElement.value?.contains(nextTarget) ||
-      listboxElement.value?.contains(nextTarget))
+    dropdown.containsTarget(nextTarget)
   )
     return;
   emit('blur', event);
@@ -553,24 +548,8 @@ function handleTagsWheel(event: WheelEvent) {
   tags.scrollLeft = nextScroll;
 }
 
-function handleDocumentClick(event: MouseEvent) {
-  const target = event.target;
-  if (!(target instanceof Node)) return;
-  if (
-    rootElement.value?.contains(target) ||
-    listboxElement.value?.contains(target)
-  )
-    return;
-  close();
-}
-
-function updateDropdownPosition() {
+function measureDropdownHeight(dropdown: HTMLElement) {
   dropdownZIndex.value = resolveDropdownZIndex();
-  const control = controlElement.value;
-  const dropdown = listboxElement.value;
-  if (!control || !dropdown) return;
-  const controlRect = control.getBoundingClientRect();
-  const dropdownRect = dropdown.getBoundingClientRect();
   const list = optionsElement.value;
   const footerHeight =
     dropdown
@@ -581,70 +560,25 @@ function updateDropdownPosition() {
     (Number.parseFloat(style.borderTopWidth) || 0) +
     (Number.parseFloat(style.borderBottomWidth) || 0);
   const headerHeight = dropdown.querySelector<HTMLElement>('.zt-select__header')?.getBoundingClientRect().height ?? 0;
-  const chromeHeight = headerHeight + footerHeight + borderHeight;
-  const menuHeight = list?.scrollHeight
-    ? Math.min(props.height, list.scrollHeight) + chromeHeight
-    : Math.max(dropdown.scrollHeight + borderHeight, dropdownRect.height);
-  // Leave the CSS six-pixel trigger gap and an eight-pixel viewport gutter.
-  const lowerSpace = Math.max(0, window.innerHeight - controlRect.bottom - 14);
-  const upperSpace = Math.max(0, controlRect.top - 14);
-  const opensUpward = lowerSpace < menuHeight && upperSpace > lowerSpace;
-  const availableHeight = opensUpward ? upperSpace : lowerSpace;
-  const menuVisibleHeight = Math.min(menuHeight, availableHeight);
-
-  placement.value = opensUpward ? 'up' : 'down';
-  dropdownMaxHeight.value = availableHeight;
-  listMaxHeight.value = Math.max(
-    0,
-    Math.min(props.height, availableHeight - chromeHeight),
-  );
-  dropdownPosition.value = {
-    top: opensUpward ? controlRect.top - menuVisibleHeight : controlRect.bottom,
-    left: controlRect.left,
-    width: controlRect.width,
-  };
+  dropdownChromeHeight.value = headerHeight + footerHeight + borderHeight;
+  return list?.scrollHeight
+    ? Math.min(props.height, list.scrollHeight) + dropdownChromeHeight.value
+    : Math.max(dropdown.scrollHeight + borderHeight, dropdown.getBoundingClientRect().height);
 }
 
 function resolveDropdownZIndex() {
   const inheritedLayer = inheritedOverlayLayer.value;
-  if (inheritedLayer !== undefined && Number.isFinite(inheritedLayer)) return Math.max(2000, Math.floor(inheritedLayer) + 1);
-  const overlay = rootElement.value?.closest<HTMLElement>(
-    '.zt-modal, .zt-drawer',
+  const inheritedZIndex = inheritedLayer !== undefined && Number.isFinite(inheritedLayer)
+    ? Math.max(2000, Math.floor(inheritedLayer) + 1)
+    : 2000;
+  const containingOverlay = rootElement.value?.closest<HTMLElement>(
+    '.zt-modal, .zt-drawer, .zt-select__dropdown',
   );
-  if (!overlay) return 2000;
+  if (!containingOverlay) return inheritedZIndex;
   const layer = Number.parseFloat(
-    overlay.style.zIndex || getComputedStyle(overlay).zIndex,
+    containingOverlay.style.zIndex || getComputedStyle(containingOverlay).zIndex,
   );
-  return Number.isFinite(layer) ? Math.max(2000, Math.floor(layer) + 1) : 2000;
-}
-
-function startDropdownResizeObserver() {
-  stopDropdownResizeObserver();
-  if (typeof ResizeObserver === 'undefined' || !listboxElement.value) return;
-  dropdownResizeObserver = new ResizeObserver(updateDropdownPosition);
-  dropdownResizeObserver.observe(listboxElement.value);
-  if (controlElement.value) dropdownResizeObserver.observe(controlElement.value);
-}
-
-function stopDropdownResizeObserver() {
-  dropdownResizeObserver?.disconnect();
-  dropdownResizeObserver = undefined;
-}
-
-function startOutsideClickListening() {
-  if (outsideClickListening) return;
-  document.addEventListener('click', handleDocumentClick);
-  window.addEventListener('scroll', updateDropdownPosition, true);
-  window.addEventListener('resize', updateDropdownPosition);
-  outsideClickListening = true;
-}
-
-function stopOutsideClickListening() {
-  if (!outsideClickListening) return;
-  document.removeEventListener('click', handleDocumentClick);
-  window.removeEventListener('scroll', updateDropdownPosition, true);
-  window.removeEventListener('resize', updateDropdownPosition);
-  outsideClickListening = false;
+  return Number.isFinite(layer) ? Math.max(inheritedZIndex, Math.floor(layer) + 1) : inheritedZIndex;
 }
 
 function optionId(index: number) {
@@ -652,9 +586,6 @@ function optionId(index: number) {
 }
 
 onBeforeUnmount(() => {
-  unregisterOverlayBranch?.();
-  stopOutsideClickListening();
-  stopDropdownResizeObserver();
   remoteSearch.dispose();
 });
 
@@ -768,6 +699,7 @@ defineExpose({ focus, blur, open, close });
             `zt-select__dropdown--${effectiveSize}`,
         ]"
         :data-placement="placement"
+        :data-zt-theme="providerTheme"
         :style="[providerStyle, dropdownStyle]"
         :role="panelSearch ? undefined : 'listbox'"
         :aria-multiselectable="!panelSearch && multiple ? 'true' : undefined"
