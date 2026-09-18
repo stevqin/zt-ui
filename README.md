@@ -417,7 +417,7 @@ Menu 还支持 `v-model:collapsed` 整栏折叠、`collapsible` 底部按钮、`
 
 ### Icon
 
-`ZtIcon` 提供常用内置 SVG 图标，并支持自定义 Vue 组件和默认插槽。可继承 ConfigProvider 的五档尺寸，也支持数值/CSS 尺寸、六种状态色、旋转、加载旋转和无障碍标签；具名图标组件可按需导入。完整图标列表与 API 位于 `/icon`。
+`ZtIcon` 提供常用内置 SVG 图标，并支持自定义 Vue 组件和默认插槽。`size` 为独立的 `number | string`：正数按 px 处理，字符串使用 CSS 长度（如 `24px`、`1.5em`、`50%`），默认 `1em`；不读取 ConfigProvider 的全局 size，也不提供预设密度值。支持六种状态色、旋转、加载旋转和无障碍标签；具名图标组件可按需导入。完整图标列表与 API 位于 `/icon`。
 
 ### Link / Text
 

@@ -89,6 +89,14 @@ describe('complete and executable documentation examples', () => {
     expect(props('icon').find(prop => prop.name === 'size')?.default).toBe("'1em'")
     expect(props('alert').map(prop => prop.name)).not.toContain('size')
   })
+  it('keeps README Icon sizing independent from global density', () => {
+    const readme = readFileSync(resolve(process.cwd(), '../README.md'), 'utf8')
+    const iconSection = readme.split('### Icon\n')[1]?.split('\n### ')[0] ?? ''
+    expect(iconSection).not.toMatch(/可继承\s*ConfigProvider|默认继承\s*ConfigProvider|五档(?:尺寸|预设)/)
+    for (const contract of ['number | string', 'px', 'CSS', '1em', '不读取 ConfigProvider']) {
+      expect(iconSection, contract).toContain(contract)
+    }
+  })
   it('shows all InputNumber controls positions and proper form autofill', () => {
     for (const position of ['default', 'left', 'right'])
       expect(sourceFor('input-number')).toContain(`controls-position="${position}"`)
