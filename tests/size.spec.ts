@@ -29,6 +29,12 @@ describe('shared component sizes', () => {
     expect(pagination.classes()).toContain(`zt-pagination--${size}`)
   })
 
+  it('uses the shared size contract without a Pagination boolean density override', () => {
+    const pagination = mount(ZtPagination, { props: { total: 30, size: 'medium', layout: 'pager' } })
+
+    expect(pagination.classes()).toContain('zt-pagination--medium')
+  })
+
   it('applies Modal size to its layout and built-in controls', () => {
     mount(ZtModal, {
       attachTo: document.body,

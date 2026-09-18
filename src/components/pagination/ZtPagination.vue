@@ -18,7 +18,6 @@ const props = withDefaults(defineProps<ZtPaginationProps>(), {
   pagerCount: 7,
   pageSizes: () => [10, 20, 30, 40, 50, 100],
   layout: 'prev, pager, next, jumper, ->, total',
-  small: false,
   background: false,
   disabled: false,
   hideOnSinglePage: false,
@@ -50,7 +49,7 @@ const totalPages = computed(() => {
 })
 const innerCurrentPage = ref(Math.min(totalPages.value, normalizePositiveInteger(props.currentPage)))
 const current = computed(() => Math.min(totalPages.value, normalizePositiveInteger(innerCurrentPage.value)))
-const effectiveSize = computed(() => props.small ? 'small' : configSize.value)
+const effectiveSize = configSize
 const pagerItems = computed(() => buildPagerItems(totalPages.value, current.value, props.pagerCount))
 const jumpValue = ref(String(current.value))
 const rootElement = ref<HTMLElement>()

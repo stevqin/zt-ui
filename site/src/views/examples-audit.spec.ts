@@ -97,6 +97,22 @@ describe('complete and executable documentation examples', () => {
       expect(iconSection, contract).toContain(contract)
     }
   })
+  it('uses only the standardized RadioGroup, Pagination, and Badge APIs', () => {
+    const publicSources = [
+      readFileSync(resolve(process.cwd(), 'src/views/radio/Index.vue'), 'utf8'),
+      readFileSync(resolve(process.cwd(), 'src/views/pagination/Index.vue'), 'utf8'),
+      readFileSync(resolve(process.cwd(), 'src/views/badge/Index.vue'), 'utf8'),
+      readFileSync(resolve(process.cwd(), '../README.md'), 'utf8'),
+    ].join('\n')
+
+    expect(publicSources).not.toContain('variant=segmented')
+    expect(publicSources).not.toMatch(/<ZtPagination\b[^>]*\bsmall(?:\s|=|>)/)
+    expect(publicSources).not.toMatch(/<ZtBadge\b[^>]*\btype(?:\s|=|>)/)
+    expect(api.radio.components.find(owner => owner.name === 'ZtRadioGroup')?.props.map(prop => prop.name))
+      .not.toContain('variant')
+    expect(api.pagination.components[0].props.map(prop => prop.name)).not.toContain('small')
+    expect(api.badge.components[0].props.map(prop => prop.name)).not.toContain('type')
+  })
   it('shows all InputNumber controls positions and proper form autofill', () => {
     for (const position of ['default', 'left', 'right'])
       expect(sourceFor('input-number')).toContain(`controls-position="${position}"`)

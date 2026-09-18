@@ -10,7 +10,6 @@ export interface ZtBadgeProps {
   hidden?: boolean
   status?: ZtBadgeStatus
   size?: ZtBadgeSize
-  type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'
   offset?: [number, number]
   showZero?: boolean
 }

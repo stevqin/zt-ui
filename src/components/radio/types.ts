@@ -17,8 +17,6 @@ export interface ZtRadioProps {
 export interface ZtRadioGroupProps {
   /** 启用连体分段样式，可直接传递 segmented 属性。 */
   segmented?: boolean
-  /** @deprecated 请使用 segmented；保留兼容原有用法。 */
-  variant?: 'default' | 'segmented'
   name?: string
   modelValue?: unknown
   disabled?: boolean

@@ -16,6 +16,14 @@ describe('buildPagerItems', () => {
 })
 
 describe('ZtPagination', () => {
+  it('uses size as the sole density prop', () => {
+    const wrapper = mount(ZtPagination, {
+      props: { total: 30, size: 'large', small: true, layout: 'pager' } as any,
+    })
+
+    expect(wrapper.classes()).toContain('zt-pagination--large')
+  })
+
   it.each([
     { label: '下一页', target: '3' },
     { label: '上一页', target: '1' },

@@ -37,7 +37,7 @@ import EventsCode from './Events.vue?raw';
     <DemoBlock :code="Example03Code" desc="RadioGroup 统一管理选中状态。"><Example03 /></DemoBlock>
 
     <h2>连体分段按钮</h2>
-    <DemoBlock :code="SegmentedCode" desc="variant=segmented 将单选项连成一组按钮。支持五种 size、status 以及 ConfigProvider 的圆角与尺寸；Tab 聚焦，方向键切换，空格选择。为分组添加 aria-label，disabled 可单独禁用选项。"><Segmented /></DemoBlock>
+    <DemoBlock :code="SegmentedCode" desc="segmented 将单选项连成一组按钮。支持五种 size、status 以及 ConfigProvider 的圆角与尺寸；Tab 聚焦，方向键切换，空格选择。为分组添加 aria-label，disabled 可单独禁用选项。"><Segmented /></DemoBlock>
 
     <h2>颜色状态</h2>
     <DemoBlock :code="Example04Code" desc="通过 RadioGroup 的 status 设置选中颜色。"
