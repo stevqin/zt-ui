@@ -28,7 +28,7 @@ async function save() {
     <p>{{ saved.contact }}</p>
     <ZtButton status="primary" @click="edit">编辑门店</ZtButton>
     <p role="status" style="margin-top: 12px">{{ message }}</p>
-    <ZtDrawer v-model="open" title="编辑门店" :size="440" destroy-on-close
+    <ZtDrawer v-model="open" title="编辑门店" :width="440" destroy-on-close
       ><ZtForm
         ref="form"
         :model="draft"

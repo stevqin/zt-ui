@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import Underline from './Underline.vue';
+import UnderlineCode from './Underline.vue?raw';
 import DemoBlock from '@/components/DemoBlock.vue';
 import IntegratedValidation from './IntegratedValidation.vue';
 import integratedValidationCode from './IntegratedValidation.vue?raw';
@@ -33,6 +35,9 @@ import ExpandedControlsCode from './ExpandedControls.vue?raw';
       desc="覆盖当前全部数据录入组件。点击“校验全部字段”可一次观察 13 个字段的规则、错误定位和提示方式。"
       ><IntegratedValidation
     /></DemoBlock>
+    <h2>下边框表单</h2>
+    <p>在 Form 设置 underline 即可统一启用下边框外观。适用于文本、选择、日期时间控件；Button、Upload、Rate、Switch、Slider、Segmented、Radio、Checkbox、Transfer、ColorPicker 保持原样。嵌套 Form 独立控制外观，弹出面板内的辅助控件保持原有边框。</p>
+    <DemoBlock :code="UnderlineCode" desc="切换五档密度、浅深主题、圆角和禁用状态。Select / InputTag 使用柔和无边框标签，SelectBox 保留逗号摘要。"><Underline /></DemoBlock>
     <h2>基础校验</h2>
     <DemoBlock
       :code="Example02Code"

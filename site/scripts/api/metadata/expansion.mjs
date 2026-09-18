@@ -1,4 +1,21 @@
 export default {
+  'form.ZtForm.props.underline': {
+    description: '为支持的输入、选择和日期时间控件启用下边框外观；嵌套 Form 独立决定外观，弹出面板中的辅助控件保留原样。',
+    defaultValue: 'false',
+  },
+  'drawer.ZtDrawer.props.width': {
+    description: 'left / right 方向的抽屉宽度；数值为 px，也接受 CSS 长度。', defaultValue: '420',
+  },
+  'drawer.ZtDrawer.props.height': {
+    description: 'top / bottom 方向的抽屉高度；数值为 px，也接受 CSS 长度。', defaultValue: '420',
+  },
+  'drawer.ZtDrawer.props.size': {
+    description: '头部、底部、内容间距及内部控件的五档密度；子控件显式 size 优先。',
+    defaultValue: "继承 ConfigProvider（最终为 'default'）",
+  },
+  'icon.ZtIcon.props.size': {
+    description: '独立图标尺寸：正数转换为 px，字符串支持 em、px、% 等 CSS 长度；不绑定全局密度。', defaultValue: "'1em'",
+  },
   'select-box.ZtSelectBox.props.pageSize': {
     description: '本地与远程模式共用的每页条数；支持 v-model:page-size，变化时回到第 1 页。非正数或非有限值回退到 10，有限小数向下取整。',
   },

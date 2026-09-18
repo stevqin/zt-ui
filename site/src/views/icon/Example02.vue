@@ -1,44 +1,35 @@
 <script setup lang="ts">
-import { ZtIcon } from '@ztechjs/zt-ui';
-import type { ZtComponentSize } from '@ztechjs/zt-ui';
-const sizes: ZtComponentSize[] = ['mini', 'small', 'default', 'medium', 'large'];
+import { ZtIcon, ZtConfigProvider } from '@ztechjs/zt-ui';
 </script>
-
 <template>
-  <div class="icon-row">
-    <ZtIcon
-      v-for="size in sizes"
-      :key="size"
-      name="search"
-      :size="size"
-      :label="`${size} 搜索`"
-    /><ZtIcon name="image" :size="32" label="图片" />
-  </div>
+  <ZtConfigProvider size="large">
+    <div class="icon-row">
+      <span><ZtIcon name="search" label="默认 1em" /> 默认 1em</span>
+      <span><ZtIcon name="search" :size="24" label="24px" /> 数值 24</span>
+      <span><ZtIcon name="search" size="1.5em" label="1.5em" /> 1.5em</span>
+      <span class="percent-box"
+        ><ZtIcon name="image" size="50%" label="50%"
+      /></span>
+      <span>50%（相对 64px 容器）</span>
+    </div>
+  </ZtConfigProvider>
 </template>
-
 <style scoped>
-.icon-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
-  gap: 10px;
-}
-.icon-grid > div {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 10px;
-  border: 1px solid var(--zt-border);
-  border-radius: var(--zt-radius);
-  font-size: 12px;
-}
 .icon-row {
   display: flex;
   align-items: center;
-  gap: 22px;
   flex-wrap: wrap;
+  gap: 20px;
+  font-size: 16px;
 }
-.icon-row :deep(svg) {
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.icon-row > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.percent-box {
+  width: 64px;
+  height: 64px;
+  background: var(--glass-accent-soft);
 }
 </style>

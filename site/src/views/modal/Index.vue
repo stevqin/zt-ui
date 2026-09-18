@@ -35,7 +35,7 @@ import CustomContentCode from './CustomContent.vue?raw';
     <h2>尺寸</h2>
     <DemoBlock
       :code="Example05Code"
-      desc="size 提供五档密度，同时调整标题栏、正文、底部和内置按钮。"
+      desc="size 提供五档密度，同时调整标题栏、正文、底部和内部控件；子控件显式 size 优先。"
       ><Example05
     /></DemoBlock>
 

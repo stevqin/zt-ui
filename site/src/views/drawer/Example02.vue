@@ -16,7 +16,12 @@ function openAt(value: ZtDrawerPlacement) {
     ><ZtButton @click="openAt('top')">顶部</ZtButton
     ><ZtButton @click="openAt('bottom')">底部</ZtButton>
   </div>
-  <ZtDrawer v-model="placementVisible" title="方向示例" :placement="placement" :size="320"
+  <ZtDrawer
+    v-model="placementVisible"
+    title="方向示例"
+    :placement="placement"
+    :width="360"
+    height="40vh"
     ><p>当前方向：{{ placement }}</p></ZtDrawer
   >
 </template>

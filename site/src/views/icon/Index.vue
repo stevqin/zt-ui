@@ -20,8 +20,8 @@ import SlotCode from './Slot.vue?raw';
     </p>
     <h2>内置图标</h2>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>尺寸</h2>
-    <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
+    <h2>独立尺寸</h2>
+    <DemoBlock :code="Example02Code" desc="size 接受数值（px）或 CSS 长度，默认 1em，不绑定 ConfigProvider 的五档密度。百分比相对确定宽高的容器解析。"><Example02 /></DemoBlock>
     <h2>主题颜色</h2>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
     <h2>旋转、自定义颜色与组件</h2>

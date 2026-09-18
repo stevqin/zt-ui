@@ -26,10 +26,10 @@
             "name": "size",
             "templateName": "size",
             "kind": "prop",
-            "type": "ZtComponentSize | number | string",
+            "type": "number | string",
             "required": false,
-            "default": "继承 ConfigProvider（最终为 default）",
-            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
+            "default": "'1em'",
+            "description": "独立图标尺寸：正数转换为 px，字符串支持 em、px、% 等 CSS 长度；不绑定全局密度。"
           },
           {
             "name": "color",
@@ -111,18 +111,13 @@
       },
       {
         "name": "ZtIconProps",
-        "code": "export interface ZtIconProps {\n  /** 内置图标名称。默认插槽和 component 的优先级更高。 */\n  name?: ZtIconName\n  /** 自定义 Vue 图标组件。 */\n  component?: Component\n  /** 五档预设尺寸、像素数值或 CSS 长度，默认继承 ConfigProvider。 */\n  size?: ZtComponentSize | number | string\n  /** 自定义图标颜色，覆盖 status。 */\n  color?: string\n  /** 图标主题颜色。 */\n  status?: ZtIconStatus\n  /** 顺时针旋转角度。 */\n  rotate?: number\n  /** 是否持续旋转；系统减少动画时停止。 */\n  spin?: boolean\n  /** 内置线性图标的描边宽度。 */\n  strokeWidth?: number\n  /** 图标的无障碍名称；未设置时视为装饰内容。 */\n  label?: string\n}",
-        "public": true
-      },
-      {
-        "name": "ZtComponentSize",
-        "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
+        "code": "export interface ZtIconProps {\n  /** 内置图标名称。默认插槽和 component 的优先级更高。 */\n  name?: ZtIconName\n  /** 自定义 Vue 图标组件。 */\n  component?: Component\n  /** 图标 CSS 尺寸；正数按像素处理，默认 1em。 */\n  size?: number | string\n  /** 自定义图标颜色，覆盖 status。 */\n  color?: string\n  /** 图标主题颜色。 */\n  status?: ZtIconStatus\n  /** 顺时针旋转角度。 */\n  rotate?: number\n  /** 是否持续旋转；系统减少动画时停止。 */\n  spin?: boolean\n  /** 内置线性图标的描边宽度。 */\n  strokeWidth?: number\n  /** 图标的无障碍名称；未设置时视为装饰内容。 */\n  label?: string\n}",
         "public": true
       }
     ],
     "sections": [
       "内置图标",
-      "尺寸",
+      "独立尺寸",
       "主题颜色",
       "旋转、自定义颜色与组件",
       "自定义 SVG 插槽与描边"
@@ -5638,6 +5633,15 @@
         "name": "ZtForm",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "为支持的输入、选择和日期时间控件启用下边框外观；嵌套 Form 独立决定外观，弹出面板中的辅助控件保留原样。"
+          },
+          {
             "name": "model",
             "templateName": "model",
             "kind": "prop",
@@ -6017,7 +6021,7 @@
       },
       {
         "name": "ZtFormProps",
-        "code": "export interface ZtFormProps {\n  model?: Record<string, unknown>\n  rules?: ZtFormRules\n  size?: ZtComponentSize\n  disabled?: boolean\n  inline?: boolean\n  labelPosition?: ZtFormLabelPosition\n  labelWidth?: number | string | 'auto'\n  hideRequiredAsterisk?: boolean\n  showMessage?: boolean\n  scrollToError?: boolean\n}",
+        "code": "export interface ZtFormProps {\n  underline?: boolean\n  model?: Record<string, unknown>\n  rules?: ZtFormRules\n  size?: ZtComponentSize\n  disabled?: boolean\n  inline?: boolean\n  labelPosition?: ZtFormLabelPosition\n  labelWidth?: number | string | 'auto'\n  hideRequiredAsterisk?: boolean\n  showMessage?: boolean\n  scrollToError?: boolean\n}",
         "public": true
       },
       {
@@ -6048,6 +6052,7 @@
     ],
     "sections": [
       "全组件校验场景",
+      "下边框表单",
       "基础校验",
       "标签布局",
       "行内表单",
@@ -6922,10 +6927,10 @@
             "name": "size",
             "templateName": "size",
             "kind": "prop",
-            "type": "number | string",
+            "type": "ZtComponentSize",
             "required": false,
-            "default": "420",
-            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
+            "default": "继承 ConfigProvider（最终为 default）",
+            "description": "头部、底部、内容间距及内部控件的五档密度；子控件显式 size 优先。"
           },
           {
             "name": "width",
@@ -6933,8 +6938,17 @@
             "kind": "prop",
             "type": "number | string",
             "required": false,
-            "default": "无默认值",
-            "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
+            "default": "420",
+            "description": "left / right 方向的抽屉宽度；数值为 px，也接受 CSS 长度。"
+          },
+          {
+            "name": "height",
+            "templateName": "height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "420",
+            "description": "top / bottom 方向的抽屉高度；数值为 px，也接受 CSS 长度。"
           },
           {
             "name": "fullscreenBelow",
@@ -7268,13 +7282,18 @@
       },
       {
         "name": "ZtDrawerProps",
-        "code": "export interface ZtDrawerProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  subtitle?: string\n  closeLabel?: string\n  placement?: ZtDrawerPlacement\n  /** Panel width (left/right) or height (top/bottom), in pixels or CSS units. */\n  size?: number | string\n  /** Width alias for horizontal drawers; takes precedence over size. */\n  width?: number | string\n  /** Fill the viewport below this breakpoint; 0 disables it. */\n  fullscreenBelow?: number\n  bodyScroll?: boolean\n  bodyPadding?: number | string\n  loading?: boolean\n  loadingText?: string\n}",
+        "code": "export interface ZtDrawerProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  subtitle?: string\n  closeLabel?: string\n  placement?: ZtDrawerPlacement\n  /** Component density. */\n  size?: ZtComponentSize\n  /** Panel width for left/right drawers, in pixels or CSS units. */\n  width?: number | string\n  /** Panel height for top/bottom drawers, in pixels or CSS units. */\n  height?: number | string\n  /** Fill the viewport below this breakpoint; 0 disables it. */\n  fullscreenBelow?: number\n  bodyScroll?: boolean\n  bodyPadding?: number | string\n  loading?: boolean\n  loadingText?: string\n}",
         "public": true
       },
       {
         "name": "ZtOverlayCommonProps",
         "code": "export interface ZtOverlayCommonProps {\n  title?: string\n  ariaLabel?: string\n  showHeader?: boolean\n  showClose?: boolean\n  showFooter?: boolean\n  showCancelButton?: boolean\n  confirmText?: string\n  cancelText?: string\n  confirmLoading?: boolean\n  confirmDisabled?: boolean\n  maskClosable?: boolean\n  escClosable?: boolean\n  lockScroll?: boolean\n  destroyOnClose?: boolean\n  autoFocus?: boolean\n  focusTrap?: boolean\n  zIndex?: number\n  beforeClose?: ZtBeforeClose\n}",
         "public": false
+      },
+      {
+        "name": "ZtComponentSize",
+        "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
+        "public": true
       },
       {
         "name": "ZtBeforeClose",
@@ -9768,15 +9787,6 @@
             "required": false,
             "default": "true",
             "description": "是否显示语义图标。"
-          },
-          {
-            "name": "size",
-            "templateName": "size",
-            "kind": "prop",
-            "type": "ZtComponentSize",
-            "required": false,
-            "default": "继承 ConfigProvider（最终为 default）",
-            "description": "未指定时继承全局尺寸。"
           }
         ],
         "events": [
@@ -9818,12 +9828,7 @@
       },
       {
         "name": "ZtAlertProps",
-        "code": "export interface ZtAlertProps {\n  /** 标题文本，不解析 HTML。 */ title?: string;\n  /** 正文说明。 */ description?: string;\n  /** 提示语义颜色。 */ status?: ZtAlertStatus;\n  /** 是否展示关闭按钮。 */ closable?: boolean;\n  /** 是否显示语义图标。 */ showIcon?: boolean;\n  /** 未指定时继承全局尺寸。 */ size?: ZtComponentSize;\n}",
-        "public": true
-      },
-      {
-        "name": "ZtComponentSize",
-        "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
+        "code": "export interface ZtAlertProps {\n  /** 标题文本，不解析 HTML。 */ title?: string;\n  /** 正文说明。 */ description?: string;\n  /** 提示语义颜色。 */ status?: ZtAlertStatus;\n  /** 是否展示关闭按钮。 */ closable?: boolean;\n  /** 是否显示语义图标。 */ showIcon?: boolean;\n}",
         "public": true
       }
     ],

@@ -253,7 +253,7 @@ for (const [id, [dir, ...names]] of Object.entries(config)) {
       const required = !(symbol.flags & ts.SymbolFlags.Optional);
       const metadata = metaFor(id, name, 'props', symbol.name);
       const inherited =
-        symbol.name === 'size' && name !== 'ZtDrawer' ? 'default' : undefined;
+        symbol.name === 'size' && name !== 'ZtIcon' ? 'default' : undefined;
       return {
         name: symbol.name,
         templateName: toTemplateName(symbol.name),

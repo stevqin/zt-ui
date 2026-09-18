@@ -13,7 +13,7 @@ import CustomContentCode from './CustomContent.vue?raw';
 <template>
   <div class="doc-section">
     <h1>Drawer 抽屉</h1>
-    <p>从视口边缘滑入，用于承载筛选、详情和辅助操作。</p>
+    <p>从视口边缘滑入，用于承载筛选、详情和辅助操作。左右方向使用 width，上下方向使用 height，默认均为 420px；与 Modal 一样，size 控制头部、底部和内部控件密度。</p>
     <h2>基础用法</h2>
     <DemoBlock :code="Example01Code" desc="使用 v-model 控制右侧抽屉。"><Example01 /></DemoBlock>
     <h2>出现方向</h2>
@@ -21,7 +21,7 @@ import CustomContentCode from './CustomContent.vue?raw';
       ><Example02
     /></DemoBlock>
     <h2>尺寸与底部操作</h2>
-    <DemoBlock :code="Example03Code" desc="size 控制宽度或高度，并支持默认确认/取消区域。"
+    <DemoBlock :code="Example03Code" desc="width / height 控制宽高；size 控制密度，并传递给内部控件。"
       ><Example03
     /></DemoBlock>
 

@@ -43,7 +43,7 @@ import Example03Code from './Example03.vue?raw';
       的单位为像素，各组件按原有圆角比例缩放。圆形按钮、单选圆点、开关滑块和胶囊标签保持其形状。负数或非有限数字忽略并继承父级。
     </p>
     <p>
-      Drawer 的 size 仍表示面板宽高，不受全局五档 size 改写。VTableGrid 的原生 theme 若通过
+      Drawer / Modal 的 size 控制密度并传递给内部控件；Drawer 使用 width / height 控制几何尺寸。Icon 使用独立 CSS 长度，Alert 使用固定默认密度。VTableGrid 的原生 theme 若通过
       tableOptions 显式设置，会优先于全局主题。业务自定义插槽中的颜色需自行适配。
     </p>
   </article>

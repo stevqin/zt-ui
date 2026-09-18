@@ -64,6 +64,31 @@ describe('complete and executable documentation examples', () => {
       expect(prop.default).toContain('ConfigProvider')
     }
   })
+  it('documents independent geometry, density and underline appearance', () => {
+    expect(sourceFor('drawer')).toContain('width=')
+    expect(sourceFor('drawer')).toContain('height=')
+    expect(sourceFor('drawer')).not.toMatch(/:size="\d+"/)
+    expect(sourceFor('form')).toMatch(/<ZtForm\s+underline/)
+    for (const component of ['Input', 'Password', 'InputNumber', 'InputTag', 'InputOtp', 'Select', 'SelectBox', 'Autocomplete', 'Cascader', 'TreeSelect', 'DatePicker', 'DateTimePicker', 'TimePicker', 'TimeSelect', 'Mention']) {
+      expect(readFileSync(resolve(process.cwd(), 'src/views/form/Underline.vue'), 'utf8')).toContain(`<Zt${component}`)
+    }
+    for (const file of ['src/views/config-provider/Index.vue', 'src/views/Conventions.vue']) {
+      const source = readFileSync(resolve(process.cwd(), file), 'utf8')
+      expect(source).toContain('width / height')
+      expect(source).not.toMatch(/size (仍表示|表示面板)/)
+    }
+    expect(sourceFor('icon')).toContain('size="1.5em"')
+    expect(sourceFor('icon')).toContain('size="50%"')
+    expect(sourceFor('icon')).not.toContain('ZtComponentSize')
+    expect(sourceFor('feedback')).not.toMatch(/ZtDrawer|Dialog|Modal/)
+    const props = (id: string) => api[id].components[0].props
+    expect(props('drawer').map(prop => prop.name)).toEqual(expect.arrayContaining(['width', 'height', 'size']))
+    expect(props('drawer').find(prop => prop.name === 'size')?.description).toContain('密度')
+    expect(props('form').find(prop => prop.name === 'underline')?.description).toContain('下边框')
+    expect(props('icon').find(prop => prop.name === 'size')?.description).not.toContain('继承 ConfigProvider')
+    expect(props('icon').find(prop => prop.name === 'size')?.default).toBe("'1em'")
+    expect(props('alert').map(prop => prop.name)).not.toContain('size')
+  })
   it('shows all InputNumber controls positions and proper form autofill', () => {
     for (const position of ['default', 'left', 'right'])
       expect(sourceFor('input-number')).toContain(`controls-position="${position}"`)

@@ -24,13 +24,13 @@ The [documentation site](https://stevqin.github.io/zt-ui/) contains **79 compone
 
 Select and Tree support virtual rendering. SelectBox provides a standalone multi-select filter with draft confirmation, local and remote paging, batch matching, and immediate clear.
 
-Imperative Message, Notification, MessageBox, Dialog, Drawer and fullscreen Loading belong to [@ztechjs/zt-alert](https://www.npmjs.com/package/@ztechjs/zt-alert). Install and import that package directly; zt-ui does not re-export its APIs. Declarative `ZtLoading`, `ZtAlert`, `ZtModal`, and `ZtDrawer` remain in zt-ui.
+Imperative Message, Notification, MessageBox and fullscreen Loading belong to [@ztechjs/zt-alert](https://www.npmjs.com/package/@ztechjs/zt-alert). Install and import that package directly; zt-ui does not re-export its APIs. Declarative `ZtLoading`, `ZtAlert`, `ZtModal`, and `ZtDrawer` remain in zt-ui.
 
 ## Sizes
 
-Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Input, Password, InputNumber, Select, SelectBox, Form, Badge, Steps, Pagination, Modal, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children; Form passes it to registered input controls.
+Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Input, Password, InputNumber, Select, SelectBox, Form, Badge, Steps, Pagination, Modal, Drawer, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children; Form passes it to registered input controls.
 
-Drawer keeps its established `size` API for panel width or height, so values such as `420`, `"36rem"`, and `"60%"` remain compatible.
+Drawer uses `width` for left/right panels and `height` for top/bottom panels (both default to 420px). Its `size` controls density and scopes descendant controls, like Modal. Icon uses an independent number or CSS length (default `1em`); Alert has one fixed density.
 
 ## Installation
 
@@ -224,7 +224,7 @@ Drawer supports all four viewport edges:
   v-model="visible"
   title="Filters"
   placement="right"
-  :size="420"
+  :width="420"
 >
   Content
 </ZtDrawer>
@@ -391,7 +391,7 @@ import '@ztechjs/zt-ui/style.css'
 </template>
 ```
 
-`size` 支持五档尺寸；`theme` 支持 `light` / `dark`；`borderRadius` 为非负像素数，默认 11，0 为直角。组件显式尺寸优先，其次为表单/组合配置，再使用最近的 Provider。嵌套 Provider 仅覆盖已设置的参数，支持动态更新；浮层继承配色和圆角。圆形与胶囊控件保留形状，Drawer 的 size 仍为宽高值。Provider 渲染 div 容器，可通过 class / style 配置布局。示例与完整 API 位于文档站 `/config-provider`。
+`size` 支持五档尺寸；`theme` 支持 `light` / `dark`；`borderRadius` 为非负像素数，默认 11，0 为直角。组件显式尺寸优先，其次为表单/组合配置，再使用最近的 Provider。嵌套 Provider 仅覆盖已设置的参数，支持动态更新；浮层继承配色和圆角。圆形与胶囊控件保留形状，Drawer 的 size 控制密度，width / height 控制几何尺寸，Icon 的尺寸与 Alert 的固定密度不绑定全局 size。Provider 渲染 div 容器，可通过 class / style 配置布局。示例与完整 API 位于文档站 `/config-provider`。
 
 ### Slider / Progress
 
@@ -440,3 +440,10 @@ Menu 还支持 `v-model:collapsed` 整栏折叠、`collapsible` 底部按钮、`
 全部组件的可运行示例均拆为独立 Vue 文件。文档页同时导入该文件作为演示组件，并通过 `?raw` 导入同一文件展示源码；修改示例时只修改这份文件，不另写展示代码。示例包含实际使用的状态、事件、数据和局部样式，并继承站点顶部的全局外观配置。复制到业务项目时，需安装组件库并按快速开始引入样式。
 
 在 `site/` 执行 `npm run docs:examples` 可检查演示与源码是否同源、编译是否有效、是否依赖站点私有路径，并更新[完整组件示例盘点](docs/component-examples-audit.md)。该检查已接入测试与构建。需要业务 Axios 实例的接入代码明确标为不可在本站执行，不伪装成可运行示例；Menu 路由示例在源码中注明路由配置要求。
+
+
+## Underline forms
+
+Enable `<ZtForm underline>` to use a bottom border for Input, Password, InputNumber, InputTag, InputOtp, Select, SelectBox, Autocomplete, Cascader, TreeSelect, DatePicker, DateTimePicker, TimePicker, TimeSelect and Mention. Focus, validation colors, disabled states, density and theme remain available. Select and InputTag use compact borderless tags with a soft theme background; SelectBox keeps its single-line comma summary. Popup search and pagination controls retain their own surfaces.
+
+Button, Upload, Rate, Switch, Slider, Segmented, Radio, Checkbox, Transfer and ColorPicker retain their original appearance. A nested Form starts its own appearance boundary. See the [live Form examples](https://stevqin.github.io/zt-ui/#/form).

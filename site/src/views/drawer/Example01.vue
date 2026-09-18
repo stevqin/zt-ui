@@ -1,16 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtButton, ZtDrawer } from '@ztechjs/zt-ui';
+import { ZtButton, ZtDrawer, ZtConfigProvider, ZtInput } from '@ztechjs/zt-ui';
 const basicVisible = ref(false);
 </script>
 
 <template>
-  <div class="demo-row">
-    <ZtButton status="primary" @click="basicVisible = true">打开抽屉</ZtButton>
-  </div>
-  <ZtDrawer v-model="basicVisible" title="筛选条件"
-    ><p>这里可以放筛选项、详情或其他辅助内容。</p></ZtDrawer
-  >
+  <ZtConfigProvider size="large">
+    <div class="demo-row">
+      <ZtButton status="primary" @click="basicVisible = true"
+        >打开抽屉</ZtButton
+      >
+    </div>
+    <ZtDrawer v-model="basicVisible" title="筛选条件" :width="420"
+      ><p>继承全局 large 密度。</p>
+      <ZtInput aria-label="筛选关键词" placeholder="此输入自动继承 large"
+    /></ZtDrawer>
+  </ZtConfigProvider>
 </template>
 
 <style scoped>

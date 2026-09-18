@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ZtAlert } from '@ztechjs/zt-ui';
+import { ZtAlert, ZtConfigProvider } from '@ztechjs/zt-ui';
 import type { ZtAlertStatus } from '@ztechjs/zt-ui';
 const statuses: ZtAlertStatus[] = [
   'default',
@@ -19,6 +19,8 @@ const statuses: ZtAlertStatus[] = [
       :title="status + ' 提示'"
       description="包含说明文字的页面内提示，可以单独关闭。"
     />
+    <ZtConfigProvider size="mini"><ZtAlert title="固定密度" description="全局 mini 下的提示" /></ZtConfigProvider>
+    <ZtConfigProvider size="large"><ZtAlert title="固定密度" description="全局 large 下的提示" /></ZtConfigProvider>
   </div>
 </template>
 <style scoped>

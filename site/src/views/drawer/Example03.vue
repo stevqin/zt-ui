@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtButton, ZtDrawer } from '@ztechjs/zt-ui';
+import {
+  ZtButton,
+  ZtDrawer,
+  ZtConfigProvider,
+  ZtInput,
+  ZtSelect,
+} from '@ztechjs/zt-ui';
 const footerVisible = ref(false);
 const saving = ref(false);
 function save() {
@@ -13,31 +19,35 @@ function save() {
 </script>
 
 <template>
-  <div class="demo-row"><ZtButton @click="footerVisible = true">编辑筛选</ZtButton></div>
-  <ZtDrawer
-    v-model="footerVisible"
-    title="编辑筛选"
-    :size="520"
-    show-footer
-    mask-closable
-    :confirm-loading="saving"
-    @confirm="save"
-    ><div class="drawer-form">
-      <label
-        >品牌<select>
-          <option>全部品牌</option>
-          <option>玖姿</option>
-          <option>尹默</option>
-        </select></label
-      ><label
-        >状态<select>
-          <option>全部状态</option>
-          <option>在售</option>
-          <option>停售</option>
-        </select></label
-      >
-    </div></ZtDrawer
-  >
+  <ZtConfigProvider size="large">
+    <div class="demo-row">
+      <ZtButton @click="footerVisible = true">编辑筛选</ZtButton>
+    </div>
+    <ZtDrawer
+      v-model="footerVisible"
+      title="编辑筛选"
+      :width="520"
+      size="small"
+      show-footer
+      mask-closable
+      :confirm-loading="saving"
+      @confirm="save"
+      ><div class="drawer-form">
+        <ZtInput aria-label="筛选名称" placeholder="继承抽屉 small 密度" />
+        <ZtSelect
+          aria-label="品牌"
+          :options="[
+            { value: 'all', label: '全部品牌' },
+            { value: 'jz', label: '玖姿' },
+          ]"
+        />
+        <ZtInput
+          size="large"
+          aria-label="单独设置密度"
+          placeholder="显式 large 优先"
+        /></div
+    ></ZtDrawer>
+  </ZtConfigProvider>
 </template>
 
 <style scoped>

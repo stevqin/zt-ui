@@ -1,9 +1,21 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtButton, ZtModal, type ZtComponentSize } from '@ztechjs/zt-ui';
+import {
+  ZtButton,
+  ZtModal,
+  ZtInput,
+  ZtSelect,
+  type ZtComponentSize,
+} from '@ztechjs/zt-ui';
 const sizeVisible = ref(false);
 const modalSize = ref<ZtComponentSize>('default');
-const modalSizes: ZtComponentSize[] = ['mini', 'small', 'default', 'medium', 'large'];
+const modalSizes: ZtComponentSize[] = [
+  'mini',
+  'small',
+  'default',
+  'medium',
+  'large',
+];
 function openSize(size: ZtComponentSize) {
   modalSize.value = size;
   sizeVisible.value = true;
@@ -12,13 +24,31 @@ function openSize(size: ZtComponentSize) {
 
 <template>
   <div class="demo-row">
-    <ZtButton v-for="size in modalSizes" :key="size" :size="size" @click="openSize(size)">{{
-      size
-    }}</ZtButton>
+    <ZtButton
+      v-for="size in modalSizes"
+      :key="size"
+      :size="size"
+      @click="openSize(size)"
+      >{{ size }}</ZtButton
+    >
   </div>
   <ZtModal v-model="sizeVisible" :size="modalSize" title="尺寸示例" show-footer
-    ><p>当前尺寸：{{ modalSize }}</p></ZtModal
-  >
+    ><p>当前密度：{{ modalSize }}，子控件自动继承。</p>
+    <div class="overlay-demo-form">
+      <ZtInput aria-label="继承弹窗密度" placeholder="继承弹窗密度" />
+      <ZtInput
+        size="large"
+        aria-label="显式 large"
+        placeholder="显式 large 优先"
+      />
+      <ZtSelect
+        aria-label="弹窗内选择"
+        :options="[
+          { value: 'a', label: '选项 A' },
+          { value: 'b', label: '选项 B' },
+        ]"
+      /></div
+  ></ZtModal>
 </template>
 
 <style scoped>

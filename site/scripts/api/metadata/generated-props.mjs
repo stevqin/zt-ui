@@ -7,7 +7,7 @@ export default {
     "description": "自定义 Vue 图标组件。"
   },
   "icon.ZtIcon.props.size": {
-    "description": "五档预设尺寸、像素数值或 CSS 长度，默认继承 ConfigProvider。"
+    "description": "独立像素数值或 CSS 长度，默认 1em。"
   },
   "icon.ZtIcon.props.color": {
     "description": "自定义图标颜色，覆盖 status。"
@@ -1207,7 +1207,7 @@ export default {
     "description": "方向"
   },
   "drawer.ZtDrawer.props.size": {
-    "description": "宽度或高度"
+    "description": "抽屉头部、底部、正文及内部控件的五档密度"
   },
   "drawer.ZtDrawer.props.title": {
     "description": "标题"
