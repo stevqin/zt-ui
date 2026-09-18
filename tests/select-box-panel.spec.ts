@@ -128,6 +128,28 @@ describe('SelectBoxPanel local selection', () => {
     expect(wrapper.emitted('cancel')).toEqual([[]])
   })
 
+  it.each(['search', 'paste'])('preserves the draft for a composing Escape from %s input', async mode => {
+    const wrapper = panel()
+    await rows(wrapper)[0]!.trigger('click')
+    if (mode === 'paste') await wrapper.find('.zt-select-box-panel__mode').trigger('click')
+    const input = wrapper.find(mode === 'paste' ? 'textarea' : 'input[aria-label="搜索选项"]')
+    await input.trigger('keydown', { key: 'Escape', isComposing: true })
+    expect(wrapper.emitted('cancel')).toBeUndefined()
+    await confirm(wrapper)
+    expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['east'])
+  })
+
+  it.each(['search', 'paste'])('cancels and discards the draft for ordinary Escape from %s input', async mode => {
+    const wrapper = panel()
+    await rows(wrapper)[0]!.trigger('click')
+    if (mode === 'paste') await wrapper.find('.zt-select-box-panel__mode').trigger('click')
+    const input = wrapper.find(mode === 'paste' ? 'textarea' : 'input[aria-label="搜索选项"]')
+    await input.trigger('keydown', { key: 'Escape', isComposing: false })
+    expect(wrapper.emitted('cancel')).toEqual([[]])
+    await confirm(wrapper)
+    expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual([])
+  })
+
   it('supports Space and Enter selection and Escape cancellation', async () => {
     const wrapper = panel()
     await rows(wrapper)[0]!.trigger('keydown', { key: ' ' })

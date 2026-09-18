@@ -142,6 +142,12 @@ function confirm() {
   if (pasteOpen.value) applyPaste()
   emit('confirm', draft.confirm(), [...draft.selectedOptions.value])
 }
+function handleEscape(event: KeyboardEvent) {
+  if (event.isComposing) return
+  event.stopPropagation()
+  event.preventDefault()
+  cancel()
+}
 function cancel() {
   draft.cancel()
   emit('cancel')
@@ -149,7 +155,7 @@ function cancel() {
 </script>
 
 <template>
-  <div :class="['zt-select-box-panel', `zt-select-box-panel--${size}`]" @keydown.esc.stop.prevent="cancel">
+  <div :class="['zt-select-box-panel', `zt-select-box-panel--${size}`]" @keydown.esc="handleEscape">
     <template v-if="!pasteOpen">
       <div class="zt-select-box-panel__header">
         <ZtInput v-if="filterable" ref="searchInput" v-model="keyword" class="zt-select-box-panel__search" :size="size" :disabled="disabled" aria-label="搜索选项" placeholder="搜索选项" @input="emit('search', $event)">
