@@ -4,6 +4,7 @@ const { style: providerStyle, theme: providerTheme } = useZtConfig();
 import { useZtSize } from '../config-provider/context';
 import {
   computed,
+  defineComponent,
   getCurrentInstance,
   inject,
   nextTick,
@@ -277,6 +278,7 @@ const dropdown = useAnchoredDropdown({
   constrainWidth: false,
   getPopupHeight: measureDropdownHeight,
   restoreFocus: false,
+  onFocusOut: handleFocusout,
   close,
   focus,
 });
@@ -289,8 +291,18 @@ const listMaxHeight = computed(() => {
     : props.height;
 });
 provide(overlayContextKey, {
-  ...dropdown.overlayContext,
-  interactive: computed(() => visible.value && !effectiveDisabled.value && overlay?.interactive.value !== false),
+  ...dropdown.triggerOverlayContext,
+  interactive: computed(() => !effectiveDisabled.value && dropdown.triggerOverlayContext.interactive.value),
+});
+const PopupScope = defineComponent({
+  name: 'ZtSelectPopupScope',
+  setup(_, { slots }) {
+    provide(overlayContextKey, {
+      ...dropdown.overlayContext,
+      interactive: computed(() => !effectiveDisabled.value && dropdown.overlayContext.interactive.value),
+    });
+    return () => slots.default?.();
+  },
 });
 
 function resetSearch() {
@@ -490,6 +502,8 @@ function isSelected(option: ZtSelectOption) {
     : selectedOption.value?.value === option.value;
 }
 
+let disposed = false;
+let pendingFocusout: FocusEvent | undefined;
 function handleFocusout(event: FocusEvent) {
   const nextTarget = event.relatedTarget;
   if (
@@ -497,9 +511,17 @@ function handleFocusout(event: FocusEvent) {
     dropdown.containsTarget(nextTarget)
   )
     return;
-  emit('blur', event);
-  close();
-  void formItem?.validate('blur');
+  if (disposed || pendingFocusout) return;
+  pendingFocusout = event;
+  // Document capture and local bubbling can observe the same move. Wait for
+  // nested controls to finish any focus restoration before treating it as blur.
+  void nextTick(() => {
+    pendingFocusout = undefined;
+    if (disposed || (document.activeElement && dropdown.containsTarget(document.activeElement))) return;
+    emit('blur', event);
+    close();
+    void formItem?.validate('blur');
+  });
 }
 
 function focus(options?: FocusOptions) {
@@ -586,6 +608,8 @@ function optionId(index: number) {
 }
 
 onBeforeUnmount(() => {
+  disposed = true;
+  pendingFocusout = undefined;
   remoteSearch.dispose();
 });
 
@@ -685,8 +709,8 @@ defineExpose({ focus, blur, open, close });
     </div>
 
     <Teleport to="body">
+      <PopupScope v-if="visible">
       <div
-        v-if="visible"
         ref="listboxElement"
         :id="panelSearch ? `${selectId}-popup` : listboxId"
         class="zt-select__dropdown"
@@ -803,6 +827,7 @@ defineExpose({ focus, blur, open, close });
           <slot name="footer" />
         </div>
       </div>
+      </PopupScope>
     </Teleport>
   </div>
 </template>

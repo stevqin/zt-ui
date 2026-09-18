@@ -167,34 +167,47 @@ describe('ZtSelect single selection', () => {
     wrapper.unmount()
   })
 
-  it('installs the outside click listener only while open', () => {
+  it('installs document dismissal listeners only while open and removes them on unmount', () => {
     const addEventListener = vi.spyOn(document, 'addEventListener')
     const removeEventListener = vi.spyOn(document, 'removeEventListener')
     const addWindowEventListener = vi.spyOn(window, 'addEventListener')
     const removeWindowEventListener = vi.spyOn(window, 'removeEventListener')
     const wrapper = mount(ZtSelect, { props: { options } })
     const clickAdds = () => addEventListener.mock.calls.filter(([type]) => type === 'click')
+    const focusAdds = () => addEventListener.mock.calls.filter(([type]) => type === 'focusout')
+    let unmounted = false
 
-    expect(clickAdds()).toHaveLength(0)
-    wrapper.vm.open()
-    expect(clickAdds()).toHaveLength(1)
-    const clickHandler = clickAdds()[0][1]
-    const scrollHandler = addWindowEventListener.mock.calls.find(([type]) => type === 'scroll')?.[1]
-    const resizeHandler = addWindowEventListener.mock.calls.find(([type]) => type === 'resize')?.[1]
-    wrapper.vm.close()
-    expect(removeEventListener).toHaveBeenCalledWith('click', clickHandler, true)
-    expect(removeWindowEventListener).toHaveBeenCalledWith('scroll', scrollHandler, true)
-    expect(removeWindowEventListener).toHaveBeenCalledWith('resize', resizeHandler)
-    expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
+    try {
+      expect(clickAdds()).toHaveLength(0)
+      expect(focusAdds()).toHaveLength(0)
+      wrapper.vm.open()
+      expect(clickAdds()).toHaveLength(1)
+      expect(focusAdds()).toHaveLength(1)
+      const clickHandler = clickAdds()[0][1]
+      const focusHandler = focusAdds()[0][1]
+      const scrollHandler = addWindowEventListener.mock.calls.find(([type]) => type === 'scroll')?.[1]
+      const resizeHandler = addWindowEventListener.mock.calls.find(([type]) => type === 'resize')?.[1]
+      wrapper.vm.close()
+      expect(removeEventListener).toHaveBeenCalledWith('click', clickHandler, true)
+      expect(removeEventListener).toHaveBeenCalledWith('focusout', focusHandler, true)
+      expect(removeWindowEventListener).toHaveBeenCalledWith('scroll', scrollHandler, true)
+      expect(removeWindowEventListener).toHaveBeenCalledWith('resize', resizeHandler)
+      expect(wrapper.emitted('visible-change')).toEqual([[true], [false]])
 
-    wrapper.vm.open()
-    const reopenedHandler = clickAdds().at(-1)![1]
-    wrapper.unmount()
-    expect(removeEventListener).toHaveBeenCalledWith('click', reopenedHandler, true)
-    addEventListener.mockRestore()
-    removeEventListener.mockRestore()
-    addWindowEventListener.mockRestore()
-    removeWindowEventListener.mockRestore()
+      wrapper.vm.open()
+      const reopenedHandler = clickAdds().at(-1)![1]
+      const reopenedFocusHandler = focusAdds().at(-1)![1]
+      wrapper.unmount()
+      unmounted = true
+      expect(removeEventListener).toHaveBeenCalledWith('click', reopenedHandler, true)
+      expect(removeEventListener).toHaveBeenCalledWith('focusout', reopenedFocusHandler, true)
+    } finally {
+      if (!unmounted) wrapper.unmount()
+      addEventListener.mockRestore()
+      removeEventListener.mockRestore()
+      addWindowEventListener.mockRestore()
+      removeWindowEventListener.mockRestore()
+    }
   })
 
   it('skips disabled options with arrows and selects with Enter', async () => {
@@ -411,6 +424,38 @@ describe('ZtSelect multiple selection', () => {
 })
 
 describe('ZtSelect slots and dropdown placement', () => {
+  it.each(['prefix', 'selected', 'tag'])('keeps a nested Select in the persistent %s slot interactive while the parent is closed', async slot => {
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options, multiple: slot === 'tag', modelValue: slot === 'tag' ? ['hz'] : 'hz' },
+      slots: { [slot]: () => h(ZtSelect, { options, multiple: true, filterable: true }) },
+    })
+    try {
+      const trigger = wrapper.get<HTMLInputElement>(':scope > .zt-select__control > .zt-select__input')
+      const child = wrapper.findAllComponents(ZtSelect).find(candidate => candidate.vm !== wrapper.vm)!
+      await child.get('[role="combobox"]').trigger('click')
+      expect(trigger.attributes('aria-expanded')).toBe('false')
+      expect(child.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+      expect(document.activeElement).toBe(document.querySelector('.zt-select__search-input'))
+      document.querySelector<HTMLElement>('[role="option"]')!.click()
+      await nextTick()
+      expect(child.emitted('update:modelValue')).toEqual([[['hz']]])
+      expect(wrapper.emitted('change')).toBeUndefined()
+
+      wrapper.vm.open()
+      await nextTick()
+      wrapper.vm.close()
+      await nextTick()
+      expect(child.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+      await wrapper.setProps({ disabled: true })
+      expect(child.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+      await child.get('[role="combobox"]').trigger('click')
+      expect(child.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
   it('settles popup geometry when Teleport is rendered inline', async () => {
     const wrapper = mount(ZtSelect, {
       props: { options },
@@ -805,6 +850,114 @@ describe('ZtSelect slots and dropdown placement', () => {
 })
 
 describe('ZtSelect Form integration', () => {
+  it('observes focus leaving a persistent child popup while the parent dropdown is closed', async () => {
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options },
+      slots: { prefix: () => h(ZtSelect, { options, multiple: true, filterable: true }) },
+    })
+    try {
+      const child = wrapper.findAllComponents(ZtSelect).find(candidate => candidate.vm !== wrapper.vm)!
+      const search = await searchInput(child)
+      expect(document.activeElement).toBe(search.element)
+      outside.focus()
+      await flushPromises()
+      expect(wrapper.emitted('visible-change')).toBeUndefined()
+      expect(wrapper.emitted('blur')).toHaveLength(1)
+      expect(child.emitted('blur')).toHaveLength(1)
+      expect(child.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+      expect(document.activeElement).toBe(outside)
+    } finally {
+      wrapper.unmount()
+      outside.remove()
+    }
+  })
+
+  it('does not deliver a queued blur after the Select is unmounted', async () => {
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const wrapper = mount(ZtSelect, { attachTo: document.body, props: { options } })
+    wrapper.vm.focus()
+    wrapper.vm.open()
+    await nextTick()
+    outside.focus()
+    wrapper.unmount()
+    await nextTick()
+    expect(wrapper.emitted('blur')).toBeUndefined()
+    outside.remove()
+  })
+
+  it('validates once after focus leaves a nested teleported search popup', async () => {
+    const outside = document.createElement('button')
+    document.body.append(outside)
+    const wrapper = mount(ZtForm, {
+      attachTo: document.body,
+      props: {
+        model: { city: '', detail: [] },
+        rules: { city: { required: true, trigger: 'blur', message: '请选择城市' } },
+      },
+      slots: {
+        default: () => h(ZtFormItem, { prop: 'city' }, () => h(ZtSelect, { options }, {
+          footer: () => h(ZtFormItem, { prop: 'detail' }, () => h(ZtSelect, {
+            options, multiple: true, filterable: true,
+          })),
+        })),
+      },
+    })
+    try {
+      const parent = wrapper.getComponent(ZtSelect)
+      const trigger = parent.get<HTMLInputElement>('[role="combobox"]')
+      trigger.element.focus()
+      await trigger.trigger('click')
+      const child = parent.findAllComponents(ZtSelect).find(candidate => candidate.vm !== parent.vm)!
+      const search = await searchInput(child)
+      expect(document.activeElement).toBe(search.element)
+      expect(parent.emitted('blur')).toBeUndefined()
+      expect(wrapper.emitted('validate')).toBeUndefined()
+
+      outside.focus()
+      await flushPromises()
+      expect(trigger.attributes('aria-expanded')).toBe('false')
+      expect(parent.emitted('blur')).toHaveLength(1)
+      expect(wrapper.get('.zt-form-item').classes()).toContain('is-error')
+      expect(wrapper.emitted('validate')?.filter(([prop]) => prop === 'city')).toEqual([['city', false, '请选择城市']])
+      expect(document.activeElement).toBe(outside)
+      expect(document.querySelector('.zt-select__dropdown')).toBeNull()
+    } finally {
+      wrapper.unmount()
+      outside.remove()
+    }
+  })
+
+  it('keeps internal focus returns from nested search popups inside the parent field', async () => {
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options },
+      slots: { footer: () => h(ZtSelect, { options, multiple: true, filterable: true }) },
+    })
+    try {
+      wrapper.vm.focus()
+      wrapper.vm.open()
+      await nextTick()
+      const child = wrapper.findAllComponents(ZtSelect).find(candidate => candidate.vm !== wrapper.vm)!
+      const search = await searchInput(child)
+      await search.trigger('keydown', { key: 'Escape' })
+      expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+      expect(document.activeElement).toBe(child.get('[role="combobox"]').element)
+      expect(wrapper.emitted('blur')).toBeUndefined()
+
+      await (await searchInput(child)).setValue('上')
+      wrapper.vm.focus()
+      await nextTick()
+      expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+      expect(wrapper.emitted('blur')).toBeUndefined()
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
   it('inherits Form state and exposes validation accessibility', () => {
     const wrapper = mount(ZtForm, {
       props: { model: { city: '' }, size: 'mini', disabled: true },

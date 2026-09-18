@@ -3,6 +3,7 @@ import {
   inject,
   onBeforeUnmount,
   ref,
+  shallowReactive,
   watch,
   type ComputedRef,
   type CSSProperties,
@@ -28,6 +29,8 @@ export interface UseAnchoredDropdownOptions {
   getPopupHeight?: (popup: HTMLElement) => number
   /** Consumers with their own blur and keyboard behavior can own focus restoration. */
   restoreFocus?: boolean
+  /** Observe focus leaving any part of the control, including teleported descendants. */
+  onFocusOut?: (event: FocusEvent) => void
   tabThroughPopup?: boolean
   close: () => void
   focus: () => void
@@ -37,6 +40,8 @@ export interface AnchoredDropdown {
   popupStyle: ComputedRef<CSSProperties>
   placement: Ref<'top' | 'bottom'>
   overlayContext: OverlayContext
+  /** Persistent trigger content stays interactive when this popup is closed. */
+  triggerOverlayContext: OverlayContext
   childBranches: Set<OverlayBranch>
   updatePosition: () => void
   containsTarget: (target: Node) => boolean
@@ -59,10 +64,12 @@ export function useAnchoredDropdown(
   const layer = computed(() => options.layer?.value ?? Math.max(2000, (parentOverlay?.layer?.value ?? 0) + 1))
   const placement = ref<'top' | 'bottom'>('bottom')
   const geometry = ref<PopupGeometry>()
-  const childBranches = new Set<OverlayBranch>()
+  const childBranches = shallowReactive(new Set<OverlayBranch>())
+  const popupBranches = new Set<OverlayBranch>()
   const childRegistrations = new Set<() => void>()
   let resizeObserver: ResizeObserver | undefined
   let listening = false
+  let focusListening = false
   let disposed = false
 
   const popupStyle = computed<CSSProperties>(() => ({
@@ -74,15 +81,17 @@ export function useAnchoredDropdown(
     maxHeight: geometry.value ? `${geometry.value.maxHeight}px` : undefined,
   }))
 
-  function registerBranch(branch: OverlayBranch) {
+  function registerBranch(branch: OverlayBranch, inPopup: boolean) {
     if (disposed) return () => undefined
     childBranches.add(branch)
+    if (inPopup) popupBranches.add(branch)
     const unregisterParent = parentOverlay?.registerBranch(branch)
     let registered = true
     const unregister = () => {
       if (!registered) return
       registered = false
       childBranches.delete(branch)
+      popupBranches.delete(branch)
       unregisterParent?.()
       childRegistrations.delete(unregister)
     }
@@ -95,7 +104,12 @@ export function useAnchoredDropdown(
     interactive: computed(() =>
       options.visible.value && parentOverlay?.interactive.value !== false,
     ),
-    registerBranch,
+    registerBranch: branch => registerBranch(branch, true),
+  }
+  const triggerOverlayContext: OverlayContext = {
+    layer: parentOverlay?.layer,
+    interactive: computed(() => parentOverlay?.interactive.value !== false),
+    registerBranch: branch => registerBranch(branch, false),
   }
 
   function containsTarget(target: Node) {
@@ -109,8 +123,9 @@ export function useAnchoredDropdown(
     )
   }
 
-  function closeChildBranches() {
-    for (const branch of [...childBranches].reverse()) {
+  function closeChildBranches(includeTriggerContent = false) {
+    const branches = includeTriggerContent ? childBranches : popupBranches
+    for (const branch of [...branches].reverse()) {
       if (branch.visible.value) branch.close()
     }
   }
@@ -196,6 +211,20 @@ export function useAnchoredDropdown(
     if (event.target instanceof Node && !containsTarget(event.target)) close()
   }
 
+  function handleDocumentFocusOut(event: FocusEvent) {
+    if (event.target instanceof Node && containsTarget(event.target)) options.onFocusOut?.(event)
+  }
+
+  function setFocusListening(active: boolean) {
+    if (active && !focusListening && !disposed) {
+      document.addEventListener('focusout', handleDocumentFocusOut, true)
+      focusListening = true
+    } else if (!active && focusListening) {
+      document.removeEventListener('focusout', handleDocumentFocusOut, true)
+      focusListening = false
+    }
+  }
+
   function startListening() {
     if (listening || disposed) return
     document.addEventListener('click', handleDocumentClick, true)
@@ -236,6 +265,11 @@ export function useAnchoredDropdown(
     },
     { immediate: true, flush: 'sync' },
   )
+  const stopFocusWatch = options.onFocusOut ? watch(
+    () => options.visible.value || [...childBranches].some(branch => branch.visible.value),
+    setFocusListening,
+    { immediate: true, flush: 'sync' },
+  ) : undefined
   const stopElementWatch = watch(
     [options.visible, options.trigger, options.popup],
     ([visible, trigger, popup]) => {
@@ -267,11 +301,15 @@ export function useAnchoredDropdown(
     stopVisibleWatch()
     stopElementWatch()
     stopInteractiveWatch()
+    stopFocusWatch?.()
+    setFocusListening(false)
     deactivate(false)
+    closeChildBranches(true)
     unregisterCurrent?.()
     for (const unregister of [...childRegistrations]) unregister()
     childRegistrations.clear()
     childBranches.clear()
+    popupBranches.clear()
   }
 
   onBeforeUnmount(dispose)
@@ -280,6 +318,7 @@ export function useAnchoredDropdown(
     popupStyle,
     placement,
     overlayContext,
+    triggerOverlayContext,
     childBranches,
     updatePosition,
     containsTarget,
