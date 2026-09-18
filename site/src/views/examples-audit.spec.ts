@@ -558,6 +558,85 @@ import sampleCode from './CustomControls.vue?raw'
       ),
     ).toEqual([]);
   });
+  it.each([
+    ['dynamic bind argument', '<div :[mutate(props)]="value" />'],
+    ['dynamic event argument', '<div @[mutate(props)]="handle" />'],
+    [
+      'dynamic slot name',
+      '<Container #[mutate(props)]="slotProps">{{ slotProps }}</Container>',
+    ],
+    [
+      'computed slot key',
+      '<Container v-slot="{ [mutate(props)]: value }">{{ value }}</Container>',
+    ],
+    [
+      'computed loop key',
+      '<div v-for="{ [mutate(props)]: value } in rows">{{ value }}</div>',
+    ],
+    [
+      'nested computed slot key with default',
+      '<Container v-slot="{ nested: [{ [mutate(props)]: value = 1 }] }">{{ value }}</Container>',
+    ],
+    [
+      'nested computed loop key with default',
+      '<div v-for="{ nested: [{ [mutate(props)]: value = 1 }] } in rows">{{ value }}</div>',
+    ],
+    [
+      'nested slot default',
+      '<Container v-slot="{ nested: { [key]: value = mutate(props) } = {} }">{{ value }}</Container>',
+    ],
+    [
+      'nested loop default',
+      '<div v-for="{ nested: { [key]: value = mutate(props) } = {} } in rows">{{ value }}</div>',
+    ],
+    [
+      'dynamic argument after a shadowing sibling',
+      '<div v-for="props in rows" :[mutate(props)]="value" /><div @[mutate(props)]="handle" />',
+    ],
+  ])('rejects escaping object references in %s', (_name, markup) => {
+    const errors = inspectFixture(
+      `<script setup>const props = { status: 'success' }; function mutate(object) { object.type = 'danger'; return 'title' }</script><template>${markup}<ZtBadge v-bind="props" /></template>`,
+    );
+    expect(errors).toEqual([
+      expect.stringContaining('cannot audit ZtBadge dynamic v-bind'),
+    ]);
+  });
+  it.each([
+    [
+      'unrelated dynamic arguments and event names',
+      '<div :[key]="value" /><ZtBadge @[key]="handle" v-bind="props" />',
+    ],
+    [
+      'same-node loop aliases in dynamic arguments',
+      '<div v-for="props in rows" :[mutate(props)]="value" @[mutate(props)]="handle" />',
+    ],
+    [
+      'inherited slot aliases in dynamic arguments',
+      '<Container v-slot="props"><div :[mutate(props)]="value" @[mutate(props)]="handle" /></Container>',
+    ],
+    [
+      'inherited loop alias in a nested slot pattern',
+      '<div v-for="props in rows"><Container v-slot="{ nested: [{ [mutate(props)]: value = 1 }] }">{{ value }}</Container></div>',
+    ],
+    [
+      'inherited slot alias in a nested loop pattern',
+      '<Container v-slot="props"><div v-for="{ nested: [{ [mutate(props)]: value = 1 }] } in rows">{{ value }}</div></Container>',
+    ],
+    [
+      'local slot pattern binding in computed keys and defaults',
+      '<Container v-slot="{ props, nested: [{ [mutate(props)]: value = mutate(props) }] }">{{ value }}</Container>',
+    ],
+    [
+      'local loop pattern binding in computed keys and defaults',
+      '<div v-for="{ props, nested: [{ [mutate(props)]: value = mutate(props) }] } in rows">{{ value }}</div>',
+    ],
+  ])('preserves safe object bindings with %s', (_name, markup) => {
+    expect(
+      inspectFixture(
+        `<script setup>const props = { status: 'success' }; const key = 'type'; function mutate(object) { object.type = 'danger'; return 'title' }</script><template>${markup}<ZtBadge v-bind="props" /></template>`,
+      ),
+    ).toEqual([]);
+  });
   it('accepts canonical props and unrelated small/type props', () => {
     expect(
       inspectFixture(

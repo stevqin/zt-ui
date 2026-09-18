@@ -149,7 +149,7 @@ function staticObjectBindings(script, template) {
         unsafe.add(node.text);
     });
   }
-  function notePatternDefaults(pattern, scope) {
+  function notePatternExpressions(pattern, scope) {
     const parsed = ts.createSourceFile(
       'pattern.ts',
       `const ${pattern} = null`,
@@ -159,12 +159,19 @@ function staticObjectBindings(script, template) {
     walkTs(parsed, (node) => {
       if (ts.isBindingElement(node) && node.initializer)
         noteExpression(node.initializer.getText(parsed), scope);
+      else if (ts.isComputedPropertyName(node))
+        noteExpression(node.expression.getText(parsed), scope);
     });
   }
   function noteTemplate(node, inherited = new Set()) {
     const scope = templateScopes(node, inherited);
     for (const prop of node.props ?? [])
-      if (prop.type === 7 && prop.exp) {
+      if (prop.type === 7) {
+        // Arguments execute too, even without a directive value. Slot names
+        // are evaluated outside the slot parameters, in the element's scope.
+        if (prop.arg && !prop.arg.isStatic)
+          noteExpression(prop.arg.content, scope.self);
+        if (!prop.exp) continue;
         if (prop.name === 'for') {
           noteExpression(prop.forParseResult?.source.content, inherited);
           for (const alias of [
@@ -172,9 +179,10 @@ function staticObjectBindings(script, template) {
             prop.forParseResult?.key,
             prop.forParseResult?.index,
           ])
-            if (alias) notePatternDefaults(alias.content, inherited);
+            if (alias) notePatternExpressions(alias.content, scope.self);
         } else if (prop.name === 'slot')
-          notePatternDefaults(prop.exp.content, scope.self);
+          // Computed keys/defaults share the callback's local parameter scope.
+          notePatternExpressions(prop.exp.content, scope.children);
         // Vue evaluates a same-node v-if before introducing v-for aliases.
         else if (prop.name === 'if' || prop.name === 'else-if')
           noteExpression(prop.exp.content, inherited);
