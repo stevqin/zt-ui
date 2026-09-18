@@ -142,6 +142,57 @@ describe('shared component documentation reading flow', () => {
     },
   )
 
+  it.each(['/button/', '/BUTTON', '/button?preview=1#api'])(
+    '%s retains the complete shell for its matched component route',
+    async (location) => {
+      const router = createRouter({
+        history: createMemoryHistory(),
+        routes: siteRouter.options.routes,
+      })
+      await router.push(location)
+      await router.isReady()
+      const wrapper = mount(App, { global: { plugins: [router] } })
+      try {
+        await flushPromises()
+        expect(router.currentRoute.value.matched.at(-1)?.path).toBe('/button')
+        expect(router.currentRoute.value.fullPath).toBe(location)
+        expect(wrapper.findAll('.component-page-shell')).toHaveLength(1)
+        const shell = wrapper.get('.component-page-shell')
+        expect(shell.attributes('data-component')).toBe('button')
+        expect(shell.findAll('h1')).toHaveLength(1)
+        expect(shell.get('h1').text()).toBe('Button 按钮')
+        for (const section of [
+          'purpose',
+          'guidance',
+          'examples',
+          'notes',
+          'related',
+        ]) {
+          expect(
+            shell.findAll(`[data-page-section="${section}"]`),
+          ).toHaveLength(1)
+          expect(
+            shell.get(`[data-page-section="${section}"]`).text().trim(),
+          ).not.toBe('')
+        }
+        expect(shell.get('[data-page-section="notes"]').text()).toContain(
+          '设计建议',
+        )
+        expect(shell.get('[data-page-section="notes"]').text()).toContain(
+          '无障碍',
+        )
+        expect(shell.findAll('.doc-demo').length).toBeGreaterThan(0)
+        expect(wrapper.findAll('.api-reference')).toHaveLength(1)
+        expect(shell.get('#api').text()).toContain('ZtButton')
+        expect(
+          shell.get('[data-page-section="related"]').findAll('a').length,
+        ).toBeGreaterThan(0)
+      } finally {
+        wrapper.unmount()
+      }
+    },
+  )
+
   it('keeps guides outside the component shell', async () => {
     const router = createRouter({
       history: createMemoryHistory(),

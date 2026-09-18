@@ -16,7 +16,7 @@ const mobile=ref(window.innerWidth<=800)
 function resize(){mobile.value=window.innerWidth<=800}
 function escapeMenu(event:KeyboardEvent){if(event.key==='Escape'&&menu.value){menu.value=false;document.querySelector<HTMLButtonElement>('.menu-toggle')?.focus()}}
 const menu=ref(false), content=ref<HTMLElement>(), outline=ref<{id:string;title:string;level:number}[]>([]), active=ref('')
-const component=computed(()=>components.find(c=>route.path===c.path))
+const component=computed(()=>components.find(c=>c.path.slice(1)===route.meta.componentId))
 const navigation=computed<ZtMenuItem[]>(()=>[
  {key:'guides',label:'文档',type:'group',children:guides.map(g=>({key:g.path,label:g.title,href:g.path}))},
  ...componentGroups.map(group=>({key:'group-'+group.id,label:group.title,type:'group' as const,children:components.filter(c=>c.group===group.id).map(c=>({key:c.path,label:c.title,description:c.name,href:c.path}))})),

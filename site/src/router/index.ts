@@ -11,7 +11,10 @@ const routes = [
     path: component.path,
     name: component.routeName,
     component: componentPages[`../views${component.path}/Index.vue`],
-    meta: { title: `${component.name} ${component.title}` },
+    meta: {
+      title: `${component.name} ${component.title}`,
+      componentId: component.path.slice(1),
+    },
   })),
   {
     path: '/feedback',
