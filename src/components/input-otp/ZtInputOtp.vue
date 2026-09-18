@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance'
-import { computed, inject, nextTick, onMounted, ref, useAttrs, watch } from 'vue'
+import { toRef, computed, inject, nextTick, onMounted, ref, useAttrs, watch } from 'vue'
 import { useZtSize } from '../config-provider/context'
 import { ztFormItemKey } from '../form/context'
 import type { ZtInputOtpProps } from './types'
 import './input-otp.scss'
 defineOptions({name:'ZtInputOtp',inheritAttrs:false})
-const { underline } = useFormControlAppearance()
-const props=withDefaults(defineProps<ZtInputOtpProps>(),{modelValue:'',length:6,integerOnly:true,mask:false,status:'default',disabled:false,readonly:false,separator:'',autocomplete:'one-time-code',autofocus:false})
+const props=withDefaults(defineProps<ZtInputOtpProps>(),{underline:undefined,modelValue:'',length:6,integerOnly:true,mask:false,status:'default',disabled:false,readonly:false,separator:'',autocomplete:'one-time-code',autofocus:false})
+const { underline } = useFormControlAppearance(toRef(props, 'underline'))
 const emit=defineEmits<{
  'update:modelValue':[value:string]
  input:[value:string]

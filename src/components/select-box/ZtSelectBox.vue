@@ -14,12 +14,13 @@ import type { ZtSelectBoxProps, ZtSelectBoxRemoteRequest, ZtSelectBoxRemoteResul
 import './select-box.scss'
 
 defineOptions({ name: 'ZtSelectBox', inheritAttrs: false })
-const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtSelectBoxProps>(), {
+  underline: undefined,
   modelValue: () => [], options: () => [], placeholder: '请选择', filterable: true,
   disabled: false, clearable: false, remote: false, debounce: 300, pageSize: 10,
   pageSizes: () => [10, 20, 50], noDataText: '暂无匹配选项', remoteErrorText: '加载失败，请重新搜索',
 })
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: ZtSelectValue[]]
   'update:pageSize': [pageSize: number]

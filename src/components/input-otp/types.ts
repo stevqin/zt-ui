@@ -1,6 +1,8 @@
 import type { ZtComponentSize } from '../types'
 export type ZtInputOtpStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info' | 'error'
 export interface ZtInputOtpProps {
+  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  underline?: boolean
   /** 输入值。使用字符串以保留开头的 0。 */
   modelValue?: string | null
   /** 验证码位数，1–32，默认 6。 */

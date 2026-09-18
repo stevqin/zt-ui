@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { entryStatusStyle } from '../autocomplete/status';
-import { inject } from 'vue';
+import { toRef, inject } from 'vue';
 import { ztFormItemKey } from '../form/context';
 import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { computed, ref } from 'vue';
@@ -10,6 +10,7 @@ import type { ZtTimeSelectProps } from './types';
 import { generateTimeOptions } from './time';
 defineOptions({ name: 'ZtTimeSelect' });
 const props = withDefaults(defineProps<ZtTimeSelectProps>(), {
+  underline: undefined,
   status: 'primary',
   modelValue: null,
   start: '09:00',
@@ -21,12 +22,12 @@ const props = withDefaults(defineProps<ZtTimeSelectProps>(), {
   filterable: true,
   placeholder: '请选择时间',
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: string | null];
   change: [value: string | null];
   clear: [];
 }>();
-const { underline } = useFormControlAppearance();
 const form = inject(ztFormItemKey, undefined);
 const options = computed(() => generateTimeOptions(props)),
   select = ref<InstanceType<typeof ZtSelect>>();

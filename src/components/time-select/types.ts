@@ -1,6 +1,8 @@
 import type { ZtEntryStatus } from '../autocomplete/types';
 import type { ZtComponentSize } from '../types';
 export interface ZtTimeSelectProps {
+  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  underline?: boolean;
   /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */
   status?: ZtEntryStatus;
   /** HH:mm 文本或 null；清空依次触发 update(null)、change(null) 和 clear。 */

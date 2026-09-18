@@ -35,9 +35,9 @@ import type {
 import './select.scss';
 
 defineOptions({ name: 'ZtSelect', inheritAttrs: false });
-const { underline } = useFormControlAppearance();
 
 const props = withDefaults(defineProps<ZtSelectProps>(), {
+  underline: undefined,
   modelValue: null,
   options: () => [],
   virtual: false,
@@ -54,6 +54,7 @@ const props = withDefaults(defineProps<ZtSelectProps>(), {
   noDataText: '暂无数据',
   remoteErrorText: '加载失败，请重试',
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 
 const emit = defineEmits<{
   'update:modelValue': [value: ZtSelectModelValue];

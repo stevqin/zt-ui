@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import { useZtSize } from '../config-provider/context'
-import { computed, inject, ref, useAttrs, watch } from 'vue'
+import { toRef, computed, inject, ref, useAttrs, watch } from 'vue'
 import { ztFormItemKey } from '../form/context'
 import type { ZtInputNumberProps } from './types'
 import './input-number.scss'
 
 defineOptions({ name: 'ZtInputNumber', inheritAttrs: false })
 
-const { underline } = useFormControlAppearance()
-
 const props = withDefaults(defineProps<ZtInputNumberProps>(), {
+  underline: undefined,
   modelValue: null,
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
@@ -21,6 +20,7 @@ const props = withDefaults(defineProps<ZtInputNumberProps>(), {
   controls: true,
   controlsPosition: 'default',
 })
+const { underline } = useFormControlAppearance(toRef(props, 'underline'))
 
 const emit = defineEmits<{
   'update:modelValue': [value: number | null]

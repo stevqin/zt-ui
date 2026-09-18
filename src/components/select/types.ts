@@ -9,6 +9,8 @@ export type ZtSelectRemoteMethod = (
 ) => Promise<ZtSelectOption[]>;
 
 export interface ZtSelectProps {
+  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  underline?: boolean;
   /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */
   virtual?: boolean;
   /** 虚拟列表行高（px），未设置时跟随 size。 */

@@ -2,6 +2,7 @@
 import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { entryStatusStyle } from '../autocomplete/status';
 import {
+  toRef,
   computed,
   inject,
   nextTick,
@@ -19,9 +20,9 @@ import type { ZtMentionOption, ZtMentionProps } from './types';
 import '../autocomplete/entry.scss';
 import './mention.scss';
 defineOptions({ name: 'ZtMention', inheritAttrs: false });
-const { underline } = useFormControlAppearance();
 
 const props = withDefaults(defineProps<ZtMentionProps>(), {
+  underline: undefined,
   status: 'primary',
   modelValue: '',
   prefixes: () => ['@'],
@@ -33,6 +34,7 @@ const props = withDefaults(defineProps<ZtMentionProps>(), {
   rows: 3,
   placeholder: '输入 @ 提及',
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: string];
   change: [value: string];

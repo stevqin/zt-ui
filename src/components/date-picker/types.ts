@@ -15,6 +15,8 @@ export interface ZtDatePickerHoliday {
 export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';
 export type ZtDatePickerValue = string | [string, string] | null;
 export interface ZtDatePickerProps {
+  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  underline?: boolean;
   /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */
   modelValue?: ZtDatePickerValue;
   /** Selection granularity. Range suffix is equivalent to range=true. */
@@ -44,5 +46,5 @@ export type ZtDateTimePickerInstance = ZtDatePickerInstance;
 /** 内嵌日期面板，与 DatePicker 一致：单日期立即提交；范围选中第二个有效端点后提交。 */
 export type ZtDatePickerPanelProps = Omit<
   ZtDatePickerProps,
-  'placeholder' | 'clearable'
+  'placeholder' | 'clearable' | 'underline'
 >;

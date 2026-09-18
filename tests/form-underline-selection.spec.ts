@@ -51,7 +51,7 @@ describe('selection controls own the Form underline boundary', () => {
     expect(css(w, surface).backgroundColor).toBe('transparent')
     await w.setProps({ underline: false })
     expect(w.find('.is-form-underline').exists()).toBe(false)
-    expect('underline' in component.props).toBe(false)
+    expect('underline' in component.props).toBe(true)
     expect(css(w, component === ZtInputTag ? '.zt-input__wrapper' : surface).borderTopWidth).toBe('1px')
   })
 
@@ -71,7 +71,7 @@ describe('selection controls own the Form underline boundary', () => {
   })
 
   it.each(controls)('%s keeps disabled surfaces dashed even in an error Form item', async (_, component, _root, surface) => {
-    const w = form(component, {}, { disabled: true }, { prop: 'value', error: '错误' })
+    const w = form(component, { underline: true }, { disabled: true, underline: false }, { prop: 'value', error: '错误' })
     expect(w.get('input, button').attributes('disabled')).toBeDefined()
     expect(css(w, surface).borderBottomStyle).toBe('dashed')
     expect(css(w, surface).boxShadow).toBe('none')
@@ -79,7 +79,7 @@ describe('selection controls own the Form underline boundary', () => {
   })
 
   it.each(controls)('%s preserves error accessibility and validation focus color', async (_, component, _root, surface) => {
-    const w = form(component, {}, {}, { prop: 'value', error: '错误' })
+    const w = form(component, { underline: true }, { underline: false }, { prop: 'value', error: '错误' })
     expect(w.get('input, button').attributes('aria-invalid')).toBe('true')
     expect(w.get('input, button').attributes('aria-describedby')).toBeTruthy()
     w.get(_root).element.classList.add('test-hover')
@@ -113,7 +113,7 @@ describe('selection controls own the Form underline boundary', () => {
 
   it.each([true, false])('keeps hierarchy search outlined with teleported=%s', async teleported => {
     for (const component of [ZtCascader, ZtTreeSelect]) {
-      const w = form(component, { teleported, filterable: true })
+      const w = form(component, { underline: true, teleported, filterable: true }, { underline: false })
       await w.get('.zt-hierarchy__control').trigger('click')
       await flushPromises()
       const search = document.querySelector('.zt-hierarchy__search')!
@@ -126,7 +126,7 @@ describe('selection controls own the Form underline boundary', () => {
 
   it('keeps Select popup search and slotted helper inputs outlined', async () => {
     const w = mount(ZtForm, { attachTo: document.body, props: { underline: true }, slots: {
-      default: () => h(ZtSelect, { multiple: true, filterable: true }, { footer: () => h(ZtInput) }),
+      default: () => h(ZtSelect, { underline: true, multiple: true, filterable: true }, { footer: () => h(ZtInput) }),
     } })
     wrappers.push(w)
     await w.get('.zt-select__input').trigger('click')
@@ -138,7 +138,7 @@ describe('selection controls own the Form underline boundary', () => {
 
   it('keeps Autocomplete suggestion slot inputs outlined', async () => {
     const w = mount(ZtForm, { attachTo: document.body, props: { underline: true }, slots: {
-      default: () => h(ZtAutocomplete, { options: [{ value: '杭州' }], debounce: 0 }, { option: () => h(ZtInput) }),
+      default: () => h(ZtAutocomplete, { underline: true, options: [{ value: '杭州' }], debounce: 0 }, { option: () => h(ZtInput) }),
     } })
     wrappers.push(w)
     await w.get('input').trigger('focus')
@@ -207,4 +207,10 @@ it('preserves ordinary Autocomplete nested-input hover and underline focus', asy
   await focus(w)
   expect(css(w, '.zt-input__wrapper').borderBottomColor).toBe('#245edb')
   expect(css(w, '.zt-input__wrapper').boxShadow).toContain('inset 0 -1px 0')
+})
+
+it.each(controls)('%s explicit false restores the outlined surface inside an underline Form', (_, component, _root, surface) => {
+  const w = form(component, { underline: false })
+  expect(w.find('.is-form-underline').exists()).toBe(false)
+  expect(css(w, component === ZtInputTag ? ".zt-input__wrapper" : surface).borderTopWidth).toBe('1px')
 })

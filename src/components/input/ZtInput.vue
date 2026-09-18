@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import { useZtSize } from '../config-provider/context'
-import { computed, inject, nextTick, ref, useAttrs } from 'vue'
+import { toRef, computed, inject, nextTick, ref, useAttrs } from 'vue'
 import { ztFormItemKey } from '../form/context'
 import type { ZtInputProps } from './types'
 import './input.scss'
 
 defineOptions({ name: 'ZtInput', inheritAttrs: false })
 
-const { underline } = useFormControlAppearance()
-
 const props = withDefaults(defineProps<ZtInputProps>(), {
+  underline: undefined,
   modelValue: '',
   type: 'text',
   status: 'default',
@@ -20,6 +19,7 @@ const props = withDefaults(defineProps<ZtInputProps>(), {
   clearable: false,
   showWordLimit: false,
 })
+const { underline } = useFormControlAppearance(toRef(props, 'underline'))
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]

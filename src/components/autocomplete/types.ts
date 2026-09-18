@@ -10,6 +10,8 @@ export type ZtAutocompleteSource = (
   signal: AbortSignal,
 ) => ZtAutocompleteOption[] | Promise<ZtAutocompleteOption[]>;
 export interface ZtAutocompleteProps {
+  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  underline?: boolean;
   /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */
   status?: ZtEntryStatus;
   /** 文本值；清空时发出空字符串。 */

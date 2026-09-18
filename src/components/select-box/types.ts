@@ -21,6 +21,8 @@ export type ZtSelectBoxRemoteMethod = (
 ) => Promise<ZtSelectBoxRemoteResult>
 
 export interface ZtSelectBoxProps {
+  /** 下划线外观；省略时继承最近的 Form，显式 false 恢复描边。 */
+  underline?: boolean
   /** 已确认的选项值；面板草稿只在确定时提交。 */
   modelValue?: ZtSelectValue[]
   options?: ZtSelectOption[]

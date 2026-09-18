@@ -1,16 +1,15 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import { useZtSize } from '../config-provider/context'
-import { computed, inject, ref } from 'vue'
+import { toRef, computed, inject, ref } from 'vue'
 import { ztFormItemKey } from '../form/context'
 import ZtInput from './ZtInput.vue'
 import type { ZtPasswordProps } from './types'
 
 defineOptions({ name: 'ZtPassword', inheritAttrs: false })
 
-const { underline } = useFormControlAppearance()
-
 const props = withDefaults(defineProps<ZtPasswordProps>(), {
+  underline: undefined,
   modelValue: '',
   status: 'default',
   disabled: false,
@@ -20,6 +19,7 @@ const props = withDefaults(defineProps<ZtPasswordProps>(), {
   showWordLimit: false,
   showToggle: true,
 })
+const { underline } = useFormControlAppearance(toRef(props, 'underline'))
 
 const emit = defineEmits<{
   'update:modelValue': [value: string]
