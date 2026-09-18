@@ -11,17 +11,15 @@ import LazyCode from './Lazy.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Image 图片</h1>
-    <p>提供一致的适应方式、加载后备和具备键盘操作的全屏预览。</p>
-    <h2>适应与预览</h2>
+  <div class="component-examples">
+    <h3>适应与预览</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>错误后备</h2>
+    <h3>错误后备</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>独立预览器与缩放限制</h2>
+    <h3>独立预览器与缩放限制</h3>
     <DemoBlock :code="ViewerCode" desc=""><Viewer /></DemoBlock>
 
-    <h2>懒加载与加载反馈</h2>
+    <h3>懒加载与加载反馈</h3>
     <DemoBlock :code="LazyCode" desc=""><Lazy /></DemoBlock>
   </div>
 </template>

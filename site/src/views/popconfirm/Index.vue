@@ -9,18 +9,16 @@ import ControlledCode from './Controlled.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Popconfirm 气泡确认框</h1>
-    <p>在当前操作附近完成二次确认，支持状态图标、说明和异步确认。</p>
-    <h2>危险操作</h2>
+  <div class="component-examples">
+    <h3>危险操作</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>异步确认</h2>
+    <h3>异步确认</h3>
     <DemoBlock
       :code="Example02Code"
       desc="Promise 完成前锁定按钮并显示进度；返回 false 或拒绝时保持打开。"
       ><Example02
     /></DemoBlock>
-    <h2>受控确认与保留弹层</h2>
+    <h3>受控确认与保留弹层</h3>
     <DemoBlock :code="ControlledCode" desc=""><Controlled /></DemoBlock>
   </div>
 </template>

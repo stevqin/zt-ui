@@ -11,22 +11,19 @@ import CustomContentCode from './CustomContent.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Drawer 抽屉</h1>
-    <p>从视口边缘滑入，用于承载筛选、详情和辅助操作。左右方向使用 width，上下方向使用 height，默认均为 420px；与 Modal 一样，size 控制头部、底部和内部控件密度。</p>
-    <p>内容区内边距随 size 变化，mini / small / default / medium / large 分别为 14 / 17 / 22 / 25 / 28px；可通过 body-padding 单独覆盖。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 控制右侧抽屉。"><Example01 /></DemoBlock>
-    <h2>出现方向</h2>
+    <h3>出现方向</h3>
     <DemoBlock :code="Example02Code" desc="placement 支持 left、right、top、bottom。"
       ><Example02
     /></DemoBlock>
-    <h2>尺寸与底部操作</h2>
+    <h3>尺寸与底部操作</h3>
     <DemoBlock :code="Example03Code" desc="width / height 控制宽高；size 控制密度，并传递给内部控件。"
       ><Example03
     /></DemoBlock>
 
-    <h2>插槽、销毁与关闭守卫</h2>
+    <h3>插槽、销毁与关闭守卫</h3>
     <DemoBlock
       :code="CustomContentCode"
       desc="关闭按钮、遮罩和 Escape 经过守卫；业务直接更新 v-model 由调用方决定。"

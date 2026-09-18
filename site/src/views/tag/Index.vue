@@ -15,24 +15,22 @@ import Example06Code from './Example06.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Tag 标签</h1>
-    <p>用于标记和分类。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="status 定义标签颜色。"><Example01 /></DemoBlock>
-    <h2>主题</h2>
+    <h3>主题</h3>
     <DemoBlock :code="Example02Code" desc="effect 支持 light、dark、plain。"
       ><Example02
     /></DemoBlock>
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <DemoBlock :code="Example03Code" desc="支持五种尺寸。"><Example03 /></DemoBlock>
-    <h2>圆角</h2>
+    <h3>圆角</h3>
     <DemoBlock :code="Example04Code" desc="round 展示胶囊形标签。"><Example04 /></DemoBlock>
-    <h2>可关闭</h2>
+    <h3>可关闭</h3>
     <DemoBlock :code="Example05Code" desc="closable 显示关闭按钮并触发 close。"
       ><Example05
     /></DemoBlock>
-    <h2>边框描边</h2>
+    <h3>边框描边</h3>
     <DemoBlock :code="Example06Code" desc="hit 为 light 主题增加描边。"><Example06 /></DemoBlock>
   </div>
 </template>

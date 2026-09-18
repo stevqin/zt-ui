@@ -3,6 +3,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { components } from '../docs/catalog'
 import { api } from '../docs/reference'
+import { router } from '../router'
 
 function read(path: string) {
   return readFileSync(resolve(process.cwd(), path), 'utf8')
@@ -10,11 +11,10 @@ function read(path: string) {
 
 describe('overlay documentation pages', () => {
   it('registers Modal and Drawer navigation and routes', () => {
-    const router = read('src/router/index.ts')
     expect(components.some(item=>item.path==='/modal')).toBe(true)
     expect(components.some(item=>item.path==='/drawer')).toBe(true)
-    expect(router).toContain("path: '/modal'")
-    expect(router).toContain("path: '/drawer'")
+    expect(router.getRoutes().some(route => route.path === '/modal')).toBe(true)
+    expect(router.getRoutes().some(route => route.path === '/drawer')).toBe(true)
   })
 
   it.each(['modal', 'drawer'])('%s page documents interactive, copyable examples and API', page => {

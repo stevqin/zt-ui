@@ -13,21 +13,17 @@ import SlotCode from './Slot.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Icon 图标</h1>
-    <p>
-      统一图标尺寸、颜色和无障碍语义。内置图标使用 currentColor，也可传入 Vue 组件或使用默认插槽。
-    </p>
-    <h2>内置图标</h2>
+  <div class="component-examples">
+    <h3>内置图标</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>独立尺寸</h2>
+    <h3>独立尺寸</h3>
     <DemoBlock :code="Example02Code" desc="size 接受数值（px）或 CSS 长度，默认 1em，不绑定 ConfigProvider 的五档密度。百分比相对确定宽高的容器解析。"><Example02 /></DemoBlock>
-    <h2>主题颜色</h2>
+    <h3>主题颜色</h3>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
-    <h2>旋转、自定义颜色与组件</h2>
+    <h3>旋转、自定义颜色与组件</h3>
     <DemoBlock :code="Example04Code"><Example04 /></DemoBlock>
 
-    <h2>自定义 SVG 插槽与描边</h2>
+    <h3>自定义 SVG 插槽与描边</h3>
     <DemoBlock :code="SlotCode" desc=""><Slot /></DemoBlock>
   </div>
 </template>

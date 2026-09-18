@@ -27,7 +27,7 @@ describe('Form integrated validation example', () => {
     const wrapper = mount(FormIndex)
 
     expect(wrapper.findComponent(IntegratedValidation).exists()).toBe(true)
-    expect(wrapper.get('h2').text()).toBe('全组件校验场景')
+    expect(wrapper.get('h3').text()).toBe('全组件校验场景')
   })
 
   it('contains every developed data-entry control', () => {

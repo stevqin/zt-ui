@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
-import { componentGroups, components, guides, groupOf, scenarios } from './docs/catalog'
+import { componentGroups, components, guides, groupOf } from './docs/catalog'
 import { slug } from './docs/reference'
 import DocSearch from './components/DocSearch.vue'
 import DemoSettings from './components/DemoSettings.vue'
-import ApiReference from './components/ApiReference.vue'
+import ComponentPageShell from './components/ComponentPageShell.vue'
 import { ZtConfigProvider, ZtMenu } from '@ztechjs/zt-ui'
 import type { ZtMenuItem } from '@ztechjs/zt-ui'
 import { demoConfig } from './docs/demo-config'
@@ -22,7 +22,6 @@ const navigation=computed<ZtMenuItem[]>(()=>[
  ...componentGroups.map(group=>({key:'group-'+group.id,label:group.title,type:'group' as const,children:components.filter(c=>c.group===group.id).map(c=>({key:c.path,label:c.title,description:c.name,href:c.path}))})),
 ])
 function navigate(key:string,_item:ZtMenuItem,event:MouseEvent){event.preventDefault();menu.value=false;void router.push(key)}
-const related=computed(()=>scenarios.filter(s=>s.components.includes(component.value?.path.slice(1)??'')))
 let observer:MutationObserver|undefined
 let pendingHash=true
 function collect(){
@@ -58,9 +57,12 @@ onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEv
   </aside>
   <main id="doc-content" ref="content" class="doc-main" tabindex="-1">
    <div class="doc-breadcrumb"><RouterLink to="/">Zt UI</RouterLink><span>/</span><span>{{component?groupOf(component.group).title:'文档'}}</span><template v-if="component"><span>/</span><strong>{{component.title}}</strong></template></div>
-   <RouterView />
-   <ApiReference v-if="component" :component-id="component.path.slice(1)" />
-   <section v-if="component && related.length" class="doc-related"><h2>相关场景</h2><div class="related-links"><RouterLink v-for="s in related" :key="s.id" :to="'/scenarios/'+s.id">{{s.title}} <span>↗</span></RouterLink></div></section>
+   <RouterView v-slot="{ Component }">
+    <ComponentPageShell v-if="component" :key="component.path" :component="component">
+     <component :is="Component" />
+    </ComponentPageShell>
+    <component :is="Component" v-else />
+   </RouterView>
    <footer class="doc-footer"><span>Zt UI · 组件、场景与接口参考</span><RouterLink to="/components">浏览全部组件 →</RouterLink></footer>
   </main>
   <aside class="doc-outline" aria-label="本页目录"><span class="doc-outline__title">本页内容</span><a v-for="item in outline" :key="item.id" :href="'#'+encodeURIComponent(item.id)" :class="{'is-active':active===item.id,'is-sub':item.level===3}">{{item.title}}</a><a class="back-top" href="#doc-content">返回顶部 ↑</a></aside>

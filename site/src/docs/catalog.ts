@@ -1,4 +1,5 @@
 import expansion from './expansion.json';
+import pageContent from './component-pages.json';
 export type ComponentGroupId =
   | 'foundation'
   | 'layout'
@@ -16,6 +17,27 @@ export interface ComponentGroup {
   description: string;
   accent: string;
 }
+export interface ComponentExampleMeta {
+  title: string;
+  kind: 'live' | 'integration';
+  file: string | null;
+  description: string;
+}
+export interface ComponentPageMeta {
+  purpose: string;
+  guidance: string[];
+  designNotes: string[];
+  accessibilityNotes: string[];
+  examples: ComponentExampleMeta[];
+  related?: { path: string; title: string }[];
+}
+export type DemoVisualStatus =
+  'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
+export interface ComponentVisualStatusMeta {
+  supported: DemoVisualStatus[];
+  default: DemoVisualStatus;
+  controller: boolean;
+}
 export interface ComponentMeta {
   path: string;
   name: string;
@@ -24,6 +46,10 @@ export interface ComponentMeta {
   description: string;
   status: 'stable';
   keywords: string[];
+  routeName?: string;
+  page: ComponentPageMeta;
+  /** Optional documentation-only capability; never a ConfigProvider setting. */
+  visualStatus?: ComponentVisualStatusMeta;
 }
 export interface PlannedComponent {
   name: string;
@@ -91,6 +117,80 @@ export const componentGroups: ComponentGroup[] = [
     accent: '#48657e',
   },
 ];
+const familyNotes: Record<
+  ComponentGroupId,
+  Pick<ComponentPageMeta, 'designNotes' | 'accessibilityNotes'>
+> = {
+  foundation: {
+    designNotes: [
+      '保持同一界面的文字层级、尺寸与语义颜色一致；局部覆盖应有明确的内容或交互需要。',
+    ],
+    accessibilityNotes: [
+      '按内容含义选择语义标签，为只有图标的操作提供名称；重要信息同时用文字表达。',
+    ],
+  },
+  layout: {
+    designNotes: [
+      '布局随可用空间调整；先约束容器尺寸，再决定换行、分栏或内容滚动。',
+    ],
+    accessibilityNotes: [
+      '保持视觉顺序与阅读顺序一致；缩放及窄屏时不要遮挡内容、操作或键盘焦点。',
+    ],
+  },
+  form: {
+    designNotes: [
+      '同组字段保持密度与对齐一致；必填、限制、加载和校验结果使用清晰的文字说明。',
+    ],
+    accessibilityNotes: [
+      '为控件关联可见标签，保留键盘焦点；错误提示应与字段关联，不能只靠颜色区分。',
+    ],
+  },
+  data: {
+    designNotes: [
+      '先突出数据含义和层级，再补充操作；明确区分加载、空数据与异常结果。',
+    ],
+    accessibilityNotes: [
+      '为数据提供标题或标签；状态同时包含文字，交互项保留键盘操作和可见焦点。',
+    ],
+  },
+  navigation: {
+    designNotes: [
+      '导航名称与目标页面一致，以清晰的层级和当前状态帮助用户理解位置。',
+    ],
+    accessibilityNotes: [
+      '保留可见焦点和当前项语义；自定义内容不应阻断组件既有的键盘导航。',
+    ],
+  },
+  feedback: {
+    designNotes: [
+      '按信息重要性选择提示强度，状态颜色搭配说明，并在需要时提供下一步动作。',
+    ],
+    accessibilityNotes: [
+      '异步变化应有可感知的文字反馈；动画遵循减少动态效果偏好，不让颜色成为唯一线索。',
+    ],
+  },
+  overlay: {
+    designNotes: [
+      '浮层靠近触发上下文，内容在视口内滚动；避免叠加过多层级或放入无关任务。',
+    ],
+    accessibilityNotes: [
+      '为触发器与浮层提供名称；保留组件的焦点管理和关闭方式，关闭后让用户能够继续原任务。',
+    ],
+  },
+  media: {
+    designNotes: [
+      '明确媒体尺寸、适应方式和失败后备，避免内容加载造成明显布局跳动。',
+    ],
+    accessibilityNotes: [
+      '有信息的媒体提供替代文字，装饰内容避免重复朗读；预览和切换操作需要可访问名称。',
+    ],
+  },
+};
+const pages = pageContent as Record<
+  string,
+  Pick<ComponentPageMeta, 'purpose' | 'guidance' | 'examples' | 'related'>
+>;
+
 const stable = (
   path: string,
   name: string,
@@ -106,6 +206,12 @@ const stable = (
   description,
   status: 'stable',
   keywords,
+  routeName: path === '/menu' ? 'menu-demo' : undefined,
+  page: {
+    ...pages[path.slice(1)],
+    purpose: pages[path.slice(1)].purpose || description,
+    ...familyNotes[group],
+  },
 });
 export const components: ComponentMeta[] = [
   stable(

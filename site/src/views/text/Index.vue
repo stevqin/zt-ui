@@ -11,16 +11,14 @@ import Example04Code from './Example04.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Text 文本</h1>
-    <p>统一正文的语义标签、字号、状态色、字重和溢出处理，不改变父容器布局。</p>
-    <h2>状态颜色</h2>
+  <div class="component-examples">
+    <h3>状态颜色</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>尺寸与字重</h2>
+    <h3>尺寸与字重</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>文本省略</h2>
+    <h3>文本省略</h3>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
-    <h2>语义标签</h2>
+    <h3>语义标签</h3>
     <DemoBlock :code="Example04Code"><Example04 /></DemoBlock>
   </div>
 </template>

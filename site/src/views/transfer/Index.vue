@@ -8,17 +8,16 @@ import Status from './Status.vue';
 import StatusCode from './Status.vue?raw';
 </script>
 <template>
-  <div class="doc-section">
-    <h1>Transfer 穿梭框</h1>
-    <h2>受控移动、搜索与插槽</h2>
+  <div class="component-examples">
+    <h3>受控移动、搜索与插槽</h3>
     <DemoBlock :code="BasicCode" desc="受控移动、搜索与插槽"
       ><Basic
     /></DemoBlock>
-    <h2>尺寸、主题与自定义搜索</h2>
+    <h3>尺寸、主题与自定义搜索</h3>
     <DemoBlock :code="AdvancedCode" desc="尺寸、主题与自定义搜索"
       ><Advanced
     /></DemoBlock>
-    <h2>六种语义状态</h2>
+    <h3>六种语义状态</h3>
     <DemoBlock :code="StatusCode" desc="勾选、选中与焦点颜色随状态和主题变化"
       ><Status
     /></DemoBlock>

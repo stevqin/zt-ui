@@ -5,14 +5,45 @@ import { parse, compileScript, compileTemplate } from '@vue/compiler-sfc'
 import ts from 'typescript'
 
 const site = resolve(dirname(fileURLToPath(import.meta.url)), '..')
-export function inspectExamples() {
+function elements(node) {
+  if (!node) return []
+  return [
+    ...(node.type === 1 ? [node] : []),
+    ...(node.children ?? []).flatMap(elements),
+  ]
+}
+
+function inspectShell(siteRoot, errors) {
+  const readTemplate = (path) => {
+    try {
+      return parse(readFileSync(resolve(siteRoot, path), 'utf8')).descriptor
+        .template?.ast
+    } catch {
+      return undefined
+    }
+  }
+  const app = elements(readTemplate('src/App.vue'))
+  if (app.filter((node) => node.tag === 'ComponentPageShell').length !== 1)
+    errors.push(
+      'App: component routes must compose exactly one ComponentPageShell',
+    )
+  if (app.some((node) => node.tag === 'ApiReference'))
+    errors.push('App: API belongs inside ComponentPageShell')
+  const shell = elements(readTemplate('src/components/ComponentPageShell.vue'))
+  for (const tag of ['h1', 'ApiReference', 'slot'])
+    if (shell.filter((node) => node.tag === tag).length !== 1)
+      errors.push(`ComponentPageShell: expected exactly one ${tag}`)
+}
+
+export function inspectExamples(siteRoot = site) {
   const pages = [],
     errors = []
-  for (const directory of readdirSync(resolve(site, 'src/views'), { withFileTypes: true }).filter(
-    (item) => item.isDirectory(),
-  )) {
+  inspectShell(siteRoot, errors)
+  for (const directory of readdirSync(resolve(siteRoot, 'src/views'), {
+    withFileTypes: true,
+  }).filter((item) => item.isDirectory())) {
     const id = directory.name,
-      filename = resolve(site, 'src/views', id, 'Index.vue')
+      filename = resolve(siteRoot, 'src/views', id, 'Index.vue')
     let source
     try {
       source = readFileSync(filename, 'utf8')
@@ -21,6 +52,26 @@ export function inspectExamples() {
     }
     const { descriptor, errors: parseErrors } = parse(source, { filename })
     errors.push(...parseErrors.map((error) => `${id}: ${error}`))
+    if (id !== 'feedback') {
+      const framing = elements(descriptor.template?.ast).filter(
+        (node) =>
+          ['h1', 'h2', 'ComponentPageShell', 'ApiReference'].includes(
+            node.tag,
+          ) ||
+          node.props.some(
+            (prop) =>
+              prop.type === 6 &&
+              prop.name === 'class' &&
+              /(?:^|\s)(?:doc-section|api-reference)(?:\s|$)/.test(
+                prop.value?.content ?? '',
+              ),
+          ),
+      )
+      if (framing.length)
+        errors.push(
+          `${id}: remove shell-owned framing (${framing.map((node) => node.tag).join(', ')})`,
+        )
+    }
     const imports = new Map()
     const script = ts.createSourceFile(
       filename,
@@ -34,14 +85,26 @@ export function inspectExamples() {
     const examples = []
     let title = ''
     function visit(node) {
-      if (node.type === 1 && node.tag === 'h2')
+      if (node.type === 1 && ['h2', 'h3'].includes(node.tag))
         title = node.children.map((child) => child.content ?? '').join('')
       if (node.type === 1 && node.tag === 'DemoBlock') {
-        const code = node.props.find((prop) => prop.type === 7 && prop.arg?.content === 'code')?.exp
-          ?.content
-        const codeOnly = node.props.some((prop) => prop.type === 6 && prop.name === 'code-only')
+        const description =
+          node.props.find((prop) => prop.type === 6 && prop.name === 'desc')
+            ?.value?.content ?? ''
+        const code = node.props.find(
+          (prop) => prop.type === 7 && prop.arg?.content === 'code',
+        )?.exp?.content
+        const codeOnly = node.props.some(
+          (prop) => prop.type === 6 && prop.name === 'code-only',
+        )
         if (codeOnly) {
-          examples.push({ title, kind: 'integration', file: null, props: [] })
+          examples.push({
+            title,
+            kind: 'integration',
+            file: null,
+            description,
+            props: [],
+          })
           return
         }
         const children = node.children.filter((child) => child.type === 1)
@@ -49,14 +112,19 @@ export function inspectExamples() {
         const componentFile = imports.get(component),
           rawFile = imports.get(code)
         if (!componentFile || rawFile !== `${componentFile}?raw`) {
-          errors.push(`${id}/${title}: preview and source must import the same Vue file`)
+          errors.push(
+            `${id}/${title}: preview and source must import the same Vue file`,
+          )
           return
         }
         const examplePath = resolve(dirname(filename), componentFile)
         const exampleSource = readFileSync(examplePath, 'utf8')
-        const { descriptor: example, errors: exampleErrors } = parse(exampleSource, {
-          filename: examplePath,
-        })
+        const { descriptor: example, errors: exampleErrors } = parse(
+          exampleSource,
+          {
+            filename: examplePath,
+          },
+        )
         errors.push(...exampleErrors.map((error) => `${id}/${title}: ${error}`))
         try {
           const compiled = example.scriptSetup
@@ -71,20 +139,37 @@ export function inspectExamples() {
               expressionPlugins: ['typescript'],
             },
           })
-          errors.push(...result.errors.map((error) => `${id}/${title}: ${error}`))
+          errors.push(
+            ...result.errors.map((error) => `${id}/${title}: ${error}`),
+          )
         } catch (error) {
           errors.push(`${id}/${title}: ${error.message}`)
         }
         if (/from\s*['"]@\//.test(exampleSource))
-          errors.push(`${id}/${title}: copied example depends on private site imports`)
+          errors.push(
+            `${id}/${title}: copied example depends on private site imports`,
+          )
         if (/['"]\/(?:image-demo|upload-demo)\//.test(exampleSource))
-          errors.push(`${id}/${title}: root-relative image asset is not portable`)
+          errors.push(
+            `${id}/${title}: root-relative image asset is not portable`,
+          )
         const bindings = []
         function collect(n) {
           if (n.type === 1 && /^Zt/.test(n.tag)) {
             for (const prop of n.props) {
               const name = prop.type === 6 ? prop.name : prop.arg?.content
-              if (name) bindings.push(`${n.tag}.${name}`)
+              if (name) {
+                bindings.push(`${n.tag}.${name}`)
+                const removed = {
+                  ZtRadioGroup: 'variant',
+                  ZtPagination: 'small',
+                  ZtBadge: 'type',
+                }
+                if (removed[n.tag] === name)
+                  errors.push(
+                    `${id}/${title}: removed ${n.tag.slice(2)}.${name} in ${componentFile}`,
+                  )
+              }
             }
           }
           for (const child of n.children ?? []) collect(child)
@@ -94,6 +179,7 @@ export function inspectExamples() {
           title,
           kind: 'live',
           file: `src/views/${id}/${componentFile.replace('./', '')}`,
+          description,
           props: [...new Set(bindings)],
         })
         return
@@ -120,7 +206,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     (page) =>
       `| ${page.component} | ${page.examples.filter((e) => e.kind === 'live').length} | ${page.examples.map((e) => `${e.title}${e.kind === 'integration' ? '（仅接入代码）' : ''}`).join('；')} |`,
   )
-  const report = `# 组件示例盘点\n\n由 site/scripts/audit-examples.mjs 生成。共 ${pages.filter(page => page.component !== 'feedback').length} 个组件文档页与 ${pages.filter(page => page.component === 'feedback').length} 个反馈指南页、${live} 个可运行示例、${integration} 个接入代码示例。\n\n每个可运行示例都由独立 Vue 文件同时提供渲染组件与 ?raw 源码；包含状态、事件和样式。复制前需在业务项目安装 @ztechjs/zt-ui 并引入其样式。反馈指南的命令式 API 直接从 @ztechjs/zt-alert 导入并加载其样式。Menu 的路由示例需要安装 Vue Router 并配置示例中说明的路由；Upload 的 Axios 接入代码需要业务接口。\n\n| 组件 | 可运行示例数 | 场景 |\n| --- | ---: | --- |\n${rows.join('\n')}\n\n校验范围：所有示例与代码来源一致、SFC 解析与模板编译、私有路径与部署资源检查。完整类型检查由 npm run typecheck 执行，交互回归由 npm test 执行。该盘点统计演示场景，不将静态属性出现次数等同于功能测试通过。\n`
+  const report = `# 组件示例盘点\n\n由 site/scripts/audit-examples.mjs 生成。共 ${pages.filter((page) => page.component !== 'feedback').length} 个组件文档页与 ${pages.filter((page) => page.component === 'feedback').length} 个反馈指南页、${live} 个可运行示例、${integration} 个接入代码示例。\n\n每个可运行示例都由独立 Vue 文件同时提供渲染组件与 ?raw 源码；包含状态、事件和样式。复制前需在业务项目安装 @ztechjs/zt-ui 并引入其样式。反馈指南的命令式 API 直接从 @ztechjs/zt-alert 导入并加载其样式。Menu 的路由示例需要安装 Vue Router 并配置示例中说明的路由；Upload 的 Axios 接入代码需要业务接口。\n\n| 组件 | 可运行示例数 | 场景 |\n| --- | ---: | --- |\n${rows.join('\n')}\n\n校验范围：共享页面外壳、所有示例与代码来源一致、已移除属性、SFC 解析与模板编译、私有路径与部署资源检查。完整类型检查由 npm run typecheck 执行，交互回归由 npm test 执行。该盘点统计演示场景，不将静态属性出现次数等同于功能测试通过。\n`
   writeFileSync(resolve(site, '../docs/component-examples-audit.md'), report)
   console.log(
     `${pages.length} pages; ${live} live examples; ${integration} integration examples; source parity and SFC compilation verified`,

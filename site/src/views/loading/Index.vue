@@ -4,12 +4,8 @@ import Basic from './Basic.vue';
 import BasicCode from './Basic.vue?raw';
 </script>
 <template>
-  <div class="doc-section">
-    <h1>Loading 加载</h1>
-    <p>
-      声明式区域加载遮罩，由 loading 状态控制，仅覆盖当前内容区域。命令式全屏加载请参阅 <RouterLink to="/feedback">独立反馈库指南</RouterLink>。
-    </p>
-    <h2>区域加载</h2>
+  <div class="component-examples">
+    <h3>区域加载</h3>
     <DemoBlock :code="BasicCode"><Basic /></DemoBlock>
   </div>
 </template>

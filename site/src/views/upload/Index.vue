@@ -33,51 +33,46 @@ import FileSlotCode from './FileSlot.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Upload 上传</h1>
-    <p>
-      选择、拖拽和上传文件，提供进度、取消、重试及图片预览。通过 v-model:file-list
-      管理文件列表，继承全局尺寸、主题和圆角。
-    </p>
-    <h2>上传交互体验</h2>
+  <div class="component-examples">
+    <h3>上传交互体验</h3>
     <DemoBlock
       :code="playgroundCode"
       desc="此示例使用本地模拟请求。可切换自动/手动上传、拖拽和失败重试，或切换 status 查看六种主题。"
       ><Playground
     /></DemoBlock>
-    <h2>图片列表与预览</h2>
+    <h3>图片列表与预览</h3>
     <DemoBlock
       :code="Example02Code"
       desc="图片预览使用本地临时 URL，移除文件或卸载组件后释放。此示例不执行上传。"
       ><Example02
     /></DemoBlock>
-    <h2>照片墙</h2>
+    <h3>照片墙</h3>
     <DemoBlock
       :code="pictureCardCode"
       desc="list-type=picture-card 将文件显示为图片卡片；卡片大小随全局 size 调整，达到 limit 后隐藏添加入口，删除后恢复。"
       ><PictureCard
     /></DemoBlock>
-    <h2>单张头像上传</h2>
+    <h3>单张头像上传</h3>
     <DemoBlock
       :code="avatarCode"
       desc="参考头像上传用法，通过 trigger 自定义入口和 show-file-list=false 隐藏常规列表。"
       ><Avatar
     /></DemoBlock>
-    <h2>类型、大小与数量限制</h2>
+    <h3>类型、大小与数量限制</h3>
     <DemoBlock :code="Example05Code"><Example05 /></DemoBlock>
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <DemoBlock :code="Example06Code"><Example06 /></DemoBlock>
-    <h2>禁用与文件回显</h2>
+    <h3>禁用与文件回显</h3>
     <DemoBlock :code="Example07Code"><Example07 /></DemoBlock>
-    <h2>表单联动</h2>
+    <h3>表单联动</h3>
     <DemoBlock :code="formCode"><FormExample /></DemoBlock>
-    <h2>接入真实接口</h2>
+    <h3>接入真实接口</h3>
     <DemoBlock
       code-only
       :code="requestCode"
       desc="将项目中已经封装好的 Axios 接口方法直接传给 request；action 可以省略。以下仅展示配置，本站不执行这个请求。"
     ></DemoBlock>
-    <h2>请求与校验约定</h2>
+    <h3>请求与校验约定</h3>
     <p>
       未配置 action、request 或 httpRequest 时只选择文件。auto-upload=false 时，通过组件 ref 的
       submit() 上传待上传项；失败项使用 retry(file)。abort(file?)
@@ -95,7 +90,7 @@ import FileSlotCode from './FileSlot.vue?raw';
       / onError，并通过 signal 或返回 abort() 停止实际请求。fileList 回显条目需有唯一 uid、name 和
       status；有图片 url 时可预览，没有 raw 的历史文件不能重传。
     </p>
-    <h2>事件与插槽</h2>
+    <h3>事件与插槽</h3>
     <p>
       change 表示文件列表中的文件状态变化；progress、success、error 分别报告请求过程。reject
       报告类型、大小或前置校验失败，exceed 报告数量超限，remove / cancel / preview
@@ -103,17 +98,17 @@ import FileSlotCode from './FileSlot.vue?raw';
       remove、abort、retry、preview 操作，tip 插槽用于限制说明。
     </p>
 
-    <h2>异步校验与删除保护</h2>
+    <h3>异步校验与删除保护</h3>
     <DemoBlock :code="HooksCode" desc=""><Hooks /></DemoBlock>
 
-    <h2>直接传入业务接口函数</h2>
+    <h3>直接传入业务接口函数</h3>
     <DemoBlock
       :code="RequestCode"
       desc="此演示实际执行 FormData 接口函数，用本地 Promise 模拟返回，不发送网络请求。"
       ><Request
     /></DemoBlock>
 
-    <h2>自定义文件行与实例清空</h2>
+    <h3>自定义文件行与实例清空</h3>
     <DemoBlock :code="FileSlotCode" desc=""><FileSlot /></DemoBlock>
   </div>
 </template>

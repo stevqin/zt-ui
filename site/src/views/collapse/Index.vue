@@ -9,14 +9,12 @@ import CustomTitleCode from './CustomTitle.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Collapse 折叠面板</h1>
-    <p>收纳可分组内容，支持多开、手风琴、禁用和懒渲染。</p>
-    <h2>多面板</h2>
+  <div class="component-examples">
+    <h3>多面板</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>手风琴</h2>
+    <h3>手风琴</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>自定义标题、禁用与懒渲染</h2>
+    <h3>自定义标题、禁用与懒渲染</h3>
     <DemoBlock :code="CustomTitleCode" desc=""><CustomTitle /></DemoBlock>
   </div>
 </template>

@@ -11,16 +11,14 @@ import PlacementCode from './Placement.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Popover 弹出框</h1>
-    <p>在触发元素附近展示补充信息或轻量操作，自动翻转并限制在可视区域内。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>触发方式</h2>
+    <h3>触发方式</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>手动控制</h2>
+    <h3>手动控制</h3>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
-    <h2>方位、箭头与禁用</h2>
+    <h3>方位、箭头与禁用</h3>
     <DemoBlock :code="PlacementCode" desc=""><Placement /></DemoBlock>
   </div>
 </template>

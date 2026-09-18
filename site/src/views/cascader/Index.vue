@@ -8,15 +8,14 @@ import Status from './Status.vue';
 import StatusCode from './Status.vue?raw';
 </script>
 <template>
-  <div class="doc-section">
-    <h1>Cascader 级联选择</h1>
-    <h2>完整路径与多选</h2>
+  <div class="component-examples">
+    <h3>完整路径与多选</h3>
     <DemoBlock :code="BasicCode" desc="完整路径与多选"><Basic /></DemoBlock>
-    <h2>字段映射、主题与懒加载</h2>
+    <h3>字段映射、主题与懒加载</h3>
     <DemoBlock :code="AdvancedCode" desc="字段映射、主题与懒加载"
       ><Advanced
     /></DemoBlock>
-    <h2>六种语义状态</h2>
+    <h3>六种语义状态</h3>
     <DemoBlock :code="StatusCode" desc="勾选、选中与焦点颜色随状态和主题变化"
       ><Status
     /></DemoBlock>

@@ -19,31 +19,29 @@ import LimitsCode from './Limits.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Checkbox 多选框</h1>
-    <p>在一组备选项中进行多选。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 绑定布尔值。"><Example01 /></DemoBlock>
-    <h2>禁用</h2>
+    <h3>禁用</h3>
     <DemoBlock :code="Example02Code" desc="设置 disabled 禁用。"><Example02 /></DemoBlock>
-    <h2>CheckboxGroup 组合</h2>
+    <h3>CheckboxGroup 组合</h3>
     <DemoBlock :code="Example03Code" desc="CheckboxGroup 使用数组统一管理多选。"
       ><Example03
     /></DemoBlock>
-    <h2>颜色状态</h2>
+    <h3>颜色状态</h3>
     <DemoBlock :code="Example04Code" desc="通过 CheckboxGroup 的 status 设置选中颜色。"
       ><Example04
     /></DemoBlock>
-    <h2>半选状态</h2>
+    <h3>半选状态</h3>
     <DemoBlock :code="Example05Code" desc="indeterminate 常用于全选逻辑。"><Example05 /></DemoBlock>
-    <h2>带边框</h2>
+    <h3>带边框</h3>
     <DemoBlock :code="Example06Code" desc="设置 border 展示带边框样式。"><Example06 /></DemoBlock>
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <DemoBlock :code="Example07Code" desc="支持 mini、small、default、medium、large。"
       ><Example07
     /></DemoBlock>
 
-    <h2>组内数量限制与事件</h2>
+    <h3>组内数量限制与事件</h3>
     <DemoBlock :code="LimitsCode" desc=""><Limits /></DemoBlock>
   </div>
 </template>

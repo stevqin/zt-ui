@@ -17,35 +17,33 @@ import MethodsCode from './Methods.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section input-doc">
-    <h1>Input 输入框</h1>
-    <p>通过鼠标或键盘输入文本，支持组合插槽、状态提示和统一尺寸。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples input-doc">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 双向绑定文本。"><Example01 /></DemoBlock>
-    <h2>清空与字数限制</h2>
+    <h3>清空与字数限制</h3>
     <DemoBlock
       :code="Example02Code"
       desc="clearable 提供清空按钮；maxlength 配合 show-word-limit 显示字数。"
       ><Example02
     /></DemoBlock>
-    <h2>组合插槽</h2>
+    <h3>组合插槽</h3>
     <DemoBlock :code="Example03Code" desc="prepend、append、prefix 和 suffix 可组合扩展输入内容。"
       ><Example03
     /></DemoBlock>
-    <h2>校验状态</h2>
+    <h3>校验状态</h3>
     <DemoBlock :code="Example04Code" desc="status 提供成功、警告和错误边框反馈。"
       ><Example04
     /></DemoBlock>
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <DemoBlock :code="Example05Code" desc="支持 mini、small、default、medium、large 五档尺寸。"
       ><Example05
     /></DemoBlock>
-    <h2>禁用与只读</h2>
+    <h3>禁用与只读</h3>
     <DemoBlock :code="Example06Code" desc="disabled 禁止操作，readonly 保留可聚焦和复制能力。"
       ><Example06
     /></DemoBlock>
 
-    <h2>事件反馈与实例方法</h2>
+    <h3>事件反馈与实例方法</h3>
     <DemoBlock :code="MethodsCode" desc=""><Methods /></DemoBlock>
   </div>
 </template>
