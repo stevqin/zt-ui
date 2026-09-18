@@ -33,7 +33,10 @@ describe('standalone displayed example source', () => {
   });
   it('preserves public ConfigProvider appearance and validation status', () => {
     const appearance = source
-      .replace('<template><ZtRadio', '<template><ZtConfigProvider size="small"><ZtRadio')
+      .replace(
+        '<template><ZtRadio',
+        '<template><ZtConfigProvider size="small"><ZtRadio',
+      )
       .replace('</ZtRadio>', '</ZtRadio></ZtConfigProvider>');
     const rendered = renderExampleSource(appearance, 'warning');
     expect(rendered).toContain('<ZtConfigProvider size="small">');
@@ -44,6 +47,22 @@ describe('standalone displayed example source', () => {
         'danger',
       ),
     ).toContain('status="error"');
+  });
+  it.each([
+    'demoStatus.value',
+    'demoStatus["value"]',
+    'consume(demoStatus)',
+    '(() => { const alias = demoStatus; return alias.value })()',
+  ])('rejects unsupported script consumption: %s', (expression) => {
+    expect(() =>
+      renderExampleSource(
+        source.replace(
+          '</script>',
+          `const current = ${expression};\n</script>`,
+        ),
+        'danger',
+      ),
+    ).toThrow(/site|status/i);
   });
   it('rejects unsupported site plumbing rather than silently producing broken copied code', () => {
     expect(() =>

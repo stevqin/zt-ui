@@ -1,5 +1,7 @@
 import { mount } from '@vue/test-utils';
-import { computed, defineComponent, h, nextTick } from 'vue';
+import { computed, defineComponent, h, nextTick, ref } from 'vue';
+import { createMemoryHistory, createRouter } from 'vue-router';
+import DocSearch from './DocSearch.vue';
 import { afterEach, describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { components } from '../docs/catalog';
@@ -116,4 +118,112 @@ describe('contextual demo status controls', () => {
       expect(fixture(path).wrapper.find('.demo-status').exists()).toBe(false);
     },
   );
+});
+
+describe('status modal ownership with the actual document search', () => {
+  function searchFixture() {
+    window.innerWidth = 390;
+    const showController = ref(true);
+    const store = createDemoStatusStore();
+    const host = defineComponent({
+      setup() {
+        provideDemoStatus(
+          computed(
+            () => components.find((c) => c.path === '/radio')!.visualStatus,
+          ),
+          store,
+        );
+        return () => [
+          h(DocSearch),
+          showController.value ? h(DemoStatusController) : null,
+        ];
+      },
+    });
+    const router = createRouter({
+      history: createMemoryHistory(),
+      routes: [
+        { path: '/', component: defineComponent({ render: () => null }) },
+      ],
+    });
+    const wrapper = mount(host, {
+      attachTo: document.body,
+      global: { plugins: [router] },
+    });
+    wrappers.push(wrapper);
+    return { wrapper, showController };
+  }
+  function key(key: string, modifier: 'metaKey' | 'ctrlKey' = 'metaKey') {
+    document.activeElement?.dispatchEvent(
+      new KeyboardEvent('keydown', {
+        key,
+        bubbles: true,
+        [modifier]: key === 'k',
+      }),
+    );
+  }
+  it.each(['metaKey', 'ctrlKey'] as const)(
+    'contains %s+K, programmatic focus, Tab and Escape until the modal closes',
+    async (modifier) => {
+      const { wrapper } = searchFixture();
+      const search = wrapper.get<HTMLInputElement>('[aria-label="搜索文档"]');
+      search.element.focus();
+      await search.setValue('Radio');
+      await wrapper.get('.demo-status__pill').trigger('click');
+      await wrapper
+        .get('[data-status="warning"]')
+        .trigger('keydown', { key: 'Home' });
+      key('k', modifier);
+      await nextTick();
+      expect(document.activeElement?.getAttribute('data-status')).toBe(
+        'default',
+      );
+      expect(search.attributes('aria-expanded')).toBe('false');
+      search.element.focus();
+      await nextTick();
+      expect(document.activeElement?.getAttribute('data-status')).toBe(
+        'default',
+      );
+      expect(search.attributes('aria-expanded')).toBe('false');
+      key('Tab');
+      expect(document.activeElement?.getAttribute('aria-label')).toBe(
+        '关闭状态面板',
+      );
+      key('Escape');
+      await nextTick();
+      expect(wrapper.find('[role="dialog"]').exists()).toBe(false);
+      expect(document.activeElement).toBe(
+        wrapper.get('.demo-status__pill').element,
+      );
+      key('k', modifier);
+      await nextTick();
+      expect(document.activeElement).toBe(search.element);
+      expect(search.element.value).toBe('Radio');
+      expect(search.attributes('aria-expanded')).toBe('true');
+    },
+  );
+  it('releases ownership on a breakpoint change and unmount', async () => {
+    const { wrapper, showController } = searchFixture();
+    await wrapper.get('.demo-status__pill').trigger('click');
+    window.innerWidth = 1440;
+    window.dispatchEvent(new Event('resize'));
+    await nextTick();
+    key('k');
+    await nextTick();
+    expect(document.activeElement).toBe(
+      wrapper.get('[aria-label="搜索文档"]').element,
+    );
+    window.innerWidth = 390;
+    window.dispatchEvent(new Event('resize'));
+    await nextTick();
+    await wrapper.get('.demo-status__pill').trigger('click');
+    showController.value = false;
+    await nextTick();
+    window.dispatchEvent(
+      new KeyboardEvent('keydown', { key: 'k', ctrlKey: true }),
+    );
+    await nextTick();
+    expect(document.activeElement).toBe(
+      wrapper.get('[aria-label="搜索文档"]').element,
+    );
+  });
 });

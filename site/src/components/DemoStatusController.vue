@@ -90,8 +90,38 @@ function panelKeydown(event: KeyboardEvent) {
     ]?.focus();
   }
 }
-onMounted(() => window.addEventListener('resize', resize));
-onBeforeUnmount(() => window.removeEventListener('resize', resize));
+// The modal owns document keyboard/focus until it closes. Capture runs before
+// DocSearch's window shortcut and also guards direct programmatic focus calls.
+function modalKeydown(event: KeyboardEvent) {
+  if (!enabled.value || !mobile.value || !opened.value) return;
+  if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
+    event.preventDefault();
+    event.stopImmediatePropagation();
+  } else if (event.key === 'Tab' || event.key === 'Escape') {
+    event.stopImmediatePropagation();
+    panelKeydown(event);
+  }
+}
+function containModalFocus(event: FocusEvent) {
+  if (!enabled.value || !mobile.value || !opened.value) return;
+  const panel = root.value?.querySelector('.demo-status__panel');
+  if (panel && event.target instanceof Node && !panel.contains(event.target)) {
+    event.stopImmediatePropagation();
+    focusChoice();
+  }
+}
+onMounted(() => {
+  window.addEventListener('resize', resize);
+  window.addEventListener('keydown', modalKeydown, true);
+  document.addEventListener('focus', containModalFocus, true);
+  document.addEventListener('focusin', containModalFocus, true);
+});
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', resize);
+  window.removeEventListener('keydown', modalKeydown, true);
+  document.removeEventListener('focus', containModalFocus, true);
+  document.removeEventListener('focusin', containModalFocus, true);
+});
 </script>
 <template>
   <div
@@ -128,7 +158,6 @@ onBeforeUnmount(() => window.removeEventListener('resize', resize));
       :role="mobile ? 'dialog' : 'region'"
       :aria-modal="mobile ? true : undefined"
       aria-label="示例视觉状态"
-      @keydown="panelKeydown"
     >
       <div class="demo-status__heading">
         <strong>示例状态</strong

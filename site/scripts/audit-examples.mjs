@@ -14,6 +14,229 @@ function elements(node) {
   ];
 }
 
+function walkTs(node, visit) {
+  if (!node) return;
+  visit(node);
+  ts.forEachChild(node, (child) => walkTs(child, visit));
+}
+function unwrapExpression(node) {
+  while (
+    node &&
+    (ts.isParenthesizedExpression(node) ||
+      ts.isAsExpression(node) ||
+      ts.isSatisfiesExpression(node))
+  )
+    node = node.expression;
+  return node;
+}
+function bindingNames(pattern) {
+  const parsed = ts.createSourceFile(
+    'pattern.ts',
+    `const ${pattern} = null`,
+    ts.ScriptTarget.Latest,
+    true,
+  );
+  if (parsed.parseDiagnostics.length) return ['*'];
+  const names = [];
+  function collect(name) {
+    if (!name) names.push('*');
+    else if (ts.isIdentifier(name)) names.push(name.text);
+    else if (
+      ts.isObjectBindingPattern(name) ||
+      ts.isArrayBindingPattern(name)
+    ) {
+      for (const element of name.elements)
+        if (!ts.isOmittedExpression(element)) collect(element.name);
+    } else names.push('*');
+  }
+  collect(parsed.statements[0]?.declarationList?.declarations[0]?.name);
+  return names;
+}
+function templateScopes(node, inherited) {
+  const self = new Set(inherited);
+  for (const prop of node.props ?? [])
+    if (prop.type === 7 && prop.name === 'for') {
+      const aliases = prop.forParseResult;
+      if (!aliases) self.add('*');
+      else
+        for (const alias of [aliases.value, aliases.key, aliases.index])
+          if (alias)
+            bindingNames(alias.content).forEach((name) => self.add(name));
+    }
+  const children = new Set(self);
+  for (const prop of node.props ?? [])
+    if (prop.type === 7 && prop.name === 'slot' && prop.exp)
+      bindingNames(prop.exp.content).forEach((name) => children.add(name));
+  return { self, children };
+}
+function parseExpression(content) {
+  return ts.createSourceFile(
+    'expression.ts',
+    `const expression = (${content ?? ''})`,
+    ts.ScriptTarget.Latest,
+    true,
+  ).statements[0]?.declarationList?.declarations[0]?.initializer;
+}
+// Keys are trusted only for const literals/aliases with no other script uses.
+// Calls, property access, writes and escaping references are deliberately opaque.
+function staticObjectBindings(script, template) {
+  const declarations = new Map(),
+    allowedReferences = new Set(),
+    related = new Map(),
+    unsafe = new Set();
+  for (const statement of script.statements)
+    if (
+      ts.isVariableStatement(statement) &&
+      statement.declarationList.flags & ts.NodeFlags.Const
+    )
+      for (const declaration of statement.declarationList.declarations)
+        if (ts.isIdentifier(declaration.name)) {
+          declarations.set(declaration.name.text, declaration.initializer);
+          allowedReferences.add(declaration.name);
+        }
+  function staticReferences(node, references = []) {
+    node = unwrapExpression(node);
+    if (node && ts.isIdentifier(node)) references.push(node);
+    else if (node && ts.isObjectLiteralExpression(node))
+      for (const property of node.properties)
+        if (ts.isSpreadAssignment(property))
+          staticReferences(property.expression, references);
+    return references;
+  }
+  for (const [name, initializer] of declarations)
+    for (const reference of staticReferences(initializer)) {
+      allowedReferences.add(reference);
+      if (!declarations.has(reference.text)) continue;
+      for (const [a, b] of [
+        [name, reference.text],
+        [reference.text, name],
+      ]) {
+        if (!related.has(a)) related.set(a, new Set());
+        related.get(a).add(b);
+      }
+    }
+  function isReference(node) {
+    if (!ts.isIdentifier(node) || !declarations.has(node.text)) return false;
+    const p = node.parent;
+    return !(
+      (ts.isPropertyAccessExpression(p) && p.name === node) ||
+      (ts.isPropertyAssignment(p) && p.name === node) ||
+      (ts.isMethodDeclaration(p) && p.name === node) ||
+      (ts.isBindingElement(p) && p.propertyName === node)
+    );
+  }
+  walkTs(script, (node) => {
+    if (isReference(node) && !allowedReferences.has(node))
+      unsafe.add(node.text);
+  });
+  function noteExpression(content, scope, objectBinding = false) {
+    const expression = objectBinding
+      ? parseExpression(content)
+      : ts.createSourceFile(
+          'template-expression.ts',
+          content ?? '',
+          ts.ScriptTarget.Latest,
+          true,
+        );
+    const allowed = new Set(objectBinding ? staticReferences(expression) : []);
+    walkTs(expression, (node) => {
+      if (
+        isReference(node) &&
+        !scope.has('*') &&
+        !scope.has(node.text) &&
+        !allowed.has(node)
+      )
+        unsafe.add(node.text);
+    });
+  }
+  function notePatternDefaults(pattern, scope) {
+    const parsed = ts.createSourceFile(
+      'pattern.ts',
+      `const ${pattern} = null`,
+      ts.ScriptTarget.Latest,
+      true,
+    );
+    walkTs(parsed, (node) => {
+      if (ts.isBindingElement(node) && node.initializer)
+        noteExpression(node.initializer.getText(parsed), scope);
+    });
+  }
+  function noteTemplate(node, inherited = new Set()) {
+    const scope = templateScopes(node, inherited);
+    for (const prop of node.props ?? [])
+      if (prop.type === 7 && prop.exp) {
+        if (prop.name === 'for') {
+          noteExpression(prop.forParseResult?.source.content, inherited);
+          for (const alias of [
+            prop.forParseResult?.value,
+            prop.forParseResult?.key,
+            prop.forParseResult?.index,
+          ])
+            if (alias) notePatternDefaults(alias.content, inherited);
+        } else if (prop.name === 'slot')
+          notePatternDefaults(prop.exp.content, scope.self);
+        // Vue evaluates a same-node v-if before introducing v-for aliases.
+        else if (prop.name === 'if' || prop.name === 'else-if')
+          noteExpression(prop.exp.content, inherited);
+        else
+          noteExpression(
+            prop.exp.content,
+            scope.self,
+            prop.name === 'bind' && !prop.arg,
+          );
+      }
+    if (node.type === 5) noteExpression(node.content.content, inherited);
+    for (const child of node.children ?? [])
+      noteTemplate(child, scope.children);
+  }
+  noteTemplate(template);
+  // Reject all connected aliases when any one can be mutated or escape.
+  const queue = [...unsafe];
+  for (let i = 0; i < queue.length; i++)
+    for (const alias of related.get(queue[i]) ?? [])
+      if (!unsafe.has(alias)) {
+        unsafe.add(alias);
+        queue.push(alias);
+      }
+  function keys(node, scope = new Set(), seen = new Set()) {
+    node = unwrapExpression(node);
+    if (!node) return undefined;
+    if (ts.isIdentifier(node)) {
+      if (
+        scope.has('*') ||
+        scope.has(node.text) ||
+        unsafe.has(node.text) ||
+        seen.has(node.text)
+      )
+        return undefined;
+      // The initializer is in script scope, independent of template locals.
+      return keys(
+        declarations.get(node.text),
+        new Set(),
+        new Set([...seen, node.text]),
+      );
+    }
+    if (!ts.isObjectLiteralExpression(node)) return undefined;
+    const names = [];
+    for (const property of node.properties) {
+      if (ts.isSpreadAssignment(property)) {
+        const spread = keys(property.expression, scope, seen);
+        if (!spread) return undefined;
+        names.push(...spread);
+      } else if (
+        (ts.isPropertyAssignment(property) ||
+          ts.isShorthandPropertyAssignment(property)) &&
+        property.name &&
+        (ts.isIdentifier(property.name) || ts.isStringLiteral(property.name))
+      )
+        names.push(property.name.text);
+      else return undefined;
+    }
+    return names;
+  }
+  return keys;
+}
+
 function inspectShell(siteRoot, errors) {
   const readTemplate = (path) => {
     try {
@@ -175,50 +398,10 @@ export function inspectExamples(siteRoot = site) {
           ts.ScriptTarget.Latest,
           true,
         );
-        const declarations = new Map();
-        for (const statement of sourceScript.statements)
-          if (
-            ts.isVariableStatement(statement) &&
-            statement.declarationList.flags & ts.NodeFlags.Const
-          )
-            for (const declaration of statement.declarationList.declarations)
-              if (ts.isIdentifier(declaration.name))
-                declarations.set(
-                  declaration.name.text,
-                  declaration.initializer,
-                );
-        function objectKeys(node, seen = new Set()) {
-          if (!node) return undefined;
-          if (
-            ts.isParenthesizedExpression(node) ||
-            ts.isAsExpression(node) ||
-            ts.isSatisfiesExpression(node)
-          )
-            return objectKeys(node.expression, seen);
-          if (ts.isIdentifier(node)) {
-            if (seen.has(node.text)) return undefined;
-            return objectKeys(
-              declarations.get(node.text),
-              new Set([...seen, node.text]),
-            );
-          }
-          if (!ts.isObjectLiteralExpression(node)) return undefined;
-          const keys = [];
-          for (const property of node.properties) {
-            if (ts.isSpreadAssignment(property)) {
-              const spread = objectKeys(property.expression, seen);
-              if (!spread) return undefined;
-              keys.push(...spread);
-            } else if (
-              property.name &&
-              (ts.isIdentifier(property.name) ||
-                ts.isStringLiteral(property.name))
-            )
-              keys.push(property.name.text);
-            else return undefined;
-          }
-          return keys;
-        }
+        const objectKeys = staticObjectBindings(
+          sourceScript,
+          example.template.ast,
+        );
         function check(tag, name) {
           bindings.push(`${tag}.${name}`);
           if (removed[tag] === name)
@@ -226,7 +409,8 @@ export function inspectExamples(siteRoot = site) {
               `${id}/${title}: removed ${tag.slice(2)}.${name} in ${componentFile}`,
             );
         }
-        function collect(n) {
+        function collect(n, inherited = new Set()) {
+          const scope = templateScopes(n, inherited);
           const tag = n.tag?.replace(/(^|-)([a-z])/g, (_, prefix, letter) =>
             letter.toUpperCase(),
           );
@@ -236,17 +420,12 @@ export function inspectExamples(siteRoot = site) {
               else if (prop.name === 'bind') {
                 if (prop.arg?.isStatic) check(tag, prop.arg.content);
                 else if (removed[tag]) {
-                  const expression = ts.createSourceFile(
-                    'binding.ts',
-                    `const binding = (${prop.exp?.content ?? ''})`,
-                    ts.ScriptTarget.Latest,
-                    true,
-                  ).statements[0]?.declarationList?.declarations[0]
-                    ?.initializer;
-                  const keys = !prop.arg && objectKeys(expression);
+                  const keys =
+                    !prop.arg &&
+                    objectKeys(parseExpression(prop.exp?.content), scope.self);
                   if (!keys)
                     errors.push(
-                      `${id}/${title}: cannot audit ${tag} dynamic v-bind; use explicit props or a static const object in ${componentFile}`,
+                      `${id}/${title}: cannot audit ${tag} dynamic v-bind; use explicit props or an unshadowed, immutable static const object in ${componentFile}`,
                     );
                   else keys.forEach((name) => check(tag, name));
                 }
@@ -254,7 +433,7 @@ export function inspectExamples(siteRoot = site) {
                 check(tag, prop.arg?.content ?? 'modelValue');
             }
           }
-          for (const child of n.children ?? []) collect(child);
+          for (const child of n.children ?? []) collect(child, scope.children);
         }
         collect(example.template.ast);
         examples.push({

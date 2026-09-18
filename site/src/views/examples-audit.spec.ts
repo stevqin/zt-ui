@@ -465,6 +465,99 @@ import sampleCode from './CustomControls.vue?raw'
       ),
     ).toEqual([]);
   });
+  it.each([
+    [
+      'v-if before loop scope mutation',
+      'const props = { status: "success" }',
+      `<div v-if="Object.assign(props, { type: 'danger' })" v-for="props in rows">{{ props }}</div><ZtBadge v-bind="props" />`,
+    ],
+    [
+      'accessor mutation through this',
+      'const props = { get status() { this.type = "danger"; return "success" } }',
+      '<ZtBadge v-bind="props" />',
+    ],
+    [
+      'v-for shadow',
+      'const props = { status: "success" }',
+      '<ZtBadge v-for="props in [{ type: \'danger\' }]" v-bind="props" />',
+    ],
+    [
+      'destructured loop shadow',
+      'const props = { status: "success" }',
+      '<div v-for="{ props } in rows"><ZtBadge v-bind="props" /></div>',
+    ],
+    [
+      'slot shadow',
+      'const props = { status: "success" }',
+      '<Container v-slot="props"><ZtBadge v-bind="props" /></Container>',
+    ],
+    [
+      'destructured slot shadow',
+      'const props = { status: "success" }',
+      '<Container><template #default="{ value: props }"><ZtBadge v-bind="props" /></template></Container>',
+    ],
+    [
+      'Object.assign mutation',
+      'const props = { status: "success" }; Object.assign(props, { type: "danger" })',
+      '<ZtBadge v-bind="props" />',
+    ],
+    [
+      'direct mutation',
+      'const props = { status: "success" }; props.type = "danger"',
+      '<ZtBadge v-bind="props" />',
+    ],
+    [
+      'computed mutation',
+      'const props = { status: "success" }; props["type"] = "danger"',
+      '<ZtBadge v-bind="props" />',
+    ],
+    [
+      'alias mutation',
+      'const props = { status: "success" }; const alias = props; alias.type = "danger"',
+      '<ZtBadge v-bind="props" />',
+    ],
+    [
+      'escaped object',
+      'const props = { status: "success" }; mutate(props)',
+      '<ZtBadge v-bind="props" />',
+    ],
+    [
+      'template statement sequence',
+      'const props = { status: "success" }',
+      '<button @click="count++; Object.assign(props, { type: \'danger\' })">Change</button><ZtBadge v-bind="props" />',
+    ],
+    [
+      'slot default escape',
+      'const props = { status: "success" }',
+      '<Container v-slot="{ value = props }"><button @click="value.type = \'danger\'">Change</button></Container><ZtBadge v-bind="props" />',
+    ],
+    [
+      'loop default escape',
+      'const props = { status: "success" }',
+      '<div v-for="{ value = props } in rows"><button @click="value.type = \'danger\'">Change</button></div><ZtBadge v-bind="props" />',
+    ],
+    [
+      'template mutation',
+      'const props = { status: "success" }',
+      '<button @click="Object.assign(props, { type: \'danger\' })">Change</button><ZtBadge v-bind="props" />',
+    ],
+  ])(
+    'rejects %s instead of trusting unrelated or mutable script keys',
+    (_name, script, markup) => {
+      expect(
+        inspectFixture(
+          `<script setup>${script}</script><template>${markup}</template>`,
+        ).some((error) => error.includes('cannot audit')),
+      ).toBe(true);
+    },
+  );
+  it('accepts immutable const aliases/spreads and restores scope after a shadowing sibling', () => {
+    expect(
+      inspectFixture(
+        `<script setup>const props = { status: 'success' }; const alias = props; const options = { ...alias }</script><template><div v-for="props in rows">{{ props }}</div><Container v-slot="props"><span>{{ props }}</span></Container><ZtBadge v-bind="options" /></template>`,
+      ),
+    ).toEqual([]);
+  });
   it('accepts canonical props and unrelated small/type props', () => {
     expect(
       inspectFixture(
