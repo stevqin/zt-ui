@@ -1,4 +1,9 @@
 export default {
+  'tooltip.ZtTooltip.props.width': { description: '浮层外框宽度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束；Tooltip 省略时为 max-content，短文本紧凑、长文本换行。' },
+  'tooltip.ZtTooltip.props.height': { description: '浮层外框高度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束；省略时按内容高度展示，指定高度后仅内容区滚动。' },
+  'popover.ZtPopover.props.width': { description: '浮层外框宽度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束。' },
+  'popover.ZtPopover.props.height': { description: '浮层外框高度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束；省略时按内容高度展示，指定高度后仅内容区滚动。' },
+
   'drawer.ZtDrawer.props.subtitle': { description:'标题下方的辅助说明。' },
   'drawer.ZtDrawer.props.closeLabel': { description:'关闭按钮的无障碍名称。' },
   'drawer.ZtDrawer.props.bodyScroll': { description:'是否由抽屉内容区管理纵向滚动；设为 false 可让内部表格或树独立滚动。' },

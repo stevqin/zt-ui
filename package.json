@@ -49,7 +49,8 @@
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
     "build": "npm run typecheck && vite build && vite build --mode umd",
     "prepublishOnly": "npm test && npm run build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "audit:components": "node scripts/audit-component-contracts.mjs"
   },
   "peerDependencies": {
     "@visactor/vtable": "^1.26.7",

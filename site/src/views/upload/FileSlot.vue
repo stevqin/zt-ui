@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtUpload, ZtButton } from '@ztechjs/zt-ui';
 import type { ZtUploadFile } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const files = ref<ZtUploadFile[]>([]);
 const upload = ref<InstanceType<typeof ZtUpload>>();
 </script>
@@ -9,7 +12,12 @@ const upload = ref<InstanceType<typeof ZtUpload>>();
 <template>
   <div class="example-stack">
     <ZtButton @click="upload?.clearFiles()">清空列表</ZtButton
-    ><ZtUpload ref="upload" v-model:file-list="files" :auto-upload="false" multiple
+    ><ZtUpload
+      :status="demoStatus"
+      ref="upload"
+      v-model:file-list="files"
+      :auto-upload="false"
+      multiple
       ><template #file="{ file, remove }"
         ><div class="example-row">
           <strong>{{ file.name }}</strong

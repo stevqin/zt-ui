@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputOtp } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 const short = ref('');
 </script>
 
 <template>
   <ZtInputOtp
+    :status="demoStatus"
     v-model="short"
     :length="4"
     separator="-"

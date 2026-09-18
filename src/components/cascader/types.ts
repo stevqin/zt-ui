@@ -9,6 +9,8 @@ import type {
 export type ZtCascaderPath = ZtTreeKey[];
 export type ZtCascaderValue = ZtCascaderPath | ZtCascaderPath[];
 export interface ZtCascaderProps {
+  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */
+  underline?: boolean;
   /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */
   status?: ZtButtonStatus;
   /** 单选为完整 key 路径，多选为路径数组；清空发出 []。 */

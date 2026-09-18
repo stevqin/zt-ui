@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { hierarchyStyle } from '../tree/appearance';
-import { computed, inject, ref, watch, nextTick, onBeforeUnmount } from 'vue';
+import { toRef, computed, inject, ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
 import ZtPopover from '../popover/ZtPopover.vue';
@@ -11,14 +11,15 @@ import type { ZtCascaderProps, ZtCascaderValue, ZtCascaderPath } from './types';
 import '../tree-select/tree-select.scss';
 import './cascader.scss';
 defineOptions({ name: 'ZtCascader' });
-const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtCascaderProps>(), {
+  underline: undefined,
   modelValue: () => [],
   options: () => [],
   placeholder: '请选择',
   teleported: true,
   clearable: false,
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: ZtCascaderValue];
   change: [value: ZtCascaderValue];

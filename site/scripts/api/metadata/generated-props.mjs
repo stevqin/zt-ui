@@ -726,9 +726,6 @@ export default {
   "badge.ZtBadge.props.size": {
     "description": "尺寸"
   },
-  "badge.ZtBadge.props.type": {
-    "description": "兼容的类型字段；具体可选值见左侧类型。"
-  },
   "badge.ZtBadge.props.offset": {
     "description": "偏移量"
   },
@@ -1106,9 +1103,6 @@ export default {
   },
   "pagination.ZtPagination.props.size": {
     "description": "组件尺寸"
-  },
-  "pagination.ZtPagination.props.small": {
-    "description": "兼容的小尺寸开关；新代码应使用 size。"
   },
   "pagination.ZtPagination.props.background": {
     "description": "按钮背景样式"

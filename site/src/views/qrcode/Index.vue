@@ -6,18 +6,14 @@ import Advanced from './Advanced.vue';
 import AdvancedCode from './Advanced.vue?raw';
 </script>
 <template>
-  <div class="doc-section">
-    <h1>QRCode 二维码</h1>
-    <p>
-      使用 qrcode 编码，支持 SVG / Canvas 与下载。空值及编码容量超限会明确反馈。
-    </p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock
       :code="BasicCode"
       desc="使用 qrcode 编码，支持 SVG / Canvas 与下载。空值及编码容量超限会明确反馈。"
       ><Basic
     /></DemoBlock>
-    <h2>配置、交互与边界</h2>
+    <h3>配置、交互与边界</h3>
     <DemoBlock
       :code="AdvancedCode"
       desc="完整可运行的进阶示例，包含所有状态、方法和样式。"

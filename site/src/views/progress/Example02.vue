@@ -1,13 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtProgressStatus } from '@ztechjs/zt-ui';
 import { ZtProgress } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtProgressStatus>('primary');
 </script>
 
 <template>
   <div class="progress-examples">
-    <ZtProgress :percentage="100" status="success" /><ZtProgress
-      :percentage="65"
-      status="warning"
-    /><ZtProgress :percentage="30" status="danger" />
+    <ZtProgress :status="demoStatus" :percentage="65" aria-label="主题进度" />
   </div>
 </template>
 

@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtPaginationStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtPagination } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtPaginationStatus>('primary');
 const page = ref(1),
   message = ref('');
 </script>
@@ -8,6 +11,7 @@ const page = ref(1),
 <template>
   <div class="example-stack">
     <ZtPagination
+      :status="demoStatus"
       v-model:current-page="page"
       :page-count="12"
       :pager-count="5"

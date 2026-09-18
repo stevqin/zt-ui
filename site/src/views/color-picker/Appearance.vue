@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtColorPicker,
   ZtConfigProvider,
   type ZtComponentSize,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const sizes: ZtComponentSize[] = [
   'mini',
   'small',
@@ -28,9 +31,19 @@ const dark = ref(false);
       ><div class="picker-demo">
         <div v-for="(size, i) in sizes" :key="size">
           <p>{{ size }}</p>
-          <ZtColorPicker v-model="values[i]" :size="size" clearable />
+          <ZtColorPicker
+            :status="demoStatus"
+            v-model="values[i]"
+            :size="size"
+            clearable
+          />
         </div>
-        <ZtColorPicker :model-value="values[0]" disabled /><ZtColorPicker
+        <ZtColorPicker
+          :status="demoStatus"
+          :model-value="values[0]"
+          disabled
+        /><ZtColorPicker
+          :status="demoStatus"
           :model-value="values[0]"
           readonly
         /></div

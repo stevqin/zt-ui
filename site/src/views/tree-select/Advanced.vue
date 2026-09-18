@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import {
   ZtTreeSelect,
@@ -7,6 +9,7 @@ import {
   type ZtTreeNode,
   type ZtComponentSize,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtTreeSelectValue>([]),
   strict = ref(false),
   disabled = ref(false),
@@ -35,6 +38,7 @@ async function load(node: ZtTreeNode): Promise<ZtTreeNode[]> {
     ><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
       ><div class="stack">
         <ZtTreeSelect
+          :status="demoStatus"
           v-for="size in sizes"
           :key="size"
           v-model="value"

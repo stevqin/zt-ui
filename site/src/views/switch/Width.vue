@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtSwitchStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtSwitch } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtSwitchStatus>('primary');
 const enabled = ref(false),
   message = ref('尚未更改');
 </script>
@@ -8,6 +11,7 @@ const enabled = ref(false),
 <template>
   <div class="example-stack">
     <ZtSwitch
+      :status="demoStatus"
       v-model="enabled"
       :width="80"
       active-text="营业中"

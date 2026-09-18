@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtPaginationStatus } from '@ztechjs/zt-ui';
 import { ZtPagination } from '@ztechjs/zt-ui';
-const statuses = ['default', 'primary', 'success', 'warning', 'danger', 'info'] as const;
+const demoStatus = useDemoStatus<ZtPaginationStatus>('primary');
 </script>
 
 <template>
   <div class="pagination-stack">
     <ZtPagination
-      v-for="status in statuses"
-      :key="status"
-      :status="status"
+      :status="demoStatus"
       :total="100"
       layout="prev, pager, next"
     />

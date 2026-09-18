@@ -11,7 +11,6 @@ defineOptions({ name: 'ZtRadioGroup', inheritAttrs: false })
 const props = withDefaults(defineProps<ZtRadioGroupProps>(), {
   disabled: false,
   status: 'primary',
-  variant: 'default',
   segmented: false,
 })
 const formItem = inject(ztFormItemKey, undefined)
@@ -38,7 +37,7 @@ provide<RadioGroupContext>(radioGroupKey, {
 </script>
 
 <template>
-  <div class="zt-radio-group" :class="[`zt-radio-group--${segmented ? 'segmented' : variant}`, `zt-radio-group--${configSize}`]" role="radiogroup" v-bind="$attrs">
+  <div class="zt-radio-group" :class="[`zt-radio-group--${segmented ? 'segmented' : 'default'}`, `zt-radio-group--${configSize}`]" role="radiogroup" v-bind="$attrs">
     <slot />
   </div>
 </template>

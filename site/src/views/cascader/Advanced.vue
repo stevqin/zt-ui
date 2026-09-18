@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import {
   ZtCascader,
@@ -6,6 +8,7 @@ import {
   type ZtCascaderValue,
   type ZtTreeNode,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtCascaderValue>([]),
   dark = ref(true),
   attempts = new Set<string>();
@@ -28,6 +31,7 @@ async function load(node: ZtTreeNode): Promise<ZtTreeNode[]> {
   ><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="4"
     ><div class="pad">
       <ZtCascader
+        :status="demoStatus"
         v-model="value"
         :options="options"
         :fields="fields"
@@ -36,10 +40,11 @@ async function load(node: ZtTreeNode): Promise<ZtTreeNode[]> {
         filterable
       />
       <p>{{ value }}</p>
-      <ZtCascader :options="[]" placeholder="空数据" /><ZtCascader
-        disabled
-        placeholder="禁用"
-      /></div
+      <ZtCascader
+        :status="demoStatus"
+        :options="[]"
+        placeholder="空数据"
+      /><ZtCascader :status="demoStatus" disabled placeholder="禁用" /></div
   ></ZtConfigProvider>
   <p>
     首次展开失败，点击重试加载。键盘 ↑ ↓ 导航当前列，→ 展开并进入下一级，←

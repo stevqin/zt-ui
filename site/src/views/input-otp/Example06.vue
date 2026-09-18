@@ -1,14 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ZtInputOtp } from '@ztechjs/zt-ui';
 import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
-const statuses: ZtInputOtpStatus[] = ['default', 'primary', 'success', 'warning', 'danger', 'info'];
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 </script>
 
 <template>
   <div class="otp-examples">
-    <div v-for="status in statuses" :key="status">
-      <span>{{ status }}</span
-      ><ZtInputOtp model-value="012" :status="status" :aria-label="status + '验证码'" />
+    <div>
+      <span>{{ demoStatus }}</span
+      ><ZtInputOtp
+        model-value="012"
+        :status="demoStatus"
+        :aria-label="demoStatus + '验证码'"
+      />
     </div>
   </div>
 </template>

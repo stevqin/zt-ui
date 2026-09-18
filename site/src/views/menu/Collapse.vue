@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtMenuStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtMenu, ZtSwitch, ZtSlider } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 const collapsed = ref(false),
   width = ref<number | string>(240),
   selected = ref('overview');
@@ -35,6 +38,7 @@ const items = [
     /></label>
   </div>
   <ZtMenu
+    :status="demoStatus"
     v-model="selected"
     v-model:collapsed="collapsed"
     v-model:width="width"

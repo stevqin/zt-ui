@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick, ref } from 'vue'
 import { describe, expect, it } from 'vitest'
-import { ZtCollapse, ZtCollapseItem, ZtDescriptions, ZtDescriptionsItem, ZtResult } from '../src'
+import { ZtBadge, ZtCollapse, ZtCollapseItem, ZtDescriptions, ZtDescriptionsItem, ZtResult } from '../src'
 
 describe('Descriptions', () => {
   it('renders semantic terms, values and responsive span metadata', async () => {
@@ -36,5 +36,13 @@ describe('Result', () => {
     expect(wrapper.classes()).toContain('zt-result--success')
     expect(wrapper.get('[role="status"]').text()).toContain('提交成功')
     expect(wrapper.get('button').text()).toBe('返回')
+  })
+})
+
+describe('Badge status', () => {
+  it('uses status as the sole semantic color prop', () => {
+    const wrapper = mount(ZtBadge, { props: { value: 8, status: 'danger', type: 'success' } as any })
+
+    expect(wrapper.get('.zt-badge__content').classes()).toContain('zt-badge--danger')
   })
 })

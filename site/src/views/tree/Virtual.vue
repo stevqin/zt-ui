@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtTree, type ZtTreeKey } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const filter = ref(''),
   checked = ref<ZtTreeKey[]>([]),
   selected = ref<ZtTreeKey[]>([]);
@@ -22,6 +25,7 @@ const expanded = ref<ZtTreeKey[]>(data.map((n) => n.key));
       aria-label="筛选万级节点"
       placeholder="例如 门店 100"
     /><ZtTree
+      :status="demoStatus"
       v-model:checked-keys="checked"
       v-model:selected-keys="selected"
       v-model:expanded-keys="expanded"

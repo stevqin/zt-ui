@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ZtIcon } from '@ztechjs/zt-ui';
 import type { ZtIconStatus } from '@ztechjs/zt-ui';
-const statuses: ZtIconStatus[] = ['default', 'primary', 'success', 'warning', 'danger', 'info'];
+const demoStatus = useDemoStatus<ZtIconStatus>('default');
 </script>
 
 <template>
   <div class="icon-row">
-    <ZtIcon v-for="status in statuses" :key="status" name="info" :status="status" :label="status" />
+    <ZtIcon name="info" :status="demoStatus" :label="demoStatus" />
   </div>
 </template>
 

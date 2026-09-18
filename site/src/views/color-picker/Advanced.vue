@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtColorPicker } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref('hsl(280, 60%, 50%)'),
   event = ref('');
 </script>
 <template>
   <div class="picker-demo">
     <ZtColorPicker
+      :status="demoStatus"
       v-model="value"
       show-alpha
       :presets="['rgba(255,0,0,0.5)', 'hsl(120,100%,50%)', 'invalid']"

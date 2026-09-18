@@ -1,6 +1,6 @@
 import { compile } from 'sass'
 import { h, nextTick, ref, type Component } from 'vue'
-import { mount, type VueWrapper } from '@vue/test-utils'
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import {
   ZtForm, ZtFormItem, ZtInput, ZtPassword, ZtInputNumber, ZtInputOtp, ZtMention,
@@ -59,7 +59,7 @@ describe('Form underline ownership', () => {
   it.each(controls)('keeps %s outlined outside an underline Form', (_, component) => {
     const wrapper = inForm(component, {}, { underline: false })
     expect(wrapper.find('.is-form-underline').exists()).toBe(false)
-    expect('underline' in component.props).toBe(false)
+    expect('underline' in component.props).toBe(true)
   })
 
   it('claims a public control boundary even when its Form is outlined', async () => {
@@ -114,7 +114,7 @@ describe('Core underline CSS and preserved behavior', () => {
   })
 
   it.each(controls)('%s preserves disabled and readonly semantics', async (_, component, _root, surface) => {
-    const wrapper = inForm(component, { readonly: true }, { disabled: true })
+    const wrapper = inForm(component, { readonly: true, underline: true }, { disabled: true, underline: false })
     expect(wrapper.get('input, textarea').attributes('disabled')).toBeDefined()
     expect(wrapper.get('input, textarea').attributes('readonly')).toBeDefined()
     expect(surfaceStyle(wrapper, surface).borderBottomStyle).toBe('dashed')
@@ -122,7 +122,7 @@ describe('Core underline CSS and preserved behavior', () => {
   })
 
   it.each(controls)('%s preserves validation accessibility and error focus color', async (_, component, _root, surface) => {
-    const wrapper = inForm(component, {}, {}, { prop: 'value', error: '错误' })
+    const wrapper = inForm(component, { underline: true }, { underline: false }, { prop: 'value', error: '错误' })
     expect(wrapper.get('input, textarea').attributes('aria-invalid')).toBe('true')
     expect(wrapper.get('input, textarea').attributes('aria-describedby')).toBeTruthy()
     await focusControl(wrapper)
@@ -194,4 +194,28 @@ describe('Core underline CSS and preserved behavior', () => {
     expect(surfaceStyle(wrapper, '.zt-input__wrapper').borderBottomColor).toBe('#22c55e')
     expect(surfaceStyle(wrapper, '.zt-input__wrapper').boxShadow).toContain('#22c55e')
   })
+})
+
+it.each(controls)('%s explicit false restores the outlined surface inside an underline Form', (_, component, _root, surface) => {
+  const w = inForm(component, { underline: false })
+  expect(w.find('.is-form-underline').exists()).toBe(false)
+  expect(surfaceStyle(w, surface).borderTopWidth).toBe('1px')
+})
+
+it('keeps Mention suggestion-slot helpers outlined with a local underline override', async () => {
+  const wrapper = mount(ZtMention, {
+    attachTo: document.body,
+    props: { underline: true, modelValue: '@a', debounce: 0, options: [{ value: 'alice' }] },
+    slots: { option: () => h(ZtInput) },
+  })
+  mounted.push(wrapper)
+  const textarea = wrapper.get('textarea')
+  textarea.element.setSelectionRange(2, 2)
+  await textarea.trigger('input')
+  await new Promise(resolve => setTimeout(resolve, 5))
+  await flushPromises()
+  const popup = document.querySelector('.zt-entry__list')!
+  expect(popup).not.toBeNull()
+  expect(popup.querySelector('.is-form-underline')).toBeNull()
+  expect(getComputedStyle(popup.querySelector('.zt-input__wrapper')!).borderTopWidth).toBe('1px')
 })

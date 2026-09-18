@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputOtp } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 const characters = ref('');
 </script>
 
 <template>
-  <ZtInputOtp v-model="characters" :integer-only="false" aria-label="字符验证码" />
+  <ZtInputOtp
+    :status="demoStatus"
+    v-model="characters"
+    :integer-only="false"
+    aria-label="字符验证码"
+  />
 </template>
 
 <style scoped>

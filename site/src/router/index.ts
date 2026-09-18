@@ -4,119 +4,22 @@ import {
   createWebHistory,
 } from 'vue-router';
 
-import expansion from '../docs/expansion.json';
-const expansionPages = import.meta.glob('../views/*/Index.vue');
+import { components } from '../docs/catalog';
+const componentPages = import.meta.glob('../views/*/Index.vue');
 const routes = [
+  ...components.map((component) => ({
+    path: component.path,
+    name: component.routeName,
+    component: componentPages[`../views${component.path}/Index.vue`],
+    meta: {
+      title: `${component.name} ${component.title}`,
+      componentId: component.path.slice(1),
+    },
+  })),
   {
     path: '/feedback',
     component: () => import('../views/feedback/Index.vue'),
     meta: { title: 'Feedback 命令式反馈' },
-  },
-  ...expansion.map((item) => ({
-    path: '/' + item.id,
-    component: expansionPages[`../views/${item.id}/Index.vue`],
-    meta: { title: item.name + ' ' + item.title },
-  })),
-  {
-    path: '/icon',
-    component: () => import('../views/icon/Index.vue'),
-    meta: { title: 'Icon 图标' },
-  },
-  {
-    path: '/link',
-    component: () => import('../views/link/Index.vue'),
-    meta: { title: 'Link 链接' },
-  },
-  {
-    path: '/text',
-    component: () => import('../views/text/Index.vue'),
-    meta: { title: 'Text 文本' },
-  },
-  {
-    path: '/scrollbar',
-    component: () => import('../views/scrollbar/Index.vue'),
-    meta: { title: 'Scrollbar 滚动条' },
-  },
-  {
-    path: '/popover',
-    component: () => import('../views/popover/Index.vue'),
-    meta: { title: 'Popover 弹出框' },
-  },
-  {
-    path: '/popconfirm',
-    component: () => import('../views/popconfirm/Index.vue'),
-    meta: { title: 'Popconfirm 气泡确认框' },
-  },
-  {
-    path: '/tabs',
-    component: () => import('../views/tabs/Index.vue'),
-    meta: { title: 'Tabs 标签页' },
-  },
-  {
-    path: '/breadcrumb',
-    component: () => import('../views/breadcrumb/Index.vue'),
-    meta: { title: 'Breadcrumb 面包屑' },
-  },
-  {
-    path: '/segmented',
-    component: () => import('../views/segmented/Index.vue'),
-    meta: { title: 'Segmented 分段控制器' },
-  },
-  {
-    path: '/descriptions',
-    component: () => import('../views/descriptions/Index.vue'),
-    meta: { title: 'Descriptions 描述列表' },
-  },
-  {
-    path: '/collapse',
-    component: () => import('../views/collapse/Index.vue'),
-    meta: { title: 'Collapse 折叠面板' },
-  },
-  {
-    path: '/result',
-    component: () => import('../views/result/Index.vue'),
-    meta: { title: 'Result 结果' },
-  },
-  {
-    path: '/image',
-    component: () => import('../views/image/Index.vue'),
-    meta: { title: 'Image 图片' },
-  },
-  {
-    path: '/avatar',
-    component: () => import('../views/avatar/Index.vue'),
-    meta: { title: 'Avatar 头像' },
-  },
-  {
-    path: '/upload',
-    component: () => import('../views/upload/Index.vue'),
-    meta: { title: 'Upload 上传' },
-  },
-  {
-    path: '/input-otp',
-    component: () => import('../views/input-otp/Index.vue'),
-    meta: { title: 'InputOtp 一次性密码输入框' },
-  },
-  {
-    path: '/menu',
-    name: 'menu-demo',
-    component: () => import('../views/menu/Index.vue'),
-    meta: { title: 'Menu 菜单' },
-  },
-  {
-    path: '/slider',
-    component: () => import('../views/slider/Index.vue'),
-    meta: { title: 'Slider 滑块' },
-  },
-  {
-    path: '/progress',
-    component: () => import('../views/progress/Index.vue'),
-    meta: { title: 'Progress 进度条' },
-  },
-  {
-    path: '/config-provider',
-    component: () => import('../views/config-provider/Index.vue'),
-    meta: { title: 'ConfigProvider 全局配置' },
   },
   {
     path: '/getting-started',
@@ -166,96 +69,6 @@ const routes = [
   {
     path: '/',
     component: () => import('../views/Home.vue'),
-  },
-  {
-    path: '/button',
-    component: () => import('../views/button/Index.vue'),
-    meta: { title: 'Button 按钮' },
-  },
-  {
-    path: '/tag',
-    component: () => import('../views/tag/Index.vue'),
-    meta: { title: 'Tag 标签' },
-  },
-  {
-    path: '/radio',
-    component: () => import('../views/radio/Index.vue'),
-    meta: { title: 'Radio 单选框' },
-  },
-  {
-    path: '/checkbox',
-    component: () => import('../views/checkbox/Index.vue'),
-    meta: { title: 'Checkbox 多选框' },
-  },
-  {
-    path: '/switch',
-    component: () => import('../views/switch/Index.vue'),
-    meta: { title: 'Switch 开关' },
-  },
-  {
-    path: '/input',
-    component: () => import('../views/input/Index.vue'),
-    meta: { title: 'Input 输入框' },
-  },
-  {
-    path: '/password',
-    component: () => import('../views/password/Index.vue'),
-    meta: { title: 'Password 密码框' },
-  },
-  {
-    path: '/input-number',
-    component: () => import('../views/input-number/Index.vue'),
-    meta: { title: 'InputNumber 数字输入框' },
-  },
-  {
-    path: '/select',
-    component: () => import('../views/select/Index.vue'),
-    meta: { title: 'Select 选择器' },
-  },
-  {
-    path: '/date-picker',
-    component: () => import('../views/date-picker/Index.vue'),
-    meta: { title: 'DatePicker 日期选择器' },
-  },
-  {
-    path: '/date-time-picker',
-    component: () => import('../views/date-time-picker/Index.vue'),
-    meta: { title: 'DateTimePicker 日期时间选择器' },
-  },
-  {
-    path: '/form',
-    component: () => import('../views/form/Index.vue'),
-    meta: { title: 'Form 表单' },
-  },
-  {
-    path: '/badge',
-    component: () => import('../views/badge/Index.vue'),
-    meta: { title: 'Badge 徽标' },
-  },
-  {
-    path: '/steps',
-    component: () => import('../views/steps/Index.vue'),
-    meta: { title: 'Steps 步骤条' },
-  },
-  {
-    path: '/pagination',
-    component: () => import('../views/pagination/Index.vue'),
-    meta: { title: 'Pagination 分页' },
-  },
-  {
-    path: '/vtable-grid',
-    component: () => import('../views/vtable-grid/Index.vue'),
-    meta: { title: 'VTableGrid 数据表格' },
-  },
-  {
-    path: '/modal',
-    component: () => import('../views/modal/Index.vue'),
-    meta: { title: 'Modal 弹窗' },
-  },
-  {
-    path: '/drawer',
-    component: () => import('../views/drawer/Index.vue'),
-    meta: { title: 'Drawer 抽屉' },
   },
 ];
 

@@ -1,13 +1,17 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtUpload } from '@ztechjs/zt-ui';
 import type { ZtUploadFile } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const limited = ref<ZtUploadFile[]>([]);
 const limitMessage = ref('');
 </script>
 
 <template>
   <ZtUpload
+    :status="demoStatus"
     v-model:file-list="limited"
     drag
     multiple
@@ -17,7 +21,9 @@ const limitMessage = ref('');
     :auto-upload="false"
     @reject="(_file, reason) => (limitMessage = reason)"
     @exceed="limitMessage = '最多两个文件，本次选择已取消'"
-    ><template #tip>仅支持 PDF / TXT，最多两个，每个不超过 2 MB。仅本地选择。</template></ZtUpload
+    ><template #tip
+      >仅支持 PDF / TXT，最多两个，每个不超过 2 MB。仅本地选择。</template
+    ></ZtUpload
   >
   <p aria-live="polite">{{ limitMessage }}</p>
 </template>

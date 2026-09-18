@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, inject, nextTick, onBeforeUnmount, ref, useId, watch } from 'vue'
+import { computed, inject, nextTick, onBeforeUnmount, provide, ref, useId, watch } from 'vue'
 import type { ZtMenuItem } from './types'
 import { menuKey } from './context'
 import { horizontalKey } from './horizontal'
 import { useZtConfig } from '../config-provider/context'
 import { menuDimensions } from './dimensions'
+import { useAnchoredDropdown } from '../selection/useAnchoredDropdown'
+import { overlayContextKey } from '../overlay/context'
 const props=withDefaults(defineProps<{item:ZtMenuItem;path:string[];parentDisabled?:boolean;tabStop?:boolean}>(),{parentDisabled:false,tabStop:false})
 const menu=inject(menuKey)!,horizontal=inject(horizontalKey)!
 const {style:providerStyle}=useZtConfig()
@@ -13,6 +15,14 @@ const disabled=computed(()=>menu.disabled.value||props.parentDisabled||props.ite
 const branch=computed(()=>Boolean(props.item.children?.length))
 const keys=computed(()=>[...props.path,props.item.key])
 const open=computed(()=>horizontal.path.value[props.path.length]===props.item.key)
+const flyout = useAnchoredDropdown({
+ visible: computed(() => branch.value && open.value),
+ trigger, popup: panel,
+ close: () => horizontal.open(props.path),
+ focus: () => trigger.value?.focus({ preventScroll: true }),
+ tabThroughPopup: true,
+})
+provide(overlayContextKey, props.item.type === 'group' ? flyout.triggerOverlayContext : flyout.overlayContext)
 const href=computed(()=>menu.href(props.item))
 const selected=computed(()=>contains(props.item,menu.selected.value))
 const position=ref({left:'0px',top:'0px',width:'232px',maxHeight:'400px'})
@@ -68,6 +78,6 @@ function keydown(event:KeyboardEvent){
   <component :is="!branch&&href?'a':'button'" ref="trigger" :type="!branch&&href?undefined:'button'" :href="disabled?undefined:href" role="menuitem" class="zt-menu__row" :class="{'is-selected':selected}" :data-horizontal-key="item.key" :aria-disabled="disabled||undefined" :aria-haspopup="branch?'menu':undefined" :aria-expanded="branch?open:undefined" :aria-controls="branch&&open?id:undefined" :aria-current="!branch&&selected?'page':undefined" :tabindex="!disabled&&tabStop?0:-1" @click="click" @keydown.stop="keydown">
    <component v-if="item.icon" :is="item.icon" class="zt-menu__icon" aria-hidden="true"/><span class="zt-menu__label">{{item.label}}</span><small v-if="item.description" class="zt-menu__description">{{item.description}}</small><svg v-if="branch" class="zt-menu__arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" aria-hidden="true"><path :d="path.length?'m6 4 4 4-4 4':'m4 6 4 4 4-4'"/></svg>
   </component>
-  <Teleport to="body"><div v-if="branch&&open" :id="id" ref="panel" class="zt-menu zt-menu__flyout zt-menu__horizontal-popup" :class="[`zt-menu--${horizontal.size.value}`,`zt-menu--status-${horizontal.status.value}`]" :style="[providerStyle,position]" :data-menu-owner="horizontal.id" @pointerenter="horizontal.enter" @pointerleave="horizontal.leave"><ul role="menu" :aria-label="item.label"><ZtMenuHorizontalNode v-for="child in item.children" :key="child.key" :item="child" :path="keys" :parent-disabled="disabled" /></ul></div></Teleport>
+  <Teleport to="body"><div v-if="branch&&open" :id="id" ref="panel" class="zt-menu zt-menu__flyout zt-menu__horizontal-popup" :class="[`zt-menu--${horizontal.size.value}`,`zt-menu--status-${horizontal.status.value}`]" :style="[providerStyle,position,{zIndex:flyout.popupStyle.value.zIndex}]" :data-menu-owner="horizontal.id" @pointerenter="horizontal.enter" @pointerleave="horizontal.leave"><ul role="menu" :aria-label="item.label"><ZtMenuHorizontalNode v-for="child in item.children" :key="child.key" :item="child" :path="keys" :parent-disabled="disabled" /></ul></div></Teleport>
  </li>
 </template>

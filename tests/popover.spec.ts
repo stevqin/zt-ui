@@ -43,3 +43,20 @@ describe('Popover',()=>{
   expect(document.body.querySelector('.zt-popover')).not.toBeNull()
  })
 })
+
+it.each([
+ ['top', {top:12,bottom:32,left:180,right:220,width:40,height:20}, 'bottom', 40, 150, 50, 10],
+ ['bottom', {top:268,bottom:288,left:180,right:220,width:40,height:20}, 'top', 200, 150, 50, 50],
+ ['left', {top:140,bottom:160,left:12,right:52,width:40,height:20}, 'right', 120, 60, 10, 30],
+ ['right', {top:140,bottom:160,left:348,right:388,width:40,height:20}, 'left', 120, 240, 90, 30],
+] as const)('flips %s and aligns the arrow after measured dimensions change', (requested, trigger, placement, top, left, arrowX, arrowY) => {
+ expect(placePopover(trigger,{width:100,height:60},{width:400,height:300,padding:8},requested,8)).toMatchObject({placement,top,left,arrowX,arrowY})
+})
+it('points the arrow at the trigger after horizontal viewport clamping', () => {
+ expect(placePopover({top:140,bottom:160,left:10,right:30,width:20,height:20},{width:240,height:60},{width:400,height:300,padding:8},'top',8)).toMatchObject({top:72,left:8,arrowX:12})
+})
+it.each([[88, '88px'], ['9rem', '9rem']] as const)('supports low-level Popover height %s', async (height, expected) => {
+ const wrapper = mount(ZtPopover, {attachTo:document.body, props:{visible:true,height},slots:{content:'内容'}})
+ try { await nextTick(); expect(document.querySelector<HTMLElement>('.zt-popover')!.style.height).toBe(expected) }
+ finally {wrapper.unmount()}
+})

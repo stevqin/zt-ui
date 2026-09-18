@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 import { computed, ref } from 'vue';
 import { ZtUpload } from '@ztechjs/zt-ui';
 import type { ZtUploadFile } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const files = ref<ZtUploadFile[]>([]),
   message = ref('');
 // 接受新图片后只保留最后一项，旧预览由 Upload 自动释放；校验失败时保留原图。
@@ -12,6 +15,7 @@ const avatar = computed({
 </script>
 <template>
   <ZtUpload
+    :status="demoStatus"
     v-model:file-list="avatar"
     accept="image/png,image/jpeg,image/webp"
     :max-size="2"
@@ -30,10 +34,13 @@ const avatar = computed({
           v-else
           class="avatar-upload__empty"
           ><b>＋</b>选择头像</span
-        ><span v-if="files.length" class="avatar-upload__replace">更换头像</span>
+        ><span v-if="files.length" class="avatar-upload__replace"
+          >更换头像</span
+        >
       </button></template
     ><template #tip
-      >自定义 trigger；JPG / PNG / WebP，不超过 2 MB。仅本地预览，点击图片可替换。</template
+      >自定义 trigger；JPG / PNG / WebP，不超过 2
+      MB。仅本地预览，点击图片可替换。</template
     ></ZtUpload
   >
   <p aria-live="polite">{{ message }}</p>

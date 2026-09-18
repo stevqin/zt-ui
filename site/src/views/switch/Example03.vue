@@ -1,18 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtSwitchStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtSwitch } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtSwitchStatus>('primary');
 const status = ref(false);
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtSwitch v-model="status" status="default" /><ZtSwitch
+    <ZtSwitch
+      :status="demoStatus"
       v-model="status"
-      status="primary"
-    /><ZtSwitch v-model="status" status="success" /><ZtSwitch
-      v-model="status"
-      status="warning"
-    /><ZtSwitch v-model="status" status="danger" /><ZtSwitch v-model="status" status="info" />
+      aria-label="主题开关"
+    /><span>{{ status ? '已开启' : '已关闭' }}</span>
   </div>
 </template>
 

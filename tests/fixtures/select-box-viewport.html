@@ -1,0 +1,70 @@
+<!doctype html>
+<!-- Real-layout regression fixture: run npm run dev and open /tests/fixtures/select-box-viewport.html.
+     Each iframe supplies an actual viewport; the page title and rendered JSON report PASS/FAIL. -->
+<html><head><meta charset="UTF-8"><style>html,body{margin:0;min-height:100%;font-family:Arial}iframe{border:0}pre{white-space:pre-wrap}</style></head><body><div id="app"></div><pre id="results">Running browser geometry checks…</pre><script type="module">
+import { createApp, h, reactive, nextTick } from 'vue'
+import ZtSelectBox from '/src/components/select-box/ZtSelectBox.vue'
+const wait = async () => { await nextTick(); await new Promise(r=>setTimeout(r,100)); }
+const scenario = new URLSearchParams(location.search).get('scenario')
+if (!scenario) {
+ const cases=['enough','above','constrained','narrow','pagination','selected','paste','remote','resize','scroll','tiny']
+ const reports=[]
+ for (const name of cases) {
+  const frame=document.createElement('iframe');frame.width=name==='narrow'?320:1000;frame.height=name==='resize'?500:name==='tiny'?300:800
+  const done=new Promise(resolve=>{
+   const timer=setTimeout(()=>{removeEventListener('message',listener);resolve({scenario:name,pass:false,error:'Browser scenario timed out'})},10000)
+   const listener=e=>{
+    if(e.source!==frame.contentWindow)return
+    if(e.data.resize){frame.height=1200;return}
+    if(e.data.report){clearTimeout(timer);removeEventListener('message',listener);resolve(e.data.report)}
+   }
+   addEventListener('message',listener)
+  })
+  frame.src=`?scenario=${name}`;document.body.append(frame)
+  reports.push(await done);frame.remove();document.querySelector('#results').textContent=JSON.stringify(reports,null,2)
+ }
+ document.title=reports.every(r=>r.pass)?'PASS SelectBox browser geometry':'FAIL SelectBox browser geometry'
+} else {
+ document.querySelector('#results').remove()
+ const results=[]; const check=(value,message)=>{if(!value)throw new Error(message);results.push(message)}
+ const source=Array.from({length:25},(_,value)=>({value,label:`选项 ${value}`}))
+ let complete,fail
+ const props=reactive({options:source,modelValue:scenario==='selected'?[0]:[],pageSize:10})
+ if(scenario==='remote'){props.remote=true;props.remoteMethod=()=>new Promise((res,rej)=>{complete=res;fail=rej})}
+ const anchor=document.querySelector('#app');anchor.style.cssText=`position:fixed;left:40px;top:${scenario==='above'?680:['constrained','narrow','pagination','selected','paste','remote','scroll'].includes(scenario)?410:100}px`
+ const app=createApp({render:()=>h(ZtSelectBox,props)})
+ try{
+  app.mount(anchor)
+  await wait();let before=document.documentElement.scrollHeight
+  anchor.querySelector('button').click();await wait()
+  const popup=()=>document.querySelector('.zt-select-box__popup')
+  const inspect=()=>{
+   const p=popup(),rect=p.getBoundingClientRect(),panel=p.querySelector('.zt-select-box-panel'),list=p.querySelector('.zt-select-box-panel__list')
+   check(rect.top>=7.5 && rect.bottom<=innerHeight-7.5,'popup within vertical gutter')
+   check(rect.left>=7.5 && rect.right<=innerWidth-7.5,'popup within horizontal gutter')
+   check(document.documentElement.scrollHeight===before,'page height unchanged')
+   check(p.scrollHeight<=p.clientHeight+1,'popup has no overflowing content')
+   if(scenario!=='tiny')check(panel.scrollHeight<=panel.clientHeight+1,'panel has no overflowing content')
+   check(getComputedStyle(p).overflow==='hidden'&&getComputedStyle(panel).overflow==='hidden','popup and panel hide overflow')
+   check(getComputedStyle(list).overflow==='auto','list owns overflow')
+   const footer=p.querySelector('.zt-select-box-panel__footer').getBoundingClientRect()
+   if(scenario!=='tiny')check(footer.bottom<=rect.bottom && footer.top>=rect.top,'footer visible')
+   return {rect:{top:rect.top,bottom:rect.bottom,width:rect.width,height:rect.height}, list:{height:list.clientHeight,scroll:list.scrollHeight}}
+  }
+  let geometry=inspect()
+  if(['constrained','narrow'].includes(scenario)){
+   const list=popup().querySelector('.zt-select-box-panel__list'),footer=popup().querySelector('.zt-select-box-panel__footer'),top=footer.getBoundingClientRect().top
+   list.scrollTop=100;await wait();check(list.scrollTop===100,'options retain their requested scroll position');check(footer.getBoundingClientRect().top===top,'footer remains fixed while options scroll');inspect()
+  }
+  if(scenario==='above')check(geometry.rect.bottom<=680,'flips above')
+  if(scenario==='pagination'){popup().querySelector('[aria-label="第 3 页"]').click();await wait();geometry=inspect();check(popup().querySelectorAll('.zt-select-box-panel__option').length===5,'last page content rendered')}
+  if(scenario==='selected'){popup().querySelector('.zt-select-box-panel__view-selected').click();await wait();geometry=inspect();check(popup().querySelectorAll('.zt-select-box-panel__option').length===1,'selected-only content rendered')}
+  if(scenario==='paste'){popup().querySelector('.zt-select-box-panel__mode').click();await wait();geometry=inspect();const input=popup().querySelector('textarea');input.value=Array(200).fill('内容').join('\n');input.dispatchEvent(new Event('input',{bubbles:true}));await wait();input.scrollTop=100;check(input.scrollTop>0,'paste editor scrolls');inspect()}
+  if(scenario==='remote'){complete({mode:'search',options:source.slice(0,10),total:25});await wait();geometry=inspect();popup().querySelector('[aria-label="下一页"]').click();await wait();inspect();fail(new Error('offline'));await wait();inspect();check(popup().querySelector('[role="alert"]'),'error rendered')}
+  if(scenario==='resize'){parent.postMessage({resize:true},'*');await new Promise(r=>setTimeout(r,300));const expanded=popup().getBoundingClientRect();check(expanded.height>geometry.rect.height,'re-expands after viewport resize');before=innerHeight;geometry=inspect()}
+  if(scenario==='scroll'){anchor.style.top='680px';window.dispatchEvent(new Event('scroll'));await wait();geometry=inspect();check(geometry.rect.bottom<=680,'scroll repositions above trigger')}
+  parent.postMessage({report:{scenario,pass:true,checks:results.length,geometry}},'*')
+ }catch(error){parent.postMessage({report:{scenario,pass:false,error:String(error),checks:results}},'*')}
+ app.unmount()
+}
+</script></body></html>

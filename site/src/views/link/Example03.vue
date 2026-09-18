@@ -1,12 +1,22 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtLinkStatus } from '@ztechjs/zt-ui';
 import { ZtLink } from '@ztechjs/zt-ui';
 import type { ZtComponentSize } from '@ztechjs/zt-ui';
-const sizes: ZtComponentSize[] = ['mini', 'small', 'default', 'medium', 'large'];
+const demoStatus = useDemoStatus<ZtLinkStatus>('default');
+const sizes: ZtComponentSize[] = [
+  'mini',
+  'small',
+  'default',
+  'medium',
+  'large',
+];
 </script>
 
 <template>
   <div class="link-row">
     <ZtLink
+      :status="demoStatus"
       v-for="size in sizes"
       :key="size"
       href="#"

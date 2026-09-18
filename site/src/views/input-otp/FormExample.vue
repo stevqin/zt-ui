@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import { ZtInputOtp, ZtForm, ZtFormItem, ZtButton } from '@ztechjs/zt-ui';
 import type { ZtFormInstance, ZtFormRules } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 const model = reactive({ code: '' }),
   form = ref<ZtFormInstance>(),
   result = ref('');
@@ -22,7 +25,8 @@ async function submit() {
 </script>
 <template>
   <ZtForm ref="form" :model="model" :rules="rules" label-position="top"
-    ><ZtFormItem label="验证码" prop="code"><ZtInputOtp v-model="model.code" /></ZtFormItem
+    ><ZtFormItem label="验证码" prop="code"
+      ><ZtInputOtp :status="demoStatus" v-model="model.code" /></ZtFormItem
     ><ZtButton status="primary" @click="submit">校验格式</ZtButton>
     <p aria-live="polite">{{ result }}</p></ZtForm
   >

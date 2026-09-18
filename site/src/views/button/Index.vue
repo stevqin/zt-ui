@@ -15,11 +15,9 @@ import NativeFormCode from './NativeForm.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Button 按钮</h1>
-    <p>常用的操作按钮，提供颜色状态、尺寸、圆形图标、加载态等能力。</p>
-
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <p>按钮深度随 ConfigProvider 的 borderRadius 基准变化：小于 5px 为纯色与边框，无深度渐变和外阴影；5–8px（含端点）只有轻微内高光和低透明度的一像素阴影；大于 8px 使用克制渐变与更明显的按压层次。全部五档尺寸和六色主题使用同一规则，禁用和加载减少强调；焦点轮廓始终可见，减少动画偏好关闭位移。</p>
+    <h3>基础用法</h3>
     <p>使用 <code>status</code> 设置颜色状态。</p>
     <DemoBlock
       :code="Example01Code"
@@ -27,7 +25,7 @@ import NativeFormCode from './NativeForm.vue?raw';
       ><Example01
     /></DemoBlock>
 
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <p>提供五种尺寸以适应不同场景。</p>
     <DemoBlock
       :code="Example02Code"
@@ -35,7 +33,7 @@ import NativeFormCode from './NativeForm.vue?raw';
       ><Example02
     /></DemoBlock>
 
-    <h2>圆形按钮</h2>
+    <h3>圆形按钮</h3>
     <p>设置 <code>circle</code> 属性可得到圆形图标按钮。</p>
     <DemoBlock
       :code="Example03Code"
@@ -43,7 +41,7 @@ import NativeFormCode from './NativeForm.vue?raw';
       ><Example03
     /></DemoBlock>
 
-    <h2>加载态</h2>
+    <h3>加载态</h3>
     <p>点击按钮加载数据，显示 loading 状态。</p>
     <DemoBlock
       :code="Example04Code"
@@ -51,10 +49,10 @@ import NativeFormCode from './NativeForm.vue?raw';
       ><Example04
     /></DemoBlock>
 
-    <h2>禁用态</h2>
+    <h3>禁用态</h3>
     <DemoBlock :code="Example05Code" desc="通过 `disabled` 属性禁用按钮。"><Example05 /></DemoBlock>
 
-    <h2>原生提交与重置</h2>
+    <h3>原生提交与重置</h3>
     <DemoBlock :code="NativeFormCode" desc=""><NativeForm /></DemoBlock>
   </div>
 </template>

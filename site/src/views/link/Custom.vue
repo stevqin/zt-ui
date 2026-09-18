@@ -1,18 +1,31 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtLinkStatus } from '@ztechjs/zt-ui';
 import { ZtLink } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtLinkStatus>('default');
 </script>
 
 <template>
   <div class="example-stack">
     <div class="example-row">
-      <ZtLink href="https://example.com" underline="never" target="_blank" rel="noopener noreferrer"
-        ><template #icon>↗</template>图标插槽<template #suffix>外链</template></ZtLink
+      <ZtLink
+        :status="demoStatus"
+        href="https://example.com"
+        underline="never"
+        target="_blank"
+        rel="noopener noreferrer"
+        ><template #icon>↗</template>图标插槽<template #suffix
+          >外链</template
+        ></ZtLink
       ><ZtLink
+        :status="demoStatus"
         href="data:text/plain;charset=utf-8,ZT%20UI%20demo"
         download="zt-ui-demo.txt"
         underline="always"
         >下载示例文本</ZtLink
-      ><ZtLink href="https://example.com" underline="hover">悬停显示下划线</ZtLink>
+      ><ZtLink :status="demoStatus" href="https://example.com" underline="hover"
+        >悬停显示下划线</ZtLink
+      >
     </div>
   </div>
 </template>

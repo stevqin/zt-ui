@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtDateTimePicker, ZtButton } from '@ztechjs/zt-ui';
 import type { ZtDatePickerValue } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const picker = ref<InstanceType<typeof ZtDateTimePicker>>();
 const value = ref<ZtDatePickerValue>(null);
 const message = ref('尚未选择');
@@ -15,6 +18,7 @@ const message = ref('尚未选择');
       ><ZtButton @click="picker?.clear()">清空</ZtButton>
     </div>
     <ZtDateTimePicker
+      :status="demoStatus"
       ref="picker"
       v-model="value"
       clearable

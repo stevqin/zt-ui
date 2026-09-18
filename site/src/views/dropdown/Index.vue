@@ -6,12 +6,10 @@ import Hover from './Hover.vue';
 import HoverCode from './Hover.vue?raw';
 </script>
 <template>
-  <div class="doc-section">
-    <h1>Dropdown 下拉菜单</h1>
-    <p>紧凑操作列表，支持鼠标、触屏与方向键导航；选择后默认关闭。</p>
-    <h2>分组、分隔、禁用与命令反馈</h2>
+  <div class="component-examples">
+    <h3>分组、分隔、禁用与命令反馈</h3>
     <DemoBlock :code="BasicCode"><Basic /></DemoBlock>
-    <h2>悬停与保持菜单展开</h2>
+    <h3>悬停与保持菜单展开</h3>
     <DemoBlock :code="HoverCode"><Hover /></DemoBlock>
   </div>
 </template>

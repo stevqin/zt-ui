@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtAutocomplete, type ZtAutocompleteSource } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref('');
 const fetch: ZtAutocompleteSource = (query, signal) =>
   new Promise((resolve, reject) => {
@@ -29,6 +32,7 @@ const fetch: ZtAutocompleteSource = (query, signal) =>
 <template>
   <div class="entry-demo">
     <ZtAutocomplete
+      :status="demoStatus"
       v-model="value"
       :fetch-suggestions="fetch"
       :debounce="100"

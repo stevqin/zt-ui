@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtRadioStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtRadio, ZtRadioGroup } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtRadioStatus>('primary');
 const group = ref('A');
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtRadioGroup v-model="group"
-      ><ZtRadio label="A">选项 A</ZtRadio><ZtRadio label="B">选项 B</ZtRadio
-      ><ZtRadio label="C">选项 C</ZtRadio></ZtRadioGroup
+    <ZtRadioGroup :status="demoStatus" v-model="group"
+      ><ZtRadio :status="demoStatus" label="A">选项 A</ZtRadio
+      ><ZtRadio :status="demoStatus" label="B">选项 B</ZtRadio
+      ><ZtRadio :status="demoStatus" label="C">选项 C</ZtRadio></ZtRadioGroup
     >
   </div>
 </template>

@@ -11,16 +11,15 @@ import PlacementCode from './Placement.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Popover 弹出框</h1>
-    <p>在触发元素附近展示补充信息或轻量操作，自动翻转并限制在可视区域内。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <p>width / height 的数字值转换为 px，字符串作为 CSS 长度。显式 height 固定外框高度（受视口边界约束），溢出仅在内容区滚动，箭头保持固定；尺寸或内容变化会重新定位并按可用空间调整方位。Tooltip 也使用此定位与尺寸能力。</p>
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>触发方式</h2>
+    <h3>触发方式</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>手动控制</h2>
+    <h3>手动控制</h3>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
-    <h2>方位、箭头与禁用</h2>
+    <h3>方位、箭头与禁用</h3>
     <DemoBlock :code="PlacementCode" desc=""><Placement /></DemoBlock>
   </div>
 </template>

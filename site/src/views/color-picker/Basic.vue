@@ -1,16 +1,25 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtColorPicker } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref('#245edb'),
   alpha = ref('#16a34a80');
 </script>
 <template>
   <div class="picker-demo">
     <ZtColorPicker
+      :status="demoStatus"
       v-model="value"
       clearable
       :presets="['#245edb', '#16a34a', '#ef4444']"
-    /><ZtColorPicker v-model="alpha" show-alpha clearable />
+    /><ZtColorPicker
+      :status="demoStatus"
+      v-model="alpha"
+      show-alpha
+      clearable
+    />
     <p>不透明：{{ value }}；含透明度：{{ alpha }}</p>
   </div>
 </template>

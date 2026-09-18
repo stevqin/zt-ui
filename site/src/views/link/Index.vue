@@ -11,16 +11,14 @@ import CustomCode from './Custom.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Link 链接</h1>
-    <p>用于页面跳转或资源导航，支持原生链接、可选 Vue Router、图标、禁用和安全的外部链接。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>状态颜色</h2>
+    <h3>状态颜色</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>尺寸与图标</h2>
+    <h3>尺寸与图标</h3>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
-    <h2>插槽、下划线与下载</h2>
+    <h3>插槽、下划线与下载</h3>
     <DemoBlock :code="CustomCode" desc=""><Custom /></DemoBlock>
   </div>
 </template>

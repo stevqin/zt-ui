@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtTextStatus } from '@ztechjs/zt-ui';
 import { ZtText } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtTextStatus>('default');
 </script>
 
 <template>
   <div class="text-row">
-    <ZtText tag="strong">强调内容</ZtText><ZtText tag="code">const total = 8</ZtText
-    ><ZtText tag="mark">重点标记</ZtText>
+    <ZtText :status="demoStatus" tag="strong">强调内容</ZtText
+    ><ZtText :status="demoStatus" tag="code">const total = 8</ZtText
+    ><ZtText :status="demoStatus" tag="mark">重点标记</ZtText>
   </div>
 </template>
 

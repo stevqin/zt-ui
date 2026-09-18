@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputOtp } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 const masked = ref('');
 </script>
 
 <template>
-  <ZtInputOtp v-model="masked" mask aria-label="私密验证码" />
+  <ZtInputOtp
+    :status="demoStatus"
+    v-model="masked"
+    mask
+    aria-label="私密验证码"
+  />
 </template>
 
 <style scoped>

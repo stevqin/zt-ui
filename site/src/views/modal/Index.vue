@@ -15,31 +15,29 @@ import CustomContentCode from './CustomContent.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Modal 弹窗</h1>
-    <p>在当前页面上方集中呈现需要用户处理的内容。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 控制显示状态。"><Example01 /></DemoBlock>
-    <h2>底部操作与加载</h2>
+    <h3>底部操作与加载</h3>
     <DemoBlock :code="Example02Code" desc="confirm 由使用方处理，保存完成后再关闭弹窗。"
       ><Example02
     /></DemoBlock>
-    <h2>遮罩与关闭拦截</h2>
+    <h3>遮罩与关闭拦截</h3>
     <DemoBlock :code="Example03Code" desc="关闭按钮、遮罩和 Escape 都统一经过 beforeClose。"
       ><Example03
     /></DemoBlock>
-    <h2>全屏与拖拽</h2>
+    <h3>全屏与拖拽</h3>
     <DemoBlock :code="Example04Code" desc="拖动标题栏移动弹窗，使用 header 按钮切换全屏。"
       ><Example04
     /></DemoBlock>
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <DemoBlock
       :code="Example05Code"
       desc="size 提供五档密度，同时调整标题栏、正文、底部和内部控件；子控件显式 size 优先。"
       ><Example05
     /></DemoBlock>
 
-    <h2>插槽、销毁与关闭守卫</h2>
+    <h3>插槽、销毁与关闭守卫</h3>
     <DemoBlock
       :code="CustomContentCode"
       desc="关闭按钮、遮罩和 Escape 经过守卫；业务直接更新 v-model 由调用方决定。"

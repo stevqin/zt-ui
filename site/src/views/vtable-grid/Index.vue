@@ -17,56 +17,50 @@ import Example07Code from './Example07.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section vtable-docs">
-    <h1>VTableGrid 数据表格</h1>
-    <p>
-      基于 VisActor VTable
-      的高性能业务表格，提供本地与远程数据、分页、排序、选择、操作、编辑、汇总和列设置。
-    </p>
-
-    <h2>基础表格</h2>
+  <div class="component-examples vtable-docs">
+    <h3>基础表格</h3>
     <DemoBlock
       :code="Example01Code"
       desc="固定列、格式化、样式、rowKey、tableOptions 和五档 size 均可直接配置。"
       ><Example01
     /></DemoBlock>
 
-    <h2>远程分页与排序</h2>
+    <h3>远程分页与排序</h3>
     <DemoBlock
       :code="Example02Code"
       desc="proxyConfig 统一接收页码、每页条数、排序和查询表单；只应用最后一次请求的结果。"
       ><Example02
     /></DemoBlock>
 
-    <h2>选择与行操作</h2>
+    <h3>选择与行操作</h3>
     <DemoBlock
       :code="Example03Code"
       desc="支持表头全选、跨页保留、自定义操作、行事件，以及选择相关 Expose 方法和工具栏插槽。"
       ><Example03
     /></DemoBlock>
 
-    <h2>单元格编辑与批量保存</h2>
+    <h3>单元格编辑与批量保存</h3>
     <DemoBlock
       :code="Example04Code"
       desc="覆盖 text、textarea、date、number、select、email、url 编辑器；自定义 edit-actions 插槽可调用保存和撤销。"
       ><Example04
     /></DemoBlock>
 
-    <h2>汇总与列设置</h2>
+    <h3>汇总与列设置</h3>
     <DemoBlock
       :code="Example05Code"
       desc="同时演示 sum、avg、count、min、max、自定义计算、copyFormatter、列显隐/排序持久化和全部工具栏事件。"
       ><Example05
     /></DemoBlock>
 
-    <h2>加载、空状态与禁用</h2>
+    <h3>加载、空状态与禁用</h3>
     <DemoBlock
       :code="Example06Code"
       desc="一个示例切换 loading、empty 插槽和 disabled；禁用态会阻止 Canvas 内的选择、排序、编辑和行操作。"
       ><Example06
     /></DemoBlock>
 
-    <h2>实例方法与延迟加载</h2>
+    <h3>实例方法与延迟加载</h3>
     <DemoBlock
       :code="Example07Code"
       desc="autoLoad=false 时由调用方启动查询；下方按钮覆盖 query、reload、resize、setRecords、getTableInstance 和 exportCsv。"

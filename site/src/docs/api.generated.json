@@ -655,7 +655,16 @@
             "type": "number | string",
             "required": false,
             "default": "无默认值",
-            "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
+            "description": "浮层外框宽度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束。"
+          },
+          {
+            "name": "height",
+            "templateName": "height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "浮层外框高度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束；省略时按内容高度展示，指定高度后仅内容区滚动。"
           },
           {
             "name": "offset",
@@ -718,7 +727,7 @@
             "type": "number",
             "required": false,
             "default": "1000",
-            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
+            "description": "自定义层叠顺序；省略时由浮层管理器分配。"
           },
           {
             "name": "restoreFocus",
@@ -826,7 +835,7 @@
       },
       {
         "name": "ZtPopoverProps",
-        "code": "export interface ZtPopoverProps {\n  /** 浮层是否显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 触发方式。 */ trigger?: ZtPopoverTrigger;\n  /** 首选出现方位，空间不足时自动翻转。 */ placement?: ZtPopoverPlacement;\n  /** 浮层宽度，数值按像素处理。 */ width?: number | string;\n  /** 浮层与触发器的间距。 */ offset?: number;\n  /** 禁用全部打开交互。 */ disabled?: boolean;\n  /** 是否显示指向触发器的箭头。 */ showArrow?: boolean;\n  /** 是否 Teleport 到 body。 */ teleported?: boolean;\n  /** 打开延迟毫秒数。 */ openDelay?: number;\n  /** 关闭延迟毫秒数。 */ closeDelay?: number;\n  /** 浮层层级。 */ zIndex?: number;\n  /** 关闭时将焦点返回触发器；输入建议类浮层可关闭以保留正常 Tab 顺序。 */ restoreFocus?: boolean;\n  /** 关闭后保留浮层 DOM。 */ persistent?: boolean;\n}",
+        "code": "export interface ZtPopoverProps {\n  /** 浮层是否显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 触发方式。 */ trigger?: ZtPopoverTrigger;\n  /** 首选出现方位，空间不足时自动翻转。 */ placement?: ZtPopoverPlacement;\n  /** 浮层外框宽度，数字转换为 px，字符串作为 CSS 长度，受视口边界约束。 */ width?: number | string;\n  /** 浮层外框高度，数字转换为 px，字符串作为 CSS 长度；省略时按内容高度展示，指定高度后仅内容区滚动，受视口边界约束。 */ height?: number | string;\n  /** 浮层与触发器的间距。 */ offset?: number;\n  /** 禁用全部打开交互。 */ disabled?: boolean;\n  /** 是否显示指向触发器的箭头。 */ showArrow?: boolean;\n  /** 是否 Teleport 到 body。 */ teleported?: boolean;\n  /** 打开延迟毫秒数。 */ openDelay?: number;\n  /** 关闭延迟毫秒数。 */ closeDelay?: number;\n  /** 浮层层级。 */ zIndex?: number;\n  /** 关闭时将焦点返回触发器；输入建议类浮层可关闭以保留正常 Tab 顺序。 */ restoreFocus?: boolean;\n  /** 关闭后保留浮层 DOM。 */ persistent?: boolean;\n}",
         "public": true
       },
       {
@@ -2059,7 +2068,7 @@
             "type": "number",
             "required": false,
             "default": "2000",
-            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
+            "description": "自定义层叠顺序；省略时由浮层管理器分配。"
           }
         ],
         "events": [
@@ -2192,7 +2201,7 @@
             "type": "number",
             "required": false,
             "default": "2000",
-            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
+            "description": "自定义层叠顺序；省略时由浮层管理器分配。"
           }
         ],
         "events": [
@@ -2795,6 +2804,15 @@
         "name": "ZtInputOtp",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
@@ -2846,7 +2864,7 @@
             "type": "ZtInputOtpStatus",
             "required": false,
             "default": "'default'",
-            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
+            "description": "视觉主题使用 danger，字段校验失败使用 error；FormItem 校验错误优先。"
           },
           {
             "name": "disabled",
@@ -2984,7 +3002,7 @@
       },
       {
         "name": "ZtInputOtpProps",
-        "code": "export interface ZtInputOtpProps {\n  /** 输入值。使用字符串以保留开头的 0。 */\n  modelValue?: string | null\n  /** 验证码位数，1–32，默认 6。 */\n  length?: number\n  /** 仅接受数字；关闭后允许非空白字符。全角数字会转换为半角。 */\n  integerOnly?: boolean\n  /** 遮蔽已输入字符，不影响绑定值。 */\n  mask?: boolean\n  /** 默认继承 Form / ConfigProvider 的尺寸。 */\n  size?: ZtComponentSize\n  /** 主题或校验状态，error 为 danger 的别名。 */\n  status?: ZtInputOtpStatus\n  /** 禁用输入，可继承 Form。 */\n  disabled?: boolean\n  /** 只读。 */\n  readonly?: boolean\n  /** 两组字符之间的分隔文本，例如 \"-\"。 */\n  separator?: string\n  /** 在第几格后显示分隔符，默认位数的一半（向下取整）。 */\n  separatorAfter?: number\n  /** 浏览器自动填充提示，默认 one-time-code。 */\n  autocomplete?: string\n  /** 挂载时自动聚焦，默认关闭。 */\n  autofocus?: boolean\n}",
+        "code": "export interface ZtInputOtpProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  /** 输入值。使用字符串以保留开头的 0。 */\n  modelValue?: string | null\n  /** 验证码位数，1–32，默认 6。 */\n  length?: number\n  /** 仅接受数字；关闭后允许非空白字符。全角数字会转换为半角。 */\n  integerOnly?: boolean\n  /** 遮蔽已输入字符，不影响绑定值。 */\n  mask?: boolean\n  /** 默认继承 Form / ConfigProvider 的尺寸。 */\n  size?: ZtComponentSize\n  /** 视觉主题使用 danger，字段校验失败使用 error；FormItem 校验错误优先。 */\n  status?: ZtInputOtpStatus\n  /** 禁用输入，可继承 Form。 */\n  disabled?: boolean\n  /** 只读。 */\n  readonly?: boolean\n  /** 两组字符之间的分隔文本，例如 \"-\"。 */\n  separator?: string\n  /** 在第几格后显示分隔符，默认位数的一半（向下取整）。 */\n  separatorAfter?: number\n  /** 浏览器自动填充提示，默认 one-time-code。 */\n  autocomplete?: string\n  /** 挂载时自动聚焦，默认关闭。 */\n  autofocus?: boolean\n}",
         "public": true
       },
       {
@@ -3608,7 +3626,7 @@
             "type": "number",
             "required": false,
             "default": "11",
-            "description": "全局圆角基准，单位为 px；0 表示直角。"
+            "description": "全局圆角基准，单位为 px；0 表示直角。Button 深度随基准变化：小于 5px 扁平，5–8px 轻微，大于 8px 更明显。"
           }
         ],
         "events": [],
@@ -3919,6 +3937,15 @@
             "description": "圆点模式"
           },
           {
+            "name": "circle",
+            "templateName": "circle",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "圆形数字徽标；单字符为正圆，多字符扩展为胶囊形，默认 true。false 时继承全局圆角。"
+          },
+          {
             "name": "hidden",
             "templateName": "hidden",
             "kind": "prop",
@@ -3944,15 +3971,6 @@
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
             "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
-          },
-          {
-            "name": "type",
-            "templateName": "type",
-            "kind": "prop",
-            "type": "'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'",
-            "required": false,
-            "default": "无默认值",
-            "description": "选择组件的外观或原生行为类型；可选值见对应类型声明。"
           },
           {
             "name": "offset",
@@ -3998,7 +4016,7 @@
       },
       {
         "name": "ZtBadgeProps",
-        "code": "export interface ZtBadgeProps {\n  value?: string | number\n  max?: number\n  isDot?: boolean\n  hidden?: boolean\n  status?: ZtBadgeStatus\n  size?: ZtBadgeSize\n  type?: 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'\n  offset?: [number, number]\n  showZero?: boolean\n}",
+        "code": "export interface ZtBadgeProps {\n  value?: string | number\n  max?: number\n  isDot?: boolean\n  /** 圆形数字徽标；单字符为正圆，多字符扩展为胶囊形，默认 true。false 时继承全局圆角。 */\n  circle?: boolean\n  hidden?: boolean\n  status?: ZtBadgeStatus\n  size?: ZtBadgeSize\n  offset?: [number, number]\n  showZero?: boolean\n}",
         "public": true
       },
       {
@@ -4124,15 +4142,6 @@
             "description": "启用连体分段样式，可直接传递 segmented 属性。"
           },
           {
-            "name": "variant",
-            "templateName": "variant",
-            "kind": "prop",
-            "type": "'default' | 'segmented'",
-            "required": false,
-            "default": "'default'",
-            "description": "兼容旧版样式配置，新代码使用 segmented 属性；segmented 为 true 时优先启用连体样式。"
-          },
-          {
             "name": "name",
             "templateName": "name",
             "kind": "prop",
@@ -4221,7 +4230,7 @@
       },
       {
         "name": "ZtRadioGroupProps",
-        "code": "export interface ZtRadioGroupProps {\n  /** 启用连体分段样式，可直接传递 segmented 属性。 */\n  segmented?: boolean\n  /** @deprecated 请使用 segmented；保留兼容原有用法。 */\n  variant?: 'default' | 'segmented'\n  name?: string\n  modelValue?: unknown\n  disabled?: boolean\n  size?: ZtRadioSize\n  status?: ZtRadioStatus\n}",
+        "code": "export interface ZtRadioGroupProps {\n  /** 启用连体分段样式，可直接传递 segmented 属性。 */\n  segmented?: boolean\n  name?: string\n  modelValue?: unknown\n  disabled?: boolean\n  size?: ZtRadioSize\n  status?: ZtRadioStatus\n}",
         "public": true
       },
       {
@@ -4634,6 +4643,15 @@
         "name": "ZtInput",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
@@ -4835,7 +4853,7 @@
       },
       {
         "name": "ZtInputProps",
-        "code": "export interface ZtInputProps {\n  modelValue?: string | number | null\n  type?: string\n  size?: ZtInputSize\n  status?: ZtInputStatus\n  disabled?: boolean\n  readonly?: boolean\n  autocomplete?: string\n  clearable?: boolean\n  maxlength?: number\n  showWordLimit?: boolean\n}",
+        "code": "export interface ZtInputProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  modelValue?: string | number | null\n  type?: string\n  size?: ZtInputSize\n  status?: ZtInputStatus\n  disabled?: boolean\n  readonly?: boolean\n  autocomplete?: string\n  clearable?: boolean\n  maxlength?: number\n  showWordLimit?: boolean\n}",
         "public": true
       },
       {
@@ -4872,6 +4890,15 @@
             "required": false,
             "default": "true",
             "description": "显示密码显隐按钮"
+          },
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
           },
           {
             "name": "modelValue",
@@ -5066,7 +5093,7 @@
       },
       {
         "name": "ZtInputProps",
-        "code": "export interface ZtInputProps {\n  modelValue?: string | number | null\n  type?: string\n  size?: ZtInputSize\n  status?: ZtInputStatus\n  disabled?: boolean\n  readonly?: boolean\n  autocomplete?: string\n  clearable?: boolean\n  maxlength?: number\n  showWordLimit?: boolean\n}",
+        "code": "export interface ZtInputProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  modelValue?: string | number | null\n  type?: string\n  size?: ZtInputSize\n  status?: ZtInputStatus\n  disabled?: boolean\n  readonly?: boolean\n  autocomplete?: string\n  clearable?: boolean\n  maxlength?: number\n  showWordLimit?: boolean\n}",
         "public": true
       },
       {
@@ -5094,6 +5121,15 @@
       {
         "name": "ZtInputNumber",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "modelValue",
             "templateName": "model-value",
@@ -5262,7 +5298,7 @@
       },
       {
         "name": "ZtInputNumberProps",
-        "code": "export interface ZtInputNumberProps {\n  modelValue?: number | null\n  min?: number\n  max?: number\n  step?: number\n  precision?: number\n  stepStrictly?: boolean\n  size?: ZtInputNumberSize\n  disabled?: boolean\n  readonly?: boolean\n  controls?: boolean\n  controlsPosition?: ZtInputNumberControlsPosition\n}",
+        "code": "export interface ZtInputNumberProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  modelValue?: number | null\n  min?: number\n  max?: number\n  step?: number\n  precision?: number\n  stepStrictly?: boolean\n  size?: ZtInputNumberSize\n  disabled?: boolean\n  readonly?: boolean\n  controls?: boolean\n  controlsPosition?: ZtInputNumberControlsPosition\n}",
         "public": true
       },
       {
@@ -5286,6 +5322,15 @@
       {
         "name": "ZtSelect",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "virtual",
             "templateName": "virtual",
@@ -5590,7 +5635,7 @@
       },
       {
         "name": "ZtSelectProps",
-        "code": "export interface ZtSelectProps {\n  /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */\n  virtual?: boolean;\n  /** 虚拟列表行高（px），未设置时跟随 size。 */\n  itemHeight?: number;\n  /** 下拉列表最大高度（px），视口不足时自动缩小。 */\n  height?: number;\n  modelValue?: ZtSelectModelValue;\n  options?: ZtSelectOption[];\n  multiple?: boolean;\n  /** 多选时折叠超出数量的标签，剩余项显示为 +N。 */\n  collapseTags?: boolean;\n  /** 开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。 */\n  maxCollapseTags?: number;\n  filterable?: boolean;\n  remote?: boolean;\n  remoteMethod?: ZtSelectRemoteMethod;\n  debounce?: number;\n  clearable?: boolean;\n  placeholder?: string;\n  disabled?: boolean;\n  size?: ZtComponentSize;\n  noDataText?: string;\n  remoteErrorText?: string;\n}",
+        "code": "export interface ZtSelectProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */\n  virtual?: boolean;\n  /** 虚拟列表行高（px），未设置时跟随 size。 */\n  itemHeight?: number;\n  /** 下拉列表最大高度（px），视口不足时自动缩小。 */\n  height?: number;\n  modelValue?: ZtSelectModelValue;\n  options?: ZtSelectOption[];\n  multiple?: boolean;\n  /** 多选时折叠超出数量的标签，剩余项显示为 +N。 */\n  collapseTags?: boolean;\n  /** 开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。 */\n  maxCollapseTags?: number;\n  filterable?: boolean;\n  remote?: boolean;\n  remoteMethod?: ZtSelectRemoteMethod;\n  debounce?: number;\n  clearable?: boolean;\n  placeholder?: string;\n  disabled?: boolean;\n  size?: ZtComponentSize;\n  noDataText?: string;\n  remoteErrorText?: string;\n}",
         "public": true
       },
       {
@@ -5639,7 +5684,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "为支持的输入、选择和日期时间控件启用下边框外观；嵌套 Form 独立决定外观，弹出面板中的辅助控件保留原样。"
+            "description": "为 15 个输入、选择和日期时间控件提供默认下边框外观；组件显式 underline 优先，嵌套 Form 独立决定外观，弹出面板中的辅助控件保留普通边框。"
           },
           {
             "name": "model",
@@ -6358,15 +6403,6 @@
             "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
-            "name": "small",
-            "templateName": "small",
-            "kind": "prop",
-            "type": "boolean",
-            "required": false,
-            "default": "false",
-            "description": "兼容的小尺寸开关；新代码应使用 size。"
-          },
-          {
             "name": "background",
             "templateName": "background",
             "kind": "prop",
@@ -6480,7 +6516,7 @@
       },
       {
         "name": "ZtPaginationProps",
-        "code": "export interface ZtPaginationProps {\n  status?: ZtPaginationStatus\n  currentPage?: number\n  pageSize?: number\n  total?: number\n  pageCount?: number\n  pagerCount?: number\n  pageSizes?: number[]\n  layout?: string\n  size?: ZtPaginationSize\n  small?: boolean\n  background?: boolean\n  disabled?: boolean\n  hideOnSinglePage?: boolean\n  prevText?: string\n  nextText?: string\n}",
+        "code": "export interface ZtPaginationProps {\n  status?: ZtPaginationStatus\n  currentPage?: number\n  pageSize?: number\n  total?: number\n  pageCount?: number\n  pagerCount?: number\n  pageSizes?: number[]\n  layout?: string\n  size?: ZtPaginationSize\n  background?: boolean\n  disabled?: boolean\n  hideOnSinglePage?: boolean\n  prevText?: string\n  nextText?: string\n}",
         "public": true
       },
       {
@@ -6719,7 +6755,7 @@
             "type": "number",
             "required": false,
             "default": "1000",
-            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
+            "description": "自定义层叠顺序；省略时由浮层管理器分配。"
           },
           {
             "name": "beforeClose",
@@ -7146,7 +7182,7 @@
             "type": "number",
             "required": false,
             "default": "1000",
-            "description": "自定义弹层的层叠顺序；省略时由浮层管理器分配。"
+            "description": "自定义层叠顺序；省略时由浮层管理器分配。"
           },
           {
             "name": "beforeClose",
@@ -7319,6 +7355,15 @@
         "name": "ZtDatePicker",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
@@ -7388,7 +7433,7 @@
             "type": "ZtDatePickerStatus",
             "required": false,
             "default": "'primary'",
-            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
+            "description": "视觉主题默认 primary，danger 表示红色主题；error 表示校验错误，FormItem 校验错误优先。"
           },
           {
             "name": "disabled",
@@ -7528,7 +7573,7 @@
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -7548,7 +7593,7 @@
       },
       {
         "name": "ZtDatePickerPanelProps",
-        "code": "export type ZtDatePickerPanelProps = Omit<\n  ZtDatePickerProps,\n  'placeholder' | 'clearable'\n>;",
+        "code": "export type ZtDatePickerPanelProps = Omit<\n  ZtDatePickerProps,\n  'placeholder' | 'clearable' | 'underline'\n>;",
         "public": true
       },
       {
@@ -7578,6 +7623,15 @@
       {
         "name": "ZtDateTimePicker",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "modelValue",
             "templateName": "model-value",
@@ -7648,7 +7702,7 @@
             "type": "ZtDatePickerStatus",
             "required": false,
             "default": "'primary'",
-            "description": "组件的语义颜色，支持 default、primary、success、warning、danger 和 info。"
+            "description": "视觉主题默认 primary，danger 表示红色主题；error 表示校验错误，FormItem 校验错误优先。"
           },
           {
             "name": "disabled",
@@ -7788,7 +7842,7 @@
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -7808,7 +7862,7 @@
       },
       {
         "name": "ZtDatePickerPanelProps",
-        "code": "export type ZtDatePickerPanelProps = Omit<\n  ZtDatePickerProps,\n  'placeholder' | 'clearable'\n>;",
+        "code": "export type ZtDatePickerPanelProps = Omit<\n  ZtDatePickerProps,\n  'placeholder' | 'clearable' | 'underline'\n>;",
         "public": true
       },
       {
@@ -9937,6 +9991,24 @@
             "description": "简短纯文本说明。"
           },
           {
+            "name": "width",
+            "templateName": "width",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "'max-content'",
+            "description": "外框宽度，数字转换为 px，字符串作为 CSS 长度；省略时为 max-content，短文本紧凑、长文本换行，受视口最大宽度约束。"
+          },
+          {
+            "name": "height",
+            "templateName": "height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "外框高度，数字转换为 px，字符串作为 CSS 长度；省略时按内容高度展示，指定高度后仅内容区滚动，受视口边界约束。"
+          },
+          {
             "name": "disabled",
             "templateName": "disabled",
             "kind": "prop",
@@ -10019,7 +10091,7 @@
     "types": [
       {
         "name": "ZtTooltipProps",
-        "code": "export interface ZtTooltipProps {\n  /** 简短纯文本说明。 */ content?: string;\n  /** 禁用显示与打开行为。 */ disabled?: boolean;\n  /** 首选方位。 */ placement?: ZtPopoverPlacement;\n  /** 鼠标悬停打开延迟毫秒。 */ openDelay?: number;\n  /** 鼠标移出关闭延迟毫秒。 */ closeDelay?: number;\n  /** 控制显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 是否显示箭头。 */ showArrow?: boolean;\n}",
+        "code": "export interface ZtTooltipProps {\n  /** 简短纯文本说明。 */ content?: string;\n  /** 外框宽度，数字转换为 px，字符串作为 CSS 长度；省略时为 max-content，短文本紧凑、长文本换行，受视口最大宽度约束。 */ width?: number | string;\n  /** 外框高度，数字转换为 px，字符串作为 CSS 长度；省略时按内容高度展示，指定高度后仅内容区滚动，受视口边界约束。 */ height?: number | string;\n  /** 禁用显示与打开行为。 */ disabled?: boolean;\n  /** 首选方位。 */ placement?: ZtPopoverPlacement;\n  /** 鼠标悬停打开延迟毫秒。 */ openDelay?: number;\n  /** 鼠标移出关闭延迟毫秒。 */ closeDelay?: number;\n  /** 控制显示，支持 v-model:visible。 */ visible?: boolean;\n  /** 是否显示箭头。 */ showArrow?: boolean;\n}",
         "public": true
       },
       {
@@ -10409,6 +10481,15 @@
         "name": "ZtCascader",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "status",
             "templateName": "status",
             "kind": "prop",
@@ -10582,7 +10663,7 @@
       },
       {
         "name": "ZtCascaderProps",
-        "code": "export interface ZtCascaderProps {\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 单选为完整 key 路径，多选为路径数组；清空发出 []。 */\n  modelValue?: ZtCascaderValue;\n  /** 层级选项数组，所有节点 key 唯一。 */\n  options?: ZtTreeNode[];\n  /** 映射 key、label、children、disabled、isLeaf 字段。 */\n  fields?: ZtTreeFields;\n  /** 允许独立选择多条完整路径。 */\n  multiple?: boolean;\n  /** 允许选择分支节点；关闭时只能选择叶节点。 */\n  checkStrictly?: boolean;\n  /** 显示按完整标签路径匹配的搜索框。 */\n  filterable?: boolean;\n  /** 有值时显示清空按钮。 */\n  clearable?: boolean;\n  /** 禁用控件；继承 Form 禁用状态。 */\n  disabled?: boolean;\n  /** 未选择路径时显示的文本。 */\n  placeholder?: string;\n  /** 展开未加载分支时请求子节点；失败显示重试，过期响应被忽略。 */\n  load?: ZtTreeLoader;\n  /** 五档尺寸，继承 Form 和 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 是否将浮层传送到 body，默认 true。 */\n  teleported?: boolean;\n}",
+        "code": "export interface ZtCascaderProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 单选为完整 key 路径，多选为路径数组；清空发出 []。 */\n  modelValue?: ZtCascaderValue;\n  /** 层级选项数组，所有节点 key 唯一。 */\n  options?: ZtTreeNode[];\n  /** 映射 key、label、children、disabled、isLeaf 字段。 */\n  fields?: ZtTreeFields;\n  /** 允许独立选择多条完整路径。 */\n  multiple?: boolean;\n  /** 允许选择分支节点；关闭时只能选择叶节点。 */\n  checkStrictly?: boolean;\n  /** 显示按完整标签路径匹配的搜索框。 */\n  filterable?: boolean;\n  /** 有值时显示清空按钮。 */\n  clearable?: boolean;\n  /** 禁用控件；继承 Form 禁用状态。 */\n  disabled?: boolean;\n  /** 未选择路径时显示的文本。 */\n  placeholder?: string;\n  /** 展开未加载分支时请求子节点；失败显示重试，过期响应被忽略。 */\n  load?: ZtTreeLoader;\n  /** 五档尺寸，继承 Form 和 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 是否将浮层传送到 body，默认 true。 */\n  teleported?: boolean;\n}",
         "public": true
       },
       {
@@ -10627,6 +10708,15 @@
       {
         "name": "ZtTreeSelect",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "status",
             "templateName": "status",
@@ -10841,7 +10931,7 @@
       },
       {
         "name": "ZtTreeSelectProps",
-        "code": "export interface ZtTreeSelectProps {\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 单选为 key 或 null；多选为 key 数组；清空分别发出 null 或 []。 */\n  modelValue?: ZtTreeSelectValue;\n  /** 树节点数据，整棵树 key 唯一。 */\n  data?: ZtTreeNode[];\n  /** 映射树节点 key、label、children、disabled、isLeaf 字段。 */\n  fields?: ZtTreeFields;\n  /** 多选使用 Tree 勾选框；单选使用行选择。 */\n  multiple?: boolean;\n  /** 启用独立节点勾选，忽略 checkStrategy 联动归并。 */\n  checkStrictly?: boolean;\n  /** all 保留全部勾选 key；parent 省略已选父节点的子孙；leaf 仅保留叶节点。 */\n  checkStrategy?: 'all' | 'parent' | 'leaf';\n  /** 在浮层中显示标签过滤输入框并保留匹配祖先。 */\n  filterable?: boolean;\n  /** 有值时显示清空按钮。 */\n  clearable?: boolean;\n  /** 禁用打开、清空及选择；同时继承 Form 禁用状态。 */\n  disabled?: boolean;\n  /** 无值时的触发器提示文本。 */\n  placeholder?: string;\n  /** 多选触发器最多展示的标签数，默认 3，至少展示 1 个。 */\n  collapseTags?: number;\n  /** 异步加载子节点；失败由 Tree 显示重试，并发出 load-error。 */\n  load?: ZtTreeLoader;\n  /** 五档尺寸，依次继承 Form 和 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 启用内部 Tree 的窗口渲染。 */\n  virtual?: boolean;\n  /** 内部 Tree 最大高度，省略时为 280 像素。 */\n  height?: number;\n  /** 内部 Tree 行高；省略时随 mini/small/default/medium/large 分别为 24/28/32/36/40 像素。 */\n  itemHeight?: number;\n  /** 是否将浮层传送到 body，默认 true；保留主题与 overlay 上下文。 */\n  teleported?: boolean;\n}",
+        "code": "export interface ZtTreeSelectProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 单选为 key 或 null；多选为 key 数组；清空分别发出 null 或 []。 */\n  modelValue?: ZtTreeSelectValue;\n  /** 树节点数据，整棵树 key 唯一。 */\n  data?: ZtTreeNode[];\n  /** 映射树节点 key、label、children、disabled、isLeaf 字段。 */\n  fields?: ZtTreeFields;\n  /** 多选使用 Tree 勾选框；单选使用行选择。 */\n  multiple?: boolean;\n  /** 启用独立节点勾选，忽略 checkStrategy 联动归并。 */\n  checkStrictly?: boolean;\n  /** all 保留全部勾选 key；parent 省略已选父节点的子孙；leaf 仅保留叶节点。 */\n  checkStrategy?: 'all' | 'parent' | 'leaf';\n  /** 在浮层中显示标签过滤输入框并保留匹配祖先。 */\n  filterable?: boolean;\n  /** 有值时显示清空按钮。 */\n  clearable?: boolean;\n  /** 禁用打开、清空及选择；同时继承 Form 禁用状态。 */\n  disabled?: boolean;\n  /** 无值时的触发器提示文本。 */\n  placeholder?: string;\n  /** 多选触发器最多展示的标签数，默认 3，至少展示 1 个。 */\n  collapseTags?: number;\n  /** 异步加载子节点；失败由 Tree 显示重试，并发出 load-error。 */\n  load?: ZtTreeLoader;\n  /** 五档尺寸，依次继承 Form 和 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 启用内部 Tree 的窗口渲染。 */\n  virtual?: boolean;\n  /** 内部 Tree 最大高度，省略时为 280 像素。 */\n  height?: number;\n  /** 内部 Tree 行高；省略时随 mini/small/default/medium/large 分别为 24/28/32/36/40 像素。 */\n  itemHeight?: number;\n  /** 是否将浮层传送到 body，默认 true；保留主题与 overlay 上下文。 */\n  teleported?: boolean;\n}",
         "public": true
       },
       {
@@ -11035,6 +11125,15 @@
         "name": "ZtAutocomplete",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "status",
             "templateName": "status",
             "kind": "prop",
@@ -11194,7 +11293,7 @@
       },
       {
         "name": "ZtAutocompleteProps",
-        "code": "export interface ZtAutocompleteProps {\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 文本值；清空时发出空字符串。 */\n  modelValue?: string;\n  /** 本地建议选项，包含 value、可选 label 和 disabled。 */\n  options?: ZtAutocompleteOption[];\n  /** 同步或异步建议源；接收查询文本和 AbortSignal，覆盖 options 本地过滤。 */\n  fetchSuggestions?: ZtAutocompleteSource;\n  /** 请求建议前等待的毫秒数，默认 200。 */\n  debounce?: number;\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtAutocompleteProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 文本值；清空时发出空字符串。 */\n  modelValue?: string;\n  /** 本地建议选项，包含 value、可选 label 和 disabled。 */\n  options?: ZtAutocompleteOption[];\n  /** 同步或异步建议源；接收查询文本和 AbortSignal，覆盖 options 本地过滤。 */\n  fetchSuggestions?: ZtAutocompleteSource;\n  /** 请求建议前等待的毫秒数，默认 200。 */\n  debounce?: number;\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -11226,6 +11325,15 @@
       {
         "name": "ZtInputTag",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "status",
             "templateName": "status",
@@ -11363,7 +11471,7 @@
     "types": [
       {
         "name": "ZtInputTagProps",
-        "code": "export interface ZtInputTagProps {\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 受控标签数组，空值为 []；仅标签变化时触发 update/change。 */\n  modelValue?: string[];\n  /** 是否精确去重，区分大小写，默认 true。 */\n  deduplicate?: boolean;\n  /** 标签数量上限，超出项丢弃并触发 limit；默认不限制。 */\n  max?: number;\n  /** 除 Enter 外的提交分隔符，同时用于拆分粘贴文本。 */\n  separators?: string[];\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n}",
+        "code": "export interface ZtInputTagProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 受控标签数组，空值为 []；仅标签变化时触发 update/change。 */\n  modelValue?: string[];\n  /** 是否精确去重，区分大小写，默认 true。 */\n  deduplicate?: boolean;\n  /** 标签数量上限，超出项丢弃并触发 limit；默认不限制。 */\n  max?: number;\n  /** 除 Enter 外的提交分隔符，同时用于拆分粘贴文本。 */\n  separators?: string[];\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n}",
         "public": true
       },
       {
@@ -11390,6 +11498,15 @@
       {
         "name": "ZtMention",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "status",
             "templateName": "status",
@@ -11562,7 +11679,7 @@
       },
       {
         "name": "ZtMentionProps",
-        "code": "export interface ZtMentionProps {\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 普通多行文本值；选择仅替换前缀到光标之间的内容，保留其后的文本。 */\n  modelValue?: string;\n  /** 触发提及的前缀数组，默认 [@]；前缀须位于文本开头或空白之后。 */\n  prefixes?: string[];\n  /** 本地建议选项，包含 value、可选 label 和 disabled。 */\n  options?: ZtMentionOption[];\n  /** 异步或同步建议源，接收查询文本、前缀及 AbortSignal，旧响应不会覆盖新查询。 */\n  fetchSuggestions?: ZtMentionSource;\n  /** 建议查询的防抖时间，单位毫秒，默认 200。 */\n  debounce?: number;\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n  /** textarea 的可见文本行数，默认 3。 */\n  rows?: number;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtMentionProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 普通多行文本值；选择仅替换前缀到光标之间的内容，保留其后的文本。 */\n  modelValue?: string;\n  /** 触发提及的前缀数组，默认 [@]；前缀须位于文本开头或空白之后。 */\n  prefixes?: string[];\n  /** 本地建议选项，包含 value、可选 label 和 disabled。 */\n  options?: ZtMentionOption[];\n  /** 异步或同步建议源，接收查询文本、前缀及 AbortSignal，旧响应不会覆盖新查询。 */\n  fetchSuggestions?: ZtMentionSource;\n  /** 建议查询的防抖时间，单位毫秒，默认 200。 */\n  debounce?: number;\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n  /** textarea 的可见文本行数，默认 3。 */\n  rows?: number;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -11755,6 +11872,15 @@
         "name": "ZtTimeSelect",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "status",
             "templateName": "status",
             "kind": "prop",
@@ -11924,7 +12050,7 @@
     "types": [
       {
         "name": "ZtTimeSelectProps",
-        "code": "export interface ZtTimeSelectProps {\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** HH:mm 文本或 null；清空依次触发 update(null)、change(null) 和 clear。 */\n  modelValue?: string | null;\n  /** 选项生成开始时间 HH:mm；非法或反向起止时间不生成选项。 */\n  start?: string;\n  /** 生成选项的结束时间 HH:mm；只有落在步长网格时才包含，默认 18:00。 */\n  end?: string;\n  /** 正数 HH:mm 步长；非法或零步长不生成选项。 */\n  step?: string;\n  /** 最小可选时间下界 HH:mm；小于或等于此值的选项禁用。 */\n  minTime?: string;\n  /** 排除该时间及之后的选项，使用 HH:mm；未设置或非法时不限制。 */\n  maxTime?: string;\n  /** 禁用的闭区间 [from,to] 数组，非法区间忽略。 */\n  disabledRanges?: [string, string][];\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  filterable?: boolean;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtTimeSelectProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** HH:mm 文本或 null；清空依次触发 update(null)、change(null) 和 clear。 */\n  modelValue?: string | null;\n  /** 选项生成开始时间 HH:mm；非法或反向起止时间不生成选项。 */\n  start?: string;\n  /** 生成选项的结束时间 HH:mm；只有落在步长网格时才包含，默认 18:00。 */\n  end?: string;\n  /** 正数 HH:mm 步长；非法或零步长不生成选项。 */\n  step?: string;\n  /** 最小可选时间下界 HH:mm；小于或等于此值的选项禁用。 */\n  minTime?: string;\n  /** 排除该时间及之后的选项，使用 HH:mm；未设置或非法时不限制。 */\n  maxTime?: string;\n  /** 禁用的闭区间 [from,to] 数组，非法区间忽略。 */\n  disabledRanges?: [string, string][];\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  filterable?: boolean;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -11951,6 +12077,15 @@
       {
         "name": "ZtTimePicker",
         "props": [
+          {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
           {
             "name": "status",
             "templateName": "status",
@@ -12143,7 +12278,7 @@
       },
       {
         "name": "ZtTimePickerProps",
-        "code": "export interface ZtTimePickerProps {\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 根据 format 使用 HH:mm 或 HH:mm:ss；范围为 [开始,结束]，空值为 null。 */\n  modelValue?: ZtTimePickerValue;\n  /** 启用开始/结束双值模式；两个端点共享面板并明确标识当前端点。 */\n  range?: boolean;\n  /** 值及可见列格式，默认 HH:mm；HH:mm:ss 显示秒列。 */\n  format?: 'HH:mm' | 'HH:mm:ss';\n  /** 小时列正整数步长，非法值按 1。 */\n  hourStep?: number;\n  /** 分钟列正整数步长，非法值按 1。 */\n  minuteStep?: number;\n  /** 秒列正整数步长，非法值按 1。 */\n  secondStep?: number;\n  /** 按候选完整时间和当前端点返回是否禁用。 */\n  disabledTime?: (value: string, endpoint: ZtTimePickerEndpoint) => boolean;\n  /** 禁止打开、选择、确认和清空；也继承 Form 禁用。 */\n  disabled?: boolean;\n  /** 禁止编辑和打开面板，保留文本显示。 */\n  readonly?: boolean;\n  /** 显示清空按钮；清空依次发出 update:modelValue(null)、change(null)、clear。 */\n  clearable?: boolean;\n  /** 无值时显示的占位文本。 */\n  placeholder?: string;\n  /** 五档尺寸；省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtTimePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 根据 format 使用 HH:mm 或 HH:mm:ss；范围为 [开始,结束]，空值为 null。 */\n  modelValue?: ZtTimePickerValue;\n  /** 启用开始/结束双值模式；两个端点共享面板并明确标识当前端点。 */\n  range?: boolean;\n  /** 值及可见列格式，默认 HH:mm；HH:mm:ss 显示秒列。 */\n  format?: 'HH:mm' | 'HH:mm:ss';\n  /** 小时列正整数步长，非法值按 1。 */\n  hourStep?: number;\n  /** 分钟列正整数步长，非法值按 1。 */\n  minuteStep?: number;\n  /** 秒列正整数步长，非法值按 1。 */\n  secondStep?: number;\n  /** 按候选完整时间和当前端点返回是否禁用。 */\n  disabledTime?: (value: string, endpoint: ZtTimePickerEndpoint) => boolean;\n  /** 禁止打开、选择、确认和清空；也继承 Form 禁用。 */\n  disabled?: boolean;\n  /** 禁止编辑和打开面板，保留文本显示。 */\n  readonly?: boolean;\n  /** 显示清空按钮；清空依次发出 update:modelValue(null)、change(null)、clear。 */\n  clearable?: boolean;\n  /** 无值时显示的占位文本。 */\n  placeholder?: string;\n  /** 五档尺寸；省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -12512,7 +12647,7 @@
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -12532,7 +12667,7 @@
       },
       {
         "name": "ZtDatePickerPanelProps",
-        "code": "export type ZtDatePickerPanelProps = Omit<\n  ZtDatePickerProps,\n  'placeholder' | 'clearable'\n>;",
+        "code": "export type ZtDatePickerPanelProps = Omit<\n  ZtDatePickerProps,\n  'placeholder' | 'clearable' | 'underline'\n>;",
         "public": true
       },
       {
@@ -14324,6 +14459,15 @@
         "name": "ZtSelectBox",
         "props": [
           {
+            "name": "underline",
+            "templateName": "underline",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "继承最近 Form（最终为 false）",
+            "description": "显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。"
+          },
+          {
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
@@ -14437,7 +14581,7 @@
             "kind": "prop",
             "type": "number[]",
             "required": false,
-            "default": "[10, 20, 50]",
+            "default": "[10, 20, 50, 100, 200, 500]",
             "description": "分页器可选每页条数；过滤非正整数并去重，自动补入当前有效 pageSize。"
           },
           {
@@ -14580,7 +14724,7 @@
       },
       {
         "name": "ZtSelectBoxProps",
-        "code": "export interface ZtSelectBoxProps {\n  /** 已确认的选项值；面板草稿只在确定时提交。 */\n  modelValue?: ZtSelectValue[]\n  options?: ZtSelectOption[]\n  /** 选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。 */\n  width?: number | string\n  disabled?: boolean\n  placeholder?: string\n  size?: ZtComponentSize\n  filterable?: boolean\n  clearable?: boolean\n  /** 远程搜索返回的结果在面板内分页。 */\n  remote?: boolean\n  remoteMethod?: ZtSelectBoxRemoteMethod\n  debounce?: number\n  pageSize?: number\n  pageSizes?: number[]\n  noDataText?: string\n  remoteErrorText?: string\n}",
+        "code": "export interface ZtSelectBoxProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  /** 已确认的选项值；面板草稿只在确定时提交。 */\n  modelValue?: ZtSelectValue[]\n  options?: ZtSelectOption[]\n  /** 选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。 */\n  width?: number | string\n  disabled?: boolean\n  placeholder?: string\n  size?: ZtComponentSize\n  filterable?: boolean\n  clearable?: boolean\n  /** 远程搜索返回的结果在面板内分页。 */\n  remote?: boolean\n  remoteMethod?: ZtSelectBoxRemoteMethod\n  debounce?: number\n  pageSize?: number\n  pageSizes?: number[]\n  noDataText?: string\n  remoteErrorText?: string\n}",
         "public": true
       },
       {

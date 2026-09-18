@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtSegmentedStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtSegmented } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtSegmentedStatus>('primary');
 const value = ref(1);
 const sizes = ['mini', 'small', 'default', 'medium', 'large'] as const;
 const options = [
@@ -13,13 +16,20 @@ const options = [
 <template>
   <div class="example-stack">
     <ZtSegmented
+      :status="demoStatus"
       v-for="size in sizes"
       :key="size"
       v-model="value"
       :size="size"
       :options="options"
       :aria-label="`${size}列数`"
-    /><ZtSegmented v-model="value" disabled :options="options" aria-label="禁用列数" />
+    /><ZtSegmented
+      :status="demoStatus"
+      v-model="value"
+      disabled
+      :options="options"
+      aria-label="禁用列数"
+    />
     <p>当前列数：{{ value }}</p>
   </div>
 </template>

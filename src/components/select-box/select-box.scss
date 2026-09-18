@@ -14,9 +14,16 @@
   --select-box-list-height: 360px;
   --select-box-option-gap: 6px;
   --select-box-paste-height: 220px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
   color: var(--zt-text, var(--glass-default-ink));
   background: var(--zt-surface, #fff);
   font-size: var(--glass-size-default);
+
+  &__header, &__pager, &__footer, &__separator, &__paste-result { flex-shrink: 0; }
 
   &__header {
     padding: var(--select-box-space) var(--select-box-space) 0;
@@ -55,7 +62,15 @@
     font-variant-numeric: tabular-nums;
   }
 
-  &__list { padding: 4px 0; }
+  // ZtScrollbar forwards the list class to its actual scrolling wrap.
+  > .zt-scrollbar {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+  &__list { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 4px 0; overscroll-behavior: contain; }
   &__loading.is-loading { min-height: 72px; }
   &__state {
     display: block;
@@ -76,7 +91,18 @@
   }
   &__option .zt-checkbox__input { flex: 0 0 auto; }
   &__option .zt-checkbox__label { flex: 1; min-width: 0; padding-left: 0; }
-  &__option-content { display: block; color: inherit; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  // ZtText truncation is inline by default. In an option row it is the flex
+  // content column, so it must consume the complete space after the checkbox.
+  .zt-text.zt-select-box-panel__option-content.is-truncated {
+    display: block;
+    flex: 1 1 auto;
+    width: 100%;
+    min-width: 0;
+    color: inherit;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
   &__option:hover:not(.is-disabled) { background: var(--zt-surface-soft, var(--glass-accent-soft)); }
   &__option.is-checked { background: var(--glass-accent-soft); }
 
@@ -122,8 +148,19 @@
     &:hover:not(:disabled) { background: var(--select-box-accent); filter: brightness(1.07); box-shadow: none; }
   }
 
-  &__paste { padding: var(--select-box-space); }
+  &__paste {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    padding: var(--select-box-space);
+  }
   &__paste-editor {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
     overflow: hidden;
     border: 1px solid var(--select-box-line);
     border-radius: glass.radius(4px);
@@ -134,7 +171,8 @@
   &__paste textarea {
     display: block;
     width: 100%;
-    min-height: var(--select-box-paste-height);
+    height: var(--select-box-paste-height);
+    min-height: 0;
     box-sizing: border-box;
     padding: 12px;
     border: 0;
@@ -143,7 +181,7 @@
     color: inherit;
     font: inherit;
     line-height: 1.7;
-    resize: vertical;
+    resize: none;
   }
   &__paste textarea::placeholder { color: var(--select-box-muted); }
   &__separator {
@@ -307,7 +345,7 @@
     &:active:not(:disabled) { transform: scale(.9); }
     @media (prefers-reduced-motion: reduce) { &, &:hover:not(:disabled), &:active:not(:disabled) { transform: none; } }
   }
-  &__popup { @include glass.tokens; overflow: auto; box-sizing: border-box; border: 1px solid var(--zt-border, var(--glass-default-line)); border-radius: glass.radius(6px); background: var(--zt-surface, #fff); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); }
+  &__popup { @include glass.tokens; display: flex; flex-direction: column; min-height: 0; overflow: hidden; box-sizing: border-box; border: 1px solid var(--zt-border, var(--glass-default-line)); border-radius: glass.radius(6px); background: var(--zt-surface, #fff); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); }
 }
 
 .zt-select-box.is-form-underline {

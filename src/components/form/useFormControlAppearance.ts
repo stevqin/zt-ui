@@ -1,4 +1,4 @@
-import { computed, inject, provide, type InjectionKey } from 'vue'
+import { computed, inject, provide, toValue, type InjectionKey, type MaybeRefOrGetter } from 'vue'
 import { ztFormKey } from './context'
 
 const formControlAppearanceBoundaryKey: InjectionKey<boolean> = Symbol('ztFormControlAppearanceBoundary')
@@ -8,10 +8,11 @@ export function provideFormControlAppearanceRoot() {
   provide(formControlAppearanceBoundaryKey, false)
 }
 
-export function useFormControlAppearance() {
+export function useFormControlAppearance(local?: MaybeRefOrGetter<boolean | undefined>) {
   const form = inject(ztFormKey, undefined)
   const insidePublicControl = inject(formControlAppearanceBoundaryKey, false)
-  const underline = computed(() => Boolean(form?.underline.value && !insidePublicControl))
+  const inherited = computed(() => Boolean(form?.underline.value && !insidePublicControl))
+  const underline = computed(() => toValue(local) ?? inherited.value)
   provide(formControlAppearanceBoundaryKey, true)
   return { underline }
 }

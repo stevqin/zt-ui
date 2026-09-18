@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtPopconfirmStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtPopconfirm, ZtButton, ZtSwitch } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtPopconfirmStatus>('warning');
 const visible = ref(false),
   disabled = ref(false),
   message = ref('');
@@ -18,7 +21,7 @@ const visible = ref(false),
       confirm-text="标记已读"
       cancel-text="关闭"
       button-size="small"
-      status="info"
+      :status="demoStatus"
       @confirm="message = '已标记为已读'"
       @cancel="message = '已关闭'"
       ><ZtButton>打开确认</ZtButton></ZtPopconfirm

@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtDatePicker } from '@ztechjs/zt-ui';
 import type { ZtDatePickerValue } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const value = ref<ZtDatePickerValue>(null);
 </script>
 
 <template>
   <div class="date-demo-stack">
-    <ZtDatePicker v-model="value" clearable /><span>当前值：{{ value ?? '未选择' }}</span>
+    <ZtDatePicker :status="demoStatus" v-model="value" clearable /><span
+      >当前值：{{ value ?? '未选择' }}</span
+    >
   </div>
 </template>
 

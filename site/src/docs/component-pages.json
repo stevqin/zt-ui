@@ -1,0 +1,2675 @@
+{
+  "affix": {
+    "purpose": "在指定滚动区域顶部或底部固定内容，并保留占位避免布局跳动。",
+    "guidance": [
+      "先确定滚动容器，再设置固定方向和偏移；预留占位避免内容跳动。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/affix/Basic.vue",
+        "description": "在指定滚动区域顶部或底部固定内容，并保留占位避免布局跳动。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/affix/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "alert": {
+    "purpose": "持续展示页面内状态，支持语义颜色、图标、插槽与关闭。使用固定默认密度，不受 ConfigProvider 的 size 影响。",
+    "guidance": [
+      "页面内需要持续可见的提示使用 Alert；一次性操作反馈参阅命令式反馈指南。"
+    ],
+    "examples": [
+      {
+        "title": "语义颜色与关闭",
+        "kind": "live",
+        "file": "src/views/alert/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "标题、图标插槽与关闭反馈",
+        "kind": "live",
+        "file": "src/views/alert/Custom.vue",
+        "description": ""
+      }
+    ]
+  },
+  "anchor": {
+    "purpose": "支持独立滚动容器、偏移、嵌套链接与滚动位置同步。",
+    "guidance": [
+      "目录链接对应唯一标题 ID，滚动容器与实际正文容器保持一致。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/anchor/Basic.vue",
+        "description": "支持独立滚动容器、偏移、嵌套链接与滚动位置同步。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/anchor/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "autocomplete": {
+    "purpose": "文本建议支持本地过滤及可取消的异步查询，方向键选择、Home/End 跳转、Enter 确认，Esc/Tab 关闭。",
+    "guidance": [
+      "输入值与候选项分开管理；远程查询应处理过期请求与无匹配结果。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/autocomplete/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/autocomplete/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/autocomplete/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/autocomplete/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/autocomplete/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "avatar": {
+    "purpose": "显示人物或实体头像，图片失败时按插槽、图标、文字首字和默认图标依次后备。",
+    "guidance": [
+      "优先提供人物名称和可靠的图片地址，并为图片失败准备文字或图标后备。"
+    ],
+    "examples": [
+      {
+        "title": "尺寸与形状",
+        "kind": "live",
+        "file": "src/views/avatar/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "状态与后备",
+        "kind": "live",
+        "file": "src/views/avatar/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "插槽、图标与图片适应",
+        "kind": "live",
+        "file": "src/views/avatar/Fallbacks.vue",
+        "description": ""
+      }
+    ]
+  },
+  "backtop": {
+    "purpose": "按指定容器的滚动距离显示按钮；支持插槽和减少动画偏好。",
+    "guidance": [
+      "目标设为实际滚动容器，显示阈值应让用户在长内容中容易返回起点。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/backtop/Basic.vue",
+        "description": "按指定容器的滚动距离显示按钮；支持插槽和减少动画偏好。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/backtop/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "badge": {
+    "purpose": "出现在按钮、图标旁的数字或状态标记。",
+    "guidance": [
+      "用徽标补充数量或状态，重要信息同时在正文或控件名称中说明。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/badge/Example01.vue",
+        "description": "数字超过 max 时显示 max+；show-zero 可显示 0。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/badge/Example02.vue",
+        "description": "size 提供 mini、small、default、medium、large 五档尺寸。"
+      },
+      {
+        "title": "小红点",
+        "kind": "live",
+        "file": "src/views/badge/Example03.vue",
+        "description": "设置 is-dot 以小圆点标注。"
+      },
+      {
+        "title": "颜色状态",
+        "kind": "live",
+        "file": "src/views/badge/Example04.vue",
+        "description": "通过 status 设置徽标颜色。"
+      },
+      {
+        "title": "自定义内容",
+        "kind": "live",
+        "file": "src/views/badge/Example05.vue",
+        "description": "circle 默认为 true，单字符为正圆、多字符扩展为胶囊形且不受全局圆角影响；设为 false 后继承全局圆角。value 也可以是字符串。"
+      },
+      {
+        "title": "自定义偏移",
+        "kind": "live",
+        "file": "src/views/badge/Example06.vue",
+        "description": "offset 使用 [x, y] 控制徽标位置。"
+      },
+      {
+        "title": "隐藏徽标",
+        "kind": "live",
+        "file": "src/views/badge/Example07.vue",
+        "description": "设置 hidden 隐藏徽标。"
+      },
+      {
+        "title": "零值、最大值与截断",
+        "kind": "live",
+        "file": "src/views/badge/Zero.vue",
+        "description": ""
+      }
+    ]
+  },
+  "breadcrumb": {
+    "purpose": "显示当前页面在信息架构中的位置，最后一项自动标记为当前页。",
+    "guidance": [
+      "按页面层级排列路径，只让可以返回的上级节点承担导航。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/breadcrumb/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "自定义分隔",
+        "kind": "live",
+        "file": "src/views/breadcrumb/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "分隔插槽、禁用与尺寸",
+        "kind": "live",
+        "file": "src/views/breadcrumb/States.vue",
+        "description": ""
+      }
+    ]
+  },
+  "button": {
+    "purpose": "常用的操作按钮，提供颜色状态、尺寸、圆形图标、加载态等能力。",
+    "guidance": [
+      "按钮文案描述具体动作；提交和重置明确设置原生 type，异步操作展示 loading。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/button/Example01.vue",
+        "description": "通过 `status` 属性来定义按钮的颜色状态，默认为 `default`。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/button/Example02.vue",
+        "description": "通过 `size` 属性设置尺寸，可选值：`mini`、`small`、`default`、`medium`、`large`。"
+      },
+      {
+        "title": "圆形按钮",
+        "kind": "live",
+        "file": "src/views/button/Example03.vue",
+        "description": "第一行：`status` 全色系。第二行：不同 `size` 的圆形按钮。"
+      },
+      {
+        "title": "加载态",
+        "kind": "live",
+        "file": "src/views/button/Example04.vue",
+        "description": "通过 `loading` 属性设置加载状态。使用 `loading-text` 自定义加载文案。"
+      },
+      {
+        "title": "禁用态",
+        "kind": "live",
+        "file": "src/views/button/Example05.vue",
+        "description": "通过 `disabled` 属性禁用按钮。"
+      },
+      {
+        "title": "原生提交与重置",
+        "kind": "live",
+        "file": "src/views/button/NativeForm.vue",
+        "description": ""
+      }
+    ]
+  },
+  "calendar": {
+    "purpose": "",
+    "guidance": [
+      "用日期单元格呈现简短日程，复杂编辑放到关联详情或表单中。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/calendar/Basic.vue",
+        "description": "基础交互与受控数据"
+      },
+      {
+        "title": "进阶用法",
+        "kind": "live",
+        "file": "src/views/calendar/Advanced.vue",
+        "description": "主题、插槽与边界场景"
+      }
+    ]
+  },
+  "card": {
+    "purpose": "提供头部、附加操作、正文和底部，支持主题、圆角、尺寸、阴影和加载切换。",
+    "guidance": [
+      "将同一主题的标题、内容和操作放在一张卡片内，避免过多嵌套。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/card/Basic.vue",
+        "description": "提供头部、附加操作、正文和底部，支持主题、圆角、尺寸、阴影和加载切换。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/card/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "carousel": {
+    "purpose": "受控索引、箭头指示器、键盘与触摸；自动轮播在悬停、聚焦、隐藏页面或减少动画时暂停。",
+    "guidance": [
+      "轮播内容保持一致高度，自动播放时提供手动切换与暂停机会。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/carousel/Basic.vue",
+        "description": "受控索引、箭头指示器、键盘与触摸；自动轮播在悬停、聚焦、隐藏页面或减少动画时暂停。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/carousel/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "cascader": {
+    "purpose": "",
+    "guidance": [
+      "用于逐级关联选项；按业务需要选择完整路径或末级值，并说明多选规则。"
+    ],
+    "examples": [
+      {
+        "title": "完整路径与多选",
+        "kind": "live",
+        "file": "src/views/cascader/Basic.vue",
+        "description": "完整路径与多选"
+      },
+      {
+        "title": "字段映射、主题与懒加载",
+        "kind": "live",
+        "file": "src/views/cascader/Advanced.vue",
+        "description": "字段映射、主题与懒加载"
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/cascader/Status.vue",
+        "description": "勾选、选中与焦点颜色随状态和主题变化"
+      }
+    ]
+  },
+  "checkbox": {
+    "purpose": "在一组备选项中进行多选。",
+    "guidance": [
+      "多项独立选择使用 Checkbox；组级全选应同时表达未选、全选和半选。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/checkbox/Example01.vue",
+        "description": "使用 v-model 绑定布尔值。"
+      },
+      {
+        "title": "禁用",
+        "kind": "live",
+        "file": "src/views/checkbox/Example02.vue",
+        "description": "设置 disabled 禁用。"
+      },
+      {
+        "title": "CheckboxGroup 组合",
+        "kind": "live",
+        "file": "src/views/checkbox/Example03.vue",
+        "description": "CheckboxGroup 使用数组统一管理多选。"
+      },
+      {
+        "title": "颜色状态",
+        "kind": "live",
+        "file": "src/views/checkbox/Example04.vue",
+        "description": "通过 CheckboxGroup 的 status 设置选中颜色。"
+      },
+      {
+        "title": "半选状态",
+        "kind": "live",
+        "file": "src/views/checkbox/Example05.vue",
+        "description": "indeterminate 常用于全选逻辑。"
+      },
+      {
+        "title": "带边框",
+        "kind": "live",
+        "file": "src/views/checkbox/Example06.vue",
+        "description": "设置 border 展示带边框样式。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/checkbox/Example07.vue",
+        "description": "支持 mini、small、default、medium、large。"
+      },
+      {
+        "title": "组内数量限制与事件",
+        "kind": "live",
+        "file": "src/views/checkbox/Limits.vue",
+        "description": ""
+      }
+    ]
+  },
+  "col": {
+    "purpose": "支持 span、offset 和 xs/sm/md/lg/xl 响应式跨度与偏移；span=0 隐藏。",
+    "guidance": [
+      "与 Row 配合使用，按 24 列规划跨度，并检查窄屏断点和隐藏行为。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/col/Basic.vue",
+        "description": "支持 span、offset 和 xs/sm/md/lg/xl 响应式跨度与偏移；span=0 隐藏。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/col/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "collapse": {
+    "purpose": "收纳可分组内容，支持多开、手风琴、禁用和懒渲染。",
+    "guidance": [
+      "将可独立阅读的内容分组；只有互斥阅读时才启用手风琴模式。"
+    ],
+    "examples": [
+      {
+        "title": "多面板",
+        "kind": "live",
+        "file": "src/views/collapse/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "手风琴",
+        "kind": "live",
+        "file": "src/views/collapse/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "自定义标题、禁用与懒渲染",
+        "kind": "live",
+        "file": "src/views/collapse/CustomTitle.vue",
+        "description": ""
+      }
+    ]
+  },
+  "color-picker": {
+    "purpose": "自定义色盘、色相、透明度与文本输入。HEX、RGB、HSL 均可输入；仅确定提交规范 HEX，取消恢复绑定值。",
+    "guidance": [
+      "颜色编辑使用草稿，确定后提交；取消时保留原值，并给预设颜色提供名称。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/color-picker/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/color-picker/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/color-picker/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/color-picker/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/color-picker/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "color-picker-panel": {
+    "purpose": "与 ColorPicker 使用同一面板。色盘方向键调整饱和度/明度，Shift 加速；所有控件编辑草稿，确定才发出 update 与 change。",
+    "guidance": [
+      "嵌入表单时为面板保留完整操作区，通过确定动作提交当前颜色草稿。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/color-picker-panel/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/color-picker-panel/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/color-picker-panel/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/color-picker-panel/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/color-picker-panel/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "config-provider": {
+    "purpose": "为内部组件统一设置尺寸、明暗主题和圆角基准。支持动态切换及嵌套覆盖，不修改页面根节点，也不会影响作用域外的组件。",
+    "guidance": [
+      "在需要统一外观的作用域设置 Provider；局部差异使用嵌套配置或组件显式属性。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/config-provider/Example01.vue",
+        "description": "在应用根部包裹一次即可；组件上显式设置的 size 优先，包括 default。"
+      },
+      {
+        "title": "动态配置体验",
+        "kind": "live",
+        "file": "src/views/config-provider/Playground.vue",
+        "description": "切换尺寸、主题和圆角后，尝试打开选择器、日期范围、弹窗和抽屉；这些浮层也会继承配置。"
+      },
+      {
+        "title": "嵌套与局部覆盖",
+        "kind": "live",
+        "file": "src/views/config-provider/Example03.vue",
+        "description": "内层 Provider 未设置的属性继续继承父级。显式 light 可在 dark 范围内恢复亮色，0 可创建直角控件。"
+      }
+    ]
+  },
+  "date-picker": {
+    "purpose": "使用本地日历值 YYYY-MM-DD，不进行时区转换。支持单值和范围选择、清空、禁用日期及表单校验。",
+    "guidance": [
+      "使用本地日期字符串；范围、禁用日期和清空行为应与业务规则一致。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/date-picker/Example01.vue",
+        "description": "空字符串和 null 显示占位提示。选择完成后立即提交。"
+      },
+      {
+        "title": "范围选择",
+        "kind": "live",
+        "file": "src/views/date-picker/Example02.vue",
+        "description": "设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+      },
+      {
+        "title": "年份、月份与范围",
+        "kind": "live",
+        "file": "src/views/date-picker/Example07.vue",
+        "description": "type 支持 year、month、yearrange、monthrange，值分别为 YYYY、YYYY-MM 或两项数组；也可通过 range 开启范围。单击提交单值，范围选满两个端点后提交并自动排序。disabledDate 在年份/月模式下接收该周期第一天的本地 Date。clearable 默认 false，开启后悬停或聚焦显示清空按钮，触屏保持可用。"
+      },
+      {
+        "title": "禁用日期、禁用与只读",
+        "kind": "live",
+        "file": "src/views/date-picker/Example03.vue",
+        "description": "此示例禁用周末。disabledDate 限制可选择的端点，范围中间可以包含禁用日期。"
+      },
+      {
+        "title": "五档尺寸",
+        "kind": "live",
+        "file": "src/views/date-picker/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "主题颜色",
+        "kind": "live",
+        "file": "src/views/date-picker/Example05.vue",
+        "description": "status 统一控制焦点边框、选中日期、范围底色和确认按钮，默认 primary。"
+      },
+      {
+        "title": "节假日标识",
+        "kind": "live",
+        "file": "src/views/date-picker/Example06.vue",
+        "description": "holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；长名称悬停查看。支持单值和范围，标识不改变可选状态，也不会自动禁用周末。"
+      },
+      {
+        "title": "事件反馈与实例方法",
+        "kind": "live",
+        "file": "src/views/date-picker/Methods.vue",
+        "description": ""
+      }
+    ]
+  },
+  "date-picker-panel": {
+    "purpose": "与 DatePicker 共用日期、年份/月份导航、节假日及禁用日期规则。单值点击立即提交；范围选中第二个端点后提交，不额外弹出确认层。",
+    "guidance": [
+      "需要日期面板常驻页面时使用；范围选择在第二个端点确定后提交。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/date-picker-panel/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/date-picker-panel/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/date-picker-panel/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/date-picker-panel/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/date-picker-panel/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "date-time-picker": {
+    "purpose": "使用本地日历值 YYYY-MM-DD HH:mm:ss，不进行时区转换。支持单值和范围选择、清空、禁用日期及表单校验。",
+    "guidance": [
+      "使用本地日期时间字符串，并明确时间精度、范围及禁用日期规则。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Example01.vue",
+        "description": "空字符串和 null 显示占位提示。选择日期和时间后点击确定提交；时间精确到秒。同一天范围的结束时间不能早于开始时间。"
+      },
+      {
+        "title": "范围选择",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Example02.vue",
+        "description": "设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+      },
+      {
+        "title": "禁用日期、禁用与只读",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Example03.vue",
+        "description": "此示例禁用周末。disabledDate 限制可选择的端点，范围中间可以包含禁用日期。"
+      },
+      {
+        "title": "五档尺寸",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "主题颜色",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Example05.vue",
+        "description": "status 统一控制焦点边框、选中日期、范围底色和确认按钮，默认 primary。"
+      },
+      {
+        "title": "节假日标识",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Example06.vue",
+        "description": "holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；长名称悬停查看。支持单值和范围，标识不改变可选状态，也不会自动禁用周末。"
+      },
+      {
+        "title": "事件反馈与实例方法",
+        "kind": "live",
+        "file": "src/views/date-time-picker/Methods.vue",
+        "description": ""
+      }
+    ]
+  },
+  "descriptions": {
+    "purpose": "按标签和值展示结构化详情，窄屏时自动切换为单列。",
+    "guidance": [
+      "用于只读详情的标签和值；需要输入或校验时使用 Form。"
+    ],
+    "examples": [
+      {
+        "title": "带边框的详情",
+        "kind": "live",
+        "file": "src/views/descriptions/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "布局、列数与标签插槽",
+        "kind": "live",
+        "file": "src/views/descriptions/Directions.vue",
+        "description": ""
+      }
+    ]
+  },
+  "divider": {
+    "purpose": "分隔内容区域，文本支持左、中、右位置，纵向分割适合行内操作。",
+    "guidance": [
+      "用分割线表达内容分组，避免在每个相邻控件之间重复添加。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/divider/Basic.vue",
+        "description": "分隔内容区域，文本支持左、中、右位置，纵向分割适合行内操作。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/divider/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "drawer": {
+    "purpose": "从视口边缘滑入，用于承载筛选、详情和辅助操作。左右方向使用 width，上下方向使用 height，默认均为 420px；与 Modal 一样，size 控制头部、底部和内部控件密度。",
+    "guidance": [
+      "在保留页面上下文时展示详情或编辑；根据弹出方向设置 width 或 height。",
+      "内容区内边距随 size 变化，mini / small / default / medium / large 分别为 14 / 17 / 22 / 25 / 28px；可通过 body-padding 单独覆盖。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/drawer/Example01.vue",
+        "description": "使用 v-model 控制右侧抽屉。"
+      },
+      {
+        "title": "出现方向",
+        "kind": "live",
+        "file": "src/views/drawer/Example02.vue",
+        "description": "placement 支持 left、right、top、bottom。"
+      },
+      {
+        "title": "尺寸与底部操作",
+        "kind": "live",
+        "file": "src/views/drawer/Example03.vue",
+        "description": "width / height 控制宽高；size 控制密度，并传递给内部控件。"
+      },
+      {
+        "title": "插槽、销毁与关闭守卫",
+        "kind": "live",
+        "file": "src/views/drawer/CustomContent.vue",
+        "description": "关闭按钮、遮罩和 Escape 经过守卫；业务直接更新 v-model 由调用方决定。"
+      }
+    ]
+  },
+  "dropdown": {
+    "purpose": "紧凑操作列表，支持鼠标、触屏与方向键导航；选择后默认关闭。",
+    "guidance": [
+      "收纳次要操作，危险操作使用清晰文案并按需增加确认。"
+    ],
+    "examples": [
+      {
+        "title": "分组、分隔、禁用与命令反馈",
+        "kind": "live",
+        "file": "src/views/dropdown/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "悬停与保持菜单展开",
+        "kind": "live",
+        "file": "src/views/dropdown/Hover.vue",
+        "description": ""
+      }
+    ]
+  },
+  "empty": {
+    "purpose": "默认插画和说明可独立替换，操作插槽可引导创建内容。",
+    "guidance": [
+      "说明为什么没有内容，并提供用户可执行的创建、重试或调整筛选动作。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/empty/Basic.vue",
+        "description": "默认插画和说明可独立替换，操作插槽可引导创建内容。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/empty/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "form": {
+    "purpose": "统一管理输入、选择、日期、验证码和附件字段的布局、校验状态与提交过程；FormGroup 用于组织完整的业务表单。",
+    "guidance": [
+      "FormItem 的 prop 对应模型字段；提交前调用 validate，并将错误定位到对应字段。"
+    ],
+    "examples": [
+      {
+        "title": "全组件校验场景",
+        "kind": "live",
+        "file": "src/views/form/IntegratedValidation.vue",
+        "description": "覆盖当前全部数据录入组件。点击“校验全部字段”可一次观察 13 个字段的规则、错误定位和提示方式。"
+      },
+      {
+        "title": "下边框表单",
+        "kind": "live",
+        "file": "src/views/form/Underline.vue",
+        "description": "切换五档密度、浅深主题、圆角和禁用状态。Select / InputTag 使用柔和无边框标签，SelectBox 保留逗号摘要。"
+      },
+      {
+        "title": "基础校验",
+        "kind": "live",
+        "file": "src/views/form/Example02.vue",
+        "description": "规则支持 blur、change、内置类型和公开校验方法；错误图标悬停或聚焦时显示 Tooltip。"
+      },
+      {
+        "title": "标签布局",
+        "kind": "live",
+        "file": "src/views/form/Example03.vue",
+        "description": "label-position 支持 left、right 和 top。"
+      },
+      {
+        "title": "行内表单",
+        "kind": "live",
+        "file": "src/views/form/Example04.vue",
+        "description": "inline 适合筛选栏和紧凑操作区。"
+      },
+      {
+        "title": "表单分组",
+        "kind": "live",
+        "file": "src/views/form/Example05.vue",
+        "description": "ZtFormGroup 使用 fieldset/legend 组织区块，不改变字段校验规则。"
+      },
+      {
+        "title": "异步自定义校验",
+        "kind": "live",
+        "file": "src/views/form/Example06.vue",
+        "description": "validator 可返回 Promise、字符串、Error、boolean 或空值。"
+      },
+      {
+        "title": "尺寸与整体禁用",
+        "kind": "live",
+        "file": "src/views/form/Example07.vue",
+        "description": "Form 的 size 和 disabled 自动传递给输入控件。"
+      },
+      {
+        "title": "字段级规则、外部错误与实例方法",
+        "kind": "live",
+        "file": "src/views/form/FieldControl.vue",
+        "description": ""
+      },
+      {
+        "title": "扩展表单组件统一校验",
+        "kind": "live",
+        "file": "src/views/form/ExpandedControls.vue",
+        "description": ""
+      }
+    ]
+  },
+  "icon": {
+    "purpose": "统一图标尺寸、颜色和无障碍语义。内置图标使用 currentColor，也可传入 Vue 组件或使用默认插槽。",
+    "guidance": [
+      "装饰图标无需重复朗读；独立表达含义的图标应有可访问名称。"
+    ],
+    "examples": [
+      {
+        "title": "内置图标",
+        "kind": "live",
+        "file": "src/views/icon/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "独立尺寸",
+        "kind": "live",
+        "file": "src/views/icon/Example02.vue",
+        "description": "size 接受数值（px）或 CSS 长度，默认 1em，不绑定 ConfigProvider 的五档密度。百分比相对确定宽高的容器解析。"
+      },
+      {
+        "title": "主题颜色",
+        "kind": "live",
+        "file": "src/views/icon/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "旋转、自定义颜色与组件",
+        "kind": "live",
+        "file": "src/views/icon/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "自定义 SVG 插槽与描边",
+        "kind": "live",
+        "file": "src/views/icon/Slot.vue",
+        "description": ""
+      }
+    ]
+  },
+  "image": {
+    "purpose": "提供一致的适应方式、加载后备和具备键盘操作的全屏预览。",
+    "guidance": [
+      "提供替代文本与加载失败后备，预览功能只用于需要查看细节的图片。"
+    ],
+    "examples": [
+      {
+        "title": "适应与预览",
+        "kind": "live",
+        "file": "src/views/image/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "错误后备",
+        "kind": "live",
+        "file": "src/views/image/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "独立预览器与缩放限制",
+        "kind": "live",
+        "file": "src/views/image/Viewer.vue",
+        "description": ""
+      },
+      {
+        "title": "懒加载与加载反馈",
+        "kind": "live",
+        "file": "src/views/image/Lazy.vue",
+        "description": ""
+      }
+    ]
+  },
+  "infinite-scroll": {
+    "purpose": "接近容器底部时调用加载函数，防止并发，失败可重试，卸载中止本地异步任务。",
+    "guidance": [
+      "明确指定滚动区域，并区分加载中、没有更多数据与失败重试。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/infinite-scroll/Basic.vue",
+        "description": "接近容器底部时调用加载函数，防止并发，失败可重试，卸载中止本地异步任务。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/infinite-scroll/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "input": {
+    "purpose": "通过鼠标或键盘输入文本，支持组合插槽、状态提示和统一尺寸。",
+    "guidance": [
+      "为输入提供持续可见的标签；需要字数限制时同时说明限制与当前计数。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/input/Example01.vue",
+        "description": "使用 v-model 双向绑定文本。"
+      },
+      {
+        "title": "清空与字数限制",
+        "kind": "live",
+        "file": "src/views/input/Example02.vue",
+        "description": "clearable 提供清空按钮；maxlength 配合 show-word-limit 显示字数。"
+      },
+      {
+        "title": "组合插槽",
+        "kind": "live",
+        "file": "src/views/input/Example03.vue",
+        "description": "prepend、append、prefix 和 suffix 可组合扩展输入内容。"
+      },
+      {
+        "title": "校验状态",
+        "kind": "live",
+        "file": "src/views/input/Example04.vue",
+        "description": "status 提供成功、警告和错误边框反馈。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/input/Example05.vue",
+        "description": "支持 mini、small、default、medium、large 五档尺寸。"
+      },
+      {
+        "title": "禁用与只读",
+        "kind": "live",
+        "file": "src/views/input/Example06.vue",
+        "description": "disabled 禁止操作，readonly 保留可聚焦和复制能力。"
+      },
+      {
+        "title": "事件反馈与实例方法",
+        "kind": "live",
+        "file": "src/views/input/Methods.vue",
+        "description": ""
+      }
+    ]
+  },
+  "input-number": {
+    "purpose": "使用按钮、键盘方向键或直接输入来调整数值。",
+    "guidance": [
+      "明确上下限、精度和步长，避免显示值与提交数值规则不一致。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/input-number/Example01.vue",
+        "description": "使用 v-model 绑定 number 或 null。"
+      },
+      {
+        "title": "范围与步进",
+        "kind": "live",
+        "file": "src/views/input-number/Example02.vue",
+        "description": "min、max 限制范围，step 设置每次增减量。"
+      },
+      {
+        "title": "精度与严格步进",
+        "kind": "live",
+        "file": "src/views/input-number/Example03.vue",
+        "description": "precision 固定小数位；step-strictly 将输入校准到步进倍数。"
+      },
+      {
+        "title": "控制按钮布局",
+        "kind": "live",
+        "file": "src/views/input-number/Example04.vue",
+        "description": "default 将按钮分置两侧，left 和 right 将按钮堆叠在指定一侧；也可以完全隐藏。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/input-number/Example05.vue",
+        "description": "支持 mini、small、default、medium、large 五档尺寸。"
+      },
+      {
+        "title": "禁用与只读",
+        "kind": "live",
+        "file": "src/views/input-number/Example06.vue",
+        "description": "disabled 禁止所有交互，readonly 保留聚焦能力并禁用增减。"
+      },
+      {
+        "title": "事件反馈与实例方法",
+        "kind": "live",
+        "file": "src/views/input-number/Methods.vue",
+        "description": ""
+      }
+    ]
+  },
+  "input-otp": {
+    "purpose": "用于短信验证码、邮箱验证码和动态口令。支持逐位输入、整段粘贴、键盘编辑以及浏览器 one-time-code 自动填充；使用字符串保留开头的 0。",
+    "guidance": [
+      "验证码使用字符串以保留前导零；允许整段粘贴并配置 one-time-code 自动填充。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/input-otp/Example01.vue",
+        "description": "默认 6 位数字，输入完整时触发 complete。可直接粘贴 012345，空格和分隔字符会自动过滤。"
+      },
+      {
+        "title": "位数与分隔符",
+        "kind": "live",
+        "file": "src/views/input-otp/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "字符验证码",
+        "kind": "live",
+        "file": "src/views/input-otp/Example03.vue",
+        "description": "integer-only=false 可输入字母等非空白字符。"
+      },
+      {
+        "title": "遮蔽显示",
+        "kind": "live",
+        "file": "src/views/input-otp/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/input-otp/Example05.vue",
+        "description": ""
+      },
+      {
+        "title": "主题颜色",
+        "kind": "live",
+        "file": "src/views/input-otp/Example06.vue",
+        "description": ""
+      },
+      {
+        "title": "禁用与只读",
+        "kind": "live",
+        "file": "src/views/input-otp/Example07.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/input-otp/FormExample.vue",
+        "description": "继承 Form 的尺寸与禁用状态，输入变化和失焦分别触发 change / blur 校验。complete 表示填满，不代表验证码验证成功。"
+      },
+      {
+        "title": "事件反馈与实例方法",
+        "kind": "live",
+        "file": "src/views/input-otp/Methods.vue",
+        "description": ""
+      }
+    ]
+  },
+  "input-tag": {
+    "purpose": "Enter 或分隔符提交，粘贴批量拆分，默认精确去重；空输入 Backspace 删除最后一项。组合输入期间不提交。",
+    "guidance": [
+      "说明分隔符和去重规则，批量粘贴后应让用户能够检查与移除每一项。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/input-tag/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/input-tag/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/input-tag/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/input-tag/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/input-tag/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "layout": {
+    "purpose": "语义化容器按 Header / Footer 自动推导纵向，内部可继续横向嵌套。",
+    "guidance": [
+      "先确定页头、侧栏和正文关系，再使用嵌套布局组织局部区域。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/layout/Basic.vue",
+        "description": "语义化容器按 Header / Footer 自动推导纵向，内部可继续横向嵌套。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/layout/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "link": {
+    "purpose": "用于页面跳转或资源导航，支持原生链接、可选 Vue Router、图标、禁用和安全的外部链接。",
+    "guidance": [
+      "页面或资源跳转使用 Link；执行当前页面操作使用 Button。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/link/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "状态颜色",
+        "kind": "live",
+        "file": "src/views/link/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "尺寸与图标",
+        "kind": "live",
+        "file": "src/views/link/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "插槽、下划线与下载",
+        "kind": "live",
+        "file": "src/views/link/Custom.vue",
+        "description": ""
+      }
+    ]
+  },
+  "loading": {
+    "purpose": "声明式区域加载遮罩，由 loading 状态控制，仅覆盖当前内容区域。命令式全屏加载请参阅 独立反馈库指南。",
+    "guidance": [
+      "用声明式遮罩表示局部区域的加载；全屏命令式服务参阅独立反馈库指南。"
+    ],
+    "examples": [
+      {
+        "title": "区域加载",
+        "kind": "live",
+        "file": "src/views/loading/Basic.vue",
+        "description": ""
+      }
+    ],
+    "related": [
+      {
+        "path": "/feedback",
+        "title": "独立反馈库指南"
+      }
+    ]
+  },
+  "mention": {
+    "purpose": "普通 textarea 文本值，支持多个前缀；选择仅替换前缀到光标之间的文本，不影响光标后的内容。",
+    "guidance": [
+      "明确可用前缀与候选数据，选择建议只替换光标附近的提及片段。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/mention/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/mention/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/mention/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/mention/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/mention/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "menu": {
+    "purpose": "用于侧边导航和复杂业务入口，支持六种主题色、整栏折叠、动态宽度、两栏布局和多级菜单。文档站左侧导航也使用此组件。",
+    "guidance": [
+      "菜单层级对应信息架构；路由模式让当前选中项跟随实际页面地址。"
+    ],
+    "examples": [
+      {
+        "title": "分组与选择",
+        "kind": "live",
+        "file": "src/views/menu/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "多级与手风琴",
+        "kind": "live",
+        "file": "src/views/menu/Example02.vue",
+        "description": "点击父级只展开菜单，不触发叶子选择。同一层的子菜单可通过 accordion 保持单项展开。"
+      },
+      {
+        "title": "六种主题颜色",
+        "kind": "live",
+        "file": "src/views/menu/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "整栏折叠与动态宽度",
+        "kind": "live",
+        "file": "src/views/menu/Collapse.vue",
+        "description": "collapsed 控制整栏折叠；width 接受数值或 CSS 长度，表示 default 尺寸下的基准宽度；切换 size 会增减偏移。折叠后点击父项弹出子菜单，选择后关闭浮层并保持折叠。拖动右边缘或聚焦边缘后用方向键可调整宽度。"
+      },
+      {
+        "title": "两栏复杂菜单",
+        "kind": "live",
+        "file": "src/views/menu/Advanced.vue",
+        "description": "mode=double 将顶层菜单作为业务模块，右栏呈现模块内的分组和多级菜单。activeKey 控制模块，modelValue 控制叶子选择。"
+      },
+      {
+        "title": "横向导航",
+        "kind": "live",
+        "file": "src/views/menu/Horizontal.vue",
+        "description": "mode=horizontal 支持多级下拉菜单；menu-trigger 默认为 hover，可设为 click。继承全局 size 和主题，空间不足时横向滚动；横向模式不使用整栏折叠和宽度拖动。"
+      },
+      {
+        "title": "路由模式",
+        "kind": "live",
+        "file": "src/views/menu/Routing.vue",
+        "description": "应用 app.use(router) 后设置 router 即可自动跳转，默认以叶子项 key 为路径；route 可设置路径字符串或命名路由对象，支持 params、query、hash。无需手动处理 select 跳转。"
+      },
+      {
+        "title": "默认展开、整体禁用与尺寸",
+        "kind": "live",
+        "file": "src/views/menu/Defaults.vue",
+        "description": ""
+      }
+    ]
+  },
+  "modal": {
+    "purpose": "在当前页面上方集中呈现需要用户处理的内容。",
+    "guidance": [
+      "用于需要集中处理的任务；提供明确的完成与取消动作，异步提交期间反馈进度。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/modal/Example01.vue",
+        "description": "使用 v-model 控制显示状态。"
+      },
+      {
+        "title": "底部操作与加载",
+        "kind": "live",
+        "file": "src/views/modal/Example02.vue",
+        "description": "confirm 由使用方处理，保存完成后再关闭弹窗。"
+      },
+      {
+        "title": "遮罩与关闭拦截",
+        "kind": "live",
+        "file": "src/views/modal/Example03.vue",
+        "description": "关闭按钮、遮罩和 Escape 都统一经过 beforeClose。"
+      },
+      {
+        "title": "全屏与拖拽",
+        "kind": "live",
+        "file": "src/views/modal/Example04.vue",
+        "description": "拖动标题栏移动弹窗，使用 header 按钮切换全屏。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/modal/Example05.vue",
+        "description": "size 提供五档密度，同时调整标题栏、正文、底部和内部控件；子控件显式 size 优先。"
+      },
+      {
+        "title": "插槽、销毁与关闭守卫",
+        "kind": "live",
+        "file": "src/views/modal/CustomContent.vue",
+        "description": "关闭按钮、遮罩和 Escape 经过守卫；业务直接更新 v-model 由调用方决定。"
+      }
+    ]
+  },
+  "page-header": {
+    "purpose": "返回事件、面包屑、标题说明与附加操作；窄屏自动换行。",
+    "guidance": [
+      "以页面标题建立当前位置，返回动作应回到用户可预期的上级页面。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/page-header/Basic.vue",
+        "description": "返回事件、面包屑、标题说明与附加操作；窄屏自动换行。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/page-header/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "pagination": {
+    "purpose": "当数据量较多时，通过分页控制每次展示的数据范围。",
+    "guidance": [
+      "将当前页与每页条数绑定到数据查询，改变筛选或条数后回到有效页码。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/pagination/Example01.vue",
+        "description": "当页数超过 pager-count 时，中间页码会自动折叠。"
+      },
+      {
+        "title": "带背景色",
+        "kind": "live",
+        "file": "src/views/pagination/Example02.vue",
+        "description": "background 为按钮增加轻量背景和边框。"
+      },
+      {
+        "title": "主题颜色",
+        "kind": "live",
+        "file": "src/views/pagination/Example03.vue",
+        "description": "status 与 Button 的六种主题一致，默认 primary。当前页悬停保留主题高亮。"
+      },
+      {
+        "title": "完整功能",
+        "kind": "live",
+        "file": "src/views/pagination/Example04.vue",
+        "description": "通过 layout 自由组合总数、每页条数、页码和跳转输入框。"
+      },
+      {
+        "title": "尺寸与禁用",
+        "kind": "live",
+        "file": "src/views/pagination/Example05.vue",
+        "description": "size 支持五档尺寸；disabled 可以和任意尺寸组合并禁止全部交互。"
+      },
+      {
+        "title": "左右对齐与插槽",
+        "kind": "live",
+        "file": "src/views/pagination/Example06.vue",
+        "description": "layout 中的 -> 将后续模块推到右侧，slot 插入自定义内容。"
+      },
+      {
+        "title": "单页隐藏",
+        "kind": "live",
+        "file": "src/views/pagination/Example07.vue",
+        "description": "hide-on-single-page 在只有一页时隐藏分页栏。"
+      },
+      {
+        "title": "指定页数、按钮文字与事件",
+        "kind": "live",
+        "file": "src/views/pagination/Count.vue",
+        "description": ""
+      }
+    ]
+  },
+  "password": {
+    "purpose": "专门用于密码输入，默认提供可访问的显隐切换按钮。",
+    "guidance": [
+      "按登录或设置密码场景配置 autocomplete，并保留可访问的显隐切换。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/password/Example01.vue",
+        "description": "点击眼睛图标可切换密码可见状态。"
+      },
+      {
+        "title": "清空与隐藏切换按钮",
+        "kind": "live",
+        "file": "src/views/password/Example02.vue",
+        "description": "支持清空，也可以通过 show-toggle 关闭显隐按钮。"
+      },
+      {
+        "title": "校验状态",
+        "kind": "live",
+        "file": "src/views/password/Example03.vue",
+        "description": "沿用 Input 的 success、warning 和 error 状态。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/password/Example04.vue",
+        "description": "支持 mini、small、default、medium、large 五档尺寸。"
+      },
+      {
+        "title": "禁用与只读",
+        "kind": "live",
+        "file": "src/views/password/Example05.vue",
+        "description": "disabled 会禁用输入与显隐操作，readonly 适合仅查看场景。"
+      },
+      {
+        "title": "组合插槽与字数限制",
+        "kind": "live",
+        "file": "src/views/password/Slots.vue",
+        "description": ""
+      }
+    ]
+  },
+  "popconfirm": {
+    "purpose": "在当前操作附近完成二次确认，支持状态图标、说明和异步确认。",
+    "guidance": [
+      "仅用于简短的就地确认；复杂说明、表单或多步操作使用 Modal。"
+    ],
+    "examples": [
+      {
+        "title": "危险操作",
+        "kind": "live",
+        "file": "src/views/popconfirm/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "异步确认",
+        "kind": "live",
+        "file": "src/views/popconfirm/Example02.vue",
+        "description": "Promise 完成前锁定按钮并显示进度；返回 false 或拒绝时保持打开。"
+      },
+      {
+        "title": "受控确认与保留弹层",
+        "kind": "live",
+        "file": "src/views/popconfirm/Controlled.vue",
+        "description": ""
+      }
+    ]
+  },
+  "popover": {
+    "purpose": "在触发元素附近展示补充信息或轻量操作，自动翻转并限制在可视区域内。",
+    "guidance": [
+      "内容紧贴触发元素并保持简短；需要复杂编辑或长内容时考虑 Drawer 或 Modal。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/popover/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "触发方式",
+        "kind": "live",
+        "file": "src/views/popover/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "手动控制",
+        "kind": "live",
+        "file": "src/views/popover/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "方位、箭头与禁用",
+        "kind": "live",
+        "file": "src/views/popover/Placement.vue",
+        "description": ""
+      }
+    ]
+  },
+  "progress": {
+    "purpose": "展示任务完成比例，支持状态颜色、尺寸和不确定进度。颜色搭配文字，让用户理解任务状态。",
+    "guidance": [
+      "有确定比例时展示百分比，无法估算时使用不确定进度并说明正在处理的任务。"
+    ],
+    "examples": [
+      {
+        "title": "可调进度",
+        "kind": "live",
+        "file": "src/views/progress/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "状态颜色",
+        "kind": "live",
+        "file": "src/views/progress/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "不确定进度",
+        "kind": "live",
+        "file": "src/views/progress/Example03.vue",
+        "description": "用于尚未获得总量的任务。此时不报告虚假的百分比，系统减少动画偏好会停用循环动画。"
+      },
+      {
+        "title": "尺寸与格式化",
+        "kind": "live",
+        "file": "src/views/progress/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "自定义内容与隐藏文字",
+        "kind": "live",
+        "file": "src/views/progress/CustomText.vue",
+        "description": ""
+      }
+    ]
+  },
+  "qrcode": {
+    "purpose": "使用 qrcode 编码，支持 SVG / Canvas 与下载。空值及编码容量超限会明确反馈。",
+    "guidance": [
+      "编码内容应可被其他方式访问；下载前检查尺寸、对比度与有效内容。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/qrcode/Basic.vue",
+        "description": "使用 qrcode 编码，支持 SVG / Canvas 与下载。空值及编码容量超限会明确反馈。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/qrcode/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "radio": {
+    "purpose": "在一组备选项中进行单选。",
+    "guidance": [
+      "用于互斥选项；少量紧凑选项可使用 RadioGroup 的 segmented 外观。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/radio/Example01.vue",
+        "description": "使用 v-model 绑定选中值，label 为选项值。"
+      },
+      {
+        "title": "禁用",
+        "kind": "live",
+        "file": "src/views/radio/Example02.vue",
+        "description": "设置 disabled 属性禁用单个 Radio。"
+      },
+      {
+        "title": "RadioGroup 组合",
+        "kind": "live",
+        "file": "src/views/radio/Example03.vue",
+        "description": "RadioGroup 统一管理选中状态。"
+      },
+      {
+        "title": "连体分段按钮",
+        "kind": "live",
+        "file": "src/views/radio/Segmented.vue",
+        "description": "segmented 将单选项连成一组按钮。支持五种 size、status 以及 ConfigProvider 的圆角与尺寸；Tab 聚焦，方向键切换，空格选择。为分组添加 aria-label，disabled 可单独禁用选项。"
+      },
+      {
+        "title": "颜色状态",
+        "kind": "live",
+        "file": "src/views/radio/Example04.vue",
+        "description": "通过 RadioGroup 的 status 设置选中颜色。"
+      },
+      {
+        "title": "带边框",
+        "kind": "live",
+        "file": "src/views/radio/Example05.vue",
+        "description": "设置 border 属性展示带边框的 Radio。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/radio/Example06.vue",
+        "description": "RadioGroup 可统一设置 mini、small、medium、large 尺寸。"
+      },
+      {
+        "title": "组合禁用与选择反馈",
+        "kind": "live",
+        "file": "src/views/radio/Events.vue",
+        "description": ""
+      }
+    ]
+  },
+  "rate": {
+    "purpose": "支持半星、最大分值、清空及自定义图标。方向键按步长评分，Home/End 设置边界，Delete 清空。",
+    "guidance": [
+      "明确评分范围与含义；只读评分应提供完整的数值说明。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/rate/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/rate/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/rate/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/rate/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/rate/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "result": {
+    "purpose": "对完整任务给出明确结果和下一步操作。",
+    "guidance": [
+      "同时解释结果和下一步操作；任务结果语义与装饰性主题颜色分别表达。"
+    ],
+    "examples": [
+      {
+        "title": "成功结果",
+        "kind": "live",
+        "file": "src/views/result/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "异常状态",
+        "kind": "live",
+        "file": "src/views/result/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "自定义图标与内容插槽",
+        "kind": "live",
+        "file": "src/views/result/Slots.vue",
+        "description": ""
+      }
+    ]
+  },
+  "row": {
+    "purpose": "基于 24 列的弹性布局，gutter 为水平或 [水平, 垂直] 像素间距。",
+    "guidance": [
+      "用 gutter 统一列间距，并通过 Col 的响应式配置调整窄屏排列。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/row/Basic.vue",
+        "description": "基于 24 列的弹性布局，gutter 为水平或 [水平, 垂直] 像素间距。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/row/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "scrollbar": {
+    "purpose": "保留浏览器原生滚动、触摸惯性和键盘操作，同时提供跨平台一致的轨道与滑块样式。",
+    "guidance": [
+      "先约束容器高度或宽度，再启用滚动；保留触摸和键盘可达的内容。"
+    ],
+    "examples": [
+      {
+        "title": "固定高度",
+        "kind": "live",
+        "file": "src/views/scrollbar/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "横向滚动与常显轨道",
+        "kind": "live",
+        "file": "src/views/scrollbar/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "原生模式",
+        "kind": "live",
+        "file": "src/views/scrollbar/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "滚动事件与实例方法",
+        "kind": "live",
+        "file": "src/views/scrollbar/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "动态内容与完整滚动方法",
+        "kind": "live",
+        "file": "src/views/scrollbar/Resize.vue",
+        "description": "noresize 关闭自动尺寸监听，此处增加内容后显式调用 update。"
+      }
+    ]
+  },
+  "segmented": {
+    "purpose": "用于少量互斥选项的即时切换，支持状态色、全宽和键盘操作。",
+    "guidance": [
+      "用于少量互斥选项的即时切换；选项较多或需要搜索时使用 Select。"
+    ],
+    "examples": [
+      {
+        "title": "对象选项",
+        "kind": "live",
+        "file": "src/views/segmented/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "全宽与主题",
+        "kind": "live",
+        "file": "src/views/segmented/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "尺寸、禁用与数值选项",
+        "kind": "live",
+        "file": "src/views/segmented/States.vue",
+        "description": ""
+      }
+    ]
+  },
+  "select": {
+    "purpose": "从结构化选项中选择一个或多个值，支持本地筛选、远程搜索、键盘操作和业务化插槽。",
+    "guidance": [
+      "选项使用稳定唯一值；远程搜索应展示加载、空结果与失败后的恢复方式。"
+    ],
+    "examples": [
+      {
+        "title": "基础单选与清空",
+        "kind": "live",
+        "file": "src/views/select/Example01.vue",
+        "description": "使用 v-model 绑定单个值；clearable 允许快速清空当前城市。"
+      },
+      {
+        "title": "多选与可移除标签",
+        "kind": "live",
+        "file": "src/views/select/Example02.vue",
+        "description": "multiple 输出去重后的值数组；配合 filterable 时，搜索框固定在下拉面板顶部，打开后自动聚焦。搜索框内的清空按钮只清除关键词，已选标签保持不变。"
+      },
+      {
+        "title": "折叠已选标签",
+        "kind": "live",
+        "file": "src/views/select/Collapsed.vue",
+        "description": "collapse-tags 开启折叠；max-collapse-tags 指定展示数量（默认 1），其余以 +N 展示，已选值保持完整。"
+      },
+      {
+        "title": "本地筛选",
+        "kind": "live",
+        "file": "src/views/select/Example03.vue",
+        "description": "filterable 按选项标签做不区分大小写的本地匹配；选中、关闭或失焦后保留关键词，清空按钮会同时清空选择和关键词。"
+      },
+      {
+        "title": "远程用户搜索",
+        "kind": "live",
+        "file": "src/views/select/Example04.vue",
+        "description": "查询固定等待 900 ms，便于观察加载；选中结果后保留远程搜索词，输入“失败”可稳定触发错误提示。"
+      },
+      {
+        "title": "业务插槽",
+        "kind": "live",
+        "file": "src/views/select/Example05.vue",
+        "description": "prefix、option、selected、tag、empty、loading 和 footer 可承载品牌、区域与权限信息。"
+      },
+      {
+        "title": "禁用状态",
+        "kind": "live",
+        "file": "src/views/select/Example06.vue",
+        "description": "disabled 可锁定整个选择器；单个选项也可按业务状态禁止选择。"
+      },
+      {
+        "title": "五档尺寸",
+        "kind": "live",
+        "file": "src/views/select/Example07.vue",
+        "description": "size 支持 mini、small、default、medium、large，适配不同信息密度。"
+      },
+      {
+        "title": "外部控制与无匹配结果",
+        "kind": "live",
+        "file": "src/views/select/Methods.vue",
+        "description": ""
+      },
+      {
+        "title": "万级选项虚拟滚动",
+        "kind": "live",
+        "file": "src/views/select/Virtual.vue",
+        "description": "virtual 只挂载可见选项；自定义选项需保持 itemHeight 指定的固定行高。"
+      }
+    ]
+  },
+  "select-box": {
+    "purpose": "用于区域、品牌等多选筛选条件。搜索、翻页和勾选保留在草稿中，点击确定后一次更新绑定值；取消、Esc 或点击外部放弃本次草稿。",
+    "guidance": [
+      "搜索、翻页和勾选属于草稿；确定后统一提交，取消时保持原有绑定值。"
+    ],
+    "examples": [
+      {
+        "title": "本地搜索与分页",
+        "kind": "live",
+        "file": "src/views/select-box/Example01.vue",
+        "description": "列表全选仅影响当前页可用项，跨页保留选择；查看可切换至已选列表。本地搜索先过滤完整 options，再分页。"
+      },
+      {
+        "title": "远程分页与自定义选项",
+        "kind": "live",
+        "file": "src/views/select-box/Remote.vue",
+        "description": "remoteMethod 接收可判别请求：search 包含 keyword、从 1 开始的 page 和 pageSize，返回当前页 options 与总数 total；batch 接收去重后的 keywords 并返回全部精确 matches。option 插槽只替换左侧复选框之后的内容。"
+      },
+      {
+        "title": "远程批量粘贴与部分匹配",
+        "kind": "live",
+        "file": "src/views/select-box/Batch.vue",
+        "description": "进入批量粘贴，选择换行、逗号、分号或制表符。服务端按名称或值精确匹配完整数据集，跨页结果也能选中；匹配结果与已有草稿合并去重并立即提交。"
+      },
+      {
+        "title": "清空、宽度与外观继承",
+        "kind": "live",
+        "file": "src/views/select-box/Clearable.vue",
+        "description": "数字 width 按 px 处理，也支持 100% 等 CSS 长度。摘要保持单行省略，悬停可查看全文。ConfigProvider 统一设置五档 size、light/dark 主题与 borderRadius，面板和嵌套选择器一并继承。"
+      }
+    ]
+  },
+  "skeleton": {
+    "purpose": "等待数据时显示占位，支持行宽、自定义形状与减少动画偏好。",
+    "guidance": [
+      "占位形状贴近最终内容，数据准备好后整体替换，避免持续闪动。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/skeleton/Basic.vue",
+        "description": "等待数据时显示占位，支持行宽、自定义形状与减少动画偏好。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/skeleton/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "slider": {
+    "purpose": "用于音量、数值筛选和范围设置。拖动过程中同步更新数值，松开后触发 change。",
+    "guidance": [
+      "适合近似调节连续数值；精确录入可同时提供 InputNumber。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/slider/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "范围选择",
+        "kind": "live",
+        "file": "src/views/slider/Example02.vue",
+        "description": "两个滑块不可交叉；点击轨道会调整较近的滑块。"
+      },
+      {
+        "title": "小数步长",
+        "kind": "live",
+        "file": "src/views/slider/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "主题、尺寸与禁用",
+        "kind": "live",
+        "file": "src/views/slider/Example04.vue",
+        "description": ""
+      },
+      {
+        "title": "格式化提示与提交事件",
+        "kind": "live",
+        "file": "src/views/slider/Feedback.vue",
+        "description": ""
+      }
+    ]
+  },
+  "space": {
+    "purpose": "自动忽略空节点，支持横向、纵向、换行、分隔插槽和继承尺寸。",
+    "guidance": [
+      "使用统一间距组织相邻控件，窄屏或动态内容场景启用换行。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/space/Basic.vue",
+        "description": "自动忽略空节点，支持横向、纵向、换行、分隔插槽和继承尺寸。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/space/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "splitter": {
+    "purpose": "使用受控百分比调整两栏。方向键调整，Shift 加速，Home/End 到边界，Enter 收起恢复。",
+    "guidance": [
+      "为两栏设置可用的尺寸范围，保留分隔条的键盘操作与焦点反馈。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/splitter/Basic.vue",
+        "description": "使用受控百分比调整两栏。方向键调整，Shift 加速，Home/End 到边界，Enter 收起恢复。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/splitter/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "statistic": {
+    "purpose": "精度、分组和前后缀可定制。NaN、Infinity 或缺失数据明确显示后备文字。",
+    "guidance": [
+      "同时展示数值含义与单位，缺失或无效值使用明确后备文字。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/statistic/Basic.vue",
+        "description": "精度、分组和前后缀可定制。NaN、Infinity 或缺失数据明确显示后备文字。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/statistic/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "steps": {
+    "purpose": "引导用户按照流程完成任务，当前步骤从 0 开始计算。",
+    "guidance": [
+      "当前步骤从 0 开始；区分当前进度和单步的等待、完成或错误状态。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/steps/Example01.vue",
+        "description": "active 表示当前步骤；finish-status 可以设置已完成步骤的状态。"
+      },
+      {
+        "title": "居中布局",
+        "kind": "live",
+        "file": "src/views/steps/Example02.vue",
+        "description": "align-center 让标题、描述和步骤图标居中对齐。"
+      },
+      {
+        "title": "步骤状态与固定间距",
+        "kind": "live",
+        "file": "src/views/steps/Example03.vue",
+        "description": "可分别设置完成、进行中或单个步骤的状态；space 固定每个步骤的宽度。"
+      },
+      {
+        "title": "自定义图标",
+        "kind": "live",
+        "file": "src/views/steps/Example04.vue",
+        "description": "通过 icon 插槽为每个步骤提供业务图标。"
+      },
+      {
+        "title": "竖向布局",
+        "kind": "live",
+        "file": "src/views/steps/Example05.vue",
+        "description": "direction 设置为 vertical 后按纵向展示，适合较长的步骤说明。"
+      },
+      {
+        "title": "简洁布局",
+        "kind": "live",
+        "file": "src/views/steps/Example06.vue",
+        "description": "simple 使用紧凑箭头布局，适合放在表单或弹窗顶部。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/steps/Example07.vue",
+        "description": "size 会同步调整图标、连接线、标题、说明和简洁布局间距。"
+      },
+      {
+        "title": "标题与说明插槽",
+        "kind": "live",
+        "file": "src/views/steps/Slots.vue",
+        "description": ""
+      }
+    ]
+  },
+  "switch": {
+    "purpose": "表示两种相互对立的状态间切换。",
+    "guidance": [
+      "适合立即生效的二选一设置；需要统一提交的选项放入表单并说明提交方式。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/switch/Example01.vue",
+        "description": "使用 v-model 绑定布尔值。"
+      },
+      {
+        "title": "文字描述",
+        "kind": "live",
+        "file": "src/views/switch/Example02.vue",
+        "description": "通过 active-text 和 inactive-text 设置文字。"
+      },
+      {
+        "title": "颜色状态",
+        "kind": "live",
+        "file": "src/views/switch/Example03.vue",
+        "description": "通过 status 设置开启颜色。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/switch/Example04.vue",
+        "description": "支持 mini、small、default、medium、large 五档尺寸。"
+      },
+      {
+        "title": "禁用与加载",
+        "kind": "live",
+        "file": "src/views/switch/Example05.vue",
+        "description": "disabled 禁止交互，loading 展示处理中状态。"
+      },
+      {
+        "title": "自定义值",
+        "kind": "live",
+        "file": "src/views/switch/Example06.vue",
+        "description": "active-value 和 inactive-value 可使用字符串或数字。"
+      },
+      {
+        "title": "自定义宽度与事件",
+        "kind": "live",
+        "file": "src/views/switch/Width.vue",
+        "description": ""
+      }
+    ]
+  },
+  "table": {
+    "purpose": "",
+    "guidance": [
+      "为行提供稳定标识；大量数据、复杂编辑或虚拟滚动需求参阅 VTableGrid。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/table/Basic.vue",
+        "description": "基础交互与受控数据"
+      },
+      {
+        "title": "进阶用法",
+        "kind": "live",
+        "file": "src/views/table/Advanced.vue",
+        "description": "主题、插槽与边界场景"
+      }
+    ]
+  },
+  "tabs": {
+    "purpose": "在同一层级切换相关内容，支持键盘导航、异步切换守卫、增删和四向布局。",
+    "guidance": [
+      "将同一层级的相关内容放在标签页中，切换守卫应明确反馈等待或拒绝原因。"
+    ],
+    "examples": [
+      {
+        "title": "基础与禁用",
+        "kind": "live",
+        "file": "src/views/tabs/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "卡片与可编辑",
+        "kind": "live",
+        "file": "src/views/tabs/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "液态玻璃岛",
+        "kind": "live",
+        "file": "src/views/tabs/Island.vue",
+        "description": "type=island；五种 size 同步调整高度、间距和关闭按钮，六种 status 调整选中底色、文字与焦点。"
+      },
+      {
+        "title": "四向布局",
+        "kind": "live",
+        "file": "src/views/tabs/Layouts.vue",
+        "description": ""
+      },
+      {
+        "title": "异步切换守卫",
+        "kind": "live",
+        "file": "src/views/tabs/Guard.vue",
+        "description": ""
+      }
+    ]
+  },
+  "tag": {
+    "purpose": "用于标记和分类。",
+    "guidance": [
+      "使用简短文本表达分类；可关闭标签应让删除动作及其结果容易理解。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/tag/Example01.vue",
+        "description": "status 定义标签颜色。"
+      },
+      {
+        "title": "主题",
+        "kind": "live",
+        "file": "src/views/tag/Example02.vue",
+        "description": "effect 支持 light、dark、plain。"
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/tag/Example03.vue",
+        "description": "支持五种尺寸。"
+      },
+      {
+        "title": "圆角",
+        "kind": "live",
+        "file": "src/views/tag/Example04.vue",
+        "description": "round 展示胶囊形标签。"
+      },
+      {
+        "title": "可关闭",
+        "kind": "live",
+        "file": "src/views/tag/Example05.vue",
+        "description": "closable 显示关闭按钮并触发 close。"
+      },
+      {
+        "title": "边框描边",
+        "kind": "live",
+        "file": "src/views/tag/Example06.vue",
+        "description": "hit 为 light 主题增加描边。"
+      }
+    ]
+  },
+  "text": {
+    "purpose": "统一正文的语义标签、字号、状态色、字重和溢出处理，不改变父容器布局。",
+    "guidance": [
+      "按内容语义选择标签，省略文本时保留获取完整内容的途径。"
+    ],
+    "examples": [
+      {
+        "title": "状态颜色",
+        "kind": "live",
+        "file": "src/views/text/Example01.vue",
+        "description": ""
+      },
+      {
+        "title": "尺寸与字重",
+        "kind": "live",
+        "file": "src/views/text/Example02.vue",
+        "description": ""
+      },
+      {
+        "title": "文本省略",
+        "kind": "live",
+        "file": "src/views/text/Example03.vue",
+        "description": ""
+      },
+      {
+        "title": "语义标签",
+        "kind": "live",
+        "file": "src/views/text/Example04.vue",
+        "description": ""
+      }
+    ]
+  },
+  "time-picker": {
+    "purpose": "自定义时、分、秒列；编辑草稿后点击确定提交，取消不改变绑定值。范围使用同一面板，明确显示当前开始/结束端点。",
+    "guidance": [
+      "选择时分秒使用草稿，确定后提交；范围模式明确当前编辑的起止端点。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/time-picker/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/time-picker/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/time-picker/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/time-picker/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/time-picker/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "time-select": {
+    "purpose": "使用自定义 Select 面板，按 start/end/step 生成 HH:mm。边界无效或步长为零时不生成选项。",
+    "guidance": [
+      "用 start、end 和 step 生成固定时间选项，并检查有效边界与步长。"
+    ],
+    "examples": [
+      {
+        "title": "基础与事件",
+        "kind": "live",
+        "file": "src/views/time-select/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/time-select/Advanced.vue",
+        "description": ""
+      },
+      {
+        "title": "五档尺寸与主题",
+        "kind": "live",
+        "file": "src/views/time-select/Appearance.vue",
+        "description": ""
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/time-select/Status.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/time-select/Form.vue",
+        "description": ""
+      }
+    ]
+  },
+  "timeline": {
+    "purpose": "",
+    "guidance": [
+      "按一致的时间方向排列事件，使用正文说明时间与事件状态。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/timeline/Basic.vue",
+        "description": "基础交互与受控数据"
+      },
+      {
+        "title": "进阶用法",
+        "kind": "live",
+        "file": "src/views/timeline/Advanced.vue",
+        "description": "主题、插槽与边界场景"
+      }
+    ]
+  },
+  "tooltip": {
+    "purpose": "简短辅助说明支持悬停、键盘聚焦、延迟和定位；长内容请使用 Popover。",
+    "guidance": [
+      "仅放简短辅助说明，不承载必须完成的操作；长内容使用 Popover。"
+    ],
+    "examples": [
+      {
+        "title": "方位与键盘触发",
+        "kind": "live",
+        "file": "src/views/tooltip/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "受控显示、延迟与禁用",
+        "kind": "live",
+        "file": "src/views/tooltip/Controlled.vue",
+        "description": ""
+      }
+    ]
+  },
+  "tour": {
+    "purpose": "通过已有浮层管理器处理焦点和 Escape。目标缺失时居中显示，步骤与开关完全受控。",
+    "guidance": [
+      "步骤针对当前可见目标，允许用户关闭，并为目标缺失准备说明。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/tour/Basic.vue",
+        "description": "通过已有浮层管理器处理焦点和 Escape。目标缺失时居中显示，步骤与开关完全受控。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/tour/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  },
+  "transfer": {
+    "purpose": "",
+    "guidance": [
+      "使用稳定选项值控制两个集合，说明移动方向并保留筛选后的选择状态。"
+    ],
+    "examples": [
+      {
+        "title": "受控移动、搜索与插槽",
+        "kind": "live",
+        "file": "src/views/transfer/Basic.vue",
+        "description": "受控移动、搜索与插槽"
+      },
+      {
+        "title": "尺寸、主题与自定义搜索",
+        "kind": "live",
+        "file": "src/views/transfer/Advanced.vue",
+        "description": "尺寸、主题与自定义搜索"
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/transfer/Status.vue",
+        "description": "勾选、选中与焦点颜色随状态和主题变化"
+      }
+    ]
+  },
+  "tree": {
+    "purpose": "",
+    "guidance": [
+      "层级数据使用稳定节点标识，说明父子勾选联动与懒加载失败恢复方式。"
+    ],
+    "examples": [
+      {
+        "title": "勾选、过滤与键盘导航",
+        "kind": "live",
+        "file": "src/views/tree/Basic.vue",
+        "description": "勾选、过滤与键盘导航"
+      },
+      {
+        "title": "万级节点虚拟窗口",
+        "kind": "live",
+        "file": "src/views/tree/Virtual.vue",
+        "description": "万级节点虚拟窗口"
+      },
+      {
+        "title": "懒加载与失败重试",
+        "kind": "live",
+        "file": "src/views/tree/Lazy.vue",
+        "description": "懒加载与失败重试"
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/tree/Status.vue",
+        "description": "勾选、选中与焦点颜色随状态和主题变化"
+      }
+    ]
+  },
+  "tree-select": {
+    "purpose": "",
+    "guidance": [
+      "将层级选择放在有限空间内，明确单选、多选和父子选择规则。"
+    ],
+    "examples": [
+      {
+        "title": "单选、多选与父子联动",
+        "kind": "live",
+        "file": "src/views/tree-select/Basic.vue",
+        "description": "单选、多选与父子联动"
+      },
+      {
+        "title": "五档尺寸、主题与异步数据",
+        "kind": "live",
+        "file": "src/views/tree-select/Advanced.vue",
+        "description": "五档尺寸、主题与异步数据"
+      },
+      {
+        "title": "六种语义状态",
+        "kind": "live",
+        "file": "src/views/tree-select/Status.vue",
+        "description": "勾选、选中与焦点颜色随状态和主题变化"
+      }
+    ]
+  },
+  "typography": {
+    "purpose": "标题、段落和语义修饰复用 Text 的主题与尺寸。复制结果通过事件和可访问状态反馈。",
+    "guidance": [
+      "保持标题层级连续，正文、强调与复制反馈各自使用对应语义。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/typography/Basic.vue",
+        "description": "标题、段落和语义修饰复用 Text 的主题与尺寸。复制结果通过事件和可访问状态反馈。"
+      },
+      {
+        "title": "进阶与边界",
+        "kind": "live",
+        "file": "src/views/typography/Advanced.vue",
+        "description": "完整的交互、配置和边界示例。"
+      }
+    ]
+  },
+  "upload": {
+    "purpose": "选择、拖拽和上传文件，提供进度、取消、重试及图片预览。通过 v-model:file-list 管理文件列表，继承全局尺寸、主题和圆角。",
+    "guidance": [
+      "上传前说明类型、大小和数量限制，上传中提供进度、取消和失败重试。"
+    ],
+    "examples": [
+      {
+        "title": "上传交互体验",
+        "kind": "live",
+        "file": "src/views/upload/Playground.vue",
+        "description": "此示例使用本地模拟请求。可切换自动/手动上传、拖拽和失败重试，使用页面状态控制器切换六种主题。"
+      },
+      {
+        "title": "图片列表与预览",
+        "kind": "live",
+        "file": "src/views/upload/Example02.vue",
+        "description": "图片预览使用本地临时 URL，移除文件或卸载组件后释放。此示例不执行上传。"
+      },
+      {
+        "title": "照片墙",
+        "kind": "live",
+        "file": "src/views/upload/PictureCard.vue",
+        "description": "list-type=picture-card 将文件显示为图片卡片；卡片大小随全局 size 调整，达到 limit 后隐藏添加入口，删除后恢复。"
+      },
+      {
+        "title": "单张头像上传",
+        "kind": "live",
+        "file": "src/views/upload/Avatar.vue",
+        "description": "参考头像上传用法，通过 trigger 自定义入口和 show-file-list=false 隐藏常规列表。"
+      },
+      {
+        "title": "类型、大小与数量限制",
+        "kind": "live",
+        "file": "src/views/upload/Example05.vue",
+        "description": ""
+      },
+      {
+        "title": "尺寸",
+        "kind": "live",
+        "file": "src/views/upload/Example06.vue",
+        "description": ""
+      },
+      {
+        "title": "禁用与文件回显",
+        "kind": "live",
+        "file": "src/views/upload/Example07.vue",
+        "description": ""
+      },
+      {
+        "title": "表单联动",
+        "kind": "live",
+        "file": "src/views/upload/FormExample.vue",
+        "description": ""
+      },
+      {
+        "title": "接入真实接口",
+        "kind": "integration",
+        "file": null,
+        "description": "将项目中已经封装好的 Axios 接口方法直接传给 request；action 可以省略。以下仅展示配置，本站不执行这个请求。"
+      },
+      {
+        "title": "异步校验与删除保护",
+        "kind": "live",
+        "file": "src/views/upload/Hooks.vue",
+        "description": ""
+      },
+      {
+        "title": "直接传入业务接口函数",
+        "kind": "live",
+        "file": "src/views/upload/Request.vue",
+        "description": "此演示实际执行 FormData 接口函数，用本地 Promise 模拟返回，不发送网络请求。"
+      },
+      {
+        "title": "自定义文件行与实例清空",
+        "kind": "live",
+        "file": "src/views/upload/FileSlot.vue",
+        "description": ""
+      }
+    ]
+  },
+  "vtable-grid": {
+    "purpose": "基于 VisActor VTable 的高性能业务表格，提供本地与远程数据、分页、排序、选择、操作、编辑、汇总和列设置。",
+    "guidance": [
+      "为数据行和列提供稳定标识，将查询、分页、编辑保存与业务接口明确连接。"
+    ],
+    "examples": [
+      {
+        "title": "基础表格",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example01.vue",
+        "description": "固定列、格式化、样式、rowKey、tableOptions 和五档 size 均可直接配置。"
+      },
+      {
+        "title": "远程分页与排序",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example02.vue",
+        "description": "proxyConfig 统一接收页码、每页条数、排序和查询表单；只应用最后一次请求的结果。"
+      },
+      {
+        "title": "选择与行操作",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example03.vue",
+        "description": "支持表头全选、跨页保留、自定义操作、行事件，以及选择相关 Expose 方法和工具栏插槽。"
+      },
+      {
+        "title": "单元格编辑与批量保存",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example04.vue",
+        "description": "覆盖 text、textarea、date、number、select、email、url 编辑器；自定义 edit-actions 插槽可调用保存和撤销。"
+      },
+      {
+        "title": "汇总与列设置",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example05.vue",
+        "description": "同时演示 sum、avg、count、min、max、自定义计算、copyFormatter、列显隐/排序持久化和全部工具栏事件。"
+      },
+      {
+        "title": "加载、空状态与禁用",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example06.vue",
+        "description": "一个示例切换 loading、empty 插槽和 disabled；禁用态会阻止 Canvas 内的选择、排序、编辑和行操作。"
+      },
+      {
+        "title": "实例方法与延迟加载",
+        "kind": "live",
+        "file": "src/views/vtable-grid/Example07.vue",
+        "description": "autoLoad=false 时由调用方启动查询；下方按钮覆盖 query、reload、resize、setRecords、getTableInstance 和 exportCsv。"
+      }
+    ]
+  },
+  "watermark": {
+    "purpose": "用于显示文字或图片的视觉提示，不提供防篡改或数据保护。容器变化后自动更新密度。",
+    "guidance": [
+      "用于提示内容归属或敏感程度；数据保护仍需由权限与业务安全机制实现。"
+    ],
+    "examples": [
+      {
+        "title": "基础用法",
+        "kind": "live",
+        "file": "src/views/watermark/Basic.vue",
+        "description": "用于显示文字或图片的视觉提示，不提供防篡改或数据保护。容器变化后自动更新密度。"
+      },
+      {
+        "title": "配置、交互与边界",
+        "kind": "live",
+        "file": "src/views/watermark/Advanced.vue",
+        "description": "完整可运行的进阶示例，包含所有状态、方法和样式。"
+      }
+    ]
+  }
+}

@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtSwitchStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtSwitch } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtSwitchStatus>('primary');
 const enabled = ref(true);
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtSwitch v-model="enabled" active-text="开" inactive-text="关" /><ZtSwitch
+    <ZtSwitch
+      :status="demoStatus"
+      v-model="enabled"
+      active-text="开"
+      inactive-text="关"
+    /><ZtSwitch
+      :status="demoStatus"
       v-model="enabled"
       active-text="ON"
       inactive-text="OFF"

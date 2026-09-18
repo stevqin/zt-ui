@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ref } from 'vue';
 import {
   ZtTreeSelect,
@@ -6,17 +7,8 @@ import {
   type ZtButtonStatus,
   type ZtTreeSelectValue,
 } from '@ztechjs/zt-ui';
-const statuses: ZtButtonStatus[] = [
-  'default',
-  'primary',
-  'success',
-  'warning',
-  'danger',
-  'info',
-];
-const values = ref<Record<string, ZtTreeSelectValue>>(
-  Object.fromEntries(statuses.map((status) => [status, ['b']])),
-);
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
+const value = ref<ZtTreeSelectValue>(['b']);
 const dark = ref(false);
 const data = [
   { key: 'a', label: '区域', children: [{ key: 'b', label: '门店' }] },
@@ -26,12 +18,12 @@ const data = [
   <label><input v-model="dark" type="checkbox" />暗色状态色</label
   ><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
     ><div class="statuses">
-      <div v-for="status in statuses" :key="status">
-        <p>{{ status }}</p>
+      <div>
+        <p>{{ demoStatus }}</p>
         <ZtTreeSelect
-          v-model="values[status]"
+          v-model="value"
           :data="data"
-          :status="status"
+          :status="demoStatus"
           multiple
           clearable
           filterable

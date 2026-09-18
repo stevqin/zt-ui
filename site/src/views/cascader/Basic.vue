@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import {
   ZtCascader,
   type ZtCascaderValue,
   type ZtTreeNode,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtCascaderValue>([]),
   multiple = ref<ZtCascaderValue>([]),
   strict = ref(false);
@@ -31,12 +34,14 @@ const options: ZtTreeNode[] = [
   <div class="stack">
     <label><input v-model="strict" type="checkbox" />允许选择任意层级</label
     ><ZtCascader
+      :status="demoStatus"
       v-model="value"
       :options="options"
       :check-strictly="strict"
       filterable
       clearable
     /><ZtCascader
+      :status="demoStatus"
       v-model="multiple"
       :options="options"
       :check-strictly="strict"

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { entryStatusStyle } from '../autocomplete/status';
-import { computed, inject, ref, provide, useAttrs } from 'vue';
+import { toRef, computed, inject, ref, provide, useAttrs } from 'vue';
 import { ZtInput } from '../input';
 import { ztFormItemKey } from '../form/context';
 import { useZtSize } from '../config-provider/context';
 import type { ZtInputTagProps } from './types';
 import './input-tag.scss';
 defineOptions({ name: 'ZtInputTag', inheritAttrs: false });
-const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtInputTagProps>(), {
+  underline: undefined,
   status: 'primary',
   modelValue: () => [],
   deduplicate: true,
@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<ZtInputTagProps>(), {
   clearable: false,
   placeholder: '输入后按回车',
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: string[]];
   change: [value: string[]];

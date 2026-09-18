@@ -9,6 +9,7 @@ defineOptions({ name: 'ZtBadge', inheritAttrs: false })
 const props = withDefaults(defineProps<ZtBadgeProps>(), {
   max: 99,
   isDot: false,
+  circle: true,
   hidden: false,
   status: 'danger',
   showZero: false,
@@ -33,6 +34,7 @@ const badgeClasses = computed(() => [
   `zt-badge--${configSize.value}`,
   {
     'is-dot': props.isDot,
+    'is-circle': props.circle,
     'is-fixed': !!slots.default,
   },
 ])

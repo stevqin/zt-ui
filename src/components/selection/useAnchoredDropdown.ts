@@ -58,6 +58,17 @@ interface PopupGeometry {
 
 const VIEWPORT_GUTTER = 8
 
+/** Read the desired height independently of the last viewport constraint. */
+export function getUnconstrainedPopupHeight(popup: HTMLElement): number {
+  const previousMaxHeight = popup.style.maxHeight
+  try {
+    popup.style.maxHeight = 'none'
+    return popup.getBoundingClientRect().height
+  } finally {
+    popup.style.maxHeight = previousMaxHeight
+  }
+}
+
 export function useAnchoredDropdown(
   options: UseAnchoredDropdownOptions,
 ): AnchoredDropdown {
@@ -153,7 +164,6 @@ export function useAnchoredDropdown(
     const popup = options.popup.value
     if (!trigger || !popup) return
     const triggerRect = trigger.getBoundingClientRect()
-    const popupHeight = options.getPopupHeight?.(popup) ?? popup.getBoundingClientRect().height
     const gutter = options.viewportGutter ?? VIEWPORT_GUTTER
     const viewportWidth = window.innerWidth
     const viewportHeight = window.innerHeight
@@ -163,6 +173,16 @@ export function useAnchoredDropdown(
     const width = preserveWidth
       ? desiredWidth
       : Math.min(maximumWidth, desiredWidth)
+    // Wrapped chrome must be measured at the width selected for this viewport,
+    // including on the first open and before Vue applies the next geometry.
+    const previousWidth = popup.style.width
+    let popupHeight: number
+    try {
+      if (options.getPopupHeight) popup.style.width = `${width}px`
+      popupHeight = options.getPopupHeight?.(popup) ?? popup.getBoundingClientRect().height
+    } finally {
+      if (options.getPopupHeight) popup.style.width = previousWidth
+    }
     const viewportTop = gutter
     const viewportBottom = Math.max(
       viewportTop,

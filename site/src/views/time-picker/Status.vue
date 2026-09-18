@@ -1,32 +1,19 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import { ref } from 'vue';
 import {
   ZtTimePicker,
   type ZtEntryStatus,
   type ZtTimePickerValue,
 } from '@ztechjs/zt-ui';
-const statuses: ZtEntryStatus[] = [
-  'default',
-  'primary',
-  'success',
-  'warning',
-  'danger',
-  'info',
-];
-const values = reactive<ZtTimePickerValue[]>([
-  '10:00',
-  '10:00',
-  '10:00',
-  '10:00',
-  '10:00',
-  '10:00',
-]);
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
+const value = ref<ZtTimePickerValue>('10:00');
 </script>
 <template>
   <div class="status-demo">
-    <div v-for="(status, i) in statuses" :key="status">
-      <p>{{ status }}</p>
-      <ZtTimePicker v-model="values[i]" :status="status" clearable />
+    <div>
+      <p>{{ demoStatus }}</p>
+      <ZtTimePicker v-model="value" :status="demoStatus" clearable />
     </div>
   </div>
 </template>

@@ -1,19 +1,25 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputOtp, ZtButton } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 const code = ref('');
 const completed = ref(false);
 </script>
 
 <template>
   <ZtInputOtp
+    :status="demoStatus"
     v-model="code"
     aria-label="短信验证码"
     @input="completed = false"
     @complete="completed = true"
   />
   <div class="otp-feedback">
-    <span aria-live="polite">{{ completed ? '输入完成' : '请输入 6 位验证码' }}</span
+    <span aria-live="polite">{{
+      completed ? '输入完成' : '请输入 6 位验证码'
+    }}</span
     ><ZtButton
       size="small"
       @click="

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 // 内联示意图让示例无需下载静态资源，可替换为业务图片地址。
 const demoImage1 =
   'data:image/svg+xml,' +
@@ -9,6 +11,7 @@ const demoImage1 =
 import { ref } from 'vue';
 import { ZtUpload } from '@ztechjs/zt-ui';
 import type { ZtUploadFile } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const pictures = ref<ZtUploadFile[]>([
   { uid: 'dunes', name: '沙丘.svg', status: 'success', url: demoImage1 },
 ]);
@@ -17,6 +20,7 @@ const pictureMessage = ref('');
 
 <template>
   <ZtUpload
+    :status="demoStatus"
     v-model:file-list="pictures"
     accept="image/*"
     list-type="picture"
@@ -26,7 +30,9 @@ const pictureMessage = ref('');
     :max-size="5"
     @reject="(_file, reason) => (pictureMessage = reason)"
     @exceed="pictureMessage = '最多选择 4 张图片'"
-    ><template #tip>选择图片后点击缩略图预览，单张不超过 5 MB。</template></ZtUpload
+    ><template #tip
+      >选择图片后点击缩略图预览，单张不超过 5 MB。</template
+    ></ZtUpload
   >
   <p aria-live="polite">{{ pictureMessage }}</p>
 </template>

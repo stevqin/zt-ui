@@ -39,8 +39,8 @@ function handleClose(event: MouseEvent) {
 <template>
   <span :class="classes" v-bind="$attrs">
     <slot />
-    <span v-if="closable" class="zt-tag__close" @click="handleClose">
+    <button v-if="closable" type="button" class="zt-tag__close" aria-label="关闭标签" @click="handleClose">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
-    </span>
+    </button>
   </span>
 </template>

@@ -29,7 +29,7 @@ import './date-picker.scss';
 
 defineOptions({ inheritAttrs: false });
 const props = withDefaults(
-  defineProps<ZtDatePickerProps & { datetime?: boolean; inline?: boolean }>(),
+  defineProps<Omit<ZtDatePickerProps, 'underline'> & { datetime?: boolean; inline?: boolean }>(),
   {
     modelValue: null,
     range: false,

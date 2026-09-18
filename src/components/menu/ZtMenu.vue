@@ -8,6 +8,7 @@ import ZtMenuHorizontal from './ZtMenuHorizontal.vue'
 import { useMenuRouter } from './useMenuRouter'
 import './menu.scss'
 import { menuDimensions } from './dimensions'
+import { useAnchoredDropdown } from '../selection/useAnchoredDropdown'
 defineOptions({name:'ZtMenu'})
 const props=withDefaults(defineProps<ZtMenuProps>(),{modelValue:'',items:()=>[],defaultExpandedKeys:()=>[],accordion:false,disabled:false,status:'primary',ariaLabel:'菜单',mode:'vertical',router:false,menuTrigger:'hover',collapsed:false,collapsible:false,resizable:false,minWidth:160,maxWidth:480})
 const emit=defineEmits<{
@@ -33,6 +34,13 @@ const popupId=useId()
 const popupKey=ref<string>()
 const popupPosition=ref({left:'0px',top:'0px',width:'260px',maxHeight:'400px'})
 const {style:providerStyle}=useZtConfig()
+const flyout = useAnchoredDropdown({
+ visible: computed(() => Boolean(popupKey.value)),
+ trigger: computed(popupTrigger), popup,
+ close: () => closePopup(),
+ focus: () => popupTrigger()?.focus({ preventScroll: true }),
+ tabThroughPopup: true,
+})
 function popupTrigger(){return [...root.value?.querySelectorAll<HTMLElement>('[data-category], [data-menu-key]')??[]].find(el=>(el.dataset.category??el.dataset.menuKey)===popupKey.value)}
 function closePopup(restore=false){const trigger=popupTrigger();popupKey.value=undefined;if(restore)void nextTick(()=>{if(trigger?.isConnected)trigger.focus({preventScroll:true})})}
 function positionPopup(){
@@ -45,7 +53,7 @@ function positionPopup(){
 }
 function outside(event:PointerEvent){const target=event.target as Node;if(popupKey.value&&!root.value?.contains(target)&&!popup.value?.contains(target))closePopup()}
 function scroll(event:Event){if(popupKey.value&&!popup.value?.contains(event.target as Node))positionPopup()}
-function escape(event:KeyboardEvent){if(popupKey.value&&event.key==='Escape'){event.preventDefault();event.stopPropagation();closePopup(true)}}
+function escape(event:KeyboardEvent){if(!event.defaultPrevented&&popupKey.value&&event.key==='Escape'){event.preventDefault();event.stopPropagation();closePopup(true)}}
 function focusOut(event:FocusEvent){const target=event.relatedTarget as Node|null;if(popupKey.value&&target&&!root.value?.contains(target)&&!popup.value?.contains(target))closePopup()}
 onMounted(()=>{document.addEventListener('pointerdown',outside);document.addEventListener('keydown',escape,true);window.addEventListener('scroll',scroll,true);window.addEventListener('resize',positionPopup)})
 onBeforeUnmount(()=>{document.removeEventListener('pointerdown',outside);document.removeEventListener('keydown',escape,true);window.removeEventListener('scroll',scroll,true);window.removeEventListener('resize',positionPopup)})
@@ -177,7 +185,7 @@ function keydown(event:KeyboardEvent){
   <button v-if="collapsible&&mode!=='horizontal'" type="button" class="zt-menu__collapse" :disabled="disabled" :aria-label="folded?'展开菜单':'折叠菜单'" :aria-expanded="!folded" @click="collapse()"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor" aria-hidden="true"><path :d="folded?'m8 5 5 5-5 5':'m12 5-5 5 5 5'" /></svg><span v-if="!folded">收起导航</span></button>
   <div v-if="resizable&&!folded&&mode!=='horizontal'" class="zt-menu__resize" role="separator" aria-label="调整菜单宽度" aria-orientation="vertical" :aria-valuemin="widthMin" :aria-valuemax="widthMax" :aria-valuenow="typeof localWidth==='number'?Math.max(120,localWidth+widthOffset):Math.round(root?.getBoundingClientRect().width??240)" :tabindex="disabled?-1:0" @pointerdown="resizeDown" @pointermove="resizeMove" @pointerup="resizeEnd" @pointercancel="resizeEnd" @lostpointercapture="resizeEnd" @keydown="resizeKey" />
   <Teleport to="body">
-   <div v-if="popupKey&&folded&&mode!=='horizontal'" :id="popupId" ref="popup" class="zt-menu zt-menu__flyout" :class="[`zt-menu--${size}`,`zt-menu--status-${status}`]" :style="[providerStyle,popupPosition]" @keydown="keydown" @focusout="focusOut">
+   <div v-if="popupKey&&folded&&mode!=='horizontal'" :id="popupId" ref="popup" class="zt-menu zt-menu__flyout" :class="[`zt-menu--${size}`,`zt-menu--status-${status}`]" :style="[providerStyle,popupPosition,{zIndex:flyout.popupStyle.value.zIndex}]" @keydown="keydown" @focusout="focusOut">
     <div class="zt-menu__module-title">{{activeCategory?.label}}</div>
     <ul role="menu" :aria-label="`${activeCategory?.label}子菜单`"><ZtMenuNode v-for="item in activeCategory?.children" :key="item.key" :item="item" flyout /></ul>
    </div>

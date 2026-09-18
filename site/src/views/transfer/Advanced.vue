@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import {
   ZtTransfer,
@@ -6,6 +8,7 @@ import {
   type ZtTransferKey,
   type ZtComponentSize,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtTransferKey[]>([]),
   disabled = ref(false),
   dark = ref(true),
@@ -35,6 +38,7 @@ const data = [
     <ZtConfigProvider :theme="dark ? 'dark' : 'light'" :size="size"
       ><div class="pad">
         <ZtTransfer
+          :status="demoStatus"
           v-model="value"
           :data="data"
           :disabled="disabled"

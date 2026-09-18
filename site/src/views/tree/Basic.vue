@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtTree, type ZtTreeNode, type ZtTreeKey } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const checked = ref<ZtTreeKey[]>([]),
   selected = ref<ZtTreeKey[]>([]),
   expanded = ref<ZtTreeKey[]>(['east']),
@@ -28,6 +31,7 @@ const data: ZtTreeNode[] = [
     <label>筛选节点 <input v-model="filter" placeholder="搜索门店" /></label
     ><label><input v-model="strict" type="checkbox" />严格勾选</label
     ><ZtTree
+      :status="demoStatus"
       v-model:checked-keys="checked"
       v-model:selected-keys="selected"
       v-model:expanded-keys="expanded"

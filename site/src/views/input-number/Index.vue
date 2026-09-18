@@ -17,39 +17,37 @@ import MethodsCode from './Methods.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section number-doc">
-    <h1>InputNumber 数字输入框</h1>
-    <p>使用按钮、键盘方向键或直接输入来调整数值。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples number-doc">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 绑定 number 或 null。"
       ><Example01
     /></DemoBlock>
-    <h2>范围与步进</h2>
+    <h3>范围与步进</h3>
     <DemoBlock :code="Example02Code" desc="min、max 限制范围，step 设置每次增减量。"
       ><Example02
     /></DemoBlock>
-    <h2>精度与严格步进</h2>
+    <h3>精度与严格步进</h3>
     <DemoBlock
       :code="Example03Code"
       desc="precision 固定小数位；step-strictly 将输入校准到步进倍数。"
       ><Example03
     /></DemoBlock>
-    <h2>控制按钮布局</h2>
+    <h3>控制按钮布局</h3>
     <DemoBlock
       :code="Example04Code"
       desc="default 将按钮分置两侧，left 和 right 将按钮堆叠在指定一侧；也可以完全隐藏。"
       ><Example04
     /></DemoBlock>
-    <h2>尺寸</h2>
+    <h3>尺寸</h3>
     <DemoBlock :code="Example05Code" desc="支持 mini、small、default、medium、large 五档尺寸。"
       ><Example05
     /></DemoBlock>
-    <h2>禁用与只读</h2>
+    <h3>禁用与只读</h3>
     <DemoBlock :code="Example06Code" desc="disabled 禁止所有交互，readonly 保留聚焦能力并禁用增减。"
       ><Example06
     /></DemoBlock>
 
-    <h2>事件反馈与实例方法</h2>
+    <h3>事件反馈与实例方法</h3>
     <DemoBlock :code="MethodsCode" desc=""><Methods /></DemoBlock>
   </div>
 </template>

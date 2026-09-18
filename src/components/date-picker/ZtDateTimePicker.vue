@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref, toRef } from 'vue'
 import { useFormControlAppearance } from '../form/useFormControlAppearance'
 import ZtDatePickerBase from './ZtDatePickerBase.vue'
 import type { ZtDatePickerProps, ZtDatePickerInstance, ZtDatePickerValue } from './types'
 defineOptions({ name: 'ZtDateTimePicker', inheritAttrs: false })
-withDefaults(defineProps<ZtDatePickerProps>(), { showHolidays: true })
+const props = withDefaults(defineProps<ZtDatePickerProps>(), { underline: undefined, showHolidays: true })
+const pickerProps = computed(() => {
+  const { underline: _underline, ...rest } = props
+  return rest
+})
 const emit = defineEmits<{
   'update:modelValue': [value: ZtDatePickerValue]
   change: [value: ZtDatePickerValue]
@@ -13,7 +17,7 @@ const emit = defineEmits<{
   focus: [event: FocusEvent]
   blur: [event: FocusEvent]
 }>()
-const { underline } = useFormControlAppearance()
+const { underline } = useFormControlAppearance(toRef(props, 'underline'))
 const picker = ref<ZtDatePickerInstance>()
 defineExpose({
   focus: (options?: FocusOptions) => picker.value?.focus(options),
@@ -24,7 +28,7 @@ defineExpose({
 })
 </script>
 <template>
-  <ZtDatePickerBase ref="picker" :class="{ 'is-form-underline': underline }" v-bind="{ ...$props, ...$attrs }" :datetime="true"
+  <ZtDatePickerBase ref="picker" :class="{ 'is-form-underline': underline }" v-bind="{ ...pickerProps, ...$attrs }" :datetime="true"
     @update:model-value="emit('update:modelValue', $event)" @change="emit('change', $event)"
     @clear="emit('clear')" @visible-change="emit('visible-change', $event)"
     @focus="emit('focus', $event)" @blur="emit('blur', $event)" />

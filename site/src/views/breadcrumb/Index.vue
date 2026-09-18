@@ -9,14 +9,12 @@ import StatesCode from './States.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Breadcrumb 面包屑</h1>
-    <p>显示当前页面在信息架构中的位置，最后一项自动标记为当前页。</p>
-    <h2>基础用法</h2>
+  <div class="component-examples">
+    <h3>基础用法</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>自定义分隔</h2>
+    <h3>自定义分隔</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>分隔插槽、禁用与尺寸</h2>
+    <h3>分隔插槽、禁用与尺寸</h3>
     <DemoBlock :code="StatesCode" desc=""><States /></DemoBlock>
   </div>
 </template>

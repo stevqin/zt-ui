@@ -14,7 +14,6 @@ export interface ZtPaginationProps {
   pageSizes?: number[]
   layout?: string
   size?: ZtPaginationSize
-  small?: boolean
   background?: boolean
   disabled?: boolean
   hideOnSinglePage?: boolean

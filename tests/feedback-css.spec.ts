@@ -1,4 +1,7 @@
 import { readFileSync } from 'node:fs'
+import { h } from 'vue'
+import ZtButton from '../src/components/button/ZtButton.vue'
+import ZtConfigProvider from '../src/components/config-provider/ZtConfigProvider.vue'
 import { mount } from '@vue/test-utils'
 import { compile } from 'sass'
 import { build, loadConfigFromFile } from 'vite'
@@ -8,7 +11,7 @@ import ZtIcon from '../src/components/icon/ZtIcon.vue'
 import { resetOverlayManager } from '../src/components/overlay/overlayManager'
 
 const alertCss = readFileSync('node_modules/@ztechjs/zt-alert/dist/style.css', 'utf8')
-const sourceCss = ['drawer/drawer', 'icon/icon']
+const sourceCss = ['drawer/drawer', 'icon/icon', 'button/button', 'config-provider/config-provider']
   .map(path => compile(`src/components/${path}.scss`).css).join('\n')
 let builtCss = ''
 
@@ -57,6 +60,20 @@ afterEach(() => {
 
 describe.each([false, true])('feedback CSS coexistence (production build=%s)', production => {
   describe.each([false, true])('zt-alert loaded last=%s', alertLast => {
+    it('preserves flat Buttons when external feedback styles load in either order', () => {
+      applyStyles(production, alertLast)
+      const wrapper = mount(ZtConfigProvider, {
+        attachTo: document.body, props: { borderRadius: 0 },
+        slots: { default: () => h(ZtButton, { status: 'primary' }, () => '确认') },
+      })
+      wrappers.push(wrapper)
+      const css = getComputedStyle(wrapper.get('button').element)
+      // Happy DOM reports the shorthand-reset image as initial (equivalent to none).
+      expect(css.backgroundImage).toMatch(/^(none|initial)$/)
+      expect(css.boxShadow).toBe('none')
+      expect(css.backgroundColor).not.toBe('')
+    })
+
     it.each([
       { placement: 'right' as const, transform: /translate(?:X)?\(100%\)/ },
       { placement: 'left' as const, transform: /translate(?:X)?\(-100%\)/ },

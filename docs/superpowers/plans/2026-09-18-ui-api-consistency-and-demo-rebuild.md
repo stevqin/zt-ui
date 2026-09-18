@@ -16,7 +16,7 @@
 - Preserve the existing distinction between visual-theme `danger` and validation `error`.
 - `underline` is tri-state: explicit component `true` or `false` wins; omission inherits the nearest Form.
 - Only the 15 controls named in the spec expose `underline`; popup internals and excluded controls remain ordinary.
-- Button depth thresholds use ConfigProvider `borderRadius`: `<4`, `4–8`, and `>8` pixels.
+- Button depth thresholds use ConfigProvider `borderRadius`: `<5`, `5–8`, and `>8` pixels.
 - SelectBox popup chrome stays fixed and its options list is the sole vertical scroll owner.
 - Tooltip numeric dimensions become pixels; string dimensions remain CSS lengths.
 - Button and Tag documentation pages keep their status matrices; workflow statuses never use the visual-theme controller.

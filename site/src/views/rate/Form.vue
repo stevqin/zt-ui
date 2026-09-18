@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtRate,
@@ -7,6 +9,7 @@ import {
   ZtButton,
   type ZtFormInstance,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const model = reactive<{ value: number }>({ value: 0 }),
   form = ref<ZtFormInstance>(),
   disabled = ref(false),
@@ -35,7 +38,11 @@ async function submit() {
             trigger: 'change',
           },
         ]"
-        ><ZtRate v-model="model.value" allow-half show-score /></ZtFormItem
+        ><ZtRate
+          :status="demoStatus"
+          v-model="model.value"
+          allow-half
+          show-score /></ZtFormItem
       ><ZtButton :disabled="disabled" @click="submit">校验</ZtButton></ZtForm
     >
     <p role="status">{{ result }}</p>

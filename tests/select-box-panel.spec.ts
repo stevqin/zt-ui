@@ -54,6 +54,19 @@ describe('SelectBoxPanel local selection', () => {
     expect(row.find('.zt-checkbox__label .custom-option').text()).toBe('华东/false/false')
   })
 
+  it('offers the complete default page-size set', async () => {
+    const wrapper = panel({ pageSize: 10 })
+    await wrapper.find('.zt-pagination__sizes [role="combobox"]').trigger('click')
+    expect(wrapper.findAll('[role="option"]').map(option => option.text())).toEqual([
+      '10 条/页',
+      '20 条/页',
+      '50 条/页',
+      '100 条/页',
+      '200 条/页',
+      '500 条/页',
+    ])
+  })
+
   it.each(['.zt-checkbox__input', '.zt-checkbox__inner', 'input', '.zt-checkbox__label', '.custom-option', 'row'])('toggles once per click on %s', async target => {
     const wrapper = panel({}, { option: ({ option }: { option: ZtSelectOption }) => h('span', { class: 'custom-option' }, option.label) })
     const row = rows(wrapper)[0]!
@@ -90,6 +103,15 @@ describe('SelectBoxPanel local selection', () => {
     expect(rows(wrapper).every(row => row.attributes('aria-checked') === 'true')).toBe(true)
     await confirm(wrapper)
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['east', 'south', 'west'])
+  })
+
+  it('announces content changes for placement when paging and switching modes', async () => {
+    const wrapper = panel()
+    await wrapper.find('[aria-label="下一页"]').trigger('click')
+    expect(wrapper.emitted('resize')?.length).toBeGreaterThan(0)
+    const updates = wrapper.emitted('resize')!.length
+    await wrapper.find('.zt-select-box-panel__mode').trigger('click')
+    expect(wrapper.emitted('resize')!.length).toBeGreaterThan(updates)
   })
 
   it('filters before paginating and resets the page for search and page-size changes', async () => {

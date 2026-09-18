@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { entryStatusStyle } from '../autocomplete/status';
-import { computed, inject, nextTick, ref, useAttrs, useId, watch } from 'vue';
+import { toRef, computed, inject, nextTick, ref, useAttrs, useId, watch } from 'vue';
 import { ZtInput } from '../input';
 import { ZtPopover } from '../popover';
 import { useZtSize } from '../config-provider/context';
@@ -14,6 +14,7 @@ import type {
 import './time-picker.scss';
 defineOptions({ name: 'ZtTimePicker', inheritAttrs: false });
 const props = withDefaults(defineProps<ZtTimePickerProps>(), {
+  underline: undefined,
   status: 'primary',
   modelValue: null,
   range: false,
@@ -26,13 +27,13 @@ const props = withDefaults(defineProps<ZtTimePickerProps>(), {
   clearable: false,
   placeholder: '请选择时间',
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: ZtTimePickerValue];
   change: [value: ZtTimePickerValue];
   clear: [];
   'visible-change': [visible: boolean];
 }>();
-const { underline } = useFormControlAppearance();
 const form = inject(ztFormItemKey, undefined),
   size = useZtSize(props, () => form?.size.value),
   disabled = computed(() => props.disabled || form?.disabled.value),

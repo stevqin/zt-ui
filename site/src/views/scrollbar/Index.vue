@@ -13,18 +13,16 @@ import ResizeCode from './Resize.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Scrollbar 滚动条</h1>
-    <p>保留浏览器原生滚动、触摸惯性和键盘操作，同时提供跨平台一致的轨道与滑块样式。</p>
-    <h2>固定高度</h2>
+  <div class="component-examples">
+    <h3>固定高度</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>横向滚动与常显轨道</h2>
+    <h3>横向滚动与常显轨道</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>原生模式</h2>
+    <h3>原生模式</h3>
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
-    <h2>滚动事件与实例方法</h2>
+    <h3>滚动事件与实例方法</h3>
     <DemoBlock :code="Example04Code"><Example04 /></DemoBlock>
-    <h2>动态内容与完整滚动方法</h2>
+    <h3>动态内容与完整滚动方法</h3>
     <DemoBlock :code="ResizeCode" desc="noresize 关闭自动尺寸监听，此处增加内容后显式调用 update。"
       ><Resize
     /></DemoBlock>

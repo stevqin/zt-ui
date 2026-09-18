@@ -1,10 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ZtInputOtp } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 </script>
 
 <template>
   <div class="otp-examples">
-    <ZtInputOtp model-value="012345" disabled aria-label="禁用验证码" /><ZtInputOtp
+    <ZtInputOtp
+      :status="demoStatus"
+      model-value="012345"
+      disabled
+      aria-label="禁用验证码"
+    /><ZtInputOtp
+      :status="demoStatus"
       model-value="012345"
       readonly
       aria-label="只读验证码"

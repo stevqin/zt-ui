@@ -1,16 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ref } from 'vue';
-import { ZtMenu, ZtSlider, ZtSwitch, ZtSelect } from '@ztechjs/zt-ui';
+import { ZtMenu, ZtSlider, ZtSwitch } from '@ztechjs/zt-ui';
 import type { ZtMenuItem, ZtMenuStatus } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 const selected = ref('orders'),
   active = ref('commerce'),
   collapsed = ref(false),
-  width = ref<number | string>(312),
-  status = ref<ZtMenuStatus>('primary');
-const statuses = ['default', 'primary', 'success', 'warning', 'danger', 'info'].map((value) => ({
-  label: value,
-  value,
-}));
+  width = ref<number | string>(312);
 const items: ZtMenuItem[] = [
   {
     key: 'commerce',
@@ -80,13 +77,7 @@ const items: ZtMenuItem[] = [
 </script>
 <template>
   <div class="menu-config">
-    <ZtSelect
-      v-model="status"
-      :options="statuses"
-      aria-label="菜单主题颜色"
-      size="small"
-      style="width: 140px"
-    /><ZtSwitch v-model="collapsed" active-text="折叠菜单" /><label
+    <ZtSwitch v-model="collapsed" active-text="折叠菜单" /><label
       >基准宽度 {{ width }}px<ZtSlider
         :model-value="Number(width)"
         @update:model-value="
@@ -109,7 +100,7 @@ const items: ZtMenuItem[] = [
       v-model:width="width"
       :items="items"
       mode="double"
-      :status="status"
+      :status="demoStatus"
       :min-width="220"
       :max-width="560"
       collapsible
@@ -120,7 +111,9 @@ const items: ZtMenuItem[] = [
     <div class="menu-workspace__content">
       <span>工作空间</span><strong>{{ selected }}</strong>
       <p>左栏选择业务模块，右栏完成具体导航。</p>
-      <small>可拖动菜单右边缘改变宽度；折叠后点击模块打开浮层，选中子菜单后自动收起。</small>
+      <small
+        >可拖动菜单右边缘改变宽度；折叠后点击模块打开浮层，选中子菜单后自动收起。</small
+      >
     </div>
   </div>
 </template>

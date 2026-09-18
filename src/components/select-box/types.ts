@@ -21,6 +21,8 @@ export type ZtSelectBoxRemoteMethod = (
 ) => Promise<ZtSelectBoxRemoteResult>
 
 export interface ZtSelectBoxProps {
+  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */
+  underline?: boolean
   /** 已确认的选项值；面板草稿只在确定时提交。 */
   modelValue?: ZtSelectValue[]
   options?: ZtSelectOption[]

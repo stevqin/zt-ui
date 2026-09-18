@@ -1,16 +1,28 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtCheckboxStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtCheckbox, ZtCheckboxGroup } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtCheckboxStatus>('primary');
 const selected = ref(['设计']),
   message = ref('');
 </script>
 
 <template>
   <div class="example-stack">
-    <ZtCheckboxGroup v-model="selected" :min="1" :max="2" @change="message = JSON.stringify($event)"
-      ><ZtCheckbox v-for="item in ['设计', '开发', '测试']" :key="item" :value="item">{{
-        item
-      }}</ZtCheckbox></ZtCheckboxGroup
+    <ZtCheckboxGroup
+      :status="demoStatus"
+      v-model="selected"
+      :min="1"
+      :max="2"
+      @change="message = JSON.stringify($event)"
+      ><ZtCheckbox
+        :status="demoStatus"
+        v-for="item in ['设计', '开发', '测试']"
+        :key="item"
+        :value="item"
+        >{{ item }}</ZtCheckbox
+      ></ZtCheckboxGroup
     >
     <p>至少选择 1 项、最多 2 项。当前：{{ selected }}</p>
     <p role="status">最近 change：{{ message }}</p>

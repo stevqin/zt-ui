@@ -25,6 +25,7 @@ vi.mock('@visactor/vue-vtable', () => ({
 
 import ZtVTableGrid from '../src/components/vtable-grid/ZtVTableGrid.vue'
 import { ZtConfigProvider } from '../src/components/config-provider'
+import ZtModal from '../src/components/modal/ZtModal.vue'
 
 type Row = { id: number; name: string; amount: number }
 const columns = [
@@ -340,6 +341,28 @@ describe('ZtVTableGrid', () => {
     expect(wrapper.emitted('action')?.[0]?.[0]).toMatchObject({ type: 'delete', row: rows[0] })
   })
 
+  it('keeps column settings inside the parent modal focus scope and restores its trigger on Escape', async () => {
+    const wrapper = mount(ZtModal, {
+      attachTo: document.body,
+      props: { modelValue: true },
+      slots: { default: () => h(ZtVTableGrid, { columns, records: rows, columnSettings: true, toolbar: ['columnsetting'], pagination: false }) },
+    })
+    try {
+      await flushPromises()
+      const trigger = document.querySelector<HTMLButtonElement>('button[aria-label="列设置"]')!
+      trigger.click()
+      await nextTick()
+      const panel = document.querySelector<HTMLElement>('[role="dialog"][aria-label="列设置"]')!
+      const checkbox = panel.querySelector<HTMLInputElement>('input[type=checkbox]')!
+      checkbox.focus()
+      checkbox.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }))
+      await nextTick()
+      expect(document.querySelector('[role="dialog"][aria-label="列设置"]')).toBeNull()
+      expect(document.activeElement).toBe(trigger)
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    } finally { wrapper.unmount() }
+  })
+
   it('changes column visibility and order through the settings panel', async () => {
     const wrapper = mount(ZtVTableGrid<Row>, {
       props: { columns, records: rows, columnSettings: true, toolbar: ['columnsetting'], pagination: false },
@@ -348,7 +371,7 @@ describe('ZtVTableGrid', () => {
     await wrapper.get('[aria-label="列设置"]').trigger('click')
     const panel = wrapper.get('[role="dialog"][aria-label="列设置"]')
     expect(panel.text()).toContain('名称')
-    await panel.get('[aria-label="隐藏金额列"]').get('.zt-checkbox__input').trigger('click')
+    await panel.get('[aria-label="隐藏金额列"]').get('input[type=checkbox]').setValue(false)
     expect(wrapper.emitted('column-settings-change')).toHaveLength(1)
     expect(tableMock.updateColumns).toHaveBeenCalled()
     expect((wrapper.vm as any).exportCsv()).not.toContain('金额')

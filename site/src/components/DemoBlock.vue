@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, ref, useId } from 'vue'
+import { injectDemoStatus } from '../docs/demo-status'
+import { renderExampleSource } from '../../scripts/render-example-source.mjs'
 
 const props = defineProps<{
   code: string
   desc?: string
   codeOnly?: boolean
 }>()
+
+const statusContext = injectDemoStatus()
+const displayedCode = computed(() => renderExampleSource(props.code, statusContext?.status.value))
 
 const sourceId = `demo-source-${useId()}`
 const expanded = ref(props.codeOnly ?? false)
@@ -37,8 +42,8 @@ function fallbackCopy(value: string) {
 async function copyCode() {
   if (resetTimer) clearTimeout(resetTimer)
   try {
-    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(props.code)
-    else fallbackCopy(props.code)
+    if (navigator.clipboard?.writeText) await navigator.clipboard.writeText(displayedCode.value)
+    else fallbackCopy(displayedCode.value)
     copyState.value = 'copied'
   } catch {
     copyState.value = 'failed'
@@ -129,7 +134,7 @@ onBeforeUnmount(() => {
         <div class="doc-demo__source-head">
           <span class="doc-demo__language">Vue + TypeScript</span>
         </div>
-        <pre><code>{{ code }}</code></pre>
+        <pre><code>{{ displayedCode }}</code></pre>
       </div>
     </Transition>
   </div>

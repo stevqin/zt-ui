@@ -1,7 +1,16 @@
 import { mount } from '@vue/test-utils'
-import { describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { compile } from 'sass'
 import { buildPagerItems } from '../src/components/pagination/pagination'
 import ZtPagination from '../src/components/pagination/ZtPagination.vue'
+
+let styles: HTMLStyleElement
+beforeAll(() => {
+  styles = document.createElement('style')
+  styles.textContent = compile('src/components/pagination/pagination.scss').css
+  document.head.append(styles)
+})
+afterAll(() => styles.remove())
 
 describe('buildPagerItems', () => {
   it('returns every page when the page count fits', () => {
@@ -16,6 +25,34 @@ describe('buildPagerItems', () => {
 })
 
 describe('ZtPagination', () => {
+  it.each([
+    ['mini', '78px', '4px', '18px'],
+    ['small', '84px', '5px', '19px'],
+    ['default', '90px', '6px', '20px'],
+    ['medium', '100px', '7px', '22px'],
+    ['large', '128px', '9px', '24px'],
+  ] as const)('sizes the page-size selector for the %s density', (size, width, padding, end) => {
+    const wrapper = mount(ZtPagination, {
+      attachTo: document.body,
+      props: { total: 1000, size, pageSizes: [10, 20, 50, 100, 200, 500], layout: 'sizes' },
+    })
+    try {
+      expect(getComputedStyle(wrapper.get('.zt-pagination').element).getPropertyValue('--zt-pagination-size-select-width').trim()).toBe(width)
+      const css = getComputedStyle(wrapper.get('.zt-pagination__sizes').element)
+      expect(css.width).toBe(width)
+      expect(css.getPropertyValue('--zt-select-padding').trim()).toBe(padding)
+      expect(css.getPropertyValue('--zt-select-end').trim()).toBe(end)
+    } finally { wrapper.unmount() }
+  })
+
+  it('uses size as the sole density prop', () => {
+    const wrapper = mount(ZtPagination, {
+      props: { total: 30, size: 'large', small: true, layout: 'pager' } as any,
+    })
+
+    expect(wrapper.classes()).toContain('zt-pagination--large')
+  })
+
   it.each([
     { label: '下一页', target: '3' },
     { label: '上一页', target: '1' },

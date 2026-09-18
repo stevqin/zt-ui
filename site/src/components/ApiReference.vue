@@ -12,10 +12,10 @@ const sections = [
 ];
 </script>
 <template>
-  <section v-if="document" id="api" class="api-reference">
+  <section v-if="document" id="api" class="api-reference" aria-labelledby="api-title">
     <div class="api-reference__intro">
       <span>PUBLIC INTERFACE</span>
-      <h2>API</h2>
+      <h2 id="api-title">API</h2>
       <p>名称、默认行为与类型均由组件源码和经过校验的文档元数据生成。</p>
     </div>
     <section
@@ -58,9 +58,10 @@ const sections = [
       id="types"
       class="api-types"
       data-api-section="types"
+      aria-labelledby="types-title"
     >
       <div class="api-section__title">
-        <h3>Types</h3>
+        <h3 id="types-title">Types</h3>
         <span>类型声明</span>
       </div>
       <details

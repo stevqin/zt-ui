@@ -1,32 +1,20 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
+import { ref } from 'vue';
 import {
   ZtDatePickerPanel,
   type ZtEntryStatus,
   type ZtDatePickerValue,
 } from '@ztechjs/zt-ui';
-const statuses: ZtEntryStatus[] = [
-  'default',
-  'primary',
-  'success',
-  'warning',
-  'danger',
-  'info',
-];
-const values = reactive<ZtDatePickerValue[]>([
-  '2026-09-17',
-  '2026-09-17',
-  '2026-09-17',
-  '2026-09-17',
-  '2026-09-17',
-  '2026-09-17',
-]);
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
+const value = ref<ZtDatePickerValue>('2026-09-17');
 </script>
 <template>
   <div class="status-demo">
-    <div v-for="(status, i) in statuses" :key="status">
-      <p>{{ status }}</p>
-      <ZtDatePickerPanel v-model="values[i]" :status="status" />
+    <div>
+      <p>{{ demoStatus }}</p>
+      <ZtDatePickerPanel v-model="value" :status="demoStatus" />
     </div>
   </div>
 </template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { hierarchyStyle } from '../tree/appearance';
-import { computed, inject, ref, nextTick, watch, onBeforeUnmount } from 'vue';
+import { toRef, computed, inject, ref, nextTick, watch, onBeforeUnmount } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
 import ZtPopover from '../popover/ZtPopover.vue';
@@ -11,8 +11,8 @@ import type { ZtTreeKey, ZtTreeNode } from '../tree/types';
 import type { ZtTreeSelectProps, ZtTreeSelectValue } from './types';
 import './tree-select.scss';
 defineOptions({ name: 'ZtTreeSelect' });
-const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtTreeSelectProps>(), {
+  underline: undefined,
   modelValue: null,
   data: () => [],
   checkStrategy: 'all',
@@ -21,6 +21,7 @@ const props = withDefaults(defineProps<ZtTreeSelectProps>(), {
   teleported: true,
   clearable: false,
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: ZtTreeSelectValue];
   change: [value: ZtTreeSelectValue];

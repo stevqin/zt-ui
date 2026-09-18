@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { entryStatusStyle } from '../autocomplete/status';
-import { computed, inject, ref, useId, watch, nextTick, useAttrs } from 'vue';
+import { toRef, computed, inject, ref, useId, watch, nextTick, useAttrs } from 'vue';
 import { ZtInput } from '../input';
 import { ZtPopover } from '../popover';
 import { ztFormItemKey } from '../form/context';
@@ -9,8 +9,8 @@ import { useSuggestions } from './suggestions';
 import type { ZtAutocompleteOption, ZtAutocompleteProps } from './types';
 import './entry.scss';
 defineOptions({ name: 'ZtAutocomplete', inheritAttrs: false });
-const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtAutocompleteProps>(), {
+  underline: undefined,
   status: 'primary',
   modelValue: '',
   options: () => [],
@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<ZtAutocompleteProps>(), {
   readonly: false,
   placeholder: '请输入',
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: string];
   change: [value: string];

@@ -9,14 +9,12 @@ import FallbacksCode from './Fallbacks.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Avatar 头像</h1>
-    <p>显示人物或实体头像，图片失败时按插槽、图标、文字首字和默认图标依次后备。</p>
-    <h2>尺寸与形状</h2>
+  <div class="component-examples">
+    <h3>尺寸与形状</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>状态与后备</h2>
+    <h3>状态与后备</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
-    <h2>插槽、图标与图片适应</h2>
+    <h3>插槽、图标与图片适应</h3>
     <DemoBlock :code="FallbacksCode" desc=""><Fallbacks /></DemoBlock>
   </div>
 </template>

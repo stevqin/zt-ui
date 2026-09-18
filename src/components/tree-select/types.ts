@@ -8,6 +8,8 @@ import type {
 } from '../tree/types';
 export type ZtTreeSelectValue = ZtTreeKey | ZtTreeKey[] | null;
 export interface ZtTreeSelectProps {
+  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */
+  underline?: boolean;
   /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */
   status?: ZtButtonStatus;
   /** 单选为 key 或 null；多选为 key 数组；清空分别发出 null 或 []。 */

@@ -36,7 +36,7 @@ function pointerAndFocus(w: VueWrapper) {
 }
 
 describe('date and time Form underline boundaries', () => {
-  it.each(controls)('%s marks its public root and reacts to Form changes without adding an API', async (_, component, root, surface) => {
+  it.each(controls)('%s marks its public root and reacts to Form changes while keeping its public API', async (_, component, root, surface) => {
     const w = form(component)
     expect(w.get(root).classes()).toContain('is-form-underline')
     expect(w.findAll('.is-form-underline')).toHaveLength(1)
@@ -48,7 +48,7 @@ describe('date and time Form underline boundaries', () => {
     await w.setProps({ underline: false })
     expect(w.find('.is-form-underline').exists()).toBe(false)
     expect(css(w, surface).borderTopWidth).toBe('1px')
-    expect('underline' in component.props).toBe(false)
+    expect('underline' in component.props).toBe(true)
   })
 
   it.each(controls)('%s preserves all five heights while focused and opened', async (_, component, root, surface, panel) => {
@@ -74,7 +74,7 @@ describe('date and time Form underline boundaries', () => {
   })
 
   it.each(controls)('%s keeps disabled lines dashed and cannot open', async (_, component, _root, surface, panel) => {
-    const w = form(component, {}, { disabled: true }, { prop: 'value', error: '错误' })
+    const w = form(component, { underline: true }, { disabled: true, underline: false }, { prop: 'value', error: '错误' })
     expect(w.get('input').attributes('disabled')).toBeDefined()
     expect(css(w, surface).borderBottomStyle).toBe('dashed')
     expect(css(w, surface).backgroundColor).toBe('transparent')
@@ -86,7 +86,7 @@ describe('date and time Form underline boundaries', () => {
 
   it.each(controls)('%s keeps validation color on nested hover, focus and open', async (_, component, _root, surface) => {
     for (const [state, color] of [['error', '#ef4444'], ['success', '#22c55e']] as const) {
-      const w = form(component, {}, { model: { value: 'ok' } }, { prop: 'value', required: true, ...(state === 'error' ? { error: '错误' } : {}) })
+      const w = form(component, { underline: true }, { underline: false, model: { value: 'ok' } }, { prop: 'value', required: true, ...(state === 'error' ? { error: '错误' } : {}) })
       if (state === 'success') await w.vm.validate()
       w.findAll('div').forEach(el => el.element.classList.add('test-hover'))
       expect(css(w, surface).borderBottomColor).toBe(color)
@@ -160,4 +160,29 @@ describe('date and time Form underline boundaries', () => {
     const select = w.getComponent(ZtSelect)
     expect(select.vm.$attrs.class).toContain('is-form-underline')
   })
+})
+
+it.each(controls)('%s explicit false restores the outlined surface inside an underline Form', (_, component, _root, surface) => {
+  const w = form(component, { underline: false })
+  expect(w.find('.is-form-underline').exists()).toBe(false)
+  expect(css(w, surface).borderTopWidth).toBe('1px')
+})
+
+it.each(controls)('%s local override leaves open popup surfaces unchanged', async (_, component, _root, _surface, panel) => {
+  const w = mount(component, { attachTo: document.body, props: { underline: true } })
+  wrappers.push(w)
+  w.vm.open()
+  await flushPromises()
+  const popup = document.querySelector(panel)!
+  expect(popup).not.toBeNull()
+  const snapshot = () => [popup, ...popup.querySelectorAll('input, button')].map(el => {
+    const s = getComputedStyle(el)
+    return [s.borderTopWidth, s.borderRadius, s.backgroundColor, s.boxShadow]
+  })
+  const before = snapshot()
+  await w.setProps({ underline: false })
+  expect(snapshot()).toEqual(before)
+  await w.setProps({ underline: undefined })
+  expect(snapshot()).toEqual(before)
+  expect(popup.querySelector('.is-form-underline')).toBeNull()
 })

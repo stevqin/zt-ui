@@ -1,30 +1,17 @@
 <script setup lang="ts">
-import { reactive } from 'vue';
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import { ref } from 'vue';
 import { ZtAutocomplete, type ZtEntryStatus } from '@ztechjs/zt-ui';
-const statuses: ZtEntryStatus[] = [
-  'default',
-  'primary',
-  'success',
-  'warning',
-  'danger',
-  'info',
-];
-const values = reactive<string[]>([
-  '设计',
-  '设计',
-  '设计',
-  '设计',
-  '设计',
-  '设计',
-]);
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
+const value = ref<string>('设计');
 </script>
 <template>
   <div class="status-demo">
-    <div v-for="(status, i) in statuses" :key="status">
-      <p>{{ status }}</p>
+    <div>
+      <p>{{ demoStatus }}</p>
       <ZtAutocomplete
-        v-model="values[i]"
-        :status="status"
+        v-model="value"
+        :status="demoStatus"
         :options="[{ value: '设计' }, { value: '研发' }]"
       />
     </div>

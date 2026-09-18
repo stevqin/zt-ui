@@ -7,12 +7,10 @@ import DirectionsCode from './Directions.vue?raw';
 </script>
 
 <template>
-  <div class="doc-section">
-    <h1>Descriptions 描述列表</h1>
-    <p>按标签和值展示结构化详情，窄屏时自动切换为单列。</p>
-    <h2>带边框的详情</h2>
+  <div class="component-examples">
+    <h3>带边框的详情</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
-    <h2>布局、列数与标签插槽</h2>
+    <h3>布局、列数与标签插槽</h3>
     <DemoBlock :code="DirectionsCode" desc=""><Directions /></DemoBlock>
   </div>
 </template>
