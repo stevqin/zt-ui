@@ -232,3 +232,44 @@
   .zt-select-box-panel *::before,
   .zt-select-box-panel *::after { transition: none !important; }
 }
+
+.zt-select-box {
+  @include glass.tokens;
+  position: relative;
+  display: inline-flex;
+  width: 240px;
+  max-width: 100%;
+  --select-box-control-height: 36px;
+  --select-box-trigger-gap: 6px;
+  font-size: var(--glass-size-default);
+  &--mini { --select-box-trigger-gap: 4px; --select-box-control-height: 28px; font-size: var(--glass-size-mini); }
+  &--small { --select-box-trigger-gap: 5px; --select-box-control-height: 32px; font-size: var(--glass-size-small); }
+  &--medium { --select-box-trigger-gap: 7px; --select-box-control-height: 40px; font-size: var(--glass-size-medium); }
+  &--large { --select-box-trigger-gap: 8px; --select-box-control-height: 44px; font-size: var(--glass-size-large); }
+  &__trigger {
+    display: flex;
+    align-items: center;
+    gap: var(--select-box-trigger-gap);
+    width: 100%;
+    min-width: 0;
+    height: var(--select-box-control-height);
+    padding: 0 12px;
+    border: 1px solid var(--zt-border, var(--glass-default-line));
+    border-radius: glass.radius(6px);
+    background: var(--zt-surface, #fff);
+    color: var(--zt-text, var(--glass-default-ink));
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+  }
+  &__trigger:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: 2px; }
+  &.is-open &__trigger { border-color: var(--glass-accent); }
+  &.is-disabled &__trigger { cursor: not-allowed; opacity: .55; }
+  &__summary { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &__summary.is-placeholder { color: var(--zt-text-muted, var(--glass-muted)); }
+  &__arrow { flex: 0 0 auto; color: var(--zt-text-muted, var(--glass-muted)); }
+  &:has(&__clear) &__trigger { padding-right: 36px; }
+  &__clear { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: inline-flex; align-items: center; justify-content: center; padding: 3px; border: 0; background: var(--zt-surface, #fff); color: var(--zt-text-muted, var(--glass-muted)); cursor: pointer; }
+  &__clear:focus-visible { outline: 2px solid var(--glass-accent); }
+  &__popup { @include glass.tokens; overflow: auto; box-sizing: border-box; border: 1px solid var(--zt-border, var(--glass-default-line)); border-radius: glass.radius(6px); background: var(--zt-surface, #fff); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); }
+}

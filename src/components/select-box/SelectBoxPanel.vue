@@ -27,6 +27,7 @@ const props = withDefaults(defineProps<{
   failed?: boolean
   remote?: boolean
   batchLoading?: boolean
+  total?: number
   page?: number
   pageSize?: number
   pageSizes?: number[]
@@ -72,30 +73,37 @@ const filtered = computed(() => {
   const query = keyword.value.trim().toLocaleLowerCase()
   return source.filter(option => (props.remote && !selectedOnly.value) || option.label.toLocaleLowerCase().includes(query))
 })
-const pageCount = computed(() => Math.max(1, Math.ceil(filtered.value.length / pageSize.value)))
-const current = computed(() => filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
+const serverPaged = computed(() => props.remote && !selectedOnly.value)
+const total = computed(() => serverPaged.value ? Math.max(0, props.total ?? 0) : filtered.value.length)
+const pageCount = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)))
+const current = computed(() => serverPaged.value ? filtered.value : filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
 const available = computed(() => current.value.filter(option => !option.disabled))
 const all = computed(() => available.value.length > 0 && available.value.every(option => values.value.includes(option.value)))
 const some = computed(() => !all.value && available.value.some(option => values.value.includes(option.value)))
 const listBlocked = computed(() => props.disabled || (!selectedOnly.value && (props.loading || props.failed)))
 
+let changingPageSize = false
 function changePage(next: number) {
+  if (changingPageSize) return
   const normalized = Math.max(1, Math.min(pageCount.value, Math.floor(next) || 1))
   if (normalized === page.value) return
   page.value = normalized
-  emit('update:page', normalized)
+  if (!props.remote || !selectedOnly.value) emit('update:page', normalized)
 }
 function changePageSize(next: number) {
   const normalized = normalizePageSize(next)
   if (normalized === pageSize.value) return
+  changingPageSize = true
   pageSize.value = normalized
-  changePage(1)
+  page.value = 1
   emit('update:pageSize', normalized)
+  void nextTick(() => { changingPageSize = false })
 }
-watch(() => props.page, next => { if (next !== undefined) changePage(next) })
-watch(() => props.pageSize, next => changePageSize(normalizePageSize(next)))
-watch([keyword, selectedOnly], () => changePage(1))
-watch(pageCount, () => changePage(page.value), { immediate: true })
+watch(() => props.page, next => { if (next !== undefined && !selectedOnly.value) page.value = next })
+watch(() => props.pageSize, next => { pageSize.value = normalizePageSize(next); page.value = 1 })
+watch(keyword, () => { page.value = 1 })
+watch(selectedOnly, selected => { page.value = selected ? 1 : props.remote ? (props.page ?? 1) : 1 })
+watch(pageCount, () => { if (!serverPaged.value) changePage(page.value) }, { immediate: true })
 watch([pasteText, separator], () => { pasteResult.value = '' })
 watch(pasteOpen, async open => {
   await nextTick()
@@ -177,7 +185,7 @@ function cancel() {
           </template>
         </ZtLoading>
       </ZtScrollbar>
-      <ZtPagination class="zt-select-box-panel__pager" :current-page="page" :page-size="pageSize" :size="size" :disabled="disabled" :total="filtered.length" :page-sizes="pageSizes" :pager-count="5" layout="prev, pager, next, sizes, total" @update:current-page="changePage" @update:page-size="changePageSize" />
+      <ZtPagination class="zt-select-box-panel__pager" :current-page="page" :page-size="pageSize" :size="size" :disabled="disabled" :total="total" :page-sizes="pageSizes" :pager-count="5" layout="prev, pager, next, sizes, total" @update:current-page="changePage" @update:page-size="changePageSize" />
     </template>
     <div v-else class="zt-select-box-panel__paste">
       <div class="zt-select-box-panel__paste-editor">
