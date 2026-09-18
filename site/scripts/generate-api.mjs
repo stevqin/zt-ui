@@ -1,4 +1,3 @@
-import { serviceApis } from './api/services.mjs';
 import ts from 'typescript';
 import { parse as parseSfc } from 'vue/compiler-sfc';
 import { methods as methodOverrides } from './api-overrides.mjs';
@@ -373,7 +372,6 @@ for (const [id, [dir, ...names]] of Object.entries(config)) {
           metadata.description ?? sharedDescription('exposes', row.name),
       };
     });
-    if (id === 'loading') exposes.push(...serviceApis.loading);
     docs.push({ name, props, events, slots, exposes });
   }
   const types = [...declarations]
@@ -398,75 +396,6 @@ for (const [id, [dir, ...names]] of Object.entries(config)) {
     components: docs,
     types: types.map((t) => ({ ...t, public: publicTypes.has(t.name) })),
     sections,
-  };
-}
-for (const item of expansion.filter((item) => !item.owners.length)) {
-  const owner = 'Zt' + item.name;
-  const declaration = declarations.get(owner + 'Options');
-  if (!declaration) throw new Error('Missing service options ' + owner);
-  const options = checker
-    .getPropertiesOfType(checker.getTypeAtLocation(declaration))
-    .map((symbol) => {
-      const node = symbol.valueDeclaration ?? symbol.declarations[0];
-      const required = !(symbol.flags & ts.SymbolFlags.Optional);
-      const meta = metaFor(item.id, owner, 'props', symbol.name);
-      return {
-        name: symbol.name,
-        templateName: symbol.name,
-        kind: 'prop',
-        type:
-          node.type?.getText() ??
-          checker.typeToString(checker.getTypeOfSymbolAtLocation(symbol, node)),
-        required,
-        default: normalizeDefault({
-          required,
-          defaultValue: meta.defaultValue,
-        }),
-        description:
-          ts.displayPartsToString(symbol.getDocumentationComment(checker)) ||
-          meta.description,
-      };
-    });
-  const service = serviceApis[item.id];
-  const types = [...declarations]
-    .filter(
-      ([, node]) =>
-        node.getSourceFile().fileName ===
-        resolve(root, `src/components/${item.directory}/types.ts`),
-    )
-    .map(([name, node]) => ({
-      name,
-      code: node.getText(),
-      public: publicTypes.has(name),
-    }));
-  const seen = new Set(types.map((type) => type.name));
-  for (let i = 0; i < types.length; i++)
-    for (const ref of types[i].code.match(/\bZt\w+\b/g) ?? [])
-      if (!seen.has(ref) && declarations.has(ref)) {
-        seen.add(ref);
-        types.push({
-          name: ref,
-          code: declarations.get(ref).getText(),
-          public: publicTypes.has(ref),
-        });
-      }
-  const page = readFileSync(
-    resolve(root, `site/src/views/${item.id}/Index.vue`),
-    'utf8',
-  );
-  output[item.id] = {
-    components: [
-      {
-        name: owner,
-        service: true,
-        props: options,
-        events: [],
-        slots: [],
-        exposes: service,
-      },
-    ],
-    types,
-    sections: [...page.matchAll(/<h[23]>([^<]+)<\/h[23]>/g)].map((m) => m[1]),
   };
 }
 const stale = [...metadataKeys].filter((key) => !usedMetadata.has(key));

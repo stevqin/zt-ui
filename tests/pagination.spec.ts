@@ -16,6 +16,46 @@ describe('buildPagerItems', () => {
 })
 
 describe('ZtPagination', () => {
+  it.each([
+    { label: '下一页', target: '3' },
+    { label: '上一页', target: '1' },
+  ])('retains keyboard focus when $label becomes disabled at page $target', async ({ label, target }) => {
+    const wrapper = mount(ZtPagination, { attachTo: document.body, props: { total: 30, currentPage: 2, layout: 'prev, pager, next' } })
+    try {
+      const button = wrapper.find(`[aria-label="${label}"]`)
+      ;(button.element as HTMLButtonElement).focus()
+      await button.trigger('click')
+      expect((button.element as HTMLButtonElement).disabled).toBe(true)
+      expect(document.activeElement).toBe(wrapper.find('[aria-current="page"]').element)
+      expect(document.activeElement?.textContent).toBe(target)
+    } finally { wrapper.unmount() }
+  })
+
+  it('leaves focus on an enabled navigation button during non-boundary paging', async () => {
+    const wrapper = mount(ZtPagination, { attachTo: document.body, props: { total: 40, currentPage: 2, layout: 'prev, pager, next' } })
+    try {
+      const button = wrapper.find('[aria-label="下一页"]')
+      ;(button.element as HTMLButtonElement).focus()
+      await button.trigger('click')
+      expect(document.activeElement).toBe(button.element)
+    } finally { wrapper.unmount() }
+  })
+
+  it.each([false, true])('does not steal outside focus during boundary paging (previously focused=%s)', async focused => {
+    const wrapper = mount(ZtPagination, { attachTo: document.body, props: { total: 20, layout: 'prev, pager, next' } })
+    const outside = document.createElement('input')
+    document.body.append(outside)
+    try {
+      const button = wrapper.find('[aria-label="下一页"]')
+      if (focused) (button.element as HTMLButtonElement).focus()
+      else outside.focus()
+      const update = button.trigger('click')
+      outside.focus()
+      await update
+      expect(document.activeElement).toBe(outside)
+    } finally { wrapper.unmount(); outside.remove() }
+  })
+
   it('renders configured layout modules and page count from total', () => {
     const wrapper = mount(ZtPagination, {
       global: { stubs: { teleport: true } },

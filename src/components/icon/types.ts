@@ -6,6 +6,7 @@ export const ztIconNames = [
   'chevron-up','chevron-right','chevron-down','chevron-left',
   'arrow-up','arrow-right','arrow-down','arrow-left','more','user','image',
   'upload','download','calendar','edit','delete','home','settings','refresh','visibility',
+  'clipboard','checklist','filter-list',
 ] as const
 export type ZtIconName = typeof ztIconNames[number]
 export type ZtIconStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'

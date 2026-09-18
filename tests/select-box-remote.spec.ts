@@ -270,6 +270,41 @@ const eastMatch = { keyword: '华东', option: options[0]! }
 const southMatch = { keyword: '华南', option: options[1]! }
 
 describe('SelectBox batch confirmation', () => {
+  it('keeps focused confirmation inside the panel while batch loading disables the button', async () => {
+    const pending = deferred()
+    const w = box({ remote: true, remoteMethod: vi.fn().mockResolvedValueOnce(result('页面')).mockImplementationOnce(() => pending.promise) })
+    await open(w); await enterPaste(w, '华东\n华南')
+    const confirm = document.querySelector<HTMLButtonElement>('.zt-select-box-panel__confirm')!
+    confirm.focus()
+    await click('.zt-select-box-panel__confirm')
+    expect(confirm.disabled).toBe(true)
+    expect(document.activeElement).not.toBe(confirm)
+    expect(popup()?.contains(document.activeElement)).toBe(true)
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    pending.resolve(batch([eastMatch, southMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toEqual([[['east', 'south']]])
+    expect(ZtMessage.success).toHaveBeenCalledWith('批量粘贴 2 项，匹配 2 项，已自动勾选 2 项')
+    expect(popup()).toBeNull()
+    expect(document.activeElement).toBe(trigger(w).element)
+  })
+
+  it('allows genuine outside focus to cancel a pending batch without restoring it later', async () => {
+    const pending = deferred()
+    const w = box({ remote: true, remoteMethod: vi.fn().mockResolvedValueOnce(result('页面')).mockImplementationOnce(() => pending.promise) })
+    const outside = document.createElement('input')
+    document.body.append(outside)
+    await open(w); await enterPaste(w, '华东')
+    document.querySelector<HTMLButtonElement>('.zt-select-box-panel__confirm')!.focus()
+    await click('.zt-select-box-panel__confirm')
+    outside.focus(); await flushPromises()
+    expect(popup()).toBeNull()
+    expect(document.activeElement).toBe(outside)
+    pending.resolve(batch([eastMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    expect(ZtMessage.success).not.toHaveBeenCalled()
+    expect(document.activeElement).toBe(outside)
+  })
+
   it.each([false, true])('commits full matches with identical feedback (remote=%s)', async remote => {
     const remoteMethod = vi.fn().mockResolvedValueOnce(result('搜索页')).mockResolvedValueOnce(batch([eastMatch, southMatch]))
     const w = box({ remote, remoteMethod })

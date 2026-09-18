@@ -48,4 +48,10 @@ describe('Icon', () => {
       expect(warn.mock.calls[0]?.[0]).toContain('missing')
     } finally { warn.mockRestore() }
   })
+
+  it.each(['clipboard', 'checklist', 'filter-list'] as const)('exports the %s SelectBox icon', (name) => {
+    const wrapper = mount(ZtIcon, { props: { name } })
+    expect(wrapper.find('svg').exists()).toBe(true)
+    expect(wrapper.findAll('path').length).toBeGreaterThan(0)
+  })
 })

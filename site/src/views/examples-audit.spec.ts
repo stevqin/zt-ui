@@ -1,7 +1,7 @@
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { components } from '../docs/catalog'
+import { components, componentPlan, guides } from '../docs/catalog'
 import { api } from '../docs/reference'
 // @ts-expect-error Node-only audit script is shared with the build gate.
 import { inspectExamples } from '../../scripts/audit-examples.mjs'
@@ -20,7 +20,7 @@ function sourceFor(id: string) {
 describe('complete and executable documentation examples', () => {
   it('audits every published component, not a handpicked subset', () => {
     expect(audit.pages.map((p) => p.component).sort()).toEqual(
-      components.map((c) => c.path.slice(1)).sort(),
+      [...components.map((c) => c.path.slice(1)), 'feedback'].sort(),
     )
     expect(audit.errors).toEqual([])
   })
@@ -94,6 +94,48 @@ describe('complete and executable documentation examples', () => {
     for (const tag of source.match(/<ZtSelect\b[^>]*>/g) ?? [])
       expect(tag).toMatch(/\saria-(?:label|labelledby)="[^"]+"/)
     expect(source).toContain('option.label')
+  })
+  it('documents standalone SelectBox paging, batch matching, clear and configuration', () => {
+    const source = sourceFor('select-box')
+    for (const feature of [
+      'ZtSelectBoxRemoteRequest', 'ZtSelectBoxRemoteResult',
+      "request.mode === 'batch'", 'request.keywords', 'request.keyword',
+      'request.page', 'request.pageSize', "mode: 'search'", "mode: 'batch'",
+      'const pageSize = ref(20)', 'v-model:page-size="pageSize"',
+      'clearable', '.clear()', '#option', ':width=', 'width="100%"',
+      'ZtConfigProvider', 'border-radius', 'mini', 'small', 'default', 'medium', 'large',
+      'light', 'dark',
+    ]) expect(source, feature).toContain(feature)
+    const page = readFileSync(resolve(process.cwd(), 'src/views/select-box/Index.vue'), 'utf8')
+    expect(page).toContain('部分匹配')
+    expect(page).toContain('@ztechjs/zt-alert')
+    const document = api['select-box']
+    expect(document.types.map(type => type.name)).toEqual(expect.arrayContaining([
+      'ZtSelectBoxRemoteRequest', 'ZtSelectBoxRemoteResult',
+    ]))
+    expect(document.components[0].props.map(prop => prop.name)).toEqual(expect.arrayContaining([
+      'pageSize', 'pageSizes', 'clearable',
+    ]))
+    expect(document.components[0].exposes.map(method => method.name)).toContain('clear')
+  })
+  it('owns only declarative feedback and links to the external command API guide', () => {
+    const guidePath = resolve(process.cwd(), 'src/views/feedback/Index.vue')
+    expect(existsSync(guidePath)).toBe(true)
+    const guide = readFileSync(guidePath, 'utf8')
+    expect(guide).toContain('https://www.npmjs.com/package/@ztechjs/zt-alert')
+    expect(guide).toContain('npm install @ztechjs/zt-alert')
+    expect(guide).toContain('声明式')
+    expect(sourceFor('feedback')).toMatch(/import\s*\{[^}]*ZtMessage[^}]*\}\s*from\s*['"]@ztechjs\/zt-alert['"]/s)
+    expect(sourceFor('feedback')).toContain("import '@ztechjs/zt-alert/style.css'")
+    expect(guides.some(guide => guide.path === '/feedback')).toBe(true)
+    expect(components.some(component => component.path === '/feedback')).toBe(false)
+    for (const id of ['message', 'notification', 'message-box']) {
+      expect(existsSync(resolve(process.cwd(), 'src/views', id))).toBe(false)
+      expect(api[id]).toBeUndefined()
+    }
+    expect(componentPlan.some(component => ['Message', 'Notification', 'MessageBox'].includes(component.name))).toBe(false)
+    expect(JSON.stringify(api)).not.toMatch(/ZtMessage|ZtNotification|ZtMessageBox|ZtLoadingService|useZtLoading/)
+    expect(api.loading.components.map(component => component.name)).toEqual(['ZtLoading'])
   })
   it('keeps working table examples complete including simulated query and save', () => {
     const source = sourceFor('vtable-grid')

@@ -5584,16 +5584,6 @@
     ],
     "types": [
       {
-        "name": "ZtSelectValue",
-        "code": "export type ZtSelectValue = string | number | boolean;",
-        "public": true
-      },
-      {
-        "name": "ZtSelectOption",
-        "code": "export interface ZtSelectOption {\n  label: string;\n  value: ZtSelectValue;\n  disabled?: boolean;\n}",
-        "public": true
-      },
-      {
         "name": "ZtSelectModelValue",
         "code": "export type ZtSelectModelValue = ZtSelectValue | ZtSelectValue[] | null;",
         "public": true
@@ -5611,6 +5601,16 @@
       {
         "name": "ZtSelectInstance",
         "code": "export interface ZtSelectInstance {\n  focus: (options?: FocusOptions) => void;\n  blur: () => void;\n  open: () => void;\n  close: () => void;\n}",
+        "public": true
+      },
+      {
+        "name": "ZtSelectValue",
+        "code": "export type ZtSelectValue = string | number | boolean",
+        "public": true
+      },
+      {
+        "name": "ZtSelectOption",
+        "code": "export interface ZtSelectOption {\n  label: string\n  value: ZtSelectValue\n  disabled?: boolean\n}",
         "public": true
       },
       {
@@ -9898,20 +9898,7 @@
             "description": "替换默认旋转加载指示器；加载说明继续通过 text 展示。"
           }
         ],
-        "exposes": [
-          {
-            "name": "ZtLoadingService",
-            "type": "(options?: ZtLoadingProps) => ZtLoadingHandle",
-            "description": "创建全屏加载遮罩，返回 close() 句柄；服务始终启用 loading 和 fullscreen。",
-            "kind": "method"
-          },
-          {
-            "name": "useZtLoading",
-            "type": "() => (options?: ZtLoadingProps) => ZtLoadingHandle",
-            "description": "在 setup 中获取继承 ConfigProvider 的加载服务，随宿主卸载自动清理。",
-            "kind": "method"
-          }
-        ]
+        "exposes": []
       }
     ],
     "types": [
@@ -9921,19 +9908,13 @@
         "public": true
       },
       {
-        "name": "ZtLoadingHandle",
-        "code": "export interface ZtLoadingHandle {\n  close: () => void;\n}",
-        "public": true
-      },
-      {
         "name": "ZtComponentSize",
         "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
         "public": true
       }
     ],
     "sections": [
-      "区域加载",
-      "命令式全屏与自动清理"
+      "区域加载"
     ]
   },
   "tooltip": {
@@ -14332,174 +14313,55 @@
       "配置、交互与边界"
     ]
   },
-  "message": {
+  "select-box": {
     "components": [
       {
-        "name": "ZtMessage",
-        "service": true,
+        "name": "ZtSelectBox",
         "props": [
           {
-            "name": "message",
-            "templateName": "message",
+            "name": "modelValue",
+            "templateName": "model-value",
             "kind": "prop",
-            "type": "string | VNode",
-            "required": true,
-            "default": "必填",
-            "description": "消息文本或 VNode，不解析字符串 HTML。"
-          },
-          {
-            "name": "type",
-            "templateName": "type",
-            "kind": "prop",
-            "type": "ZtMessageType",
+            "type": "ZtSelectValue[]",
             "required": false,
-            "default": "'info'",
-            "description": "反馈类型。"
+            "default": "[]",
+            "description": "已确认的选项值；面板草稿只在确定时提交。"
           },
           {
-            "name": "duration",
-            "templateName": "duration",
+            "name": "options",
+            "templateName": "options",
             "kind": "prop",
-            "type": "number",
+            "type": "ZtSelectOption[]",
             "required": false,
-            "default": "3000",
-            "description": "自动关闭毫秒数；0 不自动关闭。"
+            "default": "[]",
+            "description": "可选项数据；字段结构由对应选项类型声明。"
           },
           {
-            "name": "showClose",
-            "templateName": "showClose",
+            "name": "width",
+            "templateName": "width",
             "kind": "prop",
-            "type": "boolean",
+            "type": "number | string",
             "required": false,
-            "default": "true",
-            "description": "是否显示关闭按钮。"
+            "default": "无默认值",
+            "description": "选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。"
           },
           {
-            "name": "grouping",
-            "templateName": "grouping",
+            "name": "disabled",
+            "templateName": "disabled",
             "kind": "prop",
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "相同文本及类型合并并重新计时。"
+            "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
-            "name": "size",
-            "templateName": "size",
-            "kind": "prop",
-            "type": "ZtComponentSize",
-            "required": false,
-            "default": "无默认值",
-            "description": "显式全局尺寸。"
-          },
-          {
-            "name": "style",
-            "templateName": "style",
-            "kind": "prop",
-            "type": "CSSProperties",
-            "required": false,
-            "default": "无默认值",
-            "description": "独立调用时的主题变量。"
-          },
-          {
-            "name": "onClose",
-            "templateName": "onClose",
-            "kind": "prop",
-            "type": "() => void",
-            "required": false,
-            "default": "无默认值",
-            "description": "关闭回调。"
-          }
-        ],
-        "events": [],
-        "slots": [],
-        "exposes": [
-          {
-            "name": "ZtMessage",
-            "type": "(options: ZtMessageOptions | string) => ZtMessageHandle",
-            "description": "创建消息；返回 close() 句柄。应用外调用使用默认主题，可通过 options.style 覆盖。",
-            "kind": "method"
-          },
-          {
-            "name": "success / info / warning / error",
-            "type": "(options: ZtMessageOptions | string) => ZtMessageHandle",
-            "description": "以指定反馈类型创建消息，其余选项与 ZtMessage 相同。",
-            "kind": "method"
-          },
-          {
-            "name": "closeAll",
-            "type": "() => void",
-            "description": "关闭当前全部 Message 实例，不影响 Notification。",
-            "kind": "method"
-          },
-          {
-            "name": "useZtMessage",
-            "type": "() => (options: ZtMessageOptions | string) => ZtMessageHandle",
-            "description": "在 setup 中获取继承最近 ConfigProvider 的消息函数；宿主卸载时清理其消息。",
-            "kind": "method"
-          }
-        ]
-      }
-    ],
-    "types": [
-      {
-        "name": "ZtMessageType",
-        "code": "export type ZtMessageType = 'success' | 'info' | 'warning' | 'error';",
-        "public": true
-      },
-      {
-        "name": "ZtMessageOptions",
-        "code": "export interface ZtMessageOptions {\n  /** 消息文本或 VNode，不解析字符串 HTML。 */ message: string | VNode;\n  /** 反馈类型。 */ type?: ZtMessageType;\n  /** 自动关闭毫秒数；0 不自动关闭。 */ duration?: number;\n  /** 是否显示关闭按钮。 */ showClose?: boolean;\n  /** 相同文本及类型合并并重新计时。 */ grouping?: boolean;\n  /** 显式全局尺寸。 */ size?: ZtComponentSize;\n  /** 独立调用时的主题变量。 */ style?: CSSProperties;\n  /** 关闭回调。 */ onClose?: () => void;\n}",
-        "public": true
-      },
-      {
-        "name": "ZtMessageHandle",
-        "code": "export interface ZtMessageHandle {\n  close: () => void;\n}",
-        "public": true
-      },
-      {
-        "name": "ZtComponentSize",
-        "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
-        "public": true
-      }
-    ],
-    "sections": [
-      "类型与全局外观继承",
-      "重复合并与手动关闭"
-    ]
-  },
-  "notification": {
-    "components": [
-      {
-        "name": "ZtNotification",
-        "service": true,
-        "props": [
-          {
-            "name": "title",
-            "templateName": "title",
+            "name": "placeholder",
+            "templateName": "placeholder",
             "kind": "prop",
             "type": "string",
             "required": false,
-            "default": "无默认值",
-            "description": "通知标题。"
-          },
-          {
-            "name": "position",
-            "templateName": "position",
-            "kind": "prop",
-            "type": "ZtNotificationPosition",
-            "required": false,
-            "default": "'top-right'",
-            "description": "屏幕角落位置。"
-          },
-          {
-            "name": "type",
-            "templateName": "type",
-            "kind": "prop",
-            "type": "ZtMessageType",
-            "required": false,
-            "default": "'info'",
-            "description": "反馈类型。"
+            "default": "'请选择'",
+            "description": "当前无值时在输入区域显示的提示文字。"
           },
           {
             "name": "size",
@@ -14507,98 +14369,228 @@
             "kind": "prop",
             "type": "ZtComponentSize",
             "required": false,
-            "default": "无默认值",
-            "description": "显式全局尺寸。"
+            "default": "继承 ConfigProvider（最终为 default）",
+            "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
-            "name": "message",
-            "templateName": "message",
-            "kind": "prop",
-            "type": "string | VNode",
-            "required": true,
-            "default": "必填",
-            "description": "消息文本或 VNode，不解析字符串 HTML。"
-          },
-          {
-            "name": "duration",
-            "templateName": "duration",
-            "kind": "prop",
-            "type": "number",
-            "required": false,
-            "default": "4500",
-            "description": "自动关闭毫秒数；0 不自动关闭。"
-          },
-          {
-            "name": "showClose",
-            "templateName": "showClose",
+            "name": "filterable",
+            "templateName": "filterable",
             "kind": "prop",
             "type": "boolean",
             "required": false,
             "default": "true",
-            "description": "是否显示关闭按钮。"
+            "description": "是否允许输入关键词筛选可选项。"
           },
           {
-            "name": "style",
-            "templateName": "style",
+            "name": "clearable",
+            "templateName": "clearable",
             "kind": "prop",
-            "type": "CSSProperties",
+            "type": "boolean",
             "required": false,
-            "default": "无默认值",
-            "description": "独立调用时的主题变量。"
+            "default": "false",
+            "description": "有已确认值且未禁用时显示清空按钮；即时提交空数组并同步草稿，无需再次确认。"
           },
           {
-            "name": "onClose",
-            "templateName": "onClose",
+            "name": "remote",
+            "templateName": "remote",
             "kind": "prop",
-            "type": "() => void",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "远程搜索返回的结果在面板内分页。"
+          },
+          {
+            "name": "remoteMethod",
+            "templateName": "remote-method",
+            "kind": "prop",
+            "type": "ZtSelectBoxRemoteMethod",
             "required": false,
             "default": "无默认值",
-            "description": "关闭回调。"
+            "description": "按 mode 区分 search 分页查询与 batch 全量精确匹配；返回同 mode 的 options/total 或 matches，具体见远程请求与结果类型。"
+          },
+          {
+            "name": "debounce",
+            "templateName": "debounce",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "300",
+            "description": "触发远程筛选前的防抖等待时间，单位为毫秒。"
+          },
+          {
+            "name": "pageSize",
+            "templateName": "page-size",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "10",
+            "description": "本地与远程模式共用的每页条数；支持 v-model:page-size，变化时回到第 1 页。非正数或非有限值回退到 10，有限小数向下取整。"
+          },
+          {
+            "name": "pageSizes",
+            "templateName": "page-sizes",
+            "kind": "prop",
+            "type": "number[]",
+            "required": false,
+            "default": "[10, 20, 50]",
+            "description": "分页器可选每页条数；过滤非正整数并去重，自动补入当前有效 pageSize。"
+          },
+          {
+            "name": "noDataText",
+            "templateName": "no-data-text",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'暂无匹配选项'",
+            "description": "筛选完成但没有可用选项时显示的文字。"
+          },
+          {
+            "name": "remoteErrorText",
+            "templateName": "remote-error-text",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'加载失败，请重新搜索'",
+            "description": "远程筛选请求失败时显示的文字。"
           }
         ],
-        "events": [],
-        "slots": [],
+        "events": [
+          {
+            "name": "update:modelValue",
+            "type": "(value: ZtSelectValue[]) => void",
+            "description": "双向绑定更新事件，对应 v-model。",
+            "kind": "event"
+          },
+          {
+            "name": "update:pageSize",
+            "type": "(pageSize: number) => void",
+            "description": "双向绑定更新事件，对应 v-model:pageSize。",
+            "kind": "event"
+          },
+          {
+            "name": "change",
+            "type": "(value: ZtSelectValue[]) => void",
+            "description": "用户提交新值后触发；仅程序写入是否触发以组件说明为准。",
+            "kind": "event"
+          },
+          {
+            "name": "visible-change",
+            "type": "(visible: boolean) => void",
+            "description": "弹层显示状态改变后触发。",
+            "kind": "event"
+          },
+          {
+            "name": "search",
+            "type": "(keyword: string) => void",
+            "description": "搜索关键词变化且需要筛选或远程查询时触发。",
+            "kind": "event"
+          },
+          {
+            "name": "clear",
+            "type": "() => void",
+            "description": "用户点击清空操作且值已重置后触发。",
+            "kind": "event"
+          },
+          {
+            "name": "remote-error",
+            "type": "(reason: unknown) => void",
+            "description": "当前远程分页或批量匹配请求失败时触发；过期请求不触发。",
+            "kind": "event"
+          },
+          {
+            "name": "focus",
+            "type": "(event: FocusEvent) => void",
+            "description": "内部可聚焦控件获得焦点时触发。",
+            "kind": "event"
+          },
+          {
+            "name": "blur",
+            "type": "(event: FocusEvent) => void",
+            "description": "内部可聚焦控件失去焦点时触发。",
+            "kind": "event"
+          }
+        ],
+        "slots": [
+          {
+            "name": "option",
+            "type": "{ option: ZtSelectOption; selected: boolean; disabled: boolean }",
+            "kind": "slot",
+            "description": "自定义左侧固定复选框之后的选项内容；点击内容和行空白均切换草稿选择。"
+          }
+        ],
         "exposes": [
           {
-            "name": "ZtNotification",
-            "type": "(options: ZtNotificationOptions) => ZtMessageHandle",
-            "description": "创建通知，返回可手动关闭的句柄。",
-            "kind": "method"
+            "name": "focus",
+            "type": "(options?: FocusOptions) => void",
+            "kind": "method",
+            "description": "将焦点移入组件内部的主要输入控件。"
           },
           {
-            "name": "closeAll",
+            "name": "blur",
             "type": "() => void",
-            "description": "关闭所有 Notification 实例，不影响 Message。",
-            "kind": "method"
+            "kind": "method",
+            "description": "移出组件内部输入焦点。"
           },
           {
-            "name": "useZtNotification",
-            "type": "() => (options: ZtNotificationOptions) => ZtMessageHandle",
-            "description": "setup 中创建继承当前外观、随宿主卸载清理的通知函数。",
-            "kind": "method"
+            "name": "open",
+            "type": "() => void",
+            "kind": "method",
+            "description": "打开面板或弹层。"
+          },
+          {
+            "name": "close",
+            "type": "() => void",
+            "kind": "method",
+            "description": "关闭面板并丢弃未确认草稿，已确认值保持不变。"
+          },
+          {
+            "name": "clear",
+            "type": "() => void",
+            "kind": "method",
+            "description": "立即清空已确认值、草稿和搜索，输出 change 与 clear 并触发表单校验；面板保持原开关状态，焦点回到触发器。"
           }
         ]
       }
     ],
     "types": [
       {
-        "name": "ZtNotificationPosition",
-        "code": "export type ZtNotificationPosition =\n  'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';",
+        "name": "ZtSelectBoxRemoteRequest",
+        "code": "export type ZtSelectBoxRemoteRequest =\n  | { mode: 'search'; keyword: string; page: number; pageSize: number }\n  | { mode: 'batch'; keywords: string[] }",
         "public": true
       },
       {
-        "name": "ZtNotificationOptions",
-        "code": "export interface ZtNotificationOptions extends Omit<\n  ZtMessageOptions,\n  'grouping'\n> {\n  /** 通知标题。 */ title?: string;\n  /** 屏幕角落位置。 */ position?: ZtNotificationPosition;\n}",
+        "name": "ZtSelectBoxBatchMatch",
+        "code": "export interface ZtSelectBoxBatchMatch {\n  keyword: string\n  option: ZtSelectOption\n}",
         "public": true
       },
       {
-        "name": "ZtMessageOptions",
-        "code": "export interface ZtMessageOptions {\n  /** 消息文本或 VNode，不解析字符串 HTML。 */ message: string | VNode;\n  /** 反馈类型。 */ type?: ZtMessageType;\n  /** 自动关闭毫秒数；0 不自动关闭。 */ duration?: number;\n  /** 是否显示关闭按钮。 */ showClose?: boolean;\n  /** 相同文本及类型合并并重新计时。 */ grouping?: boolean;\n  /** 显式全局尺寸。 */ size?: ZtComponentSize;\n  /** 独立调用时的主题变量。 */ style?: CSSProperties;\n  /** 关闭回调。 */ onClose?: () => void;\n}",
+        "name": "ZtSelectBoxRemoteResult",
+        "code": "export type ZtSelectBoxRemoteResult =\n  | { mode: 'search'; options: ZtSelectOption[]; total: number }\n  | { mode: 'batch'; matches: ZtSelectBoxBatchMatch[] }",
         "public": true
       },
       {
-        "name": "ZtMessageType",
-        "code": "export type ZtMessageType = 'success' | 'info' | 'warning' | 'error';",
+        "name": "ZtSelectBoxRemoteMethod",
+        "code": "export type ZtSelectBoxRemoteMethod = (\n  request: ZtSelectBoxRemoteRequest,\n) => Promise<ZtSelectBoxRemoteResult>",
+        "public": true
+      },
+      {
+        "name": "ZtSelectBoxProps",
+        "code": "export interface ZtSelectBoxProps {\n  /** 已确认的选项值；面板草稿只在确定时提交。 */\n  modelValue?: ZtSelectValue[]\n  options?: ZtSelectOption[]\n  /** 选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。 */\n  width?: number | string\n  disabled?: boolean\n  placeholder?: string\n  size?: ZtComponentSize\n  filterable?: boolean\n  clearable?: boolean\n  /** 远程搜索返回的结果在面板内分页。 */\n  remote?: boolean\n  remoteMethod?: ZtSelectBoxRemoteMethod\n  debounce?: number\n  pageSize?: number\n  pageSizes?: number[]\n  noDataText?: string\n  remoteErrorText?: string\n}",
+        "public": true
+      },
+      {
+        "name": "ZtSelectBoxInstance",
+        "code": "export interface ZtSelectBoxInstance {\n  focus: (options?: FocusOptions) => void\n  blur: () => void\n  open: () => void\n  close: () => void\n  clear: () => void\n}",
+        "public": true
+      },
+      {
+        "name": "ZtSelectOption",
+        "code": "export interface ZtSelectOption {\n  label: string\n  value: ZtSelectValue\n  disabled?: boolean\n}",
+        "public": true
+      },
+      {
+        "name": "ZtSelectValue",
+        "code": "export type ZtSelectValue = string | number | boolean",
         "public": true
       },
       {
@@ -14608,136 +14600,10 @@
       }
     ],
     "sections": [
-      "四角位置",
-      "自定义操作与持久通知"
-    ]
-  },
-  "message-box": {
-    "components": [
-      {
-        "name": "ZtMessageBox",
-        "service": true,
-        "props": [
-          {
-            "name": "title",
-            "templateName": "title",
-            "kind": "prop",
-            "type": "string",
-            "required": false,
-            "default": "无默认值",
-            "description": "对话框标题。"
-          },
-          {
-            "name": "inputValue",
-            "templateName": "inputValue",
-            "kind": "prop",
-            "type": "string",
-            "required": false,
-            "default": "''",
-            "description": "初始输入值，仅 prompt 使用。"
-          },
-          {
-            "name": "inputPlaceholder",
-            "templateName": "inputPlaceholder",
-            "kind": "prop",
-            "type": "string",
-            "required": false,
-            "default": "无默认值",
-            "description": "输入框占位文字。"
-          },
-          {
-            "name": "confirmText",
-            "templateName": "confirmText",
-            "kind": "prop",
-            "type": "string",
-            "required": false,
-            "default": "'确定'",
-            "description": "确认按钮文字。"
-          },
-          {
-            "name": "cancelText",
-            "templateName": "cancelText",
-            "kind": "prop",
-            "type": "string",
-            "required": false,
-            "default": "'取消'",
-            "description": "取消按钮文字。"
-          },
-          {
-            "name": "inputValidator",
-            "templateName": "inputValidator",
-            "kind": "prop",
-            "type": "(\n    value: string,\n  ) => boolean | string | Promise<boolean | string>",
-            "required": false,
-            "default": "无默认值",
-            "description": "返回 true 通过，false 或字符串表示校验失败；支持 Promise。"
-          },
-          {
-            "name": "beforeConfirm",
-            "templateName": "beforeConfirm",
-            "kind": "prop",
-            "type": "(\n    value: string,\n  ) => boolean | void | Promise<boolean | void>",
-            "required": false,
-            "default": "无默认值",
-            "description": "确认前执行异步提交；false 保留对话框，拒绝时展示错误。"
-          }
-        ],
-        "events": [],
-        "slots": [],
-        "exposes": [
-          {
-            "name": "alert",
-            "type": "(message: string, options?: ZtMessageBoxOptions) => Promise<ZtMessageBoxResult>",
-            "description": "提示对话框；确认时 resolve({action:'confirm', value})，取消或关闭时 reject ZtMessageBoxDismissed，可读取 action 区分。",
-            "kind": "method"
-          },
-          {
-            "name": "confirm",
-            "type": "(message: string, options?: ZtMessageBoxOptions) => Promise<ZtMessageBoxResult>",
-            "description": "确认对话框；确认时 resolve({action:'confirm', value})，取消或关闭时 reject ZtMessageBoxDismissed，可读取 action 区分。",
-            "kind": "method"
-          },
-          {
-            "name": "prompt",
-            "type": "(message: string, options?: ZtMessageBoxOptions) => Promise<ZtMessageBoxResult>",
-            "description": "输入对话框；确认时 resolve({action:'confirm', value})，取消或关闭时 reject ZtMessageBoxDismissed，可读取 action 区分。",
-            "kind": "method"
-          },
-          {
-            "name": "closeAll",
-            "type": "() => void",
-            "description": "关闭该服务所有未完成对话框，未完成 Promise 以 action=close 拒绝。",
-            "kind": "method"
-          },
-          {
-            "name": "useZtMessageBox",
-            "type": "() => typeof ZtMessageBox",
-            "description": "setup 中获取继承最近 ConfigProvider 的服务；closeAll 及卸载仅清理当前宿主创建的实例。",
-            "kind": "method"
-          }
-        ]
-      }
-    ],
-    "types": [
-      {
-        "name": "ZtMessageBoxAction",
-        "code": "export type ZtMessageBoxAction = 'confirm' | 'cancel' | 'close';",
-        "public": true
-      },
-      {
-        "name": "ZtMessageBoxResult",
-        "code": "export interface ZtMessageBoxResult {\n  action: 'confirm';\n  value: string;\n}",
-        "public": true
-      },
-      {
-        "name": "ZtMessageBoxOptions",
-        "code": "export interface ZtMessageBoxOptions {\n  /** 对话框标题。 */ title?: string;\n  /** 初始输入值，仅 prompt 使用。 */ inputValue?: string;\n  /** 输入框占位文字。 */ inputPlaceholder?: string;\n  /** 确认按钮文字。 */ confirmText?: string;\n  /** 取消按钮文字。 */ cancelText?: string;\n  /** 返回 true 通过，false 或字符串表示校验失败；支持 Promise。 */ inputValidator?: (\n    value: string,\n  ) => boolean | string | Promise<boolean | string>;\n  /** 确认前执行异步提交；false 保留对话框，拒绝时展示错误。 */ beforeConfirm?: (\n    value: string,\n  ) => boolean | void | Promise<boolean | void>;\n}",
-        "public": true
-      }
-    ],
-    "sections": [
-      "提示、确认与取消结果",
-      "输入校验与异步提交"
+      "本地搜索与分页",
+      "远程分页与自定义选项",
+      "远程批量粘贴与部分匹配",
+      "清空、宽度与外观继承"
     ]
   }
 }

@@ -7,6 +7,11 @@ import {
 import expansion from '../docs/expansion.json';
 const expansionPages = import.meta.glob('../views/*/Index.vue');
 const routes = [
+  {
+    path: '/feedback',
+    component: () => import('../views/feedback/Index.vue'),
+    meta: { title: 'Feedback 命令式反馈' },
+  },
   ...expansion.map((item) => ({
     path: '/' + item.id,
     component: expansionPages[`../views/${item.id}/Index.vue`],

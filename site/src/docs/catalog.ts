@@ -432,13 +432,6 @@ export const componentPlan: PlannedComponent[] = [
     '展示页面内持续存在的语义提示信息。',
   ),
   planned(
-    'Message',
-    '全局消息',
-    'feedback',
-    'p0',
-    '反馈轻量操作结果并自动消失。',
-  ),
-  planned(
     'Tooltip',
     '文字提示',
     'overlay',
@@ -663,6 +656,7 @@ export const guides = [
   { path: '/getting-started', title: '快速开始' },
   { path: '/foundations', title: '设计基础' },
   { path: '/conventions', title: '通用约定' },
+  { path: '/feedback', title: 'Feedback 命令式反馈 · zt-alert' },
   { path: '/components', title: '组件全景' },
   { path: '/scenarios', title: '场景方案' },
   { path: '/roadmap', title: '组件路线图' },

@@ -120,7 +120,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     (page) =>
       `| ${page.component} | ${page.examples.filter((e) => e.kind === 'live').length} | ${page.examples.map((e) => `${e.title}${e.kind === 'integration' ? '（仅接入代码）' : ''}`).join('；')} |`,
   )
-  const report = `# 组件示例盘点\n\n由 site/scripts/audit-examples.mjs 生成。共 ${pages.length} 个组件文档页、${live} 个可运行示例、${integration} 个接入代码示例。\n\n每个可运行示例都由独立 Vue 文件同时提供渲染组件与 ?raw 源码；包含状态、事件和样式。复制前需在业务项目安装 @ztechjs/zt-ui 并引入其样式。Menu 的路由示例需要安装 Vue Router 并配置示例中说明的路由；Upload 的 Axios 接入代码需要业务接口。\n\n| 组件 | 可运行示例数 | 场景 |\n| --- | ---: | --- |\n${rows.join('\n')}\n\n校验范围：所有示例与代码来源一致、SFC 解析与模板编译、私有路径与部署资源检查。完整类型检查由 npm run typecheck 执行，交互回归由 npm test 执行。该盘点统计演示场景，不将静态属性出现次数等同于功能测试通过。\n`
+  const report = `# 组件示例盘点\n\n由 site/scripts/audit-examples.mjs 生成。共 ${pages.filter(page => page.component !== 'feedback').length} 个组件文档页与 ${pages.filter(page => page.component === 'feedback').length} 个反馈指南页、${live} 个可运行示例、${integration} 个接入代码示例。\n\n每个可运行示例都由独立 Vue 文件同时提供渲染组件与 ?raw 源码；包含状态、事件和样式。复制前需在业务项目安装 @ztechjs/zt-ui 并引入其样式。反馈指南的命令式 API 直接从 @ztechjs/zt-alert 导入并加载其样式。Menu 的路由示例需要安装 Vue Router 并配置示例中说明的路由；Upload 的 Axios 接入代码需要业务接口。\n\n| 组件 | 可运行示例数 | 场景 |\n| --- | ---: | --- |\n${rows.join('\n')}\n\n校验范围：所有示例与代码来源一致、SFC 解析与模板编译、私有路径与部署资源检查。完整类型检查由 npm run typecheck 执行，交互回归由 npm test 执行。该盘点统计演示场景，不将静态属性出现次数等同于功能测试通过。\n`
   writeFileSync(resolve(site, '../docs/component-examples-audit.md'), report)
   console.log(
     `${pages.length} pages; ${live} live examples; ${integration} integration examples; source parity and SFC compilation verified`,

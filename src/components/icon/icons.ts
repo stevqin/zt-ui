@@ -26,6 +26,9 @@ const shapes:Record<ZtIconName,Shape[]> = {
   settings:[['circle',12,12,3],['path','M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V2.8h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z']],
   refresh:[['path','M20 7v5h-5M4 17v-5h5M6.1 8a7 7 0 0 1 11.5-2L20 12M4 12l2.4 6a7 7 0 0 0 11.5-2']],
   visibility:[['path','M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z'],['circle',12,12,3]],
+  clipboard:[['path','M9 5H6a2 2 0 0 0-2 2v13h16V7a2 2 0 0 0-2-2h-3'],['rect',9,3,6,4,1],['path','M8 12h8M8 16h5']],
+  checklist:[['path','m3 6 2 2 4-4M12 6h9M3 13h3M10 13h11M3 20h3M10 20h11']],
+  'filter-list':[['path','M4 6h16M7 12h13M10 18h10']],
 }
 
 function renderShapes(items:Shape[]){return items.map((shape,index)=>shape[0]==='path'
@@ -71,3 +74,6 @@ export const ZtHomeIcon=iconComponents.home
 export const ZtSettingsIcon=iconComponents.settings
 export const ZtRefreshIcon=iconComponents.refresh
 export const ZtVisibilityIcon=iconComponents.visibility
+export const ZtClipboardIcon=iconComponents.clipboard
+export const ZtChecklistIcon=iconComponents.checklist
+export const ZtFilterListIcon=iconComponents['filter-list']

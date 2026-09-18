@@ -64,6 +64,7 @@ const pasteResult = ref('')
 const separator = ref('newline')
 const searchInput = ref<InstanceType<typeof ZtInput>>()
 const pasteInput = ref<HTMLTextAreaElement>()
+const panelElement = ref<HTMLElement>()
 const separators = [
   { value: 'newline', label: '换行(\\n)' },
   { value: 'comma', label: '逗号(,)' },
@@ -138,7 +139,7 @@ function clickLabel(event: MouseEvent, action: () => void) {
   event.preventDefault()
   action()
 }
-async function applyPaste() {
+async function applyPaste(confirmationTrigger?: EventTarget | null) {
   const patterns: Record<string, RegExp> = { newline: /[\r\n]+/, comma: /[,，]+/, semicolon: /[;；]+/, tab: /\t+/ }
   const entries = pasteText.value.split(patterns[separator.value]!).map(text => text.trim()).filter(Boolean)
   const keywords = [...new Set(entries)]
@@ -146,6 +147,11 @@ async function applyPaste() {
     pasteResult.value = '没有可匹配的粘贴内容'
     ZtMessage.info(pasteResult.value)
     return true
+  }
+  // Loading disables the focused confirm button. Move focus before that update
+  // so the browser does not treat this in-panel action as an outside blur.
+  if (props.remote && confirmationTrigger instanceof HTMLElement && document.activeElement === confirmationTrigger) {
+    panelElement.value?.focus({ preventScroll: true })
   }
   // Local matching always uses the complete source, independently of search and paging.
   const matches = props.remote
@@ -174,9 +180,9 @@ async function applyPaste() {
   else ZtMessage.warning(pasteResult.value)
   return true
 }
-async function confirm() {
+async function confirm(event?: MouseEvent) {
   if (props.disabled || props.batchLoading) return
-  if (pasteOpen.value && !await applyPaste()) return
+  if (pasteOpen.value && !await applyPaste(event?.currentTarget)) return
   emit('confirm', draft.confirm(), [...draft.selectedOptions.value])
 }
 function handleEscape(event: KeyboardEvent) {
@@ -192,7 +198,7 @@ function cancel() {
 </script>
 
 <template>
-  <div :class="['zt-select-box-panel', `zt-select-box-panel--${size}`]" @keydown.esc="handleEscape">
+  <div ref="panelElement" tabindex="-1" :class="['zt-select-box-panel', `zt-select-box-panel--${size}`]" @keydown.esc="handleEscape">
     <template v-if="!pasteOpen">
       <div class="zt-select-box-panel__header">
         <ZtInput v-if="filterable" ref="searchInput" v-model="keyword" class="zt-select-box-panel__search" :size="size" :disabled="disabled" aria-label="搜索选项" placeholder="搜索选项" @input="emit('search', $event)">

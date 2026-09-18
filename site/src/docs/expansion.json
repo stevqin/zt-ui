@@ -141,38 +141,11 @@
     "name": "Loading",
     "title": "加载",
     "group": "feedback",
-    "description": "区域及全屏加载遮罩、滚动锁定和命令式调用。",
+    "description": "由响应式状态控制的声明式区域加载遮罩与自定义指示器。",
     "directory": "loading",
     "owners": [
       "ZtLoading"
     ]
-  },
-  {
-    "id": "message",
-    "name": "Message",
-    "title": "全局消息",
-    "group": "feedback",
-    "description": "短暂操作反馈、消息合并与实例关闭。",
-    "directory": "message",
-    "owners": []
-  },
-  {
-    "id": "notification",
-    "name": "Notification",
-    "title": "通知",
-    "group": "feedback",
-    "description": "支持标题、自定义操作与四角堆叠的通知。",
-    "directory": "notification",
-    "owners": []
-  },
-  {
-    "id": "message-box",
-    "name": "MessageBox",
-    "title": "消息确认",
-    "group": "overlay",
-    "description": "命令式提示、确认和带异步校验的输入框。",
-    "directory": "message-box",
-    "owners": []
   },
   {
     "id": "tooltip",
@@ -469,6 +442,17 @@
     "directory": "qrcode",
     "owners": [
       "ZtQRCode"
+    ]
+  },
+  {
+    "id": "select-box",
+    "name": "SelectBox",
+    "title": "筛选选择框",
+    "group": "form",
+    "description": "带搜索、分页、批量粘贴和确认操作的多选筛选面板。",
+    "directory": "select-box",
+    "owners": [
+      "ZtSelectBox"
     ]
   }
 ]

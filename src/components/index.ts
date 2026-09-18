@@ -21,6 +21,7 @@ export * from './switch';
 export * from './input';
 export * from './input-number';
 export * from './select';
+export * from './select-box';
 export * from './form';
 export * from './badge';
 export * from './modal';

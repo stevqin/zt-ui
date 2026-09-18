@@ -13,20 +13,22 @@ A lightweight Vue 3 component library with TypeScript support and a glass-inspir
 
 ## Components
 
-The [documentation site](https://stevqin.github.io/zt-ui/) contains **81 component pages and 336 executable examples**, including their complete Vue source and API references.
+The [documentation site](https://stevqin.github.io/zt-ui/) contains **79 component pages, one external feedback guide, and 338 executable examples**, including their complete Vue source and API references.
 
 - Foundation and layout: ConfigProvider, Icon, Text, Link, Button, Typography, Layout, Row, Col, Space, Divider, Splitter, Scrollbar, Affix.
-- Forms: Form, Input, Password, InputNumber, InputOtp, Radio, Checkbox, Switch, Select, Segmented, Slider, DatePicker, DateTimePicker, DatePickerPanel, TimePicker, TimeSelect, ColorPicker, ColorPickerPanel, Upload, Autocomplete, InputTag, Mention, Rate, Cascader, TreeSelect, Transfer.
+- Forms: Form, Input, Password, InputNumber, InputOtp, Radio, Checkbox, Switch, Select, SelectBox, Segmented, Slider, DatePicker, DateTimePicker, DatePickerPanel, TimePicker, TimeSelect, ColorPicker, ColorPickerPanel, Upload, Autocomplete, InputTag, Mention, Rate, Cascader, TreeSelect, Transfer.
 - Data: Table, VTableGrid, Tree, Pagination, Card, Empty, Statistic, Timeline, Calendar, Descriptions, Collapse, InfiniteScroll.
 - Navigation: Menu, Tabs, Breadcrumb, Steps, Dropdown, Anchor, Backtop, PageHeader.
-- Feedback and overlays: Tag, Badge, Progress, Result, Skeleton, Alert, Loading, Message, Notification, Modal, Drawer, Popover, Popconfirm, Tooltip, MessageBox, Tour.
+- Feedback and overlays: Tag, Badge, Progress, Result, Skeleton, Alert, Loading, Modal, Drawer, Popover, Popconfirm, Tooltip, Tour.
 - Media: Image, Avatar, Carousel, Watermark, QRCode.
 
-Select and Tree support virtual rendering. Message, Notification, MessageBox and Loading include imperative services and setup-scoped helpers that inherit ConfigProvider settings and clean up on unmount.
+Select and Tree support virtual rendering. SelectBox provides a standalone multi-select filter with draft confirmation, local and remote paging, batch matching, and immediate clear.
+
+Imperative Message, Notification, MessageBox, Dialog, Drawer and fullscreen Loading belong to [@ztechjs/zt-alert](https://www.npmjs.com/package/@ztechjs/zt-alert). Install and import that package directly; zt-ui does not re-export its APIs. Declarative `ZtLoading`, `ZtAlert`, `ZtModal`, and `ZtDrawer` remain in zt-ui.
 
 ## Sizes
 
-Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Input, Password, InputNumber, Select, Form, Badge, Steps, Pagination, Modal, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children; Form passes it to registered input controls.
+Density-aware components share the exported `ZtComponentSize` type and support `mini`, `small`, `default`, `medium`, and `large`. This applies to Button, Tag, Radio, Checkbox, Switch, Input, Password, InputNumber, Select, SelectBox, Form, Badge, Steps, Pagination, Modal, and VTableGrid. RadioGroup and CheckboxGroup pass the selected size to their children; Form passes it to registered input controls.
 
 Drawer keeps its established `size` API for panel width or height, so values such as `420`, `"36rem"`, and `"60%"` remain compatible.
 
@@ -141,6 +143,61 @@ const searchUsers = async (keyword: string): Promise<ZtSelectOption[]> => {
   return response.json()
 }
 ```
+
+## SelectBox
+
+`ZtSelectBox` stages changes until confirmation. Local options are filtered before paging; a remote method handles both paged searches and full-dataset batch matching:
+
+```vue
+<script setup lang="ts">
+import { ref } from 'vue'
+import { ZtConfigProvider, ZtSelectBox, type ZtSelectBoxRemoteRequest, type ZtSelectBoxRemoteResult } from '@ztechjs/zt-ui'
+
+const selected = ref<string[]>([])
+const pageSize = ref(20)
+async function loadOptions(request: ZtSelectBoxRemoteRequest): Promise<ZtSelectBoxRemoteResult> {
+  // Your API returns { mode: 'search', options, total } or { mode: 'batch', matches }.
+  // Batch matches contain { keyword, option } for every exact match across all pages.
+  const response = await fetch('/api/regions/select-options', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  })
+  if (!response.ok) throw new Error('Unable to load regions')
+  return response.json()
+}
+</script>
+
+<template>
+  <ZtConfigProvider size="small" theme="light" :border-radius="16">
+    <ZtSelectBox v-model="selected" v-model:page-size="pageSize" :page-sizes="[10, 20, 50]"
+      width="100%" remote :remote-method="loadOptions" clearable aria-label="Operating regions">
+      <template #option="{ option }"><strong>{{ option.label }}</strong></template>
+    </ZtSelectBox>
+  </ZtConfigProvider>
+</template>
+```
+
+Search requests carry `{ mode: 'search', keyword, page, pageSize }`; pages start at 1 and the server returns only the current page plus the total match count. Batch requests carry `{ mode: 'batch', keywords }` and return all exact matches, including records outside the current page. Partial matches commit the valid selection and report counts through zt-alert. Disabled matches are excluded; failed batch requests preserve the text and draft for retry.
+
+`clearable` and the exposed `clear()` method immediately reset the model, draft and search, emit `change` and `clear`, and retain focus. An open panel stays open. `width` accepts pixels or a CSS length, and the selected summary stays on one line. All five sizes, themes and corner radii inherit from ConfigProvider. See the [SelectBox examples](https://stevqin.github.io/zt-ui/#/select-box) for a fully local mock API and all states.
+
+## Imperative feedback
+
+```bash
+npm install @ztechjs/zt-alert
+```
+
+```ts
+import { ZtMessage, ZtLoading as ZtFullscreenLoading } from '@ztechjs/zt-alert'
+import '@ztechjs/zt-alert/style.css'
+
+ZtMessage.success('Filters applied')
+const loading = ZtFullscreenLoading.open({ text: 'Loading…' })
+await loading.close()
+```
+
+The zt-ui stylesheet includes the styles needed by SelectBox batch feedback. Applications using zt-alert directly should also import its stylesheet as above. The [feedback guide](https://stevqin.github.io/zt-ui/#/feedback) documents this boundary; `ZtLoading` imported from zt-ui remains a local declarative Vue component.
 
 ## Modal and Drawer
 
@@ -380,6 +437,6 @@ Menu 还支持 `v-model:collapsed` 整栏折叠、`collapsible` 底部按钮、`
 
 ### 示例维护与一致性校验
 
-全部 38 个组件的可运行示例均拆为独立 Vue 文件。文档页同时导入该文件作为演示组件，并通过 `?raw` 导入同一文件展示源码；修改示例时只修改这份文件，不另写展示代码。示例包含实际使用的状态、事件、数据和局部样式，并继承站点顶部的全局外观配置。复制到业务项目时，需安装组件库并按快速开始引入样式。
+全部组件的可运行示例均拆为独立 Vue 文件。文档页同时导入该文件作为演示组件，并通过 `?raw` 导入同一文件展示源码；修改示例时只修改这份文件，不另写展示代码。示例包含实际使用的状态、事件、数据和局部样式，并继承站点顶部的全局外观配置。复制到业务项目时，需安装组件库并按快速开始引入样式。
 
 在 `site/` 执行 `npm run docs:examples` 可检查演示与源码是否同源、编译是否有效、是否依赖站点私有路径，并更新[完整组件示例盘点](docs/component-examples-audit.md)。该检查已接入测试与构建。需要业务 Axios 实例的接入代码明确标为不可在本站执行，不伪装成可运行示例；Menu 路由示例在源码中注明路由配置要求。

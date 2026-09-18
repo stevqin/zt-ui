@@ -1,4 +1,30 @@
 export default {
+  'select-box.ZtSelectBox.props.pageSize': {
+    description: '本地与远程模式共用的每页条数；支持 v-model:page-size，变化时回到第 1 页。非正数或非有限值回退到 10，有限小数向下取整。',
+  },
+  'select-box.ZtSelectBox.props.pageSizes': {
+    description: '分页器可选每页条数；过滤非正整数并去重，自动补入当前有效 pageSize。',
+  },
+  'select-box.ZtSelectBox.props.remoteMethod': {
+    description: '按 mode 区分 search 分页查询与 batch 全量精确匹配；返回同 mode 的 options/total 或 matches，具体见远程请求与结果类型。',
+  },
+  'select-box.ZtSelectBox.props.clearable': {
+    description: '有已确认值且未禁用时显示清空按钮；即时提交空数组并同步草稿，无需再次确认。',
+  },
+  'select-box.ZtSelectBox.exposes.clear': {
+    description: '立即清空已确认值、草稿和搜索，输出 change 与 clear 并触发表单校验；面板保持原开关状态，焦点回到触发器。',
+    type: '() => void',
+  },
+  'select-box.ZtSelectBox.exposes.close': {
+    description: '关闭面板并丢弃未确认草稿，已确认值保持不变。',
+  },
+  'select-box.ZtSelectBox.events.remote-error': {
+    description: '当前远程分页或批量匹配请求失败时触发；过期请求不触发。',
+  },
+  'select-box.ZtSelectBox.slots.option': {
+    description: '自定义左侧固定复选框之后的选项内容；点击内容和行空白均切换草稿选择。',
+    type: '{ option: ZtSelectOption; selected: boolean; disabled: boolean }',
+  },
   'tree.ZtTree.props.status': { defaultValue: "'primary'" },
   'tree-select.ZtTreeSelect.props.status': { defaultValue: "'primary'" },
   'cascader.ZtCascader.props.status': { defaultValue: "'primary'" },
@@ -126,15 +152,4 @@ export default {
     description: '自定义每个可操作菜单项的内容；item 为当前菜单项。',
     type: '{ item: ZtDropdownItem }',
   },
-  'message.ZtMessage.props.duration': { defaultValue: '3000' },
-  'message.ZtMessage.props.type': { defaultValue: "'info'" },
-  'message.ZtMessage.props.showClose': { defaultValue: 'true' },
-  'message.ZtMessage.props.grouping': { defaultValue: 'false' },
-  'notification.ZtNotification.props.duration': { defaultValue: '4500' },
-  'notification.ZtNotification.props.type': { defaultValue: "'info'" },
-  'notification.ZtNotification.props.showClose': { defaultValue: 'true' },
-  'notification.ZtNotification.props.position': { defaultValue: "'top-right'" },
-  'message-box.ZtMessageBox.props.inputValue': { defaultValue: "''" },
-  'message-box.ZtMessageBox.props.confirmText': { defaultValue: "'确定'" },
-  'message-box.ZtMessageBox.props.cancelText': { defaultValue: "'取消'" },
 };

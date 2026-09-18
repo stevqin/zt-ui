@@ -80,7 +80,7 @@ function handleChange() {
   <label :class="classes" v-bind="$attrs">
     <span class="zt-checkbox__input" @click.prevent="handleChange">
       <span class="zt-checkbox__inner" />
-      <input type="checkbox" :checked="isChecked" :disabled="isDisabled" :name="name" tabindex="-1" />
+      <input type="checkbox" :aria-hidden="$attrs.role === 'checkbox' ? true : undefined" :checked="isChecked" :disabled="isDisabled" :name="name" tabindex="-1" />
     </span>
     <span v-if="$slots.default || label" class="zt-checkbox__label">
       <slot>{{ label }}</slot>

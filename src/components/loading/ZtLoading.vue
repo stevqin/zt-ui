@@ -27,18 +27,18 @@ onBeforeUnmount(() => {
 });
 </script>
 <template>
-  <div class="zt-loading" :aria-busy="loading">
+  <div class="zt-loading-surface" :aria-busy="loading">
     <slot /><Teleport to="body" :disabled="!fullscreen"
       ><div
         v-if="loading"
-        class="zt-loading__mask"
-        :class="[fullscreen && 'is-fullscreen', `zt-loading--${size}`]"
+        class="zt-loading-surface__mask"
+        :class="[fullscreen && 'is-fullscreen', `zt-loading-surface--${size}`]"
         :style="config.style.value"
         role="status"
         aria-live="polite"
       >
         <slot name="indicator"
-          ><span class="zt-loading__spinner" aria-hidden="true" /></slot
+          ><span class="zt-loading-surface__spinner" aria-hidden="true" /></slot
         ><span>{{ text }}</span>
       </div></Teleport
     >

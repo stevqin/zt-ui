@@ -104,18 +104,31 @@ async function handlePager(item: PagerItem) {
   rootElement.value?.querySelector<HTMLElement>('[aria-current="page"]')?.focus()
 }
 
-function handlePrev() {
+async function retainBoundaryFocus(event: MouseEvent) {
+  const button = event.currentTarget
+  if (!(button instanceof HTMLButtonElement) || document.activeElement !== button) return
+  await nextTick()
+  // Disabling a focused boundary button can move browser focus to body.
+  // Keep it on the active page without taking focus back from another control.
+  if (button.disabled && (document.activeElement === button || document.activeElement === document.body)) {
+    rootElement.value?.querySelector<HTMLElement>('[aria-current="page"]')?.focus()
+  }
+}
+
+function handlePrev(event: MouseEvent) {
   const next = current.value - 1
   if (props.disabled || next < 1) return
   setPage(next)
   emit('prev-click', next)
+  void retainBoundaryFocus(event)
 }
 
-function handleNext() {
+function handleNext(event: MouseEvent) {
   const next = current.value + 1
   if (props.disabled || next > totalPages.value) return
   setPage(next)
   emit('next-click', next)
+  void retainBoundaryFocus(event)
 }
 
 function handleSize(value: ZtSelectModelValue) {
