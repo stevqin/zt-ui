@@ -24,6 +24,6 @@ import ClearableCode from './Clearable.vue?raw'
     <p>部分匹配和零匹配仍会提交有效草稿并关闭面板，@ztechjs/zt-alert 消息会报告粘贴数量、去重数量、匹配数量和新增勾选数量。禁用项不会选中；批量请求失败会保留文本和草稿，供重试。</p>
     <h2>清空、宽度与外观继承</h2>
     <DemoBlock :code="ClearableCode" desc="数字 width 按 px 处理，也支持 100% 等 CSS 长度。摘要保持单行省略，悬停可查看全文。ConfigProvider 统一设置五档 size、light/dark 主题与 borderRadius，面板和嵌套选择器一并继承。"><Clearable /></DemoBlock>
-    <p>clearable 显示清空按钮，实例 clear() 执行相同操作：立即输出空值、change 和 clear，清空搜索并保留焦点。已打开的面板保持打开，草稿同步清空；后续取消不会恢复旧值。禁用或已为空时不重复清空。</p>
+    <p>clearable 显示清空按钮，实例 clear() 仅在 clearable=true 时生效，并执行相同操作：立即输出空值、change 和 clear，清空搜索并保留焦点。已打开的面板保持打开，草稿同步清空；后续取消不会恢复旧值。禁用或已为空时不重复清空。</p>
   </div>
 </template>

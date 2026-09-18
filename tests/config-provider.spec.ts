@@ -51,7 +51,7 @@ describe('ConfigProvider',()=>{
  it.each([ZtModal,ZtDrawer])('carries provider configuration into overlays',async component=>{
   render(()=>h(component,{modelValue:true,title:'测试'},()=>h(ZtButton)))
   await nextTick()
-  const overlay=document.querySelector<HTMLElement>('.zt-modal,.zt-drawer')!
+  const overlay=document.querySelector<HTMLElement>('.zt-modal,.zt-drawer-surface')!
   expect(overlay.style.colorScheme).toBe('dark')
   expect(overlay.querySelector('button.zt-button--large')).not.toBeNull()
  })

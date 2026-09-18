@@ -129,10 +129,10 @@ const panelStyle = computed(() => isVertical.value
   ? { height: cssLength(props.size) }
   : { width: cssLength(props.width ?? props.size) })
 const classes = computed(() => [
-  'zt-drawer',
-  `zt-drawer--${props.placement}`,
-  narrow.value && !isVertical.value && 'zt-drawer--narrow',
-  !overlay.isTop.value && 'zt-drawer--underneath',
+  'zt-drawer-surface',
+  `zt-drawer-surface--${props.placement}`,
+  narrow.value && !isVertical.value && 'zt-drawer-surface--narrow',
+  !overlay.isTop.value && 'zt-drawer-surface--underneath',
 ])
 
 defineExpose({
@@ -144,7 +144,7 @@ defineExpose({
 
 <template>
   <Teleport to="body">
-    <Transition name="zt-drawer" appear @after-enter="afterEnter" @after-leave="afterLeave">
+    <Transition name="zt-drawer-surface" appear @after-enter="afterEnter" @after-leave="afterLeave">
       <div
         v-if="overlay.alive.value"
         v-show="overlay.visible.value"
@@ -157,7 +157,7 @@ defineExpose({
       >
         <section
           ref="panel"
-          class="zt-drawer__panel"
+          class="zt-drawer-surface__panel"
           :style="panelStyle"
           role="dialog"
           :aria-modal="overlay.isTop.value ? true : undefined"
@@ -169,17 +169,17 @@ defineExpose({
           @keydown.capture="guardLoading"
           @focusin.capture="guardLoading"
         >
-          <header v-if="showHeader" class="zt-drawer__header">
-            <div :id="titleId" class="zt-drawer__heading">
+          <header v-if="showHeader" class="zt-drawer-surface__header">
+            <div :id="titleId" class="zt-drawer-surface__heading">
               <slot name="title" v-bind="scope">
                 <h2>{{ title || '抽屉' }}</h2>
               </slot>
-              <p v-if="subtitle" class="zt-drawer__subtitle">{{ subtitle }}</p>
+              <p v-if="subtitle" class="zt-drawer-surface__subtitle">{{ subtitle }}</p>
             </div>
             <slot name="header-actions" v-bind="scope" />
             <ZtButton
               v-if="showClose"
-              class="zt-drawer__close"
+              class="zt-drawer-surface__close"
               circle
               :disabled="overlay.busy.value"
               :aria-label="closeLabel || `关闭${title || '抽屉'}`"
@@ -193,26 +193,26 @@ defineExpose({
           </header>
 
           <slot v-if="$slots.content" name="content" v-bind="scope" />
-          <div v-else class="zt-drawer__body"
-            :class="{ 'zt-drawer__body--custom-scroll': !bodyScroll }"
+          <div v-else class="zt-drawer-surface__body"
+            :class="{ 'zt-drawer-surface__body--custom-scroll': !bodyScroll }"
             :style="{ padding: cssLength(bodyPadding) }"
             :inert="loading ? true : undefined"
           >
             <slot v-bind="scope" />
           </div>
 
-          <footer v-if="showFooter || $slots.footer" class="zt-drawer__footer">
+          <footer v-if="showFooter || $slots.footer" class="zt-drawer-surface__footer">
             <slot name="footer" v-bind="scope">
               <ZtButton
                 v-if="showCancelButton"
-                class="zt-drawer__cancel"
+                class="zt-drawer-surface__cancel"
                 :disabled="overlay.busy.value"
                 @click="overlay.cancel"
               >
                 {{ cancelText }}
               </ZtButton>
               <ZtButton
-                class="zt-drawer__confirm"
+                class="zt-drawer-surface__confirm"
                 status="primary"
                 :disabled="overlay.busy.value || confirmDisabled"
                 :loading="confirmLoading"
@@ -222,8 +222,8 @@ defineExpose({
               </ZtButton>
             </slot>
           </footer>
-          <div v-if="loading" class="zt-drawer__loading" role="status" aria-live="polite">
-            <span class="zt-drawer__spinner" aria-hidden="true" />{{ loadingText }}
+          <div v-if="loading" class="zt-drawer-surface__loading" role="status" aria-live="polite">
+            <span class="zt-drawer-surface__spinner" aria-hidden="true" />{{ loadingText }}
           </div>
         </section>
       </div>

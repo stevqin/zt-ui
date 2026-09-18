@@ -33,7 +33,7 @@ describe('Link', () => {
     const link = wrapper.get('a')
     expect(link.classes()).toContain('zt-link--small')
     expect(link.classes()).toContain('zt-link--primary')
-    expect(link.findAll('.zt-icon')).toHaveLength(2)
+    expect(link.findAll('.zt-icon-glyph')).toHaveLength(2)
   })
 })
 

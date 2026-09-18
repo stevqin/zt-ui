@@ -12,7 +12,7 @@ export default {
     description: '有已确认值且未禁用时显示清空按钮；即时提交空数组并同步草稿，无需再次确认。',
   },
   'select-box.ZtSelectBox.exposes.clear': {
-    description: '立即清空已确认值、草稿和搜索，输出 change 与 clear 并触发表单校验；面板保持原开关状态，焦点回到触发器。',
+    description: '仅在 clearable=true 时生效；立即清空已确认值、草稿和搜索，输出 change 与 clear 并触发表单校验；面板保持原开关状态，焦点回到触发器。',
     type: '() => void',
   },
   'select-box.ZtSelectBox.exposes.close': {

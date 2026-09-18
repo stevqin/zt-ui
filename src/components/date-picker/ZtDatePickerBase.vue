@@ -198,7 +198,7 @@ function updatePosition() {
   const above = rect.top - 14;
   const upward = below < panel.height && above > below;
   const available = Math.max(0, upward ? above : below);
-  const parent = root.value.closest<HTMLElement>('.zt-modal, .zt-drawer');
+  const parent = root.value.closest<HTMLElement>('.zt-modal, .zt-drawer-surface');
   const layer = parent
     ? Number.parseFloat(parent.style.zIndex || getComputedStyle(parent).zIndex)
     : 0;

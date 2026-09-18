@@ -109,6 +109,7 @@ describe('complete and executable documentation examples', () => {
     const page = readFileSync(resolve(process.cwd(), 'src/views/select-box/Index.vue'), 'utf8')
     expect(page).toContain('部分匹配')
     expect(page).toContain('@ztechjs/zt-alert')
+    expect(page).toContain('仅在 clearable=true 时生效')
     const document = api['select-box']
     expect(document.types.map(type => type.name)).toEqual(expect.arrayContaining([
       'ZtSelectBoxRemoteRequest', 'ZtSelectBoxRemoteResult',
@@ -117,6 +118,8 @@ describe('complete and executable documentation examples', () => {
       'pageSize', 'pageSizes', 'clearable',
     ]))
     expect(document.components[0].exposes.map(method => method.name)).toContain('clear')
+    expect(document.components[0].exposes.find(method => method.name === 'clear')?.description)
+      .toContain('仅在 clearable=true 时生效')
   })
   it('owns only declarative feedback and links to the external command API guide', () => {
     const guidePath = resolve(process.cwd(), 'src/views/feedback/Index.vue')

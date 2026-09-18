@@ -11,7 +11,7 @@ describe('Icon', () => {
     })
     const icon = wrapper.get('[role="img"]')
     expect(icon.attributes('aria-label')).toBe('搜索')
-    expect(icon.classes()).toContain('zt-icon--large')
+    expect(icon.classes()).toContain('zt-icon-glyph--large')
     expect(icon.find('svg').exists()).toBe(true)
   })
 
@@ -33,7 +33,7 @@ describe('Icon', () => {
     } })
     expect(wrapper.get('.custom-icon').exists()).toBe(true)
     expect(wrapper.find('svg').exists()).toBe(false)
-    expect(wrapper.classes()).toContain('zt-icon--success')
+    expect(wrapper.classes()).toContain('zt-icon-glyph--status-success')
     expect(wrapper.attributes('style')).toContain('--zt-icon-size: 28px')
     expect(wrapper.attributes('style')).toContain('--zt-icon-color: #123456')
     expect(wrapper.attributes('style')).toContain('--zt-icon-rotate: 45deg')

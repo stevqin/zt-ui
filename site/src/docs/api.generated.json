@@ -14547,7 +14547,7 @@
             "name": "clear",
             "type": "() => void",
             "kind": "method",
-            "description": "立即清空已确认值、草稿和搜索，输出 change 与 clear 并触发表单校验；面板保持原开关状态，焦点回到触发器。"
+            "description": "仅在 clearable=true 时生效；立即清空已确认值、草稿和搜索，输出 change 与 clear 并触发表单校验；面板保持原开关状态，焦点回到触发器。"
           }
         ]
       }

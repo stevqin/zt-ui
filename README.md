@@ -180,7 +180,7 @@ async function loadOptions(request: ZtSelectBoxRemoteRequest): Promise<ZtSelectB
 
 Search requests carry `{ mode: 'search', keyword, page, pageSize }`; pages start at 1 and the server returns only the current page plus the total match count. Batch requests carry `{ mode: 'batch', keywords }` and return all exact matches, including records outside the current page. Partial matches commit the valid selection and report counts through zt-alert. Disabled matches are excluded; failed batch requests preserve the text and draft for retry.
 
-`clearable` and the exposed `clear()` method immediately reset the model, draft and search, emit `change` and `clear`, and retain focus. An open panel stays open. `width` accepts pixels or a CSS length, and the selected summary stays on one line. All five sizes, themes and corner radii inherit from ConfigProvider. See the [SelectBox examples](https://stevqin.github.io/zt-ui/#/select-box) for a fully local mock API and all states.
+The clear button and the exposed `clear()` method only work when `clearable=true`. They immediately reset the model, draft and search, emit `change` and `clear`, and retain focus. An open panel stays open. `width` accepts pixels or a CSS length, and the selected summary stays on one line. All five sizes, themes and corner radii inherit from ConfigProvider. See the [SelectBox examples](https://stevqin.github.io/zt-ui/#/select-box) for a fully local mock API and all states.
 
 ## Imperative feedback
 

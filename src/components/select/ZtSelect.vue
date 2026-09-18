@@ -594,7 +594,7 @@ function resolveDropdownZIndex() {
     ? Math.max(2000, Math.floor(inheritedLayer) + 1)
     : 2000;
   const containingOverlay = rootElement.value?.closest<HTMLElement>(
-    '.zt-modal, .zt-drawer, .zt-select__dropdown',
+    '.zt-modal, .zt-drawer-surface, .zt-select__dropdown',
   );
   if (!containingOverlay) return inheritedZIndex;
   const layer = Number.parseFloat(
