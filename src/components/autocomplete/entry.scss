@@ -13,5 +13,10 @@
   &.is-disabled > .zt-popover__reference > .zt-input > .zt-input__wrapper { @include underline.disabled; }
 }
 @each $state, $color in (error: #ef4444, success: #22c55e) {
-  .zt-form-item.is-#{$state} .zt-entry.is-form-underline { --zt-entry-underline-color: #{$color}; }
+  .zt-form-item.is-#{$state} .zt-entry.is-form-underline {
+    --zt-entry-underline-color: #{$color};
+    > .zt-popover__reference > .zt-input > .zt-input__wrapper {
+      border-bottom-color: var(--zt-entry-underline-color);
+    }
+  }
 }

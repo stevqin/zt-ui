@@ -83,6 +83,7 @@ describe('selection controls own the Form underline boundary', () => {
     expect(w.get('input, button').attributes('aria-invalid')).toBe('true')
     expect(w.get('input, button').attributes('aria-describedby')).toBeTruthy()
     w.get(_root).element.classList.add('test-hover')
+    w.findAll('.zt-input').forEach(input => input.element.classList.add('test-hover'))
     expect(css(w, surface).borderBottomColor).toBe('#ef4444')
     await focus(w)
     expect(css(w, surface).borderBottomColor).toBe('#ef4444')
@@ -92,6 +93,9 @@ describe('selection controls own the Form underline boundary', () => {
   it.each(controls)('%s preserves successful validation during focus', async (_, component, _root, surface) => {
     const w = form(component, {}, { model: { value: 'ok' } }, { prop: 'value', required: true })
     await w.vm.validate()
+    w.get(_root).element.classList.add('test-hover')
+    w.findAll('.zt-input').forEach(input => input.element.classList.add('test-hover'))
+    expect(css(w, surface).borderBottomColor).toBe('#22c55e')
     await focus(w)
     expect(css(w, surface).borderBottomColor).toBe('#22c55e')
     expect(css(w, surface).boxShadow).toContain('#22c55e')
@@ -192,4 +196,15 @@ it('preserves SelectBox internal surface styles when its Form appearance changes
   expect(snapshot(pasteAndSeparator)).toEqual(batch)
   expect(batch[0]![0]).toBe('1px')
   expect(popup.querySelector('.is-form-underline')).toBeNull()
+})
+
+
+it('preserves ordinary Autocomplete nested-input hover and underline focus', async () => {
+  const w = form(ZtAutocomplete)
+  w.get('.zt-entry').element.classList.add('test-hover')
+  w.get('.zt-input').element.classList.add('test-hover')
+  expect(css(w, '.zt-input__wrapper').borderBottomColor).toBe('#bfd2ff')
+  await focus(w)
+  expect(css(w, '.zt-input__wrapper').borderBottomColor).toBe('#245edb')
+  expect(css(w, '.zt-input__wrapper').boxShadow).toContain('inset 0 -1px 0')
 })
