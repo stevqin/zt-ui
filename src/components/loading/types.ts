@@ -6,6 +6,3 @@ export interface ZtLoadingProps {
   /** 加载说明。 */ text?: string;
   /** 指示器尺寸；未设置时继承全局。 */ size?: ZtComponentSize;
 }
-export interface ZtLoadingHandle {
-  close: () => void;
-}

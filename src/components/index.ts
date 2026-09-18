@@ -42,12 +42,6 @@ export * from './alert';
 
 export * from './loading';
 
-export * from './message';
-
-export * from './notification';
-
-export * from './message-box';
-
 export * from './tooltip';
 
 export * from './dropdown';

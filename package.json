@@ -76,6 +76,7 @@
     "vue-tsc": "^2.2.10"
   },
   "dependencies": {
+    "@ztechjs/zt-alert": "^0.1.2",
     "qrcode": "^1.5.4"
   }
 }
