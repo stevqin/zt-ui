@@ -2,7 +2,10 @@ export default {
   'drawer.ZtDrawer.props.subtitle': { description:'标题下方的辅助说明。' },
   'drawer.ZtDrawer.props.closeLabel': { description:'关闭按钮的无障碍名称。' },
   'drawer.ZtDrawer.props.bodyScroll': { description:'是否由抽屉内容区管理纵向滚动；设为 false 可让内部表格或树独立滚动。' },
-  'drawer.ZtDrawer.props.bodyPadding': { description:'内容区内边距，数字按像素处理，也支持 CSS 长度。' },
+  'drawer.ZtDrawer.props.bodyPadding': {
+    description:'内容区内边距，数字按像素处理，也支持 CSS 长度；显式传入后覆盖 size 对应的默认间距。',
+    defaultValue:'随 size：mini 14px / small 17px / default 22px / medium 25px / large 28px',
+  },
   'drawer.ZtDrawer.props.loadingText': { description:'加载遮罩显示的提示文字。' },
   'drawer.ZtDrawer.events.hide': { description:'关闭过渡结束后触发，与 closed 一致。' },
   'drawer.ZtDrawer.slots.header-actions': { description:'标题栏右侧的额外操作，位于关闭按钮之前。' },

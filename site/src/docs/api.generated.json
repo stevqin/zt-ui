@@ -6974,8 +6974,8 @@
             "kind": "prop",
             "type": "number | string",
             "required": false,
-            "default": "22",
-            "description": "内容区内边距，数字按像素处理，也支持 CSS 长度。"
+            "default": "随 size：mini 14px / small 17px / default 22px / medium 25px / large 28px",
+            "description": "内容区内边距，数字按像素处理，也支持 CSS 长度；显式传入后覆盖 size 对应的默认间距。"
           },
           {
             "name": "loading",

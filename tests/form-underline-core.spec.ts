@@ -127,7 +127,7 @@ describe('Core underline CSS and preserved behavior', () => {
     expect(wrapper.get('input, textarea').attributes('aria-describedby')).toBeTruthy()
     await focusControl(wrapper)
     expect(surfaceStyle(wrapper, surface).boxShadow).toContain('inset 0 -1px 0')
-    expect(surfaceStyle(wrapper, surface).borderBottomColor).toBe(component === ZtMention || component === ZtInputOtp ? '#991b1b' : '#ef4444')
+    expect(surfaceStyle(wrapper, surface).borderBottomColor).toBe('#ef4444')
     expect(wrapper.get('.zt-form-item').classes()).toContain('is-error')
   })
 

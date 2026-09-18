@@ -7,9 +7,16 @@
 .zt-mention .zt-mention__clear { position: absolute; right: 6px; top: 6px; z-index: 4; width: 18px; height: 18px; padding: 0; border-radius: 50%; background: var(--zt-surface, #fff); @include clear.reveal('.zt-mention'); }
 
 .zt-mention.is-form-underline {
+  --zt-mention-underline-color: var(--zt-entry-ink, var(--glass-accent));
   > .zt-popover__reference > textarea {
     @include underline.surface;
-    &:focus { outline: none; @include underline.focus(var(--zt-entry-ink, var(--glass-accent))); }
+    &:focus { outline: none; @include underline.focus(var(--zt-mention-underline-color)); }
     &:disabled { @include underline.disabled; }
+  }
+}
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-mention.is-form-underline {
+    --zt-mention-underline-color: #{$color};
+    > .zt-popover__reference > textarea { border-bottom-color: var(--zt-mention-underline-color); }
   }
 }

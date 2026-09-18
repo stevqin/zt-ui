@@ -22,3 +22,9 @@
   > .zt-input-otp__cell.is-active { @include underline.focus(var(--otp-color)); }
   &.is-disabled > .zt-input-otp__cell { @include underline.disabled; }
 }
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-input-otp.is-form-underline {
+    --otp-line: #{$color};
+    --otp-color: #{$color};
+  }
+}

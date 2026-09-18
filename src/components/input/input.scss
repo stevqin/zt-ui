@@ -211,13 +211,13 @@
 }
 
 // Form validation remains authoritative, including when form.scss loads later.
-.zt-form-item.is-error .zt-input.is-form-underline {
-  --zt-input-underline-line: #ef4444;
-  --zt-input-underline-color: #ef4444;
-}
-.zt-form-item.is-success .zt-input.is-form-underline {
-  --zt-input-underline-line: #22c55e;
-  --zt-input-underline-color: #22c55e;
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-input.is-form-underline {
+    --zt-input-underline-line: #{$color};
+    --zt-input-underline-color: #{$color};
+    > .zt-input__wrapper,
+    > .zt-input__addon { border-bottom-color: var(--zt-input-underline-line); }
+  }
 }
 .zt-form-item .zt-input.is-form-underline:focus-within:not(.is-disabled) > .zt-input__wrapper,
 .zt-form-item .zt-input.is-form-underline:focus-within:not(.is-disabled) > .zt-input__addon {

@@ -18,7 +18,6 @@ const props = withDefaults(defineProps<ZtDrawerProps>(), {
   height: 420,
   fullscreenBelow: 0,
   bodyScroll: true,
-  bodyPadding: 22,
   loading: false,
   loadingText: '正在加载…',
   showHeader: true,

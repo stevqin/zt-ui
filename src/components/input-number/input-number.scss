@@ -110,8 +110,12 @@
   &:focus-within:not(.is-disabled) { @include underline.focus(var(--zt-number-underline-color)); }
   &.is-disabled { @include underline.disabled; }
 }
-.zt-form-item.is-error .zt-input-number.is-form-underline { --zt-number-underline-color: #ef4444; }
-.zt-form-item.is-success .zt-input-number.is-form-underline { --zt-number-underline-color: #22c55e; }
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-input-number.is-form-underline {
+    --zt-number-underline-color: #{$color};
+    border-bottom-color: var(--zt-number-underline-color);
+  }
+}
 .zt-form-item .zt-input-number.is-form-underline:focus-within:not(.is-disabled) {
   @include underline.focus(var(--zt-number-underline-color));
 }
