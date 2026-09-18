@@ -4,15 +4,45 @@ import { describe, expect, it, vi } from 'vitest'
 import { ZtConfigProvider, ZtIcon } from '../src'
 
 describe('Icon', () => {
-  it('renders a named icon with inherited size and accessible labeling', () => {
+  it('renders a named icon with independent default size and accessible labeling', () => {
     const wrapper = mount(ZtConfigProvider, {
       props: { size: 'large' },
       slots: { default: () => h(ZtIcon, { name: 'search', label: '搜索' }) },
     })
     const icon = wrapper.get('[role="img"]')
     expect(icon.attributes('aria-label')).toBe('搜索')
-    expect(icon.classes()).toContain('zt-icon-glyph--large')
+    expect(icon.attributes('style')).toContain('--zt-icon-size: 1em')
+    expect(icon.classes()).not.toContain('zt-icon-glyph--large')
     expect(icon.find('svg').exists()).toBe(true)
+  })
+
+  it.each([
+    [undefined, '1em'],
+    [24, '24px'],
+    ['18px', '18px'],
+    ['1.5em', '1.5em'],
+    ['50%', '50%'],
+  ] as const)('resolves independent icon size %s', (size, expected) => {
+    const wrapper = mount({
+      template: '<ZtConfigProvider size="large"><ZtIcon name="check" :size="size" /></ZtConfigProvider>',
+      setup: () => ({ size }),
+    }, { global: { components: { ZtConfigProvider, ZtIcon } } })
+    expect(wrapper.get('.zt-icon-glyph').attributes('style')).toContain(`--zt-icon-size: ${expected}`)
+  })
+
+  it.each(['', '   ', 0, -1, Number.NaN, Number.POSITIVE_INFINITY, Number.NEGATIVE_INFINITY] as const)(
+    'falls back to 1em for invalid icon size %s',
+    (size) => {
+      const wrapper = mount(ZtIcon, { props: { name: 'check', size } })
+      const icon = wrapper.get('.zt-icon-glyph')
+      expect(icon.attributes('style')).toContain('--zt-icon-size: 1em')
+      expect(icon.classes().some((name) => /^zt-icon-glyph--(?:mini|small|default|medium|large)$/.test(name))).toBe(false)
+    },
+  )
+
+  it('does not emit preset size classes for string sizes', () => {
+    const wrapper = mount(ZtIcon, { props: { name: 'check', size: 'large' } })
+    expect(wrapper.get('.zt-icon-glyph').classes().some((name) => /^zt-icon-glyph--(?:mini|small|default|medium|large)$/.test(name))).toBe(false)
   })
 
   it('prefers slot content and hides decorative icons from assistive technology', () => {

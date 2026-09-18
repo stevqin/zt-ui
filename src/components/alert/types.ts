@@ -1,4 +1,3 @@
-import type { ZtComponentSize } from '../types';
 export type ZtAlertStatus =
   'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info';
 export interface ZtAlertProps {
@@ -7,5 +6,4 @@ export interface ZtAlertProps {
   /** 提示语义颜色。 */ status?: ZtAlertStatus;
   /** 是否展示关闭按钮。 */ closable?: boolean;
   /** 是否显示语义图标。 */ showIcon?: boolean;
-  /** 未指定时继承全局尺寸。 */ size?: ZtComponentSize;
 }

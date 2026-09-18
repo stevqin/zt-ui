@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { h, nextTick } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { ZtTag, ZtBadge, ZtSwitch, ZtCheckbox, ZtPassword, ZtInputNumber, ZtSteps, ZtPagination, ZtConfigProvider, ZtButton, ZtInput, ZtForm, ZtFormItem, ZtRadio, ZtRadioGroup, ZtSelect, ZtDatePicker, ZtDateTimePicker, ZtModal, ZtDrawer } from '../src'
+import { ZtTag, ZtBadge, ZtSwitch, ZtCheckbox, ZtPassword, ZtInputNumber, ZtSteps, ZtPagination, ZtConfigProvider, ZtButton, ZtInput, ZtForm, ZtFormItem, ZtRadio, ZtRadioGroup, ZtSelect, ZtDatePicker, ZtDateTimePicker, ZtModal, ZtDrawer, ZtIcon, ZtAlert } from '../src'
 const wrappers:ReturnType<typeof mount>[]=[]
 afterEach(()=>{wrappers.splice(0).forEach(w=>w.unmount());document.body.innerHTML=''})
 function render(slots:()=>any, props:Record<string,unknown>={size:'large',theme:'dark',borderRadius:6}){const w=mount(ZtConfigProvider,{attachTo:document.body,props,slots:{default:slots}});wrappers.push(w);return w}
@@ -13,6 +13,12 @@ describe('ConfigProvider',()=>{
   expect(w.find('.zt-input').classes()).toContain('zt-input--large')
   await w.setProps({size:'mini'})
   expect(w.findAll('button')[0]!.classes()).toContain('zt-button--mini')
+ })
+ it('does not apply provider size to Icon or Alert',()=>{
+  const w=render(()=>[h(ZtIcon,{name:'check'}),h(ZtAlert,{title:'提示'})],{size:'large'})
+  expect(w.find('.zt-icon-glyph').classes().some((name)=>/^zt-icon-glyph--(?:mini|small|default|medium|large)$/.test(name))).toBe(false)
+  expect(w.find('.zt-icon-glyph').attributes('style')).toContain('--zt-icon-size: 1em')
+  expect(w.find('.zt-alert').classes()).toEqual(['zt-alert','zt-alert--info'])
  })
  it('prioritizes component then form/group then provider',()=>{
   const w=render(()=>[h(ZtForm,{size:'small'},()=>h(ZtFormItem,{},()=>[h(ZtInput),h(ZtInput,{size:'mini'})])),h(ZtRadioGroup,{size:'small'},()=>[h(ZtRadio,{label:'a'}),h(ZtRadio,{label:'b',size:'mini'})])])

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { useZtSize } from '../config-provider/context';
 import type { ZtAlertProps } from './types';
 import './alert.scss';
 defineOptions({ name: 'ZtAlert' });
@@ -12,8 +11,7 @@ const props = withDefaults(defineProps<ZtAlertProps>(), {
   showIcon: true,
 });
 const emit = defineEmits<{ close: [] }>();
-const visible = ref(true),
-  size = useZtSize(props);
+const visible = ref(true);
 function close() {
   if (visible.value) {
     visible.value = false;
@@ -25,7 +23,7 @@ function close() {
   <div
     v-if="visible"
     class="zt-alert"
-    :class="[`zt-alert--${status}`, `zt-alert--${size}`]"
+    :class="[`zt-alert--${status}`]"
     :role="status === 'danger' || status === 'warning' ? 'alert' : 'status'"
   >
     <span v-if="showIcon" class="zt-alert__icon" aria-hidden="true"

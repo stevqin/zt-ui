@@ -1,5 +1,4 @@
 import type { Component } from 'vue'
-import type { ZtComponentSize } from '../types'
 
 export const ztIconNames = [
   'add','minus','close','check','search','info','warning','error','success',
@@ -15,8 +14,8 @@ export interface ZtIconProps {
   name?: ZtIconName
   /** 自定义 Vue 图标组件。 */
   component?: Component
-  /** 五档预设尺寸、像素数值或 CSS 长度，默认继承 ConfigProvider。 */
-  size?: ZtComponentSize | number | string
+  /** 图标 CSS 尺寸；正数按像素处理，默认 1em。 */
+  size?: number | string
   /** 自定义图标颜色，覆盖 status。 */
   color?: string
   /** 图标主题颜色。 */
