@@ -1,12 +1,7 @@
 import type { ZtComponentSize } from '../types';
+import type { ZtSelectOption, ZtSelectValue } from '../selection/types';
 
-export type ZtSelectValue = string | number | boolean;
-
-export interface ZtSelectOption {
-  label: string;
-  value: ZtSelectValue;
-  disabled?: boolean;
-}
+export type { ZtSelectOption, ZtSelectValue } from '../selection/types';
 
 export type ZtSelectModelValue = ZtSelectValue | ZtSelectValue[] | null;
 export type ZtSelectRemoteMethod = (
