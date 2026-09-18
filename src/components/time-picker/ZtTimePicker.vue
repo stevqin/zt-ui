@@ -5,6 +5,7 @@ import { ZtInput } from '../input';
 import { ZtPopover } from '../popover';
 import { useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import type {
   ZtTimePickerProps,
   ZtTimePickerValue,
@@ -31,6 +32,7 @@ const emit = defineEmits<{
   clear: [];
   'visible-change': [visible: boolean];
 }>();
+const { underline } = useFormControlAppearance();
 const form = inject(ztFormItemKey, undefined),
   size = useZtSize(props, () => form?.size.value),
   disabled = computed(() => props.disabled || form?.disabled.value),
@@ -241,6 +243,7 @@ defineExpose({
 <template>
   <div
     class="zt-time-picker zt-entry-status"
+    :class="{ 'is-form-underline': underline, 'is-disabled': disabled, 'is-open': visible }"
     :style="
       entryStatusStyle(
         form?.validateState.value === 'error' ? 'danger' : status,

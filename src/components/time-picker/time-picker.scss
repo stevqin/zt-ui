@@ -1,7 +1,26 @@
 @use '../../styles/tokens' as glass;
+@use '../../styles/form-underline' as underline;
 @use '../../styles/clear-action' as clear;
 .zt-time-picker{width:100%;.zt-popover__reference{display:block}button{background:none;color:inherit;border:0;cursor:pointer}}
 .zt-time-picker__panel{font:14px/1.5 var(--glass-font);color:var(--glass-default-ink);p{font-size:12px;margin:6px 0}.zt-time-picker__columns{display:flex;gap:8px}.zt-time-picker__column{flex:1;height:200px;overflow:auto;overscroll-behavior:contain;button{display:block;width:100%;padding:7px;scroll-margin:4px}}button{border:1px solid transparent;border-radius:glass.radius(6px);background:none;color:inherit;font:inherit;cursor:pointer;&:focus-visible{outline:2px solid var(--zt-entry-ink,var(--glass-accent))}&[aria-selected=true],&[aria-pressed=true]{background:var(--zt-entry-soft,var(--glass-accent-soft));color:var(--zt-entry-ink,var(--glass-accent))}&:disabled{opacity:.35;cursor:not-allowed}}footer,.zt-time-picker__endpoints{display:flex;justify-content:space-between;gap:8px;margin-top:8px}footer button{padding:6px 14px;border-color:var(--glass-default-line)}&.zt-time-picker--mini{font-size:11px}&.zt-time-picker--small{font-size:12px}&.zt-time-picker--medium{font-size:15px}&.zt-time-picker--large{font-size:16px}}
 
 .zt-time-picker__clear-slot { position: absolute; right: calc(100% + var(--zt-input-gap)); display: flex; align-items: center; width: 0; }
 .zt-time-picker .zt-time-picker__clear { position: absolute; right: 0; z-index: 4; background: var(--zt-surface, #fff); width: var(--zt-input-action-size); height: var(--zt-input-action-size); padding: 0; border-radius: 50%; @include clear.reveal('.zt-time-picker'); }
+
+.zt-time-picker.is-form-underline {
+  --zt-time-underline-color: var(--zt-entry-ink, var(--glass-accent));
+  > .zt-popover__reference > .zt-input > .zt-input__wrapper { @include underline.surface; }
+  &:focus-within:not(.is-disabled) > .zt-popover__reference > .zt-input > .zt-input__wrapper,
+  &.is-open:not(.is-disabled) > .zt-popover__reference > .zt-input > .zt-input__wrapper {
+    @include underline.focus(var(--zt-time-underline-color));
+  }
+  &.is-disabled > .zt-popover__reference > .zt-input > .zt-input__wrapper { @include underline.disabled; }
+}
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-time-picker.is-form-underline {
+    --zt-time-underline-color: #{$color};
+    > .zt-popover__reference > .zt-input > .zt-input__wrapper {
+      border-bottom-color: var(--zt-time-underline-color);
+    }
+  }
+}

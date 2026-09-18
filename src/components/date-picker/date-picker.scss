@@ -1,4 +1,5 @@
 @use '../../styles/tokens' as glass;
+@use '../../styles/form-underline' as underline;
 
 @mixin date-theme {
   --zt-date-color: var(--glass-accent);
@@ -198,3 +199,19 @@
 @media (prefers-reduced-motion: reduce) { .zt-date-picker__clear { transition: none; } }
 
 .zt-date-picker__clear { z-index: 4; background: var(--zt-surface, #fff); }
+
+.zt-date-picker.is-form-underline {
+  --zt-date-underline-color: var(--zt-date-color);
+  @include underline.surface;
+  &:focus-within:not(.is-disabled), &.is-open:not(.is-disabled) {
+    @include underline.focus(var(--zt-date-underline-color));
+  }
+  &.is-disabled { @include underline.disabled; }
+  &.zt-date-picker--status-error, &.is-error { --zt-date-underline-color: #ef4444; }
+}
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-date-picker.is-form-underline {
+    --zt-date-underline-color: #{$color};
+    border-bottom-color: var(--zt-date-underline-color);
+  }
+}

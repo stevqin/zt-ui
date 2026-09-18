@@ -2,6 +2,7 @@
 import { entryStatusStyle } from '../autocomplete/status';
 import { inject } from 'vue';
 import { ztFormItemKey } from '../form/context';
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { computed, ref } from 'vue';
 import { ZtSelect } from '../select';
 import type { ZtSelectModelValue } from '../select/types';
@@ -25,6 +26,7 @@ const emit = defineEmits<{
   change: [value: string | null];
   clear: [];
 }>();
+const { underline } = useFormControlAppearance();
 const form = inject(ztFormItemKey, undefined);
 const options = computed(() => generateTimeOptions(props)),
   select = ref<InstanceType<typeof ZtSelect>>();
@@ -44,6 +46,7 @@ defineExpose({
   <ZtSelect
     ref="select"
     class="zt-entry-status"
+    :class="{ 'is-form-underline': underline }"
     :style="
       entryStatusStyle(
         form?.validateState.value === 'error' ? 'danger' : status,
