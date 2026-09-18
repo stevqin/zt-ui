@@ -29,6 +29,7 @@ function buttonDepth(radius: number): Record<string, string> {
     '--zt-button-depth-hover-shadow': flat ? 'none' : raised ? 'inset 0 1px 0 rgba(255,255,255,.2), 0 4px 10px rgba(0,0,0,.18)' : 'inset 0 1px 0 rgba(255,255,255,.12), 0 1px 0 rgba(0,0,0,.09)',
     '--zt-button-depth-active-shadow': flat ? 'none' : 'inset 0 1px 2px rgba(0,0,0,.12)',
     '--zt-button-depth-active-transform': flat ? 'none' : raised ? 'scale(.97)' : 'scale(.99)',
+    '--zt-button-depth-status-border-width': flat ? '0px' : '1px',
   }
 }
 export function configStyle(theme: ZtTheme, radius: number): CSSProperties {

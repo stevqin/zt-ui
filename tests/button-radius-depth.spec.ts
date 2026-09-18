@@ -102,8 +102,12 @@ describe.each(['light', 'dark'] as const)('production Button depth (%s)', theme 
       for (const component of buttons) {
         const button = component.element as HTMLButtonElement
         depth(button, band)
+        const status = component.props('status') as typeof statuses[number]
         const idleShadow = getComputedStyle(button).boxShadow
         const idle = getComputedStyle(button).backgroundColor
+        if (band === 'flat' && status !== 'default') {
+          expect(getComputedStyle(button).borderTopWidth, 'flat colored edge is removed').toBe('0px')
+        }
         idleColors.set(button, idle)
         button.classList.add('test-hover')
         depth(button, band)
@@ -111,8 +115,15 @@ describe.each(['light', 'dark'] as const)('production Button depth (%s)', theme 
         if (band !== 'flat') expect(hoverShadow, 'hover depth changes').not.toBe(idleShadow)
         const hover = getComputedStyle(button).backgroundColor
         expect(hover, 'hover changes color').not.toBe(idle)
+        if (band === 'flat' && status !== 'default') {
+          expect(getComputedStyle(button).borderTopWidth, 'flat colored hover edge stays removed').toBe('0px')
+        }
         button.classList.add('test-active')
-        expect(getComputedStyle(button).backgroundColor, 'pressed color').not.toBe(hover)
+        const active = getComputedStyle(button).backgroundColor
+        expect(active, 'pressed color').not.toBe(hover)
+        if (band === 'flat' && status !== 'default') {
+          expect(getComputedStyle(button).borderTopWidth, 'flat colored pressed edge stays removed').toBe('0px')
+        }
         const pressedShadow = getComputedStyle(button).boxShadow
         if (band === 'flat') expect(pressedShadow).toBe('none')
         else {
