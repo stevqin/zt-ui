@@ -6,7 +6,7 @@ import ZtIcon from '../icon/ZtIcon.vue'
 import { useZtConfig, useZtSize } from '../config-provider/context'
 import { ztFormItemKey } from '../form/context'
 import { overlayContextKey } from '../overlay/context'
-import { useAnchoredDropdown } from '../selection/useAnchoredDropdown'
+import { getUnconstrainedPopupHeight, useAnchoredDropdown } from '../selection/useAnchoredDropdown'
 import { useRemoteOptions } from '../selection/useRemoteOptions'
 import SelectBoxPanel from './SelectBoxPanel.vue'
 import { normalizePageSize, useSelectBoxDraft } from './useSelectBoxDraft'
@@ -68,7 +68,7 @@ function close() {
   remoteSearch.reset()
   remoteBatch.reset()
 }
-const dropdown = useAnchoredDropdown({ visible, trigger: controlElement, popup: popupElement, minWidth: computed(() => 480), layer: popupZIndex, tabThroughPopup: true, close, focus })
+const dropdown = useAnchoredDropdown({ visible, trigger: controlElement, popup: popupElement, minWidth: computed(() => 480), getPopupHeight: getUnconstrainedPopupHeight, layer: popupZIndex, tabThroughPopup: true, close, focus })
 provide(overlayContextKey, dropdown.overlayContext)
 const popupStyle = computed(() => ({ ...providerStyle.value, ...dropdown.popupStyle.value, zIndex: popupZIndex.value }))
 const searchMethod = computed(() => {
@@ -236,7 +236,7 @@ defineExpose({ focus, blur, open, close, clear })
     <button v-if="canClear" type="button" class="zt-select-box__clear" aria-label="清空选择" @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
     <Teleport :to="dropdown.teleportTarget.value">
       <div v-if="visible" :id="popupId" ref="popupElement" class="zt-select-box__popup" :data-zt-theme="theme" :style="popupStyle" role="dialog" aria-label="选择选项" tabindex="-1" @keydown.esc="handleEscape">
-        <SelectBoxPanel ref="panel" :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
+        <SelectBoxPanel ref="panel" :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @resize="dropdown.updatePosition" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
           <template v-if="$slots.option" #option="scope"><slot name="option" v-bind="scope" /></template>
         </SelectBoxPanel>
       </div>

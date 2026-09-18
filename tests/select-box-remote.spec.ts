@@ -439,3 +439,22 @@ describe('SelectBox batch confirmation', () => {
     expect(popup()).toBeNull()
   })
 })
+
+
+describe('SelectBox remote scroll-region boundaries', () => {
+  it('retains loading and errors inside the list while search, pager and actions remain outside', async () => {
+    const pending = deferred()
+    const w = box({ remote: true, remoteMethod: () => pending.promise })
+    await open(w)
+    const list = popup()!.querySelector('.zt-select-box-panel__list')!
+    expect(list.getAttribute('aria-busy')).toBe('true')
+    expect(list.querySelector('.zt-select-box-panel__loading.is-loading')).not.toBeNull()
+    pending.reject(new Error('offline')); await flushPromises()
+    expect(list.querySelector('[role="alert"]')?.textContent).toContain('加载失败')
+    expect(list.getAttribute('aria-busy')).toBe('false')
+    for (const name of ['header', 'pager', 'footer']) {
+      expect(popup()!.querySelector(`.zt-select-box-panel__${name}`)).not.toBeNull()
+      expect(list.querySelector(`.zt-select-box-panel__${name}`)).toBeNull()
+    }
+  })
+})

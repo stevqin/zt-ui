@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue'
+import { computed, nextTick, onMounted, onUpdated, ref, toRef, watch } from 'vue'
 import { ZtMessage } from '@ztechjs/zt-alert'
 import ZtCheckbox from '../checkbox/ZtCheckbox.vue'
 import ZtButton from '../button/ZtButton.vue'
@@ -37,6 +37,7 @@ const props = withDefaults(defineProps<{
   remoteErrorText?: string
 }>(), { filterable: true, noDataText: '暂无匹配选项', remoteErrorText: '加载失败，请重新搜索' })
 const emit = defineEmits<{
+  resize: []
   search: [keyword: string]
   'update:page': [page: number]
   'update:pageSize': [pageSize: number]
@@ -116,6 +117,9 @@ watch(pasteOpen, async open => {
   else searchInput.value?.focus()
 })
 onMounted(() => searchInput.value?.focus())
+// Clipped panels can change natural height without resizing their outer box.
+// Notify after rendering pages, remote states, slots, or paste/selected modes.
+onUpdated(() => emit('resize'))
 
 // Clear is an immediate outer-field action, independent of panel confirmation.
 function reset() {
@@ -229,7 +233,7 @@ function cancel() {
     </template>
     <div v-else class="zt-select-box-panel__paste">
       <div class="zt-select-box-panel__paste-editor">
-        <textarea ref="pasteInput" v-model="pasteText" :disabled="disabled || batchLoading" aria-label="选项文本粘贴处" placeholder="选项文本粘贴处" />
+        <textarea ref="pasteInput" class="zt-select-box-panel__list" v-model="pasteText" :disabled="disabled || batchLoading" aria-label="选项文本粘贴处" placeholder="选项文本粘贴处" />
         <div class="zt-select-box-panel__separator"><ZtText :size="size">分隔符：</ZtText><ZtSelect v-model="separator" :size="size" :options="separators" :disabled="disabled || batchLoading" aria-label="分隔符" /></div>
       </div>
       <ZtText v-if="pasteResult" class="zt-select-box-panel__paste-result" tag="p" status="info" :size="size" role="status">{{ pasteResult }}</ZtText>

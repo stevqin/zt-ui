@@ -251,3 +251,24 @@ describe('SelectBox underline boundary', () => {
     expect(popup()!.querySelector('.is-form-underline')).toBeNull()
   })
 })
+
+
+describe('SelectBox scroll-region integration', () => {
+  it('keeps pagination and confirmation outside the scroll owner across list and paste modes', async () => {
+    const w = box()
+    await open(w)
+    const list = popup()!.querySelector('.zt-select-box-panel__list')!
+    expect(list.querySelector('.zt-select-box-panel__pager')).toBeNull()
+    expect(list.querySelector('.zt-select-box-panel__footer')).toBeNull()
+    await click('[aria-label="下一页"]')
+    expect(popup()!.querySelector('.zt-select-box-panel__list')).toBe(list)
+    expect(list.querySelector('.zt-select-box-panel__option')?.textContent).toContain('选项 10')
+    await click('.zt-select-box-panel__mode')
+    const editor = popup()!.querySelector('.zt-select-box-panel__list')!
+    expect(editor).toBe(popup()!.querySelector('textarea'))
+    expect(popup()!.querySelector('.zt-select-box-panel__footer')).not.toBeNull()
+    await click('.zt-select-box-panel__mode')
+    expect(popup()!.querySelectorAll('.zt-select-box-panel__list')).toHaveLength(1)
+    expect(popup()!.querySelector('[aria-current="page"]')?.textContent).toBe('2')
+  })
+})

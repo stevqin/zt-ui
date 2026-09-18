@@ -92,6 +92,15 @@ describe('SelectBoxPanel local selection', () => {
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['east', 'south', 'west'])
   })
 
+  it('announces content changes for placement when paging and switching modes', async () => {
+    const wrapper = panel()
+    await wrapper.find('[aria-label="下一页"]').trigger('click')
+    expect(wrapper.emitted('resize')?.length).toBeGreaterThan(0)
+    const updates = wrapper.emitted('resize')!.length
+    await wrapper.find('.zt-select-box-panel__mode').trigger('click')
+    expect(wrapper.emitted('resize')!.length).toBeGreaterThan(updates)
+  })
+
   it('filters before paginating and resets the page for search and page-size changes', async () => {
     const wrapper = panel({ pageSizes: [2, 4] })
     await wrapper.find('[aria-label="第 3 页"]').trigger('click')
