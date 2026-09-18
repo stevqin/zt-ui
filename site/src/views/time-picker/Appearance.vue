@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtTimePicker,
@@ -6,6 +8,7 @@ import {
   type ZtComponentSize,
   type ZtTimePickerValue,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const sizes: ZtComponentSize[] = [
   'mini',
   'small',
@@ -29,9 +32,19 @@ const dark = ref(false);
       ><div class="picker-demo">
         <div v-for="(size, i) in sizes" :key="size">
           <p>{{ size }}</p>
-          <ZtTimePicker v-model="values[i]" :size="size" clearable />
+          <ZtTimePicker
+            :status="demoStatus"
+            v-model="values[i]"
+            :size="size"
+            clearable
+          />
         </div>
-        <ZtTimePicker :model-value="values[0]" disabled /><ZtTimePicker
+        <ZtTimePicker
+          :status="demoStatus"
+          :model-value="values[0]"
+          disabled
+        /><ZtTimePicker
+          :status="demoStatus"
           :model-value="values[0]"
           readonly
         /></div

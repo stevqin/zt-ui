@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtMention, type ZtMentionSource } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref('');
 const fetch: ZtMentionSource = (query, prefix, signal) =>
   new Promise((resolve, reject) => {
@@ -26,6 +29,7 @@ const fetch: ZtMentionSource = (query, prefix, signal) =>
 <template>
   <div class="entry-demo">
     <ZtMention
+      :status="demoStatus"
       v-model="value"
       :prefixes="['@', '#']"
       :fetch-suggestions="fetch"

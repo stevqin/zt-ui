@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ZtMenu } from '@ztechjs/zt-ui';
 import type { ZtMenuStatus } from '@ztechjs/zt-ui';
-const statuses: ZtMenuStatus[] = ['default', 'primary', 'success', 'warning', 'danger', 'info'];
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 </script>
 
 <template>
   <div class="menu-palettes">
-    <div v-for="color in statuses" :key="color">
-      <p>{{ color }}</p>
+    <div>
+      <p>{{ demoStatus }}</p>
       <ZtMenu
         model-value="one"
         :items="[
@@ -16,8 +17,8 @@ const statuses: ZtMenuStatus[] = ['default', 'primary', 'success', 'warning', 'd
           { key: 'three', label: '操作日志', disabled: true },
         ]"
         size="small"
-        :status="color"
-        :aria-label="color + '主题菜单'"
+        :status="demoStatus"
+        :aria-label="demoStatus + '主题菜单'"
       />
     </div>
   </div>

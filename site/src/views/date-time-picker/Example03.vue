@@ -1,17 +1,29 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtDateTimePicker } from '@ztechjs/zt-ui';
 import type { ZtDatePickerValue } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const limited = ref<ZtDatePickerValue>(null);
 const disabledDate = (date: Date) => date.getDay() === 0 || date.getDay() === 6;
 </script>
 
 <template>
   <div class="date-demo-stack">
-    <ZtDateTimePicker v-model="limited" :disabled-date="disabledDate" /><ZtDateTimePicker
+    <ZtDateTimePicker
+      :status="demoStatus"
+      v-model="limited"
+      :disabled-date="disabledDate"
+    /><ZtDateTimePicker
+      :status="demoStatus"
       model-value="2026-09-16 09:30:00"
       disabled
-    /><ZtDateTimePicker model-value="2026-09-16 09:30:00" readonly />
+    /><ZtDateTimePicker
+      :status="demoStatus"
+      model-value="2026-09-16 09:30:00"
+      readonly
+    />
   </div>
 </template>
 

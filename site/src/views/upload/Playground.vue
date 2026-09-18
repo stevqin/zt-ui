@@ -1,13 +1,18 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ref } from 'vue';
-import { ZtUpload, ZtButton, ZtSwitch, ZtSelect } from '@ztechjs/zt-ui';
-import type { ZtUploadFile, ZtUploadRequestOptions, ZtUploadStatus } from '@ztechjs/zt-ui';
+import { ZtUpload, ZtButton, ZtSwitch } from '@ztechjs/zt-ui';
+import type {
+  ZtUploadFile,
+  ZtUploadRequestOptions,
+  ZtUploadStatus,
+} from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const upload = ref<InstanceType<typeof ZtUpload>>(),
   files = ref<ZtUploadFile[]>([]);
 const auto = ref(true),
   drag = ref(false),
   failFirst = ref(false),
-  status = ref<ZtUploadStatus>('primary'),
   notice = ref('');
 const attempted = new WeakSet<File>();
 // 本地模拟：不创建网络请求，不会发送文件。生产环境可使用 action 替换此函数。
@@ -44,25 +49,14 @@ function request(options: ZtUploadRequestOptions) {
     <ZtSwitch v-model="auto" active-text="自动上传" /><ZtSwitch
       v-model="drag"
       active-text="拖拽区域"
-    /><ZtSwitch v-model="failFirst" active-text="首次模拟失败" /><ZtSelect
-      v-model="status"
-      size="small"
-      aria-label="上传主题"
-      :options="
-        ['default', 'primary', 'success', 'warning', 'danger', 'info'].map((value) => ({
-          label: value,
-          value,
-        }))
-      "
-      style="width: 140px"
-    />
+    /><ZtSwitch v-model="failFirst" active-text="首次模拟失败" />
   </div>
   <ZtUpload
     ref="upload"
     v-model:file-list="files"
     :auto-upload="auto"
     :drag="drag"
-    :status="status"
+    :status="demoStatus"
     :http-request="request"
     multiple
     :limit="3"
@@ -72,10 +66,16 @@ function request(options: ZtUploadRequestOptions) {
     @success="notice = '本地模拟上传完成'"
     @error="notice = '模拟失败，可使用列表中的重试按钮'"
   >
-    <template #tip>本地模拟上传，不发送文件。最多 3 个文件，每个不超过 5 MB。</template>
+    <template #tip
+      >本地模拟上传，不发送文件。最多 3 个文件，每个不超过 5 MB。</template
+    >
   </ZtUpload>
   <div class="upload-actions">
-    <ZtButton v-if="!auto" size="small" status="primary" @click="upload?.submit()"
+    <ZtButton
+      v-if="!auto"
+      size="small"
+      status="primary"
+      @click="upload?.submit()"
       >开始上传</ZtButton
     ><ZtButton
       size="small"

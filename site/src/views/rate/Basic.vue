@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtRate } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref(2.5),
   event = ref('');
 </script>
 <template>
   <div class="entry-demo">
     <ZtRate
+      :status="demoStatus"
       v-model="value"
       allow-half
       clearable

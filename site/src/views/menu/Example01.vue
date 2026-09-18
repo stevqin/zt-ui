@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtMenuStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtMenu } from '@ztechjs/zt-ui';
 import type { ZtMenuItem } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 const selected = ref('overview');
 const items: ZtMenuItem[] = [
   {
@@ -27,7 +30,13 @@ const items: ZtMenuItem[] = [
 </script>
 
 <template>
-  <ZtMenu v-model="selected" :items="items" aria-label="工作空间导航" style="max-width: 300px" />
+  <ZtMenu
+    :status="demoStatus"
+    v-model="selected"
+    :items="items"
+    aria-label="工作空间导航"
+    style="max-width: 300px"
+  />
   <p>当前选择：{{ selected }}</p>
 </template>
 

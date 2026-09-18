@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtDatePickerPanel,
@@ -8,6 +10,7 @@ import {
   type ZtFormInstance,
   type ZtDatePickerValue,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const model = reactive<{ value: ZtDatePickerValue }>({ value: null }),
   form = ref<ZtFormInstance>(),
   disabled = ref(false),
@@ -31,7 +34,9 @@ async function submit() {
         :rules="[
           { required: true, message: '请填写该字段', trigger: 'change' },
         ]"
-        ><ZtDatePickerPanel v-model="model.value" /></ZtFormItem
+        ><ZtDatePickerPanel
+          :status="demoStatus"
+          v-model="model.value" /></ZtFormItem
       ><ZtButton :disabled="disabled" @click="submit">校验</ZtButton></ZtForm
     >
     <p role="status">{{ result }}</p>

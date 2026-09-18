@@ -1,24 +1,38 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtTabsStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtTabs, ZtTabPane, ZtSelect } from '@ztechjs/zt-ui';
 import type { ZtTabsPosition, ZtTabsType } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtTabsStatus>('primary');
 const active = ref('orders');
 const position = ref<ZtTabsPosition>('top');
 const type = ref<ZtTabsType>('line');
-const positions = ['top', 'right', 'bottom', 'left'].map((value) => ({ label: value, value }));
-const types = ['line', 'card', 'border-card'].map((value) => ({ label: value, value }));
+const positions = ['top', 'right', 'bottom', 'left'].map((value) => ({
+  label: value,
+  value,
+}));
+const types = ['line', 'card', 'border-card'].map((value) => ({
+  label: value,
+  value,
+}));
 </script>
 
 <template>
   <div class="example-stack">
     <div class="example-row">
-      <ZtSelect v-model="position" :options="positions" aria-label="标签位置" /><ZtSelect
-        v-model="type"
-        :options="types"
-        aria-label="标签外观"
-      />
+      <ZtSelect
+        v-model="position"
+        :options="positions"
+        aria-label="标签位置"
+      /><ZtSelect v-model="type" :options="types" aria-label="标签外观" />
     </div>
-    <ZtTabs v-model="active" :position="position" :type="type" stretch
+    <ZtTabs
+      :status="demoStatus"
+      v-model="active"
+      :position="position"
+      :type="type"
+      stretch
       ><ZtTabPane name="orders" label="订单">订单内容</ZtTabPane
       ><ZtTabPane name="customers" label="客户">客户内容</ZtTabPane></ZtTabs
     >

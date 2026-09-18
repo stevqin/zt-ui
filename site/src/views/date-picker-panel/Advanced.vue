@@ -1,12 +1,20 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtDatePickerPanel, type ZtDatePickerValue } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const value = ref<ZtDatePickerValue>(['2026-09-17', '2026-09-20']);
 const disabledDate = (date: Date) => date.getDay() === 0 || date.getDay() === 6;
 </script>
 <template>
   <div class="picker-demo">
-    <ZtDatePickerPanel v-model="value" range :disabled-date="disabledDate" />
+    <ZtDatePickerPanel
+      :status="demoStatus"
+      v-model="value"
+      range
+      :disabled-date="disabledDate"
+    />
     <p>周末不可选；反向选择自动排列起止。窄屏显示明确的开始/结束提示。</p>
     <p>{{ JSON.stringify(value) }}</p>
   </div>

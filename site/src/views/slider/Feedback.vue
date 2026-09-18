@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtSliderStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtSlider } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtSliderStatus>('primary');
 const value = ref(30),
   draft = ref(30),
   committed = ref(30);
@@ -9,6 +12,7 @@ const value = ref(30),
 <template>
   <div class="example-stack">
     <ZtSlider
+      :status="demoStatus"
       v-model="value"
       :format-tooltip="(value) => `${value}%`"
       aria-label="折扣比例"
@@ -16,7 +20,12 @@ const value = ref(30),
       @change="committed = $event as number"
     />
     <p>拖动中：{{ draft }}%，提交值：{{ committed }}%</p>
-    <ZtSlider :model-value="60" :show-tooltip="false" aria-label="无提示滑块" />
+    <ZtSlider
+      :status="demoStatus"
+      :model-value="60"
+      :show-tooltip="false"
+      aria-label="无提示滑块"
+    />
   </div>
 </template>
 

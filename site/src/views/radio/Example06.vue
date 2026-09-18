@@ -1,18 +1,30 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtRadioStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtRadio, ZtRadioGroup } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtRadioStatus>('primary');
 const sized = ref('1');
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtRadioGroup v-model="sized" size="mini"><ZtRadio label="1" border>Mini</ZtRadio></ZtRadioGroup
-    ><ZtRadioGroup v-model="sized" size="small"
-      ><ZtRadio label="1" border>Small</ZtRadio></ZtRadioGroup
-    ><ZtRadioGroup v-model="sized" size="medium"
-      ><ZtRadio label="1" border>Medium</ZtRadio></ZtRadioGroup
-    ><ZtRadioGroup v-model="sized" size="large"
-      ><ZtRadio label="1" border>Large</ZtRadio></ZtRadioGroup
+    <ZtRadioGroup :status="demoStatus" v-model="sized" size="mini"
+      ><ZtRadio :status="demoStatus" label="1" border
+        >Mini</ZtRadio
+      ></ZtRadioGroup
+    ><ZtRadioGroup :status="demoStatus" v-model="sized" size="small"
+      ><ZtRadio :status="demoStatus" label="1" border
+        >Small</ZtRadio
+      ></ZtRadioGroup
+    ><ZtRadioGroup :status="demoStatus" v-model="sized" size="medium"
+      ><ZtRadio :status="demoStatus" label="1" border
+        >Medium</ZtRadio
+      ></ZtRadioGroup
+    ><ZtRadioGroup :status="demoStatus" v-model="sized" size="large"
+      ><ZtRadio :status="demoStatus" label="1" border
+        >Large</ZtRadio
+      ></ZtRadioGroup
     >
   </div>
 </template>

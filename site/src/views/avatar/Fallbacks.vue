@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtAvatarStatus } from '@ztechjs/zt-ui';
 // 内联示意图让示例无需下载静态资源，可替换为业务图片地址。
 const demoImage1 =
   'data:image/svg+xml,' +
@@ -7,16 +9,25 @@ const demoImage1 =
   );
 
 import { ZtAvatar } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtAvatarStatus>('default');
 </script>
 
 <template>
   <div class="example-stack">
     <div class="example-row">
-      <ZtAvatar alt="自定义头像" status="warning">ZT</ZtAvatar
-      ><ZtAvatar icon="user" alt="图标头像" /><ZtAvatar
+      <ZtAvatar alt="自定义头像" :status="demoStatus">ZT</ZtAvatar
+      ><ZtAvatar :status="demoStatus" icon="user" alt="图标头像" /><ZtAvatar
+        :status="demoStatus"
         src="data:image/png;base64,invalid"
         alt="林青"
-      /><ZtAvatar :src="demoImage1" fit="contain" :size="80" shape="square" alt="完整图片" />
+      /><ZtAvatar
+        :status="demoStatus"
+        :src="demoImage1"
+        fit="contain"
+        :size="80"
+        shape="square"
+        alt="完整图片"
+      />
     </div>
   </div>
 </template>

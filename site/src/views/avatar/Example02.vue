@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtAvatarStatus } from '@ztechjs/zt-ui';
 import { ZtAvatar } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtAvatarStatus>('default');
 </script>
 
 <template>
   <div class="avatar-row">
-    <ZtAvatar
-      v-for="status in ['primary', 'success', 'warning', 'danger', 'info']"
-      :key="status"
-      :status="status as any"
-      :alt="status"
-    /><ZtAvatar src="data:image/png;base64,invalid" alt="失败后备" />
+    <ZtAvatar :status="demoStatus" :alt="demoStatus" /><ZtAvatar
+      :status="demoStatus"
+      src="data:image/png;base64,invalid"
+      alt="失败后备"
+    />
   </div>
 </template>
 

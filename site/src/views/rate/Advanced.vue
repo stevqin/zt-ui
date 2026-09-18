@@ -1,14 +1,18 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtRate } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref(3);
 const texts = ['需改进', '一般', '满意', '很好', '优秀'];
 </script>
 <template>
   <div class="entry-demo">
-    <ZtRate v-model="value" :texts="texts" label="满意程度"
+    <ZtRate :status="demoStatus" v-model="value" :texts="texts" label="满意程度"
       ><template #icon>♥</template></ZtRate
     ><ZtRate
+      :status="demoStatus"
       :model-value="8"
       :max="10"
       readonly

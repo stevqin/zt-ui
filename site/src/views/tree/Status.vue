@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ref } from 'vue';
 import {
   ZtTree,
@@ -6,17 +7,8 @@ import {
   type ZtButtonStatus,
   type ZtTreeKey,
 } from '@ztechjs/zt-ui';
-const statuses: ZtButtonStatus[] = [
-  'default',
-  'primary',
-  'success',
-  'warning',
-  'danger',
-  'info',
-];
-const values = ref<Record<string, ZtTreeKey[]>>(
-  Object.fromEntries(statuses.map((status) => [status, ['a']])),
-);
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
+const value = ref<ZtTreeKey[]>(['a']);
 const dark = ref(false);
 const data = [
   { key: 'a', label: '区域', children: [{ key: 'b', label: '门店' }] },
@@ -26,12 +18,12 @@ const data = [
   <label><input v-model="dark" type="checkbox" />暗色状态色</label
   ><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
     ><div class="statuses">
-      <div v-for="status in statuses" :key="status">
-        <p>{{ status }}</p>
+      <div>
+        <p>{{ demoStatus }}</p>
         <ZtTree
-          v-model:checked-keys="values[status]"
+          v-model:checked-keys="value"
           :data="data"
-          :status="status"
+          :status="demoStatus"
           checkable
           :default-expanded-keys="['a']"
         />

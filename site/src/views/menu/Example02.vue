@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtMenuStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtMenu } from '@ztechjs/zt-ui';
 import type { ZtMenuItem } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 const nested = ref('orders');
 const expanded = ref(['business']);
 const tree: ZtMenuItem[] = [
@@ -34,6 +37,7 @@ const tree: ZtMenuItem[] = [
 
 <template>
   <ZtMenu
+    :status="demoStatus"
     v-model="nested"
     v-model:expanded-keys="expanded"
     :items="tree"

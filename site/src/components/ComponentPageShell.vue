@@ -3,8 +3,11 @@ import { computed } from 'vue';
 import { RouterLink } from 'vue-router';
 import { components, scenarios, type ComponentMeta } from '../docs/catalog';
 import ApiReference from './ApiReference.vue';
+import DemoStatusController from './DemoStatusController.vue';
+import { provideDemoStatus } from '../docs/demo-status';
 
 const props = defineProps<{ component: ComponentMeta }>();
+provideDemoStatus(computed(() => props.component.visualStatus));
 const related = computed(() => {
   const id = props.component.path.slice(1);
   return [
@@ -36,6 +39,7 @@ const related = computed(() => {
     class="doc-section component-page-shell"
     :data-component="component.path.slice(1)"
   >
+    <DemoStatusController />
     <header class="component-page__intro" data-page-section="purpose">
       <h1>{{ component.name }} {{ component.title }}</h1>
       <p>{{ component.page.purpose }}</p>

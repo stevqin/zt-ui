@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ref } from 'vue';
 import { ZtMenu, ZtSelect } from '@ztechjs/zt-ui';
 import type { ZtMenuItem, ZtMenuStatus } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 const selected = ref('overview'),
-  trigger = ref<'hover' | 'click'>('hover'),
-  status = ref<ZtMenuStatus>('primary');
+  trigger = ref<'hover' | 'click'>('hover');
 const items: ZtMenuItem[] = [
   { key: 'overview', label: '工作台' },
   {
@@ -51,16 +52,6 @@ const items: ZtMenuItem[] = [
       ]"
       aria-label="横向菜单触发方式"
       size="small"
-    /><ZtSelect
-      v-model="status"
-      :options="
-        ['default', 'primary', 'success', 'warning', 'danger', 'info'].map((value) => ({
-          label: value,
-          value,
-        }))
-      "
-      aria-label="横向菜单主题"
-      size="small"
     />
   </div>
   <ZtMenu
@@ -68,7 +59,7 @@ const items: ZtMenuItem[] = [
     mode="horizontal"
     :items="items"
     :menu-trigger="trigger"
-    :status="status"
+    :status="demoStatus"
     aria-label="横向业务导航"
   />
   <p>当前选择：{{ selected }}</p>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ref } from 'vue';
 import {
   ZtTransfer,
@@ -6,17 +7,8 @@ import {
   type ZtButtonStatus,
   type ZtTransferKey,
 } from '@ztechjs/zt-ui';
-const statuses: ZtButtonStatus[] = [
-  'default',
-  'primary',
-  'success',
-  'warning',
-  'danger',
-  'info',
-];
-const values = ref<Record<string, ZtTransferKey[]>>(
-  Object.fromEntries(statuses.map((status) => [status, ['b']])),
-);
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
+const value = ref<ZtTransferKey[]>(['b']);
 const dark = ref(false);
 const data = [
   { key: 'a', label: '待授权' },
@@ -27,9 +19,9 @@ const data = [
   <label><input v-model="dark" type="checkbox" />暗色状态色</label
   ><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
     ><div class="statuses">
-      <div v-for="status in statuses" :key="status">
-        <p>{{ status }}</p>
-        <ZtTransfer v-model="values[status]" :data="data" :status="status" />
+      <div>
+        <p>{{ demoStatus }}</p>
+        <ZtTransfer v-model="value" :data="data" :status="demoStatus" />
       </div></div
   ></ZtConfigProvider>
 </template>

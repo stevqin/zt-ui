@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputTag } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const values = ref(['设计']),
   duplicates = ref(['A', 'A']);
 </script>
 <template>
   <div class="entry-demo">
     <ZtInputTag
+      :status="demoStatus"
       v-model="values"
       :separators="['/', ';']"
       aria-label="自定义分隔符"
@@ -14,6 +18,7 @@ const values = ref(['设计']),
     >
     <p>可粘贴：设计/研发;生产</p>
     <ZtInputTag
+      :status="demoStatus"
       v-model="duplicates"
       :deduplicate="false"
       aria-label="允许重复"

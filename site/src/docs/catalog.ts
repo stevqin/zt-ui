@@ -37,6 +37,7 @@ export interface ComponentVisualStatusMeta {
   supported: DemoVisualStatus[];
   default: DemoVisualStatus;
   controller: boolean;
+  reason?: string;
 }
 export interface ComponentMeta {
   path: string;
@@ -48,8 +49,8 @@ export interface ComponentMeta {
   keywords: string[];
   routeName?: string;
   page: ComponentPageMeta;
-  /** Optional documentation-only capability; never a ConfigProvider setting. */
-  visualStatus?: ComponentVisualStatusMeta;
+  /** Explicit documentation-only capability; never a ConfigProvider setting. */
+  visualStatus: ComponentVisualStatusMeta;
 }
 export interface PlannedComponent {
   name: string;
@@ -191,6 +192,87 @@ const pages = pageContent as Record<
   Pick<ComponentPageMeta, 'purpose' | 'guidance' | 'examples' | 'related'>
 >;
 
+const visualStatuses: DemoVisualStatus[] = [
+  'default',
+  'primary',
+  'success',
+  'warning',
+  'danger',
+  'info',
+];
+const visualStatusDefaults: Record<string, DemoVisualStatus> = {
+  '/icon': 'default',
+  '/link': 'default',
+  '/text': 'default',
+  '/popconfirm': 'warning',
+  '/tabs': 'primary',
+  '/segmented': 'primary',
+  '/avatar': 'default',
+  '/upload': 'primary',
+  '/input-otp': 'default',
+  '/menu': 'primary',
+  '/slider': 'primary',
+  '/progress': 'primary',
+  '/badge': 'danger',
+  '/radio': 'primary',
+  '/checkbox': 'primary',
+  '/switch': 'primary',
+  '/pagination': 'primary',
+  '/date-picker': 'primary',
+  '/date-time-picker': 'primary',
+  '/typography': 'default',
+  '/alert': 'info',
+  '/tree': 'primary',
+  '/cascader': 'primary',
+  '/tree-select': 'primary',
+  '/transfer': 'primary',
+  '/autocomplete': 'primary',
+  '/input-tag': 'primary',
+  '/mention': 'primary',
+  '/rate': 'primary',
+  '/time-select': 'primary',
+  '/time-picker': 'primary',
+  '/color-picker': 'primary',
+  '/date-picker-panel': 'primary',
+  '/color-picker-panel': 'primary',
+};
+function visualStatusFor(path: string): ComponentVisualStatusMeta {
+  const fallback = visualStatusDefaults[path];
+  if (fallback)
+    return {
+      supported: [...visualStatuses],
+      default: fallback,
+      controller: true,
+    };
+  if (path === '/button' || path === '/tag')
+    return {
+      supported: [...visualStatuses],
+      default: 'default',
+      controller: false,
+      reason: '保留完整视觉状态矩阵',
+    };
+  if (path === '/steps' || path === '/result')
+    return {
+      supported: [],
+      default: path === '/result' ? 'info' : 'default',
+      controller: false,
+      reason: '流程或业务结果状态',
+    };
+  if (path === '/input' || path === '/password')
+    return {
+      supported: ['default', 'success', 'warning'],
+      default: 'default',
+      controller: false,
+      reason: '字段校验状态包含 error，不支持六色视觉主题',
+    };
+  return {
+    supported: [],
+    default: 'default',
+    controller: false,
+    reason: '主组件未提供六色视觉 status 属性',
+  };
+}
+
 const stable = (
   path: string,
   name: string,
@@ -205,6 +287,7 @@ const stable = (
   group,
   description,
   status: 'stable',
+  visualStatus: visualStatusFor(path),
   keywords,
   routeName: path === '/menu' ? 'menu-demo' : undefined,
   page: {

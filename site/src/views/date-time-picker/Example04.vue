@@ -1,11 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ZtDateTimePicker } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const sizes = ['mini', 'small', 'default', 'medium', 'large'] as const;
 </script>
 
 <template>
   <div class="date-demo-stack">
-    <ZtDateTimePicker v-for="size in sizes" :key="size" :size="size" />
+    <ZtDateTimePicker
+      :status="demoStatus"
+      v-for="size in sizes"
+      :key="size"
+      :size="size"
+    />
   </div>
 </template>
 

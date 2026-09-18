@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtRadioStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtRadio, ZtRadioGroup, ZtSwitch } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtRadioStatus>('primary');
 const value = ref(1),
   disabled = ref(false),
   message = ref('');
@@ -9,11 +12,15 @@ const value = ref(1),
 <template>
   <div class="example-stack">
     <ZtSwitch v-model="disabled" active-text="禁用整组" /><ZtRadioGroup
+      :status="demoStatus"
       v-model="value"
       :disabled="disabled"
       @change="message = `选中了 ${$event}`"
-      ><ZtRadio :label="1" name="delivery">门店自提</ZtRadio
-      ><ZtRadio :label="2" name="delivery">快递配送</ZtRadio></ZtRadioGroup
+      ><ZtRadio :status="demoStatus" :label="1" name="delivery"
+        >门店自提</ZtRadio
+      ><ZtRadio :status="demoStatus" :label="2" name="delivery"
+        >快递配送</ZtRadio
+      ></ZtRadioGroup
     >
     <p role="status">{{ message }}</p>
   </div>

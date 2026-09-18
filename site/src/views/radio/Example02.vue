@@ -1,13 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtRadioStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtRadio } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtRadioStatus>('primary');
 const basic = ref('1');
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtRadio v-model="basic" label="1" disabled>禁用已选</ZtRadio
-    ><ZtRadio v-model="basic" label="2" disabled>禁用未选</ZtRadio>
+    <ZtRadio :status="demoStatus" v-model="basic" label="1" disabled
+      >禁用已选</ZtRadio
+    ><ZtRadio :status="demoStatus" v-model="basic" label="2" disabled
+      >禁用未选</ZtRadio
+    >
   </div>
 </template>
 

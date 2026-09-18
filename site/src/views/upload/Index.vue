@@ -37,7 +37,7 @@ import FileSlotCode from './FileSlot.vue?raw';
     <h3>上传交互体验</h3>
     <DemoBlock
       :code="playgroundCode"
-      desc="此示例使用本地模拟请求。可切换自动/手动上传、拖拽和失败重试，或切换 status 查看六种主题。"
+      desc="此示例使用本地模拟请求。可切换自动/手动上传、拖拽和失败重试，使用页面状态控制器切换六种主题。"
       ><Playground
     /></DemoBlock>
     <h3>图片列表与预览</h3>

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 // 内联示意图让示例无需下载静态资源，可替换为业务图片地址。
 const demoImage1 =
   'data:image/svg+xml,' +
@@ -14,6 +16,7 @@ const demoImage2 =
 import { ref } from 'vue';
 import { ZtUpload, ZtSwitch } from '@ztechjs/zt-ui';
 import type { ZtUploadFile, ZtUploadRequestOptions } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const files = ref<ZtUploadFile[]>([
   { uid: 'coast', name: '海岸.svg', status: 'success', url: demoImage1 },
   { uid: 'forest', name: '森林.svg', status: 'success', url: demoImage2 },
@@ -59,6 +62,7 @@ function request(options: ZtUploadRequestOptions) {
     />
   </div>
   <ZtUpload
+    :status="demoStatus"
     v-model:file-list="files"
     list-type="picture-card"
     accept="image/*"

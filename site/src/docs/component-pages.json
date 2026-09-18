@@ -2532,7 +2532,7 @@
         "title": "上传交互体验",
         "kind": "live",
         "file": "src/views/upload/Playground.vue",
-        "description": "此示例使用本地模拟请求。可切换自动/手动上传、拖拽和失败重试，或切换 status 查看六种主题。"
+        "description": "此示例使用本地模拟请求。可切换自动/手动上传、拖拽和失败重试，使用页面状态控制器切换六种主题。"
       },
       {
         "title": "图片列表与预览",

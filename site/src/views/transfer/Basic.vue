@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import {
   ZtTransfer,
   type ZtTransferKey,
   type ZtTransferOption,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtTransferKey[]>([2]),
   last = ref('尚未移动');
 const data: ZtTransferOption[] = Array.from({ length: 12 }, (_, i) => ({
@@ -22,6 +25,7 @@ function change(
 </script>
 <template>
   <ZtTransfer
+    :status="demoStatus"
     v-model="value"
     :data="data"
     filterable

@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtAutocomplete,
   ZtConfigProvider,
   type ZtComponentSize,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const sizes: ZtComponentSize[] = [
   'mini',
   'small',
@@ -23,17 +26,20 @@ const dark = ref(false);
         <div v-for="(size, i) in sizes" :key="size">
           <p>{{ size }}</p>
           <ZtAutocomplete
+            :status="demoStatus"
             v-model="values[i]"
             :size="size"
             :options="[{ value: '杭州' }, { value: '上海' }]"
           />
         </div>
         <ZtAutocomplete
+          :status="demoStatus"
           disabled
           :options="[{ value: '杭州' }, { value: '上海' }]"
           aria-label="禁用示例"
         /></div></ZtConfigProvider
     ><ZtAutocomplete
+      :status="demoStatus"
       readonly
       :options="[{ value: '杭州' }, { value: '上海' }]"
       aria-label="只读示例"

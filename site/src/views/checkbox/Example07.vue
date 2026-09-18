@@ -1,19 +1,30 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtCheckboxStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtCheckbox, ZtCheckboxGroup } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtCheckboxStatus>('primary');
 const bordered = ref(['阅读']);
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtCheckboxGroup v-model="bordered" size="mini"
-      ><ZtCheckbox value="阅读" border>Mini</ZtCheckbox></ZtCheckboxGroup
-    ><ZtCheckboxGroup v-model="bordered" size="small"
-      ><ZtCheckbox value="阅读" border>Small</ZtCheckbox></ZtCheckboxGroup
-    ><ZtCheckboxGroup v-model="bordered" size="medium"
-      ><ZtCheckbox value="阅读" border>Medium</ZtCheckbox></ZtCheckboxGroup
-    ><ZtCheckboxGroup v-model="bordered" size="large"
-      ><ZtCheckbox value="阅读" border>Large</ZtCheckbox></ZtCheckboxGroup
+    <ZtCheckboxGroup :status="demoStatus" v-model="bordered" size="mini"
+      ><ZtCheckbox :status="demoStatus" value="阅读" border
+        >Mini</ZtCheckbox
+      ></ZtCheckboxGroup
+    ><ZtCheckboxGroup :status="demoStatus" v-model="bordered" size="small"
+      ><ZtCheckbox :status="demoStatus" value="阅读" border
+        >Small</ZtCheckbox
+      ></ZtCheckboxGroup
+    ><ZtCheckboxGroup :status="demoStatus" v-model="bordered" size="medium"
+      ><ZtCheckbox :status="demoStatus" value="阅读" border
+        >Medium</ZtCheckbox
+      ></ZtCheckboxGroup
+    ><ZtCheckboxGroup :status="demoStatus" v-model="bordered" size="large"
+      ><ZtCheckbox :status="demoStatus" value="阅读" border
+        >Large</ZtCheckbox
+      ></ZtCheckboxGroup
     >
   </div>
 </template>

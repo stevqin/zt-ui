@@ -1,16 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ZtDateTimePicker } from '@ztechjs/zt-ui';
-const statuses = ['default', 'primary', 'success', 'warning', 'danger', 'info'] as const;
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 </script>
 
 <template>
   <div class="date-demo-stack">
     <ZtDateTimePicker
-      v-for="status in statuses"
-      :key="status"
-      :status="status"
+      :status="demoStatus"
       model-value="2026-01-01 09:00:00"
-      :placeholder="status"
+      :placeholder="demoStatus"
     />
   </div>
 </template>

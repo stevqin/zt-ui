@@ -1,14 +1,28 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ZtInputOtp } from '@ztechjs/zt-ui';
 import type { ZtComponentSize } from '@ztechjs/zt-ui';
-const sizes: ZtComponentSize[] = ['mini', 'small', 'default', 'medium', 'large'];
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
+const sizes: ZtComponentSize[] = [
+  'mini',
+  'small',
+  'default',
+  'medium',
+  'large',
+];
 </script>
 
 <template>
   <div class="otp-examples">
     <div v-for="size in sizes" :key="size">
       <span>{{ size }}</span
-      ><ZtInputOtp model-value="012" :size="size" :aria-label="size + '验证码'" />
+      ><ZtInputOtp
+        :status="demoStatus"
+        model-value="012"
+        :size="size"
+        :aria-label="size + '验证码'"
+      />
     </div>
   </div>
 </template>

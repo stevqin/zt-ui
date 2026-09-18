@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputTag } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const values = ref(['春夏', '新品']),
   event = ref('');
 </script>
 <template>
   <div class="entry-demo">
     <ZtInputTag
+      :status="demoStatus"
       v-model="values"
       :max="4"
       clearable

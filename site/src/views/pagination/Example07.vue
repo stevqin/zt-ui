@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtPaginationStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtPagination, ZtSwitch } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtPaginationStatus>('primary');
 const hideSingle = ref(true);
 </script>
 
 <template>
   <div class="pagination-stack">
     <ZtSwitch v-model="hideSingle" active-text="隐藏单页" /><ZtPagination
+      :status="demoStatus"
       :total="5"
       :hide-on-single-page="hideSingle"
       layout="prev, pager, next"

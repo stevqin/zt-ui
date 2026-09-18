@@ -1,14 +1,20 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtCheckboxStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtCheckbox, ZtCheckboxGroup } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtCheckboxStatus>('primary');
 const group = ref(['A']);
 </script>
 
 <template>
   <div class="demo-row">
-    <ZtCheckboxGroup v-model="group"
-      ><ZtCheckbox value="A">选项 A</ZtCheckbox><ZtCheckbox value="B">选项 B</ZtCheckbox
-      ><ZtCheckbox value="C">选项 C</ZtCheckbox></ZtCheckboxGroup
+    <ZtCheckboxGroup :status="demoStatus" v-model="group"
+      ><ZtCheckbox :status="demoStatus" value="A">选项 A</ZtCheckbox
+      ><ZtCheckbox :status="demoStatus" value="B">选项 B</ZtCheckbox
+      ><ZtCheckbox :status="demoStatus" value="C"
+        >选项 C</ZtCheckbox
+      ></ZtCheckboxGroup
     >
   </div>
 </template>

@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtTimeSelect } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref<string | null>(null);
 </script>
 <template>
   <div class="entry-demo">
     <ZtTimeSelect
+      :status="demoStatus"
       v-model="value"
       start="08:00"
       end="18:00"

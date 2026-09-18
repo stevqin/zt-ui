@@ -1,12 +1,19 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtIconStatus } from '@ztechjs/zt-ui';
 import { ZtIcon, ztIconNames } from '@ztechjs/zt-ui';
 import type { ZtIconName } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtIconStatus>('default');
 </script>
 
 <template>
   <div class="icon-grid">
     <div v-for="name in ztIconNames" :key="name">
-      <ZtIcon :name="name as ZtIconName" :label="name" /><span>{{ name }}</span>
+      <ZtIcon
+        :status="demoStatus"
+        :name="name as ZtIconName"
+        :label="name"
+      /><span>{{ name }}</span>
     </div>
   </div>
 </template>

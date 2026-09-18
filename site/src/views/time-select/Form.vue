@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtTimeSelect,
@@ -7,6 +9,7 @@ import {
   ZtButton,
   type ZtFormInstance,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const model = reactive<{ value: string | null }>({ value: null }),
   form = ref<ZtFormInstance>(),
   disabled = ref(false),
@@ -31,7 +34,7 @@ async function submit() {
         :rules="[
           { required: true, message: '请填写该字段', trigger: 'change' },
         ]"
-        ><ZtTimeSelect v-model="model.value" /></ZtFormItem
+        ><ZtTimeSelect :status="demoStatus" v-model="model.value" /></ZtFormItem
       ><ZtButton :disabled="disabled" @click="submit">校验</ZtButton></ZtForm
     >
     <p role="status">{{ result }}</p>

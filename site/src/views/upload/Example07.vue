@@ -1,11 +1,22 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 import { ZtUpload } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 </script>
 
 <template>
   <ZtUpload
+    :status="demoStatus"
     disabled
-    :file-list="[{ uid: 'saved-1', name: '已归档附件.pdf', size: 12345, status: 'success' }]"
+    :file-list="[
+      {
+        uid: 'saved-1',
+        name: '已归档附件.pdf',
+        size: 12345,
+        status: 'success',
+      },
+    ]"
   />
 </template>
 

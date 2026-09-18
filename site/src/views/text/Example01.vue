@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
 import { ZtText } from '@ztechjs/zt-ui';
 import type { ZtTextStatus } from '@ztechjs/zt-ui';
-const statuses: ZtTextStatus[] = ['default', 'primary', 'success', 'warning', 'danger', 'info'];
+const demoStatus = useDemoStatus<ZtTextStatus>('default');
 </script>
 
 <template>
   <div class="text-row">
-    <ZtText v-for="status in statuses" :key="status" :status="status">{{ status }} 文本</ZtText>
+    <ZtText :status="demoStatus">{{ demoStatus }} 文本</ZtText>
   </div>
 </template>
 

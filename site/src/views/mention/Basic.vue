@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtMention } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref('请 @al 审核此方案'),
   event = ref('');
 const options = [
@@ -12,6 +15,7 @@ const options = [
 <template>
   <div class="entry-demo">
     <ZtMention
+      :status="demoStatus"
       v-model="value"
       :options="options"
       :prefixes="['@', '#']"

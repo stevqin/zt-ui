@@ -1,12 +1,16 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtTimePicker, type ZtTimePickerValue } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref<ZtTimePickerValue>(['09:00', '18:00']);
 const disabledTime = (time: string) => time < '08:00' || time > '20:00';
 </script>
 <template>
   <div class="picker-demo">
     <ZtTimePicker
+      :status="demoStatus"
       v-model="value"
       range
       :minute-step="15"

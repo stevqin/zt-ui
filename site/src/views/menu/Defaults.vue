@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtMenuStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtMenu, ZtSwitch, ZtSelect } from '@ztechjs/zt-ui';
 import type { ZtComponentSize, ZtMenuItem } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtMenuStatus>('primary');
 const disabled = ref(false),
   size = ref<ZtComponentSize>('default'),
   selected = ref('orders');
@@ -37,6 +40,7 @@ const items: ZtMenuItem[] = [
       />
     </div>
     <ZtMenu
+      :status="demoStatus"
       v-model="selected"
       :items="items"
       :default-expanded-keys="['business']"

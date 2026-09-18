@@ -1,9 +1,17 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtPaginationStatus } from '@ztechjs/zt-ui';
 import { ZtPagination } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtPaginationStatus>('primary');
 </script>
 
 <template>
-  <ZtPagination background layout="prev, pager, next" :total="1000" />
+  <ZtPagination
+    :status="demoStatus"
+    background
+    layout="prev, pager, next"
+    :total="1000"
+  />
 </template>
 
 <style scoped>

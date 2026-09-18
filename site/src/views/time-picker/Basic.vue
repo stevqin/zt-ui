@@ -1,17 +1,22 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtTimePicker, type ZtTimePickerValue } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref<ZtTimePickerValue>('10:15'),
   seconds = ref<ZtTimePickerValue>('12:30:20');
 </script>
 <template>
   <div class="picker-demo">
     <ZtTimePicker
+      :status="demoStatus"
       v-model="value"
       :minute-step="15"
       clearable
       aria-label="预约时间"
     /><ZtTimePicker
+      :status="demoStatus"
       v-model="seconds"
       format="HH:mm:ss"
       :second-step="10"

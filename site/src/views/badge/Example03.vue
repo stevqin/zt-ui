@@ -1,11 +1,15 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtBadgeStatus } from '@ztechjs/zt-ui';
 import { ZtBadge, ZtButton } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtBadgeStatus>('danger');
 </script>
 
 <template>
   <div class="demo-row badge-row">
-    <ZtBadge is-dot><ZtButton size="small">消息</ZtButton></ZtBadge
-    ><ZtBadge is-dot><span>数据查询</span></ZtBadge>
+    <ZtBadge :status="demoStatus" is-dot
+      ><ZtButton size="small">消息</ZtButton></ZtBadge
+    ><ZtBadge :status="demoStatus" is-dot><span>数据查询</span></ZtBadge>
   </div>
 </template>
 

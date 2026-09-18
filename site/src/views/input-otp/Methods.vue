@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtInputOtpStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtInputOtp, ZtButton } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtInputOtpStatus>('default');
 const control = ref<InstanceType<typeof ZtInputOtp>>();
 const value = ref('');
 const message = ref('尚未操作');
@@ -13,6 +16,7 @@ const message = ref('尚未操作');
       ><ZtButton @click="control?.blur()">移出焦点</ZtButton>
     </div>
     <ZtInputOtp
+      :status="demoStatus"
       ref="control"
       v-model="value"
       aria-label="事件演示"

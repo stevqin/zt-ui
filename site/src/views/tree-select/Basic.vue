@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import {
   ZtTreeSelect,
   type ZtTreeSelectValue,
   type ZtTreeNode,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const single = ref<ZtTreeSelectValue>(null),
   multiple = ref<ZtTreeSelectValue>([]);
 const data: ZtTreeNode[] = [
@@ -30,12 +33,14 @@ const data: ZtTreeNode[] = [
 <template>
   <div class="demo">
     <ZtTreeSelect
+      :status="demoStatus"
       v-model="single"
       :data="data"
       filterable
       clearable
       placeholder="选择区域或门店"
     /><ZtTreeSelect
+      :status="demoStatus"
       v-model="multiple"
       :data="data"
       multiple

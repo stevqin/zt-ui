@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtDatePicker, ZtSwitch } from '@ztechjs/zt-ui';
 import type { ZtDatePickerValue, ZtDatePickerHoliday } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const value = ref<ZtDatePickerValue>(null);
 const holidayValue = ref<ZtDatePickerValue>('2026-01-01');
 const showHolidays = ref(true);
@@ -17,7 +20,7 @@ const holidays: ZtDatePickerHoliday[] = [
       v-model="holidayValue"
       :holidays="holidays"
       :show-holidays="showHolidays"
-      status="success"
+      :status="demoStatus"
       clearable
     />
   </div>

@@ -1,10 +1,13 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
 import {
   ZtInputTag,
   ZtConfigProvider,
   type ZtComponentSize,
 } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const sizes: ZtComponentSize[] = [
   'mini',
   'small',
@@ -22,10 +25,14 @@ const dark = ref(false);
       ><div class="entry-demo">
         <div v-for="(size, i) in sizes" :key="size">
           <p>{{ size }}</p>
-          <ZtInputTag v-model="values[i]" :size="size" />
+          <ZtInputTag :status="demoStatus" v-model="values[i]" :size="size" />
         </div>
-        <ZtInputTag disabled aria-label="禁用示例" /></div></ZtConfigProvider
-    ><ZtInputTag readonly aria-label="只读示例" />
+        <ZtInputTag
+          :status="demoStatus"
+          disabled
+          aria-label="禁用示例"
+        /></div></ZtConfigProvider
+    ><ZtInputTag :status="demoStatus" readonly aria-label="只读示例" />
   </div>
 </template>
 <style scoped>

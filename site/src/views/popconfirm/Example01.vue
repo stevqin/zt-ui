@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtPopconfirmStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtButton, ZtPopconfirm, ZtText } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtPopconfirmStatus>('warning');
 const message = ref('尚未操作');
 </script>
 
@@ -9,7 +12,7 @@ const message = ref('尚未操作');
     <ZtPopconfirm
       title="确定删除这条记录？"
       description="删除后无法恢复"
-      status="danger"
+      :status="demoStatus"
       @confirm="message = '记录已删除'"
       @cancel="message = '已取消'"
       ><ZtButton status="danger">删除</ZtButton></ZtPopconfirm

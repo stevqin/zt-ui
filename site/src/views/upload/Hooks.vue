@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { useDemoStatus } from '../../docs/useDemoStatus';
+import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
 import { ZtUpload, ZtSwitch } from '@ztechjs/zt-ui';
 import type { ZtUploadFile } from '@ztechjs/zt-ui';
+const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const files = ref<ZtUploadFile[]>([]),
   protect = ref(true),
   message = ref('');
@@ -20,6 +23,7 @@ async function beforeRemove() {
 <template>
   <div class="example-stack">
     <ZtSwitch v-model="protect" active-text="保护文件不被删除" /><ZtUpload
+      :status="demoStatus"
       v-model:file-list="files"
       :auto-upload="false"
       :before-upload="beforeUpload"
