@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { entryStatusStyle } from '../autocomplete/status';
 import { computed, inject, ref, useId, watch, nextTick, useAttrs } from 'vue';
 import { ZtInput } from '../input';
@@ -8,6 +9,7 @@ import { useSuggestions } from './suggestions';
 import type { ZtAutocompleteOption, ZtAutocompleteProps } from './types';
 import './entry.scss';
 defineOptions({ name: 'ZtAutocomplete', inheritAttrs: false });
+const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtAutocompleteProps>(), {
   status: 'primary',
   modelValue: '',
@@ -99,6 +101,7 @@ defineExpose({
 <template>
   <div
     class="zt-entry zt-entry-status"
+    :class="{ 'is-form-underline': underline, 'is-disabled': disabled }"
     :style="
       entryStatusStyle(
         form?.validateState.value === 'error' ? 'danger' : status,

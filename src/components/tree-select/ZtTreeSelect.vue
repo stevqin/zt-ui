@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { hierarchyStyle } from '../tree/appearance';
 import { computed, inject, ref, nextTick, watch, onBeforeUnmount } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
@@ -10,6 +11,7 @@ import type { ZtTreeKey, ZtTreeNode } from '../tree/types';
 import type { ZtTreeSelectProps, ZtTreeSelectValue } from './types';
 import './tree-select.scss';
 defineOptions({ name: 'ZtTreeSelect' });
+const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtTreeSelectProps>(), {
   modelValue: null,
   data: () => [],
@@ -137,7 +139,7 @@ watch(disabled, (v) => {
     ref="host"
     @focusout="blur"
     class="zt-tree-select"
-    :class="[`zt-tree-select--${size}`, { 'is-clearable': clearable }]"
+    :class="[`zt-tree-select--${size}`, { 'is-form-underline': underline, 'is-clearable': clearable }]"
     :style="[config.style.value, hierarchyStyle(status)]"
     ><ZtPopover
       v-model:visible="visible"

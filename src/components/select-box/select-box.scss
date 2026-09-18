@@ -1,3 +1,4 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 @use '../../styles/clear-action' as clear;
 
@@ -307,4 +308,27 @@
     @media (prefers-reduced-motion: reduce) { &, &:hover:not(:disabled), &:active:not(:disabled) { transform: none; } }
   }
   &__popup { @include glass.tokens; overflow: auto; box-sizing: border-box; border: 1px solid var(--zt-border, var(--glass-default-line)); border-radius: glass.radius(6px); background: var(--zt-surface, #fff); box-shadow: 0 8px 28px rgb(0 0 0 / 12%); }
+}
+
+.zt-select-box.is-form-underline {
+  --select-box-underline-color: var(--glass-accent);
+  --select-box-underline-line: var(--zt-border, var(--glass-default-line));
+  > .zt-select-box__trigger {
+    @include underline.surface;
+    border-bottom-color: var(--select-box-underline-line);
+    white-space: nowrap;
+    outline: none;
+  }
+  &:focus-within:not(.is-disabled) > .zt-select-box__trigger,
+  &.is-open:not(.is-disabled) > .zt-select-box__trigger {
+    @include underline.focus(var(--select-box-underline-color));
+  }
+  &.is-disabled > .zt-select-box__trigger { @include underline.disabled; }
+}
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-select-box.is-form-underline {
+    --select-box-underline-color: #{$color};
+    --select-box-underline-line: #{$color};
+    > .zt-select-box__trigger { border-bottom-color: var(--select-box-underline-line); }
+  }
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { useZtConfig } from '../config-provider/context';
 const { style: providerStyle, theme: providerTheme } = useZtConfig();
 import { useZtSize } from '../config-provider/context';
@@ -34,6 +35,7 @@ import type {
 import './select.scss';
 
 defineOptions({ name: 'ZtSelect', inheritAttrs: false });
+const { underline } = useFormControlAppearance();
 
 const props = withDefaults(defineProps<ZtSelectProps>(), {
   modelValue: null,
@@ -252,6 +254,7 @@ const describedBy = computed(() => {
 });
 const classes = computed(() => [
   'zt-select',
+  underline.value && 'is-form-underline',
   effectiveSize.value !== 'default' && `zt-select--${effectiveSize.value}`,
   effectiveDisabled.value && 'is-disabled',
   visible.value && 'is-open',

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { entryStatusStyle } from '../autocomplete/status';
 import { computed, inject, ref, provide, useAttrs } from 'vue';
 import { ZtInput } from '../input';
@@ -7,6 +8,7 @@ import { useZtSize } from '../config-provider/context';
 import type { ZtInputTagProps } from './types';
 import './input-tag.scss';
 defineOptions({ name: 'ZtInputTag', inheritAttrs: false });
+const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtInputTagProps>(), {
   status: 'primary',
   modelValue: () => [],
@@ -105,7 +107,7 @@ function clear() {
         form?.validateState.value === 'error' ? 'danger' : status,
       )
     "
-    :class="[`zt-input-tag--${size}`, { 'is-disabled': disabled }]"
+    :class="[`zt-input-tag--${size}`, { 'is-form-underline': underline, 'is-disabled': disabled }]"
     :aria-disabled="disabled"
   >
     <span v-for="(tag, i) in modelValue" :key="i" class="zt-input-tag__tag"

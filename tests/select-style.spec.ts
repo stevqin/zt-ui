@@ -3,9 +3,9 @@ import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { mount } from '@vue/test-utils'
 import { compile } from 'sass'
-import { h, nextTick } from 'vue'
+import { h, nextTick, ref } from 'vue'
 import { afterEach, describe, expect, it } from 'vitest'
-import { ZtModal, ZtSelect } from '../src'
+import { ZtModal, ZtSelect, ZtForm, ZtFormItem, ZtConfigProvider } from '../src'
 import type {
   ZtSelectInstance,
   ZtSelectModelValue,
@@ -193,5 +193,67 @@ describe('ZtSelect public style contract', () => {
       expect(stateRule, `${state} selector specificity`).toBeGreaterThanOrEqual(0)
       expect(stateRule, `${state} cascade order`).toBeGreaterThan(hoverRule)
     }
+  })
+})
+
+
+describe('Select underline tags', () => {
+  it.each(['light', 'dark'] as const)('preserves compact tag layout and removal at all widths in %s', async theme => {
+    const style = document.createElement('style')
+    // Resolve the RGB triplet for Happy DOM's unsupported rgba(var(--rgb), alpha) shorthand.
+    style.textContent = compiledStyle().replace(/rgba\(var\(--glass-accent-rgb\), ([\d.]+)\)/g, 'rgba(36, 94, 219, $1)').replaceAll(':hover', '.test-hover').replaceAll(':focus-within', '.test-focus-within').replaceAll(':focus-visible', '.test-focus-visible')
+    document.head.append(style)
+    try {
+      for (const width of ['100px', '240px', '100%']) {
+        const underline = ref(true)
+        const w = mount(ZtConfigProvider, { attachTo: document.body, props: { theme, borderRadius: 18 }, slots: {
+          default: () => h(ZtForm, { underline: underline.value }, () => h(ZtSelect, {
+            style: { width }, multiple: true, collapseTags: true, modelValue: [0, 1, 2],
+            options: [0, 1, 2].map(value => ({ value, label: '很长的标签名称需要省略' })),
+          })),
+        } })
+        const select = w.getComponent(ZtSelect)
+        const tag = select.get('.zt-select__tag')
+        const tagStyle = getComputedStyle(tag.element)
+        expect(tagStyle.borderTopWidth).toBe('0px')
+        expect(tagStyle.backgroundColor).toBe(getComputedStyle(w.element).getPropertyValue('--zt-accent-soft'))
+        expect(tagStyle.backgroundColor).not.toBe('rgba(0, 0, 0, 0)')
+        expect(tagStyle.flexShrink).toBe('1')
+        expect(getComputedStyle(select.get('.zt-select__tag-label').element).textOverflow).toBe('ellipsis')
+        expect(getComputedStyle(select.get('.zt-select__control').element).whiteSpace).toBe('nowrap')
+        expect(getComputedStyle(select.get('.zt-select__tags').element).flexWrap).toBe('nowrap')
+        expect(select.get('.zt-select__tag-count').text()).toBe('+2')
+        expect(getComputedStyle(select.get('.zt-select__tag-count').element).flexShrink).toBe('0')
+        const remove = select.get<HTMLButtonElement>('.zt-select__tag-remove')
+        remove.element.classList.add('test-hover')
+        expect(getComputedStyle(remove.element).transform).toContain('rotate(90deg)')
+        remove.element.focus()
+        remove.element.classList.add('test-focus-visible')
+        expect(document.activeElement).toBe(remove.element)
+        expect(getComputedStyle(remove.element).outlineOffset).toBe('1px')
+        await remove.trigger('click')
+        expect(select.emitted('update:modelValue')).toEqual([[[1, 2]]])
+        underline.value = false
+        await nextTick()
+        expect(getComputedStyle(tag.element).borderTopWidth).toBe('1px')
+        expect(getComputedStyle(tag.element).backgroundColor).toBe(tagStyle.backgroundColor)
+        w.unmount()
+      }
+    } finally { style.remove() }
+  })
+
+  it('uses status ink and soft background for invalid underline tags only', () => {
+    const style = document.createElement('style')
+    style.textContent = compiledStyle()
+    document.head.append(style)
+    const w = mount(ZtForm, { attachTo: document.body, props: { underline: true }, slots: {
+      default: () => h(ZtFormItem, { error: '错误' }, () => h(ZtSelect, { multiple: true, modelValue: ['hz'], options: [{ value: 'hz', label: '杭州' }] })),
+    } })
+    try {
+      const tag = getComputedStyle(w.get('.zt-select__tag').element)
+      expect(tag.color).toBe('#991b1b')
+      expect(tag.backgroundColor).toBe('#fef2f2')
+      expect(tag.borderTopWidth).toBe('0px')
+    } finally { w.unmount(); style.remove() }
   })
 })

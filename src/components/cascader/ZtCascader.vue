@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { hierarchyStyle } from '../tree/appearance';
 import { computed, inject, ref, watch, nextTick, onBeforeUnmount } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
@@ -10,6 +11,7 @@ import type { ZtCascaderProps, ZtCascaderValue, ZtCascaderPath } from './types';
 import '../tree-select/tree-select.scss';
 import './cascader.scss';
 defineOptions({ name: 'ZtCascader' });
+const { underline } = useFormControlAppearance();
 const props = withDefaults(defineProps<ZtCascaderProps>(), {
   modelValue: () => [],
   options: () => [],
@@ -213,7 +215,7 @@ onBeforeUnmount(() => {
     ref="host"
     class="zt-cascader"
     @focusout="blur"
-    :class="[`zt-cascader--${size}`, { 'is-clearable': clearable }]"
+    :class="[`zt-cascader--${size}`, { 'is-form-underline': underline, 'is-clearable': clearable }]"
     :style="[config.style.value, hierarchyStyle(status)]"
     ><ZtPopover
       v-model:visible="visible"

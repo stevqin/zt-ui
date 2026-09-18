@@ -1,6 +1,40 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 @use '../../styles/clear-action' as clear;
 .zt-input-tag { @include glass.tokens; display:flex;flex-wrap:wrap;align-items:center;gap:6px;color:var(--glass-default-ink);font:14px/1.5 var(--glass-font);.zt-input{flex:1;min-width:120px}.zt-input-tag__tag{display:inline-flex;align-items:center;gap:4px;padding:4px 8px;background:var(--zt-entry-soft,var(--glass-accent-soft));border-radius:glass.radius(6px);overflow-wrap:anywhere;max-width:100%}button{background:none;color:inherit;border:0;cursor:pointer;padding:2px 4px}.is-disabled{opacity:.5}&--mini{font-size:11px}&--small{font-size:12px}&--medium{font-size:15px}&--large{font-size:16px}}
 
 .zt-input-tag { position: relative; }
 .zt-input-tag .zt-input-tag__clear { position: absolute; right: 6px; bottom: 4px; z-index: 4; width: 18px; height: 18px; padding: 0; border-radius: 50%; background: var(--zt-surface, #fff); @include clear.reveal('.zt-input-tag'); }
+
+.zt-input-tag.is-form-underline {
+  @include underline.surface;
+  --zt-input-tag-underline-color: var(--zt-entry-ink, var(--glass-accent));
+  border-bottom-color: var(--zt-entry-line, var(--glass-default-line));
+  min-width: 0;
+  > .zt-input { min-width: 0; }
+  > .zt-input-tag__tag {
+    border: 0;
+    border-radius: glass.radius(4px);
+    padding: 2px 6px;
+    background: var(--zt-entry-soft, var(--glass-accent-soft));
+    color: var(--zt-entry-ink, var(--glass-accent-ink));
+  }
+  &:focus-within:not(.is-disabled) { @include underline.focus(var(--zt-input-tag-underline-color)); }
+  &.is-disabled { @include underline.disabled; }
+}
+// The aggregate field owns the border; its editable Input is part of that surface.
+.zt-input-tag.is-form-underline > .zt-input > .zt-input__wrapper {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.zt-input-tag.is-form-underline:focus-within > .zt-input:focus-within > .zt-input__wrapper {
+  box-shadow: none;
+}
+@each $state, $color in (error: #ef4444, success: #22c55e) {
+  .zt-form-item.is-#{$state} .zt-input-tag.is-form-underline {
+    --zt-input-tag-underline-color: #{$color};
+    border-bottom-color: #{$color};
+  }
+}

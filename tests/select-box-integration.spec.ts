@@ -233,3 +233,21 @@ describe('SelectBox configuration and Form integration', () => {
     expect(w.findComponent(ZtFormItem).classes()).not.toContain('is-error')
   })
 })
+
+
+describe('SelectBox underline boundary', () => {
+  it('marks the trigger only through search, pagination, and batch mode', async () => {
+    const { w, select } = form({ modelValue: [0, 1] })
+    await w.setProps({ underline: true })
+    expect(select.classes()).toContain('is-form-underline')
+    expect(select.get('.zt-select-box__summary').text()).toBe('选项 0, 选项 1')
+    await open(select)
+    expect(popup()!.querySelector('.zt-input')).not.toBeNull()
+    expect(popup()!.querySelector('.zt-select')).not.toBeNull()
+    expect(popup()!.querySelector('.is-form-underline')).toBeNull()
+    await click('.zt-select-box-panel__mode')
+    expect(popup()!.querySelector('textarea')).not.toBeNull()
+    expect(popup()!.querySelector('.zt-select-box-panel__separator .zt-select')).not.toBeNull()
+    expect(popup()!.querySelector('.is-form-underline')).toBeNull()
+  })
+})

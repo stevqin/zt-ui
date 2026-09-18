@@ -1,3 +1,4 @@
+@use '../../styles/form-underline' as underline;
 @use '../../styles/tokens' as glass;
 @use '../../styles/clear-action' as clear;
 
@@ -520,3 +521,42 @@
 }
 
 .zt-select__clear { z-index: 4; background: var(--zt-surface, #fff); }
+
+.zt-select.is-form-underline {
+  --zt-select-underline-color: var(--glass-accent);
+  --zt-select-underline-line: var(--glass-default-line);
+  --zt-select-tag-soft: var(--glass-accent-soft);
+  --zt-select-tag-ink: var(--glass-accent-ink);
+
+  > .zt-select__control {
+    @include underline.surface;
+    border-bottom-color: var(--zt-select-underline-line);
+    white-space: nowrap;
+  }
+  &:focus-within:not(.is-disabled) > .zt-select__control,
+  &.is-open:not(.is-disabled) > .zt-select__control {
+    @include underline.focus(var(--zt-select-underline-color));
+  }
+  &.is-disabled > .zt-select__control { @include underline.disabled; }
+
+  > .zt-select__control > .zt-select__tags > .zt-select__tag {
+    border: 0;
+    border-radius: glass.radius(4px);
+    background: var(--zt-select-tag-soft);
+    color: var(--zt-select-tag-ink);
+  }
+}
+
+@each $state, $color, $tone in (error #ef4444 danger, success #22c55e success) {
+  .zt-form-item.is-#{$state} .zt-select.is-form-underline {
+    --zt-select-underline-line: #{$color};
+    --zt-select-underline-color: #{$color};
+    --zt-select-tag-soft: var(--glass-#{$tone}-soft);
+    --zt-select-tag-ink: var(--glass-#{$tone}-ink);
+  }
+}
+.zt-form-item .zt-select.is-form-underline:focus-within:not(.is-disabled) > .zt-select__control,
+.zt-form-item .zt-select.is-form-underline.is-open:not(.is-disabled) > .zt-select__control {
+  @include underline.focus(var(--zt-select-underline-color));
+}
+.zt-form-item .zt-select.is-form-underline.is-disabled > .zt-select__control { @include underline.disabled; }
