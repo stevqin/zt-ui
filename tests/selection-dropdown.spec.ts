@@ -166,6 +166,21 @@ describe('useAnchoredDropdown', () => {
     expect(popup.style.top).toBe('8px')
     expect(popup.dataset.placement).toBe('top')
 
+    popupRect = rectangle(0, 0, 200, 180)
+    triggerRect = rectangle(80, 1000, 120, 40)
+    notifyResize!()
+    await nextTick()
+    expect(popup.style.top).toBe('412px')
+    expect(popup.style.maxHeight).toBe('584px')
+    expect(popup.dataset.placement).toBe('top')
+
+    triggerRect = rectangle(80, -100, 120, 40)
+    notifyResize!()
+    await nextTick()
+    expect(popup.style.top).toBe('8px')
+    expect(popup.style.maxHeight).toBe('584px')
+    expect(popup.dataset.placement).toBe('bottom')
+
     wrapper.unmount()
     expect(disconnect).toHaveBeenCalled()
   })
@@ -206,6 +221,47 @@ describe('useAnchoredDropdown', () => {
     await nextTick()
     expect(order).toEqual(['child', 'parent'])
     expect((wrapper.vm as any).visible).toBe(false)
+    expect(document.activeElement).toBe(trigger)
+    wrapper.unmount()
+  })
+
+  it('preserves a parent focus handoff while restoring focus from inside the popup', async () => {
+    let currentBranch: OverlayBranch | undefined
+    const parentOverlay: OverlayContext = {
+      interactive: ref(true),
+      registerBranch(branch) {
+        currentBranch ??= branch
+        return () => undefined
+      },
+    }
+    vi.stubGlobal('ResizeObserver', class {
+      observe = vi.fn()
+      unobserve = vi.fn()
+      disconnect = vi.fn()
+    })
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect')
+      .mockReturnValue(rectangle(40, 100, 160, 40))
+    const wrapper = mount(createHarness([]), {
+      attachTo: document.body,
+      global: { provide: { [overlayContextKey as symbol]: parentOverlay } },
+    })
+    const trigger = wrapper.get<HTMLButtonElement>('.trigger').element
+    const nextControl = document.createElement('button')
+    document.body.append(nextControl)
+
+    await wrapper.get('.trigger').trigger('click')
+    await nextTick()
+    nextControl.focus()
+    currentBranch!.close()
+    await nextTick()
+    expect(document.activeElement).toBe(nextControl)
+
+    ;(wrapper.vm as any).setChildVisible(true)
+    await wrapper.get('.trigger').trigger('click')
+    await nextTick()
+    document.querySelector<HTMLElement>('.child-trigger')!.focus()
+    currentBranch!.close()
+    await nextTick()
     expect(document.activeElement).toBe(trigger)
     wrapper.unmount()
   })

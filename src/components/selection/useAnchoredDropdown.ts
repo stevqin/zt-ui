@@ -120,11 +120,21 @@ export function useAnchoredDropdown(
       maximumWidth,
       Math.max(triggerRect.width, options.minWidth?.value ?? 0),
     )
-    const spaceBelow = Math.max(
-      0,
-      viewportHeight - triggerRect.bottom - VIEWPORT_GUTTER,
+    const viewportTop = VIEWPORT_GUTTER
+    const viewportBottom = Math.max(
+      viewportTop,
+      viewportHeight - VIEWPORT_GUTTER,
     )
-    const spaceAbove = Math.max(0, triggerRect.top - VIEWPORT_GUTTER)
+    const triggerTop = Math.max(
+      viewportTop,
+      Math.min(triggerRect.top, viewportBottom),
+    )
+    const triggerBottom = Math.max(
+      viewportTop,
+      Math.min(triggerRect.bottom, viewportBottom),
+    )
+    const spaceBelow = viewportBottom - triggerBottom
+    const spaceAbove = triggerTop - viewportTop
     const opensAbove = spaceBelow < popupRect.height && spaceAbove > spaceBelow
     const availableHeight = opensAbove ? spaceAbove : spaceBelow
     const visibleHeight = Math.min(popupRect.height, availableHeight)
@@ -136,11 +146,8 @@ export function useAnchoredDropdown(
     placement.value = opensAbove ? 'top' : 'bottom'
     geometry.value = {
       top: opensAbove
-        ? Math.max(VIEWPORT_GUTTER, triggerRect.top - visibleHeight)
-        : Math.max(
-            VIEWPORT_GUTTER,
-            Math.min(triggerRect.bottom, viewportHeight - VIEWPORT_GUTTER),
-          ),
+        ? triggerTop - visibleHeight
+        : triggerBottom,
       left: Math.max(
         VIEWPORT_GUTTER,
         Math.min(triggerRect.left, furthestLeft),
@@ -191,7 +198,12 @@ export function useAnchoredDropdown(
     closeChildBranches()
     stopListening()
     stopResizeObserver()
-    if (restoreFocus) options.focus()
+    const activeElement = document.activeElement
+    const focusWasTransferred = activeElement !== null &&
+      activeElement !== document.body &&
+      activeElement.isConnected &&
+      !containsTarget(activeElement)
+    if (restoreFocus && !focusWasTransferred) options.focus()
   }
 
   const stopVisibleWatch = watch(
