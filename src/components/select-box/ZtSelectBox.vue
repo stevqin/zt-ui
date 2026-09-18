@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, inject, nextTick, onBeforeUnmount, provide, ref, toRef, useAttrs, watch, type StyleValue } from 'vue'
+import { ZtMessage } from '@ztechjs/zt-alert'
 import ZtIcon from '../icon/ZtIcon.vue'
 import { useZtConfig, useZtSize } from '../config-provider/context'
 import { ztFormItemKey } from '../form/context'
@@ -59,6 +60,7 @@ function close() {
   if (!visible.value) return
   draft.cancel()
   remoteSearch.reset()
+  remoteBatch.reset()
 }
 const dropdown = useAnchoredDropdown({ visible, trigger: triggerElement, popup: popupElement, minWidth: computed(() => 480), layer: popupZIndex, tabThroughPopup: true, close, focus })
 provide(overlayContextKey, dropdown.overlayContext)
@@ -73,6 +75,27 @@ const searchMethod = computed(() => {
   }
 })
 const remoteSearch = useRemoteOptions<ZtSelectBoxRemoteRequest, ZtSelectBoxRemoteResult>(searchMethod, toRef(props, 'debounce'), () => ({ mode: 'search', options: [], total: 0 }))
+const batchMethod = computed(() => {
+  const method = props.remoteMethod
+  return async (query: ZtSelectBoxRemoteRequest): Promise<ZtSelectBoxRemoteResult> => {
+    if (!method) throw new Error('SelectBox batch requires a remote method')
+    const response = await method(query)
+    if (response.mode !== 'batch') throw new Error('SelectBox batch requires a batch-mode result')
+    return response
+  }
+})
+// Separate coordinators keep search pages, loading, and request generations independent.
+const remoteBatch = useRemoteOptions<ZtSelectBoxRemoteRequest, ZtSelectBoxRemoteResult>(batchMethod, toRef(props, 'debounce'), () => ({ mode: 'batch', matches: [] }))
+async function matchBatch(keywords: string[]) {
+  if (!props.remote || !visible.value || remoteBatch.loading.value) return undefined
+  const response = await remoteBatch.run({ mode: 'batch', keywords }, {
+    onError: (reason: unknown) => {
+      emit('remote-error', reason)
+      ZtMessage.error('批量匹配失败，请重试')
+    },
+  })
+  return response?.mode === 'batch' ? response.matches : undefined
+}
 let correctionUsed = false
 const remoteRunOptions = { clearOnError: false, onError: (reason: unknown) => emit('remote-error', reason) }
 function request(debounced = false, correction = false) {
@@ -161,12 +184,13 @@ watch(visible, value => emit('visible-change', value), { flush: 'sync' })
 watch(disabled, value => { if (value) close() })
 watch([() => props.remote, () => props.remoteMethod], () => {
   remoteSearch.reset()
+  remoteBatch.reset()
   remoteOptions.value = []
   total.value = 0
   page.value = 1
   request()
 })
-onBeforeUnmount(remoteSearch.dispose)
+onBeforeUnmount(() => { remoteSearch.dispose(); remoteBatch.dispose() })
 defineExpose({ focus, blur, open, close, clear })
 </script>
 
@@ -179,7 +203,7 @@ defineExpose({ focus, blur, open, close, clear })
     <button v-if="clearable && modelValue.length && !disabled" type="button" class="zt-select-box__clear" aria-label="清空选择" @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
     <Teleport to="body">
       <div v-if="visible" :id="popupId" ref="popupElement" class="zt-select-box__popup" :data-zt-theme="theme" :style="popupStyle" role="dialog" aria-label="选择选项" tabindex="-1" @keydown.esc="handleEscape">
-        <SelectBoxPanel :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
+        <SelectBoxPanel :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
           <template v-if="$slots.option" #option="scope"><slot name="option" v-bind="scope" /></template>
         </SelectBoxPanel>
       </div>

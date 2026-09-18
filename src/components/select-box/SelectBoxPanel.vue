@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, toRef, watch } from 'vue'
+import { ZtMessage } from '@ztechjs/zt-alert'
 import ZtCheckbox from '../checkbox/ZtCheckbox.vue'
 import ZtButton from '../button/ZtButton.vue'
 import ZtInput from '../input/ZtInput.vue'
@@ -11,7 +12,7 @@ import ZtScrollbar from '../scrollbar/ZtScrollbar.vue'
 import ZtText from '../text/ZtText.vue'
 import { useZtSize } from '../config-provider/context'
 import type { ZtComponentSize } from '../types'
-import type { ZtSelectOption, ZtSelectValue } from './types'
+import type { ZtSelectBoxBatchMatch, ZtSelectOption, ZtSelectValue } from './types'
 import { normalizePageSize, normalizePageSizes, useSelectBoxDraft } from './useSelectBoxDraft'
 import './select-box.scss'
 
@@ -27,6 +28,7 @@ const props = withDefaults(defineProps<{
   failed?: boolean
   remote?: boolean
   batchLoading?: boolean
+  matchBatch?: (keywords: string[]) => Promise<ZtSelectBoxBatchMatch[] | undefined>
   total?: number
   page?: number
   pageSize?: number
@@ -125,29 +127,45 @@ function clickLabel(event: MouseEvent, action: () => void) {
   event.preventDefault()
   action()
 }
-function applyPaste() {
+async function applyPaste() {
   const patterns: Record<string, RegExp> = { newline: /[\r\n]+/, comma: /[,，]+/, semicolon: /[;；]+/, tab: /\t+/ }
   const entries = pasteText.value.split(patterns[separator.value]!).map(text => text.trim()).filter(Boolean)
   const keywords = [...new Set(entries)]
-  let matchedKeywords = 0
+  if (!keywords.length) {
+    pasteResult.value = '没有可匹配的粘贴内容'
+    ZtMessage.info(pasteResult.value)
+    return true
+  }
+  // Local matching always uses the complete source, independently of search and paging.
+  const matches = props.remote
+    ? await props.matchBatch?.(keywords)
+    : keywords.flatMap(token => props.options
+      .filter(option => option.label === token || String(option.value) === token)
+      .map(option => ({ keyword: token, option })))
+  // Undefined denotes an unsuccessful or invalidated remote request; preserve the draft/input.
+  if (!matches) return false
+  const requested = new Set(keywords)
+  const matchedKeywords = new Set<string>()
+  const matchedOptions = new Map<ZtSelectValue, ZtSelectOption>()
+  for (const match of matches) {
+    if (!requested.has(match.keyword) || match.option.disabled) continue
+    matchedKeywords.add(match.keyword)
+    matchedOptions.set(match.option.value, match.option)
+  }
   const previousSize = values.value.length
-  for (const token of keywords) {
-    // Always use the complete local source, independently of search and paging.
-    const matches = props.options.filter(option => !option.disabled && (option.label === token || String(option.value) === token))
-    if (matches.length) matchedKeywords++
-    draft.mergeOptions(matches)
-    for (const option of matches) {
-      if (!values.value.includes(option.value)) draft.toggle(option)
-    }
+  draft.mergeOptions([...matchedOptions.values()])
+  for (const option of matchedOptions.values()) {
+    if (!values.value.includes(option.value)) draft.toggle(option)
   }
   const count = `批量粘贴 ${entries.length} 项${entries.length > keywords.length ? `（去重后 ${keywords.length} 项）` : ''}`
-  pasteResult.value = keywords.length
-    ? `${count}，匹配 ${matchedKeywords} 项，已自动勾选 ${values.value.length - previousSize} 项`
-    : '没有可匹配的粘贴内容'
+  pasteResult.value = `${count}，匹配 ${matchedKeywords.size} 项，已自动勾选 ${values.value.length - previousSize} 项`
+  if (matchedKeywords.size === keywords.length) ZtMessage.success(pasteResult.value)
+  else ZtMessage.warning(pasteResult.value)
+  return true
 }
-function confirm() {
+async function confirm() {
   if (props.disabled || props.batchLoading) return
-  if (pasteOpen.value) applyPaste()
+  if (pasteOpen.value && !await applyPaste()) return
   emit('confirm', draft.confirm(), [...draft.selectedOptions.value])
 }
 function handleEscape(event: KeyboardEvent) {

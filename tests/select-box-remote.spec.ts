@@ -1,11 +1,14 @@
 import { mount, flushPromises, type VueWrapper } from '@vue/test-utils'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { computed, h, ref } from 'vue'
+import { ZtMessage } from '@ztechjs/zt-alert'
 import ZtSelectBox from '../src/components/select-box/ZtSelectBox.vue'
 import ZtModal from '../src/components/modal/ZtModal.vue'
 import SelectBoxPanel from '../src/components/select-box/SelectBoxPanel.vue'
 import { ztFormItemKey } from '../src/components/form/context'
 import type { ZtSelectBoxProps, ZtSelectBoxRemoteResult } from '../src/components/select-box/types'
+
+vi.mock('@ztechjs/zt-alert', () => ({ ZtMessage: { success: vi.fn(), warning: vi.fn(), info: vi.fn(), error: vi.fn() } }))
 
 const options = [{ value: 'east', label: '华东' }, { value: 'south', label: '华南' }]
 const wrappers: VueWrapper[] = []
@@ -22,7 +25,7 @@ async function open(w: VueWrapper) { await trigger(w).trigger('click'); await fl
 async function search(w: VueWrapper, text: string) { await w.findComponent(SelectBoxPanel).find('input[aria-label="搜索选项"]').setValue(text) }
 const result = (label: string, total = 60): ZtSelectBoxRemoteResult => ({ mode: 'search', options: [{ value: label, label }], total })
 function deferred() { let resolve!: (value: ZtSelectBoxRemoteResult) => void; let reject!: (error: unknown) => void; const promise = new Promise<ZtSelectBoxRemoteResult>((res, rej) => { resolve = res; reject = rej }); return { promise, resolve, reject } }
-afterEach(() => { wrappers.splice(0).forEach(w => w.unmount()); vi.useRealTimers(); document.body.innerHTML = '' })
+afterEach(() => { wrappers.splice(0).forEach(w => w.unmount()); vi.useRealTimers(); vi.clearAllMocks(); document.body.innerHTML = '' })
 
 describe('standalone SelectBox trigger', () => {
   it('renders numeric and CSS widths, placeholder, and an accessible titled single-line summary', async () => {
@@ -254,5 +257,150 @@ describe('SelectBox in elevated modal overlays', () => {
     const nested = document.querySelector<HTMLElement>('[role="listbox"]')!
     expect(Number(selectBox.style.zIndex)).toBeGreaterThan(Number(modal.style.zIndex))
     expect(Number(nested.style.zIndex)).toBeGreaterThan(Number(selectBox.style.zIndex))
+  })
+})
+
+
+async function enterPaste(w: VueWrapper, text: string) {
+  await click('.zt-select-box-panel__mode')
+  await w.findComponent(SelectBoxPanel).find('textarea').setValue(text)
+}
+const batch = (matches: { keyword: string; option: { value: string; label: string; disabled?: boolean } }[]): ZtSelectBoxRemoteResult => ({ mode: 'batch', matches })
+const eastMatch = { keyword: '华东', option: options[0]! }
+const southMatch = { keyword: '华南', option: options[1]! }
+
+describe('SelectBox batch confirmation', () => {
+  it.each([false, true])('commits full matches with identical feedback (remote=%s)', async remote => {
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('搜索页')).mockResolvedValueOnce(batch([eastMatch, southMatch]))
+    const w = box({ remote, remoteMethod })
+    await open(w); await enterPaste(w, ' 华东\n华南 '); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['east', 'south']]])
+    expect(ZtMessage.success).toHaveBeenCalledWith('批量粘贴 2 项，匹配 2 项，已自动勾选 2 项')
+    expect(popup()).toBeNull()
+  })
+  it.each([false, true])('commits partial matches and retained draft without blocking (remote=%s)', async remote => {
+    const remoteMethod = vi.fn().mockResolvedValueOnce({ mode: 'search', options: [{ value: 'draft', label: '草稿' }], total: 1 }).mockResolvedValueOnce(batch([eastMatch, southMatch]))
+    const w = box({ remote, remoteMethod, modelValue: ['confirmed'], options: [...options, { value: 'draft', label: '草稿' }] })
+    await open(w)
+    if (remote) await click('.zt-select-box-panel__option')
+    else await w.findComponent(SelectBoxPanel).findAll('.zt-select-box-panel__option')[2]!.trigger('click')
+    await enterPaste(w, '华东\n华南\n不存在'); await click('.zt-select-box-panel__confirm')
+    if (remote) expect(remoteMethod).toHaveBeenLastCalledWith({ mode: 'batch', keywords: ['华东', '华南', '不存在'] })
+    expect(w.emitted('update:modelValue')).toEqual([[['confirmed', 'draft', 'east', 'south']]])
+    expect(ZtMessage.warning).toHaveBeenCalledWith('批量粘贴 3 项，匹配 2 项，已自动勾选 2 项')
+    expect(popup()).toBeNull()
+  })
+  it.each([false, true])('commits existing values with warning for zero matches (remote=%s)', async remote => {
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('搜索页')).mockResolvedValueOnce(batch([]))
+    const w = box({ remote, remoteMethod, modelValue: ['east'] })
+    await open(w); await enterPaste(w, '不存在'); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['east']]])
+    expect(ZtMessage.warning).toHaveBeenCalledWith('批量粘贴 1 项，匹配 0 项，已自动勾选 0 项')
+    expect(popup()).toBeNull()
+  })
+  it.each([false, true])('commits empty paste with info and no batch request (remote=%s)', async remote => {
+    const remoteMethod = vi.fn().mockResolvedValue(result('搜索页'))
+    const w = box({ remote, remoteMethod, modelValue: ['east'] })
+    await open(w); await enterPaste(w, ' \n\t '); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['east']]])
+    expect(ZtMessage.info).toHaveBeenCalledWith('没有可匹配的粘贴内容')
+    expect(remoteMethod).toHaveBeenCalledTimes(remote ? 1 : 0)
+  })
+  it('deduplicates tokens and values, counts keywords, excludes disabled and unsolicited results, and caches matched labels', async () => {
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('搜索页')).mockResolvedValueOnce(batch([
+      eastMatch, eastMatch, { keyword: '华东', option: { value: 'east2', label: '第二华东' } },
+      { keyword: 'east', option: options[0]! }, { keyword: '禁用', option: { value: 'disabled', label: '禁用', disabled: true } },
+      { keyword: '未请求', option: { value: 'rogue', label: '错误结果' } },
+    ]))
+    const w = box({ remote: true, remoteMethod, options: [], modelValue: ['east'] })
+    await open(w); await enterPaste(w, '华东\neast\n华东\n禁用'); await click('.zt-select-box-panel__confirm')
+    expect(remoteMethod).toHaveBeenLastCalledWith({ mode: 'batch', keywords: ['华东', 'east', '禁用'] })
+    expect(w.emitted('update:modelValue')).toEqual([[['east', 'east2']]])
+    expect(ZtMessage.warning).toHaveBeenCalledWith('批量粘贴 4 项（去重后 3 项），匹配 2 项，已自动勾选 1 项')
+    await w.setProps({ modelValue: ['east', 'east2'] })
+    expect(w.find('.zt-select-box__summary').text()).toBe('华东, 第二华东')
+  })
+  it('matches local options beyond the filtered page, with duplicate and disabled counting', async () => {
+    const w = box({ pageSize: 1, modelValue: ['east'], options: [...options, { value: 'east2', label: '华东' }, { value: 'disabled', label: '禁用', disabled: true }] })
+    await open(w); await search(w, '华南'); await enterPaste(w, '华东\neast\n华东\n禁用'); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['east', 'east2']]])
+    expect(ZtMessage.warning).toHaveBeenCalledWith('批量粘贴 4 项（去重后 3 项），匹配 2 项，已自动勾选 1 项')
+  })
+  it('keeps batch loading independent from search results and suppresses duplicate clicks', async () => {
+    const pending = deferred(); const pageRequest = deferred()
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('原页面')).mockImplementationOnce(() => pageRequest.promise).mockImplementationOnce(() => pending.promise)
+    const w = box({ remote: true, remoteMethod })
+    await open(w); await click('[aria-label="下一页"]'); await enterPaste(w, '华东')
+    const confirm = document.querySelector<HTMLButtonElement>('.zt-select-box-panel__confirm')!
+    confirm.click(); confirm.click(); await flushPromises()
+    expect(remoteMethod).toHaveBeenCalledTimes(3)
+    expect(remoteMethod).toHaveBeenLastCalledWith({ mode: 'batch', keywords: ['华东'] })
+    expect(confirm.textContent).toContain('匹配中')
+    expect(confirm.disabled).toBe(true)
+    expect(w.findComponent(SelectBoxPanel).find('textarea').attributes('disabled')).toBeDefined()
+    expect(w.findComponent(SelectBoxPanel).props('loading')).toBe(true)
+    pageRequest.resolve(result('新页面')); await flushPromises()
+    expect(w.findComponent(SelectBoxPanel).props('loading')).toBe(false)
+    expect(w.findComponent(SelectBoxPanel).props('batchLoading')).toBe(true)
+    expect(w.findComponent(SelectBoxPanel).props('options')).toEqual([{ value: '新页面', label: '新页面' }])
+    pending.resolve(batch([eastMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toEqual([[['east']]])
+  })
+  it('does not cancel batch when a debounced search starts later', async () => {
+    vi.useFakeTimers()
+    const pending = deferred(); const searchPending = deferred()
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('原页面')).mockImplementationOnce(() => pending.promise).mockImplementationOnce(() => searchPending.promise)
+    const w = box({ remote: true, remoteMethod, debounce: 100 })
+    await open(w); await search(w, '新搜索'); await enterPaste(w, '华东'); await click('.zt-select-box-panel__confirm')
+    await vi.advanceTimersByTimeAsync(100); await flushPromises()
+    expect(remoteMethod).toHaveBeenLastCalledWith({ mode: 'search', keyword: '新搜索', page: 1, pageSize: 10 })
+    pending.resolve(batch([eastMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toEqual([[['east']]])
+    searchPending.resolve(result('迟到搜索')); await flushPromises()
+    expect(w.emitted('update:modelValue')).toHaveLength(1)
+  })
+  it.each(['cancel', 'disable', 'method', 'unmount'])('ignores stale batch completion after %s', async action => {
+    const pending = deferred()
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('原页面')).mockImplementationOnce(() => pending.promise).mockResolvedValue(result('重开'))
+    const w = box({ remote: true, remoteMethod })
+    await open(w); await enterPaste(w, '华东'); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    if (action === 'cancel') { await click('.zt-select-box-panel__cancel'); await open(w) }
+    if (action === 'disable') await w.setProps({ disabled: true })
+    if (action === 'method') await w.setProps({ remoteMethod: vi.fn().mockResolvedValue(result('新方法')) })
+    if (action === 'unmount') w.unmount()
+    pending.resolve(batch([eastMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    expect(ZtMessage.success).not.toHaveBeenCalled()
+    expect(ZtMessage.warning).not.toHaveBeenCalled()
+    if (action === 'cancel' || action === 'method') expect(w.findComponent(SelectBoxPanel).props('batchLoading')).toBe(false)
+  })
+  it('ignores a stale batch rejection after closing', async () => {
+    const pending = deferred()
+    const w = box({ remote: true, remoteMethod: vi.fn().mockResolvedValueOnce(result('页面')).mockImplementationOnce(() => pending.promise) })
+    await open(w); await enterPaste(w, '华东'); await click('.zt-select-box-panel__confirm'); await click('.zt-select-box-panel__cancel')
+    pending.reject(new Error('late failure')); await flushPromises()
+    expect(w.emitted('remote-error')).toBeUndefined()
+    expect(ZtMessage.error).not.toHaveBeenCalled()
+  })
+  it.each(['rejection', 'wrong mode'])('preserves input and draft on %s and supports retry', async failure => {
+    const reason = new Error('offline')
+    const remoteMethod = vi.fn().mockResolvedValueOnce({ mode: 'search', options, total: 2 })
+    if (failure === 'rejection') remoteMethod.mockRejectedValueOnce(reason)
+    else remoteMethod.mockResolvedValueOnce(result('错误响应'))
+    remoteMethod.mockResolvedValueOnce(batch([southMatch]))
+    const w = box({ remote: true, remoteMethod })
+    await open(w); await click('.zt-select-box-panel__option'); await enterPaste(w, '华南'); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    expect(w.emitted('remote-error')).toHaveLength(1)
+    expect(ZtMessage.error).toHaveBeenCalledWith('批量匹配失败，请重试')
+    expect(w.findComponent(SelectBoxPanel).find('textarea').element.value).toBe('华南')
+    expect(w.findComponent(SelectBoxPanel).props('batchLoading')).toBe(false)
+    expect(w.findComponent(SelectBoxPanel).props('failed')).toBe(false)
+    expect(w.findComponent(SelectBoxPanel).props('options')).toEqual(options)
+    await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['east', 'south']]])
+    expect(ZtMessage.success).toHaveBeenCalledWith('批量粘贴 1 项，匹配 1 项，已自动勾选 1 项')
+    expect(popup()).toBeNull()
   })
 })
