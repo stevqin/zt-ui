@@ -114,6 +114,17 @@ watch(pasteOpen, async open => {
 })
 onMounted(() => searchInput.value?.focus())
 
+// Clear is an immediate outer-field action, independent of panel confirmation.
+function reset() {
+  draft.values.value = []
+  keyword.value = ''
+  page.value = 1
+  selectedOnly.value = false
+  pasteText.value = ''
+  pasteResult.value = ''
+}
+defineExpose({ reset })
+
 function toggle(option: ZtSelectOption) {
   if (!listBlocked.value) draft.toggle(option)
 }

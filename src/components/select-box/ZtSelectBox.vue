@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, getCurrentInstance, inject, nextTick, onBeforeUnmount, provide, ref, toRef, useAttrs, watch, type StyleValue } from 'vue'
+import { computed, getCurrentInstance, inject, nextTick, onBeforeUnmount, onMounted, provide, ref, toRef, useAttrs, watch, type StyleValue } from 'vue'
 import { ZtMessage } from '@ztechjs/zt-alert'
 import ZtIcon from '../icon/ZtIcon.vue'
 import { useZtConfig, useZtSize } from '../config-provider/context'
@@ -37,6 +37,9 @@ provide(ztFormItemKey as symbol, undefined)
 const size = useZtSize(props, () => formItem?.size.value)
 const { style: providerStyle, theme } = useZtConfig()
 const disabled = computed(() => props.disabled || formItem?.disabled.value || false)
+const canClear = computed(() => props.clearable && props.modelValue.length > 0 && !disabled.value)
+const controlElement = ref<HTMLElement>()
+const panel = ref<InstanceType<typeof SelectBoxPanel>>()
 const draft = useSelectBoxDraft(toRef(props, 'modelValue'))
 const visible = draft.isOpen
 const triggerElement = ref<HTMLElement>()
@@ -62,7 +65,7 @@ function close() {
   remoteSearch.reset()
   remoteBatch.reset()
 }
-const dropdown = useAnchoredDropdown({ visible, trigger: triggerElement, popup: popupElement, minWidth: computed(() => 480), layer: popupZIndex, tabThroughPopup: true, close, focus })
+const dropdown = useAnchoredDropdown({ visible, trigger: controlElement, popup: popupElement, minWidth: computed(() => 480), layer: popupZIndex, tabThroughPopup: true, close, focus })
 provide(overlayContextKey, dropdown.overlayContext)
 const popupStyle = computed(() => ({ ...providerStyle.value, ...dropdown.popupStyle.value, zIndex: popupZIndex.value }))
 const searchMethod = computed(() => {
@@ -152,9 +155,19 @@ function commit(values: ZtSelectValue[], options: ZtSelectOption[] = []) {
   close()
 }
 function clear() {
-  if (disabled.value) return
-  commit([])
+  if (!canClear.value) return
+  remoteSearch.reset()
+  remoteBatch.reset()
+  keyword.value = ''
+  page.value = 1
+  draft.values.value = []
+  panel.value?.reset()
+  emit('update:modelValue', [])
+  emit('change', [])
   emit('clear')
+  void formItem?.validate('change')
+  request()
+  focus()
 }
 function search(value: string) {
   keyword.value = value
@@ -175,10 +188,20 @@ function changePageSize(value: number, notify = true) {
   if (notify) emit('update:pageSize', normalized)
   request()
 }
-function handleBlur(event: FocusEvent) {
-  emit('blur', event)
-  if (!(event.relatedTarget instanceof Node) || !dropdown.containsTarget(event.relatedTarget)) void formItem?.validate('blur')
+let disposed = false
+function handleFocusOut(event: FocusEvent) {
+  if (!(event.target instanceof Node) || !dropdown.containsTarget(event.target)) return
+  if (event.relatedTarget instanceof Node && dropdown.containsTarget(event.relatedTarget)) return
+  // Wait for nested overlays and close/clear handlers to finish restoring focus.
+  // Listening on the document also covers teleported child Select popups.
+  void nextTick(() => {
+    if (disposed || (document.activeElement && dropdown.containsTarget(document.activeElement))) return
+    emit('blur', event)
+    close()
+    void formItem?.validate('blur')
+  })
 }
+onMounted(() => document.addEventListener('focusout', handleFocusOut, true))
 watch(() => props.pageSize, value => changePageSize(value, false))
 watch(visible, value => emit('visible-change', value), { flush: 'sync' })
 watch(disabled, value => { if (value) close() })
@@ -190,20 +213,25 @@ watch([() => props.remote, () => props.remoteMethod], () => {
   page.value = 1
   request()
 })
-onBeforeUnmount(() => { remoteSearch.dispose(); remoteBatch.dispose() })
+onBeforeUnmount(() => {
+  disposed = true
+  document.removeEventListener('focusout', handleFocusOut, true)
+  remoteSearch.dispose()
+  remoteBatch.dispose()
+})
 defineExpose({ focus, blur, open, close, clear })
 </script>
 
 <template>
-  <div :class="['zt-select-box', `zt-select-box--${size}`, attrs.class, { 'is-disabled': disabled, 'is-open': visible }]" :style="[attrs.style as StyleValue, { width }]">
-    <button v-bind="Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'))" :id="(attrs.id as string) ?? formItem?.inputId" ref="triggerElement" type="button" class="zt-select-box__trigger" role="combobox" aria-haspopup="dialog" :aria-expanded="visible" :aria-controls="visible ? popupId : undefined" :aria-invalid="formItem?.validateState.value === 'error' || undefined" :aria-describedby="describedBy" :disabled="disabled" @click="toggle" @keydown.down.prevent="open" @keydown.esc="handleEscape" @focus="emit('focus', $event)" @blur="handleBlur">
+  <div ref="controlElement" :data-zt-theme="theme" :class="['zt-select-box', `zt-select-box--${size}`, attrs.class, { 'is-disabled': disabled, 'is-open': visible, 'is-error': formItem?.validateState.value === 'error' }]" :style="[providerStyle, attrs.style as StyleValue, { width }]">
+    <button v-bind="Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'))" :id="(attrs.id as string) ?? formItem?.inputId" ref="triggerElement" type="button" class="zt-select-box__trigger" role="combobox" aria-haspopup="dialog" :aria-expanded="visible" :aria-controls="visible ? popupId : undefined" :aria-invalid="formItem?.validateState.value === 'error' || undefined" :aria-describedby="describedBy" :disabled="disabled" @click="toggle" @keydown.down.prevent="open" @keydown.esc="handleEscape" @focus="emit('focus', $event)">
       <span class="zt-select-box__summary" :class="{ 'is-placeholder': !summary }" :title="summary || undefined">{{ summary || placeholder }}</span>
       <ZtIcon class="zt-select-box__arrow" name="arrow-down" :size="14" />
     </button>
-    <button v-if="clearable && modelValue.length && !disabled" type="button" class="zt-select-box__clear" aria-label="清空选择" @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
+    <button v-if="canClear" type="button" class="zt-select-box__clear" aria-label="清空选择" @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
     <Teleport to="body">
       <div v-if="visible" :id="popupId" ref="popupElement" class="zt-select-box__popup" :data-zt-theme="theme" :style="popupStyle" role="dialog" aria-label="选择选项" tabindex="-1" @keydown.esc="handleEscape">
-        <SelectBoxPanel :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
+        <SelectBoxPanel ref="panel" :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
           <template v-if="$slots.option" #option="scope"><slot name="option" v-bind="scope" /></template>
         </SelectBoxPanel>
       </div>
