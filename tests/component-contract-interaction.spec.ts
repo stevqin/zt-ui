@@ -44,6 +44,39 @@ describe('selection control contract regressions', () => {
     await input.setValue(true)
     expect(wrapper.emitted('update:modelValue')).toEqual([[true]])
   })
+  it.each([
+    { limit: 'min', index: 0, min: 1, max: 2, wanted: false, kept: true, accepted: [] },
+    { limit: 'max', index: 1, min: 0, max: 1, wanted: true, kept: false, accepted: ['a', 'b'] },
+  ])('Checkbox group restores native state after a $limit rejection and accepts a later allowed toggle', async ({ limit, index, min, max, wanted, kept, accepted }) => {
+    const values = ref<unknown[]>(['a'])
+    const mixed = ref(true)
+    const group = render(ZtCheckboxGroup, {
+      props: { min, max, modelValue: values.value, 'onUpdate:modelValue': (next: unknown[]) => {
+        values.value = next
+        mixed.value = false
+        void group.setProps({ modelValue: next })
+      } },
+      slots: { default: () => ['a', 'b'].map(value => h(ZtCheckbox, { value, label: value, indeterminate: mixed.value })) },
+    })
+    const checkbox = group.findAllComponents(ZtCheckbox)[index]!
+    const input = checkbox.get<HTMLInputElement>('input')
+    // Native checkbox activation updates checked and clears indeterminate before
+    // emitting change, even when a controlled group will reject that change.
+    input.element.indeterminate = false
+    await input.setValue(wanted)
+    expect(values.value).toEqual(['a'])
+    expect(group.emitted('update:modelValue')).toBeUndefined()
+    expect(input.element.checked).toBe(kept)
+    expect(input.element.indeterminate).toBe(true)
+    expect(checkbox.classes().includes('is-checked')).toBe(kept)
+    await group.setProps({ [limit]: limit === 'min' ? 0 : 2 })
+    input.element.indeterminate = false
+    await input.setValue(wanted)
+    expect(values.value).toEqual(accepted)
+    expect(input.element.checked).toBe(wanted)
+    expect(input.element.indeterminate).toBe(false)
+    expect(checkbox.classes().includes('is-checked')).toBe(wanted)
+  })
   it('Checkbox group inherits Form density/disabled and prevents mutations', async () => {
     const wrapper = render(ZtForm, { props: { size: 'large', disabled: true }, slots: { default: () => h(ZtFormItem, {}, () => h(ZtCheckboxGroup, {}, () => h(ZtCheckbox, { value: 'a', label: 'A' }))) } })
     const checkbox = wrapper.getComponent(ZtCheckbox)

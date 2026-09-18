@@ -48,6 +48,31 @@ describe('whole-library component contract gate', () => {
     expect(result.status).toBe(1)
     expect(result.output).toContain('ZtNewControl: missing matrix row')
   })
+  it.each([
+    'export default Control',
+    'const Alias = Control; export default Alias',
+    'export default Alias; const Alias = Control',
+  ])('discovers a public component through a default-export barrel: %s', declaration => {
+    const directory = fixture()
+    const barrel = join(directory, 'src/components/button/default-barrel.ts')
+    writeFileSync(barrel, `import Control from './ZtButton.vue'; ${declaration}\n`)
+    const index = join(directory, 'src/index.ts')
+    writeFileSync(index, readFileSync(index, 'utf8') + "\nexport { default as ZtNewControl } from './components/button/default-barrel'\n")
+    const result = audit(directory)
+    expect(result.status, result.output).toBe(1)
+    expect(result.output).toContain('ZtNewControl: missing matrix row')
+  })
+  it.each([
+    ['indeterminate?: boolean', 'indeterminate: string'],
+    ['indeterminate?: boolean', 'indeterminate: boolean'],
+    ['indeterminate?: boolean', 'indeterminate?: string'],
+  ])('rejects component-specific public prop drift: %s -> %s', (before, after) => {
+    const directory = fixture()
+    replace(directory, 'src/components/checkbox/types.ts', before, after)
+    const result = audit(directory)
+    expect(result.status, result.output).toBe(1)
+    expect(result.output).toContain('ZtCheckbox: metadata type mismatch for indeterminate')
+  })
   it('rejects generated metadata that loses an existing public prop', () => {
     const directory = fixture()
     const file = join(directory, 'site/src/docs/api.generated.json')

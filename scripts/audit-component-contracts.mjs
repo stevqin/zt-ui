@@ -17,8 +17,18 @@ const contracts = {
   api: ['public-types'],
   metadata: ['generated', 'family:ZtIcon'],
 }
-const commonProps = new Set(['size', 'status', 'disabled', 'readonly', 'loading', 'clearable', 'width', 'height', 'placement'])
-const normalize = value => value?.replace(/\s/g, '')
+// Ignore formatting/comments and quote style, but preserve literal contents
+// (for example, 'a b' must not compare equal to 'ab').
+const normalize = value => {
+  if (value === undefined) return undefined
+  const scanner = ts.createScanner(ts.ScriptTarget.Latest, true, ts.LanguageVariant.Standard, value)
+  const tokens = []
+  for (let kind = scanner.scan(); kind !== ts.SyntaxKind.EndOfFileToken; kind = scanner.scan()) {
+    const literal = [ts.SyntaxKind.StringLiteral, ts.SyntaxKind.NumericLiteral, ts.SyntaxKind.NoSubstitutionTemplateLiteral].includes(kind)
+    tokens.push([kind, literal ? scanner.getTokenValue() : scanner.getTokenText()])
+  }
+  return JSON.stringify(tokens)
+}
 
 
 // Follow the actual entry-point graph, including local imports re-exported by a
@@ -33,35 +43,59 @@ export function inventory(root) {
     if (!file) return new Map()
     if (file.endsWith('.vue')) return new Map([['default', { file: relative(root, file), kind: 'sfc' }]])
     if (cache.has(file)) return cache.get(file)
-    const result = new Map(), locals = new Map()
+    const result = new Map(), imports = new Map(), declarations = new Map()
     cache.set(file, result)
     const source = ts.createSourceFile(file, read(file), ts.ScriptTarget.Latest, true)
     const imported = (request, name) => exportsOf(modulePath(file, request)).get(name)
+    // Collect bindings first: export assignments can precede their aliases.
     for (const node of source.statements) {
       if (ts.isImportDeclaration(node) && node.importClause && !node.importClause.isTypeOnly && node.moduleSpecifier.text.startsWith('.')) {
-        const clause = node.importClause
-        if (clause.name) locals.set(clause.name.text, imported(node.moduleSpecifier.text, 'default'))
-        if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) for (const item of clause.namedBindings.elements) locals.set(item.name.text, imported(node.moduleSpecifier.text, item.propertyName?.text ?? item.name.text))
+        const clause = node.importClause, request = node.moduleSpecifier.text
+        if (clause.name) imports.set(clause.name.text, { request, name: 'default' })
+        if (clause.namedBindings && ts.isNamedImports(clause.namedBindings)) for (const item of clause.namedBindings.elements) {
+          if (!item.isTypeOnly) imports.set(item.name.text, { request, name: item.propertyName?.text ?? item.name.text })
+        }
       }
       if (ts.isVariableStatement(node)) for (const declaration of node.declarationList.declarations) {
-        if (!ts.isIdentifier(declaration.name)) continue
-        const name = declaration.name.text, expression = declaration.initializer
-        let component = expression && ts.isIdentifier(expression) ? locals.get(expression.text) : undefined
-        if (expression && /^iconComponents(?:\.|\[)/.test(expression.getText(source))) component = { file: relative(root, file), kind: 'glyph' }
-        if (expression && ts.isCallExpression(expression) && /^(defineComponent|createIconComponent)$/.test(expression.expression.getText(source))) component = { file: relative(root, file), kind: 'render' }
-        if (component) {
-          locals.set(name, component)
-          if (node.modifiers?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword)) result.set(name, component)
+        if (ts.isIdentifier(declaration.name)) declarations.set(declaration.name.text, declaration.initializer)
+      }
+    }
+    function local(name, resolving = new Set()) {
+      if (resolving.has(name)) return undefined
+      const binding = imports.get(name)
+      if (binding) return imported(binding.request, binding.name)
+      resolving.add(name)
+      return expressionComponent(declarations.get(name), resolving)
+    }
+    function expressionComponent(expression, resolving = new Set()) {
+      if (!expression) return undefined
+      if (ts.isIdentifier(expression)) return local(expression.text, resolving)
+      if (ts.isParenthesizedExpression(expression) || ts.isAsExpression(expression) || ts.isSatisfiesExpression(expression) || ts.isNonNullExpression(expression)) return expressionComponent(expression.expression, resolving)
+      if (/^iconComponents(?:\.|\[)/.test(expression.getText(source))) return { file: relative(root, file), kind: 'glyph' }
+      if (ts.isCallExpression(expression) && /^(defineComponent|createIconComponent)$/.test(expression.expression.getText(source))) return { file: relative(root, file), kind: 'render' }
+    }
+    for (const node of source.statements) {
+      if (ts.isVariableStatement(node) && node.modifiers?.some(modifier => modifier.kind === ts.SyntaxKind.ExportKeyword)) {
+        for (const declaration of node.declarationList.declarations) {
+          if (!ts.isIdentifier(declaration.name)) continue
+          const component = local(declaration.name.text)
+          if (component) result.set(declaration.name.text, component)
         }
+      }
+      if (ts.isExportAssignment(node) && !node.isExportEquals) {
+        const component = expressionComponent(node.expression)
+        if (component) result.set('default', component)
       }
       if (!ts.isExportDeclaration(node) || node.isTypeOnly) continue
       const target = node.moduleSpecifier?.text
       if (target && !target.startsWith('.')) continue
-      if (!node.exportClause && target) for (const [name, value] of exportsOf(modulePath(file, target))) result.set(name, value)
-      else if (node.exportClause && ts.isNamedExports(node.exportClause)) for (const item of node.exportClause.elements) {
+      if (!node.exportClause && target) {
+        // export * never re-exports the target's default binding.
+        for (const [name, value] of exportsOf(modulePath(file, target))) if (name !== 'default') result.set(name, value)
+      } else if (node.exportClause && ts.isNamedExports(node.exportClause)) for (const item of node.exportClause.elements) {
         if (item.isTypeOnly) continue
         const original = item.propertyName?.text ?? item.name.text
-        const component = target ? imported(target, original) : locals.get(original)
+        const component = target ? imported(target, original) : local(original)
         if (component) result.set(item.name.text, component)
       }
     }
@@ -148,7 +182,7 @@ export function audit(root) {
         for (const prop of props) {
           const documented = owner.props.find(row => row.name === prop.name)
           if (!documented) fail(name, `metadata missing prop ${prop.name}`, 'site/src/docs/api.generated.json')
-          else if (commonProps.has(prop.name) && (normalize(documented.type) !== normalize(prop.declaredType) || documented.required !== prop.required)) fail(name, `metadata type mismatch for ${prop.name}`, 'site/src/docs/api.generated.json')
+          else if (normalize(documented.type) !== normalize(prop.declaredType ?? prop.type) || documented.required !== prop.required) fail(name, `metadata type mismatch for ${prop.name}`, 'site/src/docs/api.generated.json')
         }
         for (const prop of owner.props) if (!props.some(row => row.name === prop.name)) fail(name, `metadata contains unknown prop ${prop.name}`, 'site/src/docs/api.generated.json')
       }

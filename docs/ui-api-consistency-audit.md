@@ -1,6 +1,6 @@
 # Public component contract audit
 
-All value exports reachable from src/index.ts are inventoried, including barrel imports, the VTableGrid JS bridge, and named SVG icons: **126 components (94 SFCs + 32 SVG icons)**. Helpers, types and registry objects are not components.
+All value exports reachable from src/index.ts are inventoried, including named/default barrel imports and aliases, the VTableGrid JS bridge, and named SVG icons: **126 components (94 SFCs + 32 SVG icons)**. Helpers, types and registry objects are not components.
 
 Run `npm run audit:components`. There are no waived findings. New exports, absent rows, unresolved dispositions, missing evidence, and failed source/metadata checks exit nonzero. Static checks are combined with the behavioral/computed-style suites listed per row; this is not a claim of exhaustive browser accessibility certification.
 
@@ -151,7 +151,7 @@ All findings below are **Important**, now fixed; no Critical or Important findin
 
 | Component/family | Evidence before remediation | Required contract | Focused change / regression |
 | --- | --- | --- | --- |
-| Checkbox | Native input had unconditional tabindex=-1 and no change handler; indeterminate was only painted, not reflected in native state (checkbox/ZtCheckbox.vue). | Focusable native checkbox, announced mixed state, one change per action. | Restore native change/tab semantics and DOM indeterminate; preserve explicitly role-owning SelectBox wrappers. component-contract-interaction.spec.ts and existing SelectBox suites. |
+| Checkbox | Native input had unconditional tabindex=-1 and no change handler; indeterminate was only painted, not reflected in native state (checkbox/ZtCheckbox.vue). | Focusable native checkbox, announced mixed state, one change per action. | Restore native change/tab semantics and DOM indeterminate; reconcile checked/indeterminate after accepted or rejected group min/max toggles; preserve explicitly role-owning SelectBox wrappers. component-contract-interaction.spec.ts and existing SelectBox suites. |
 | Checkbox/CheckboxGroup | Disabled large Form yielded enabled default-density checkboxes (checkbox/ZtCheckbox.vue, ZtCheckboxGroup.vue). | FormItem disabled/density inheritance below an explicit control/group override. | Use the existing FormItem context and shared density resolver; block disabled group mutations. Behavioral Form regression. |
 | Switch | Nonfocusable div with role=switch had no keyboard handler or disabled/busy announcement; ignored FormItem density/disabled (switch/ZtSwitch.vue). | Keyboard activation, state announcements, disabled/loading mutation guard and inherited Form contract. | Add Space/Enter and resolved disabled state; preserve status and shape APIs. Behavioral keyboard and Form regressions. |
 | Tag | Closable tag rendered an unnamed click-only span (tag/ZtTag.vue). | Independently focusable named close action. | Native button with Chinese label, neutral style reset, focus-visible ring. Behavioral close regression. |
@@ -167,6 +167,6 @@ The full suite also exposed an obsolete RadioGroup.variant expectation left by T
 
 ## Verification scope
 
-The mutation-tested gate enforces export coverage, approved dimension values, evidence-file existence, density inheritance/vocabulary, token-based radius, distinct status families, animated-family reduced motion, concrete action/overlay ownership rules, common boolean/name/length contracts, generated prop coverage/common type agreement, and forbidden compatibility guidance. All 32 glyph rows must map to the shared generated ZtIcon strokeWidth contract.
+The mutation-tested gate enforces export coverage, approved dimension values, evidence-file existence, density inheritance/vocabulary, token-based radius, distinct status families, animated-family reduced motion, concrete action/overlay ownership rules, common boolean/name/length contracts, generated prop coverage/type/requiredness agreement for every public prop, and forbidden compatibility guidance. All 32 glyph rows must map to the shared generated ZtIcon strokeWidth contract.
 
 Family regressions verify native and composite keyboard interaction, disabled/readonly/loading behavior where supported, semantic validation priority, provider inheritance, adjoining control geometry and popup scroll ownership. The library-wide browser visual matrix and documentation example/source parity remain the final verification/site tasks in the approved plan. No site restructuring, new status props, public status renaming, or broad visual redesign is included here.

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useZtSize } from '../config-provider/context'
-import { computed, inject, onMounted, ref, watch } from 'vue'
+import { computed, inject, nextTick, onMounted, ref, watch } from 'vue'
 import type { ZtCheckboxProps } from './types'
 import { checkboxGroupKey } from './types'
 import { ztFormItemKey } from '../form/context'
@@ -64,16 +64,24 @@ const classes = computed(() => [
   actualSize.value !== 'default' && `zt-checkbox--${actualSize.value}`,
 ])
 
-function handleChange() {
-  if (isDisabled.value) return
-  if (isGroup.value) {
-    group!.toggle(props.value)
-  } else {
-    const next = !selfVal.value
-    selfVal.value = next
-    emit('update:modelValue', next)
-    emit('change', next)
+async function handleChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (!isDisabled.value) {
+    if (isGroup.value) {
+      group!.toggle(props.value)
+    } else {
+      const next = !selfVal.value
+      selfVal.value = next
+      emit('update:modelValue', next)
+      emit('change', next)
+    }
   }
+  // Native activation mutates these properties before change fires. A group
+  // limit (or a controlled parent) can reject the update without a Vue render.
+  // Wait for accepted parent updates before restoring the resolved state.
+  await nextTick()
+  input.checked = isChecked.value
+  input.indeterminate = props.indeterminate
 }
 </script>
 
