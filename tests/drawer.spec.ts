@@ -47,10 +47,10 @@ describe('ZtDrawer', () => {
     expect(document.activeElement).toBe(document.querySelector('.zt-drawer-surface__close'))
   })
 
-  it('maps placement and size to the correct panel axis', async () => {
+  it('maps placement and geometry to the correct panel axis', async () => {
     const wrapper = mount(ZtDrawer, {
       attachTo: document.body,
-      props: { modelValue: true, size: 460 },
+      props: { modelValue: true, width: 460, height: 460 },
     })
     const overlay = document.querySelector<HTMLElement>('.zt-drawer-surface')!
     const panel = document.querySelector<HTMLElement>('.zt-drawer-surface__panel')!
@@ -68,7 +68,7 @@ describe('ZtDrawer', () => {
   })
 
   it('normalizes numeric strings and supports width and custom body layouts', async () => {
-    const wrapper = mount(ZtDrawer, { attachTo: document.body, props: { modelValue: true, size: '760' } })
+    const wrapper = mount(ZtDrawer, { attachTo: document.body, props: { modelValue: true, width: '760' } })
     const panel = document.querySelector<HTMLElement>('.zt-drawer-surface__panel')!
     expect(panel.style.width).toBe('760px')
     await wrapper.setProps({ width: '680', bodyScroll: false, bodyPadding: 12 })

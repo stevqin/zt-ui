@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { useZtConfig } from '../config-provider/context'
+import { provideZtSizeScope, useZtConfig, useZtSize } from '../config-provider/context'
 const { style: providerStyle } = useZtConfig()
-import { useZtSize } from '../config-provider/context'
 import { computed, onBeforeUnmount, reactive, ref, useId, watch } from 'vue'
 import ZtButton from '../button/ZtButton.vue'
 import { useOverlay } from '../overlay/useOverlay'
@@ -35,6 +34,7 @@ const props = withDefaults(defineProps<ZtModalProps>(), {
   zIndex: 1000,
 })
 const configSize = useZtSize(props)
+provideZtSizeScope(configSize)
 
 
 const emit = defineEmits<{

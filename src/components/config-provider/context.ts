@@ -1,4 +1,4 @@
-import { computed, inject, type ComputedRef, type CSSProperties, type InjectionKey } from 'vue'
+import { computed, inject, provide, type ComputedRef, type CSSProperties, type InjectionKey } from 'vue'
 import type { ZtComponentSize } from '../types'
 import type { ZtTheme } from './types'
 export interface ZtConfigContext {
@@ -13,6 +13,10 @@ const defaults: ZtConfigContext = {
   borderRadius: computed(() => 11), style: computed(() => ({})),
 }
 export function useZtConfig() { return inject(configProviderKey, defaults) }
+export function provideZtSizeScope(size: ComputedRef<ZtComponentSize>) {
+  const parent = useZtConfig()
+  provide(configProviderKey, { ...parent, size })
+}
 export function useZtSize(props: { size?: ZtComponentSize }, parent?: () => ZtComponentSize | undefined) {
   const config = useZtConfig()
   return computed(() => props.size ?? parent?.() ?? config.size.value)

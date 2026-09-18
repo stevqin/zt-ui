@@ -55,4 +55,11 @@ describe('ConfigProvider',()=>{
   expect(overlay.style.colorScheme).toBe('dark')
   expect(overlay.querySelector('button.zt-button--large')).not.toBeNull()
  })
+ it('scopes explicit Modal size to implicit children while preserving child overrides',()=>{
+  const w=render(()=>h(ZtModal,{modelValue:true,size:'small'},()=>[h(ZtInput),h(ZtInput,{size:'large'})]))
+  expect(document.querySelector('.zt-modal')?.classList).toContain('zt-modal--small')
+  const inputs=document.querySelectorAll('.zt-input')
+  expect(inputs[0]?.classList).toContain('zt-input--small')
+  expect(inputs[1]?.classList).toContain('zt-input--large')
+ })
 })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useZtConfig } from '../config-provider/context'
+import { provideZtSizeScope, useZtConfig, useZtSize } from '../config-provider/context'
 const { style: providerStyle } = useZtConfig()
 import { computed, useId, watch, ref, onBeforeUnmount } from 'vue'
 import ZtButton from '../button/ZtButton.vue'
@@ -14,7 +14,8 @@ const props = withDefaults(defineProps<ZtDrawerProps>(), {
   modelValue: false,
   title: '',
   placement: 'right',
-  size: 420,
+  width: 420,
+  height: 420,
   fullscreenBelow: 0,
   bodyScroll: true,
   bodyPadding: 22,
@@ -36,6 +37,8 @@ const props = withDefaults(defineProps<ZtDrawerProps>(), {
   focusTrap: true,
   zIndex: 1000,
 })
+const resolvedSize = useZtSize(props)
+provideZtSizeScope(resolvedSize)
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
@@ -101,7 +104,8 @@ watch(() => props.loading, loading => {
   if (loading && overlay.visible.value && overlay.isTop.value) panel.value?.focus({ preventScroll: true })
 }, { flush: 'post' })
 
-function cssLength(value: number | string) {
+function cssLength(value: number | string | undefined) {
+  if (value === undefined) return undefined
   return typeof value === 'number' || /^\d+(?:\.\d+)?$/.test(value.trim()) ? `${Number(value)}px` : value
 }
 
@@ -126,11 +130,12 @@ onBeforeUnmount(removeMedia)
 
 const isVertical = computed(() => props.placement === 'top' || props.placement === 'bottom')
 const panelStyle = computed(() => isVertical.value
-  ? { height: cssLength(props.size) }
-  : { width: cssLength(props.width ?? props.size) })
+  ? { height: cssLength(props.height) }
+  : { width: cssLength(props.width) })
 const classes = computed(() => [
   'zt-drawer-surface',
   `zt-drawer-surface--${props.placement}`,
+  `zt-drawer-surface--${resolvedSize.value}`,
   narrow.value && !isVertical.value && 'zt-drawer-surface--narrow',
   !overlay.isTop.value && 'zt-drawer-surface--underneath',
 ])
