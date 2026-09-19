@@ -249,7 +249,7 @@ describe('complete and executable documentation examples', () => {
       'utf8',
     );
     expect(page).toContain('部分匹配');
-    expect(page).toContain('@ztechjs/zt-alert');
+    expect(page).toContain('MessageBox');
     expect(page).toContain('仅在 clearable=true 时生效');
     const document = api['select-box'];
     expect(document.types.map((type) => type.name)).toEqual(

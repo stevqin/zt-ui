@@ -93,6 +93,10 @@
 
   // Each status supplies state fills. The inherited depth image and
   // shadows are independent of status, size, and circle geometry.
+  --button-variant-color: var(--glass-default-ink);
+  --button-variant-ink: var(--glass-default-ink);
+  --button-variant-soft: var(--glass-default-soft);
+  --button-variant-line: var(--glass-default-line);
   --button-fill: var(--zt-default-button, #ffffffd9);
   --button-hover: var(--zt-default-button-hover, #fff);
   --button-active: var(--glass-accent-soft);
@@ -127,6 +131,10 @@
     @if $status == primary { $token: accent; }
     &--#{$status} {
       // Retain inherited status-color hooks; radius alone owns image/shadow depth.
+      --button-variant-color: #{list.nth($colors, 1)};
+      --button-variant-ink: var(--glass-#{$token}-ink, #{list.nth($colors, 1)});
+      --button-variant-soft: var(--glass-#{$token}-soft, color-mix(in srgb, #{list.nth($colors, 1)} 14%, transparent));
+      --button-variant-line: var(--glass-#{$token}-line, #{list.nth($colors, 1)});
       --button-fill: var(--zt-#{$token}-button, #{list.nth($colors, 1)});
       --button-hover: var(--zt-#{$token}-button-hover, #{list.nth($colors, 2)});
       --button-active: #{list.nth($colors, 3)};
@@ -152,6 +160,60 @@
   &:disabled {
     box-shadow: none;
     &::before { background-image: none; }
+  }
+
+  &.has-custom-color {
+    --button-variant-color: var(--zt-button-color);
+    --button-variant-ink: var(--zt-button-color);
+    --button-variant-soft: var(--zt-button-color-soft);
+    --button-variant-line: var(--zt-button-color);
+    --button-fill: var(--zt-button-color);
+    --button-hover: var(--zt-button-color-hover);
+    --button-active: var(--zt-button-color-active);
+    color: #fff;
+    border-color: transparent;
+  }
+
+  // Appearance variants intentionally stay flat at every provider radius.
+  &--plain,
+  &--dashed,
+  &--text {
+    color: var(--button-variant-ink);
+    background: var(--button-variant-soft);
+    box-shadow: none;
+    transform: none;
+    &::before { background-image: none; }
+    &:not(:disabled):hover {
+      box-shadow: none;
+      transform: none;
+    }
+    &:not(:disabled):active {
+      box-shadow: none;
+      transform: none;
+    }
+  }
+
+  &--plain {
+    border: 1px solid var(--button-variant-line);
+    &:not(:disabled):hover { color: #fff; border-color: var(--button-variant-color); background: var(--button-variant-color); }
+    &:not(:disabled):active { color: #fff; border-color: var(--button-active); background: var(--button-active); }
+  }
+
+  &--dashed {
+    border: 1px dashed var(--button-variant-line);
+    background: transparent;
+    &:not(:disabled):hover { color: var(--button-variant-ink); border-color: var(--button-variant-color); background: var(--button-variant-soft); }
+    &:not(:disabled):active { color: var(--button-variant-ink); border-color: var(--button-variant-color); background: color-mix(in srgb, var(--button-variant-soft) 78%, var(--button-variant-color)); }
+  }
+
+  &--text {
+    min-width: unset;
+    padding-inline: 9px;
+    border: 0;
+    background: transparent;
+    &:not(:disabled):hover { color: var(--button-variant-ink); background: var(--button-variant-soft); }
+    &:not(:disabled):active { color: var(--button-variant-ink); background: color-mix(in srgb, var(--button-variant-soft) 78%, var(--button-variant-color)); }
+    &:disabled { background: transparent; }
   }
 
   // ════════════════════════════════════

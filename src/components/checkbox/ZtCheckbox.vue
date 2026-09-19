@@ -61,6 +61,7 @@ const classes = computed(() => [
   isDisabled.value && 'is-disabled',
   props.indeterminate && 'is-indeterminate',
   props.border && 'is-bordered',
+  group?.segmented.value && 'is-segmented',
   actualSize.value !== 'default' && `zt-checkbox--${actualSize.value}`,
 ])
 

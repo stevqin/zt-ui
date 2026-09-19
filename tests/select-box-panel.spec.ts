@@ -1,5 +1,5 @@
 import { mount, type VueWrapper } from '@vue/test-utils'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { h, ref } from 'vue'
 import SelectBoxPanel from '../src/components/select-box/SelectBoxPanel.vue'
 import ZtCheckbox from '../src/components/checkbox/ZtCheckbox.vue'
@@ -11,6 +11,11 @@ import ZtLoading from '../src/components/loading/ZtLoading.vue'
 import ZtScrollbar from '../src/components/scrollbar/ZtScrollbar.vue'
 import { overlayContextKey, type OverlayBranch } from '../src/components/overlay/context'
 import type { ZtSelectOption } from '../src/components/select-box/types'
+
+vi.mock('@ztechjs/zt-alert', () => ({
+  ZtMessage: { success: vi.fn(), warning: vi.fn(), info: vi.fn(), error: vi.fn() },
+  ZtMessageBox: { alert: vi.fn().mockResolvedValue(true) },
+}))
 
 const options: ZtSelectOption[] = [
   { value: 'east', label: '华东' },
@@ -33,6 +38,7 @@ function panel(props = {}, slots = {}) {
 afterEach(() => { wrappers.splice(0).forEach(wrapper => wrapper.unmount()) })
 const rows = (wrapper: VueWrapper) => wrapper.findAll('.zt-select-box-panel__option')
 const confirm = (wrapper: VueWrapper) => wrapper.find('.zt-select-box-panel__confirm').trigger('click')
+const settleMessageBox = () => new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
 async function paste(wrapper: VueWrapper, text: string, separator?: string) {
   await wrapper.find('.zt-select-box-panel__mode').trigger('click')
   if (separator) {
@@ -157,6 +163,7 @@ describe('SelectBoxPanel local selection', () => {
     const input = wrapper.find(mode === 'paste' ? 'textarea' : 'input[aria-label="搜索选项"]')
     await input.trigger('keydown', { key: 'Escape', isComposing: true })
     expect(wrapper.emitted('cancel')).toBeUndefined()
+    if (mode === 'paste') await wrapper.find('.zt-select-box-panel__mode').trigger('click')
     await confirm(wrapper)
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['east'])
   })
@@ -168,8 +175,7 @@ describe('SelectBoxPanel local selection', () => {
     const input = wrapper.find(mode === 'paste' ? 'textarea' : 'input[aria-label="搜索选项"]')
     await input.trigger('keydown', { key: 'Escape', isComposing: false })
     expect(wrapper.emitted('cancel')).toEqual([[]])
-    await confirm(wrapper)
-    expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual([])
+    expect(wrapper.emitted('confirm')).toBeUndefined()
   })
 
   it('supports Space and Enter selection and Escape cancellation', async () => {
@@ -192,28 +198,39 @@ describe('SelectBoxPanel local batch matching', () => {
     const wrapper = panel()
     await wrapper.find('input[aria-label="搜索选项"]').setValue('华东')
     await paste(wrapper, text, separator)
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+    expect(rows(wrapper).map(row => row.text())).toEqual(['华东', '华西', '第五项'])
+    expect(wrapper.find('.zt-select-box-panel__pager').exists()).toBe(false)
+    await confirm(wrapper)
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['east', 'west', 5])
-    expect(wrapper.find('[role="status"]').text()).toBe('批量粘贴 4 项（去重后 3 项），匹配 3 项，已自动勾选 3 项')
   })
 
   it('commits partial matches while excluding disabled and inexact matches', async () => {
     const wrapper = panel({ modelValue: ['south'] })
     await paste(wrapper, '华东\n华北\n华\nEAST')
+    await settleMessageBox()
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+    expect(rows(wrapper).map(row => row.text())).toEqual(['华南', '华东'])
+    expect(wrapper.find('.zt-select-box-panel__pager').exists()).toBe(false)
+    await confirm(wrapper)
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['south', 'east'])
-    expect(wrapper.find('[role="status"]').text()).toBe('批量粘贴 4 项，匹配 1 项，已自动勾选 1 项')
   })
 
-  it.each(['不存在', ' \n\t '])('commits the existing draft even when nothing matches: %s', async text => {
+  it('returns to the selected view when nothing matches', async () => {
     const wrapper = panel({ modelValue: ['west'] })
-    await paste(wrapper, text)
+    await paste(wrapper, '不存在')
+    await settleMessageBox()
+    expect(wrapper.emitted('confirm')).toBeUndefined()
+    expect(rows(wrapper).map(row => row.text())).toEqual(['华西'])
+    await confirm(wrapper)
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['west'])
   })
 
   it('selects every enabled exact match and counts unique keywords separately from newly selected values', async () => {
     const wrapper = panel({ modelValue: ['east'], options: [...options, { value: 'other', label: '华东' }, { value: 'east', label: '别名' }] })
     await paste(wrapper, '华东\neast\n别名')
+    await confirm(wrapper)
     expect(wrapper.emitted('confirm')?.[0]?.[0]).toEqual(['east', 'other'])
-    expect(wrapper.find('[role="status"]').text()).toBe('批量粘贴 3 项，匹配 3 项，已自动勾选 1 项')
   })
 
   it('registers the separator Select popup in the containing overlay', async () => {

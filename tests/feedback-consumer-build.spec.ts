@@ -52,7 +52,7 @@ beforeAll(async () => {
   consumer = new Function('Vue', `${code}\nreturn ZtConsumer;`)(Vue)
 }, 30_000)
 
-it('shares one message stack between built SelectBox and the consumer direct zt-alert import', async () => {
+it('keeps the consumer message stack singular while built SelectBox validates', async () => {
   vi.useFakeTimers()
   const wrapper = mount(consumer.ZtSelectBox, { attachTo: document.body, props: { options: [{ value: 'a', label: 'Alpha' }] } })
   try {
@@ -64,8 +64,10 @@ it('shares one message stack between built SelectBox and the consumer direct zt-
     textarea.value = 'Alpha'; textarea.dispatchEvent(new Event('input', { bubbles: true }))
     await flushPromises()
     document.querySelector<HTMLElement>('.zt-select-box-panel__confirm')!.click(); await flushPromises()
-    expect(document.querySelectorAll('.zt-notice')).toHaveLength(2)
+    expect(document.querySelectorAll('.zt-notice')).toHaveLength(1)
     expect(document.querySelectorAll('.zt-message-stack')).toHaveLength(1)
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    document.querySelector<HTMLElement>('.zt-select-box-panel__confirm')!.click(); await flushPromises()
     expect(wrapper.emitted('update:modelValue')).toEqual([[['a']]])
   } finally {
     wrapper.unmount()

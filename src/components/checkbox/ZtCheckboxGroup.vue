@@ -10,6 +10,7 @@ defineOptions({ name: 'ZtCheckboxGroup', inheritAttrs: false })
 
 const props = withDefaults(defineProps<ZtCheckboxGroupProps>(), {
   modelValue: () => [],
+  segmented: false,
   disabled: false,
   min: 0,
   max: Infinity,
@@ -47,13 +48,21 @@ provide<CheckboxGroupContext>(checkboxGroupKey, {
   status: computed(() => props.status),
   min: computed(() => props.min),
   max: computed(() => props.max),
+  segmented: computed(() => props.segmented),
   toggle,
   isChecked: (val: unknown) => (props.modelValue ?? []).includes(val),
 })
 </script>
 
 <template>
-  <div class="zt-checkbox-group" v-bind="$attrs">
+  <div
+    class="zt-checkbox-group"
+    :class="[
+      { 'zt-checkbox-group--segmented': segmented },
+      segmented && `zt-checkbox-group--${configSize}`,
+    ]"
+    v-bind="$attrs"
+  >
     <slot />
   </div>
 </template>

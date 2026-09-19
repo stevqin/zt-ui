@@ -12,7 +12,7 @@ import PlacementCode from './Placement.vue?raw';
 
 <template>
   <div class="component-examples">
-    <p>width / height 的数字值转换为 px，字符串作为 CSS 长度。显式 height 固定外框高度（受视口边界约束），溢出仅在内容区滚动，箭头保持固定；尺寸或内容变化会重新定位并按可用空间调整方位。Tooltip 也使用此定位与尺寸能力。</p>
+    <p>默认宽高随内容自然展开，仅在超过视口可用空间时换行或滚动。width / height 的数字值转换为 px，字符串作为 CSS 长度；显式设置后固定对应维度，未设置的另一维继续自适应。尺寸或内容变化会自动重新定位。</p>
     <h3>基础用法</h3>
     <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
     <h3>触发方式</h3>

@@ -370,7 +370,7 @@ export default {
     "description": "启用原生懒加载。"
   },
   "image.ZtImage.props.previewSrcList": {
-    "description": "预览图片地址列表。"
+    "description": "预览图片地址列表；未传时使用 src，显式传入后覆盖默认列表。"
   },
   "image.ZtImage.props.initialIndex": {
     "description": "预览初始索引。"

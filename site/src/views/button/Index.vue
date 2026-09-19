@@ -12,6 +12,8 @@ import Example05 from './Example05.vue';
 import Example05Code from './Example05.vue?raw';
 import NativeForm from './NativeForm.vue';
 import NativeFormCode from './NativeForm.vue?raw';
+import Variants from './Variants.vue';
+import VariantsCode from './Variants.vue?raw';
 </script>
 
 <template>
@@ -23,6 +25,13 @@ import NativeFormCode from './NativeForm.vue?raw';
       :code="Example01Code"
       desc="通过 `status` 属性来定义按钮的颜色状态，默认为 `default`。"
       ><Example01
+    /></DemoBlock>
+
+    <h3>轻量模式与自定义颜色</h3>
+    <DemoBlock
+      :code="VariantsCode"
+      desc="plain、dashed、text 提供三种轻量外观；color 接受任意 CSS 颜色并覆盖 status 的视觉颜色。多个模式同时设置时按 text、dashed、plain 的顺序生效。"
+      ><Variants
     /></DemoBlock>
 
     <h3>尺寸</h3>

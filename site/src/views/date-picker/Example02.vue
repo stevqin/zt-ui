@@ -2,18 +2,21 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import { ZtDatePicker } from '@ztechjs/zt-ui';
+import { ZtDatePicker, ZtSwitch } from '@ztechjs/zt-ui';
 import type { ZtDatePickerValue } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const rangeValue = ref<ZtDatePickerValue>(null);
+const singlePanel = ref(false);
 </script>
 
 <template>
   <div class="date-demo-stack">
+    <ZtSwitch v-model="singlePanel" active-text="单面板" inactive-text="双面板" />
     <ZtDatePicker
       :status="demoStatus"
       v-model="rangeValue"
       range
+      :range-panel-mode="singlePanel ? 'single' : 'double'"
       clearable
     /><span>当前范围：{{ rangeValue ?? '未选择' }}</span>
   </div>

@@ -19,6 +19,8 @@ export interface ZtCheckboxProps {
 
 export interface ZtCheckboxGroupProps {
   modelValue?: unknown[]
+  /** 将复选框组显示为可多选的连体按钮。 */
+  segmented?: boolean
   disabled?: boolean
   min?: number
   max?: number
@@ -33,6 +35,7 @@ export interface CheckboxGroupContext {
   status: ComputedRef<ZtCheckboxStatus>
   min: ComputedRef<number>
   max: ComputedRef<number>
+  segmented: ComputedRef<boolean>
   toggle: (val: unknown) => void
   isChecked: (val: unknown) => boolean
 }

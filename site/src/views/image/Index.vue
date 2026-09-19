@@ -13,7 +13,10 @@ import LazyCode from './Lazy.vue?raw';
 <template>
   <div class="component-examples">
     <h3>适应与预览</h3>
-    <DemoBlock :code="Example01Code"><Example01 /></DemoBlock>
+    <DemoBlock
+      :code="Example01Code"
+      desc="默认点击图片会使用 src 打开预览；传入 preview-src-list 可覆盖预览列表，设置 show-preview=false 可关闭点击预览。"
+    ><Example01 /></DemoBlock>
     <h3>错误后备</h3>
     <DemoBlock :code="Example02Code"><Example02 /></DemoBlock>
     <h3>独立预览器与缩放限制</h3>

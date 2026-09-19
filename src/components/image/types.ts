@@ -5,7 +5,8 @@ export interface ZtImageProps{
  /** object-fit 模式。 */fit?:ZtImageFit
  /** object-position。 */position?:string
  /** 启用原生懒加载。 */lazy?:boolean
- /** 预览图片地址列表。 */previewSrcList?:string[]
+ /** 点击图片时是否打开预览。 */showPreview?:boolean
+ /** 预览图片地址列表，未传时使用 src，显式传入后覆盖默认列表。 */previewSrcList?:string[]
  /** 预览初始索引。 */initialIndex?:number
  /** 是否循环预览。 */infinite?:boolean
  /** 点击遮罩关闭预览。 */hideOnClickModal?:boolean

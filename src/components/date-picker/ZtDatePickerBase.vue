@@ -23,7 +23,7 @@ import {
   normalizeTime,
   parseDate,
 } from './date';
-import type { ZtDatePickerProps, ZtDatePickerValue } from './types';
+import type { ZtDatePickerProps, ZtDatePickerShortcut, ZtDatePickerValue } from './types';
 import ZtCalendarNavigation from './ZtCalendarNavigation.vue';
 import './date-picker.scss';
 
@@ -33,6 +33,7 @@ const props = withDefaults(
   {
     modelValue: null,
     range: false,
+    rangePanelMode: 'double',
     datetime: false,
     inline: false,
     disabled: false,
@@ -81,6 +82,7 @@ const disabled = computed(
 const size = useZtSize(props, () => formItem?.size.value);
 const mode = computed(() => props.datetime ? 'date' : props.type?.startsWith('year') ? 'year' : props.type?.startsWith('month') ? 'month' : 'date');
 const range = computed(() => props.range || Boolean(props.type?.endsWith('range')));
+const dualRange = computed(() => range.value && mode.value === 'date' && props.rangePanelMode === 'double');
 const periodLabel = computed(() => mode.value === 'year' ? '年份' : mode.value === 'month' ? '月份' : '日期');
 function parseValue(value: string | undefined) {
   if (mode.value === 'year') return /^\d{4}$/.test(value ?? '') ? parseDate(`${value}-01-01`) : null;
@@ -121,11 +123,11 @@ const holidayMap = computed(() => {
   return new Map(
     entries
       .filter((item) => parseDate(item.key) && item.value.trim())
-      .map((item) => [item.key, item.value] as const),
+      .map((item) => [item.key, item] as const),
   );
 });
 const calendars = computed(() =>
-  Array.from({ length: range.value && mode.value === 'date' ? 2 : 1 }, (_, index) => {
+  Array.from({ length: dualRange.value ? 2 : 1 }, (_, index) => {
     const value = calendarDate(
       month.value.getFullYear(),
       month.value.getMonth() + index,
@@ -144,7 +146,7 @@ const calendars = computed(() =>
 );
 function clampMonth(value: Date) {
   const min = calendarDate(1, 0, 1);
-  const max = calendarDate(9999, range.value && mode.value === 'date' ? 10 : 11, 1);
+  const max = calendarDate(9999, dualRange.value ? 10 : 11, 1);
   return new Date(
     Math.max(min.getTime(), Math.min(max.getTime(), value.getTime())),
   );
@@ -170,6 +172,84 @@ const draft = computed<ZtDatePickerValue>(() => {
     return null;
   return [first, last];
 });
+const draftSummary = computed(() => {
+  const first = start.value
+    ? start.value + (props.datetime ? ` ${normalizeTime(startTime.value)}` : '')
+    : `未选择${periodLabel.value}`;
+  if (!range.value) return first;
+  const last = end.value
+    ? end.value + (props.datetime ? ` ${normalizeTime(endTime.value)}` : '')
+    : `结束${periodLabel.value}`;
+  return `${first} 至 ${last}`;
+});
+function formatTime(date: Date) {
+  return [date.getHours(), date.getMinutes(), date.getSeconds()]
+    .map(value => String(value).padStart(2, '0'))
+    .join(':');
+}
+function liveShortcut(
+  label: string,
+  resolve: (now: Date) => ZtDatePickerValue,
+): ZtDatePickerShortcut {
+  return { label, value: () => resolve(new Date()) };
+}
+function defaultShortcuts(): ZtDatePickerShortcut[] {
+  if (mode.value === 'year') {
+    return range.value
+      ? [
+          liveShortcut('今年', now => {
+            const current = String(now.getFullYear()).padStart(4, '0');
+            return [current, current];
+          }),
+          liveShortcut('去年', now => {
+            const previous = String(now.getFullYear() - 1).padStart(4, '0');
+            return [previous, previous];
+          }),
+        ]
+      : [liveShortcut('今年', now => String(now.getFullYear()).padStart(4, '0'))];
+  }
+  if (mode.value === 'month') {
+    return range.value
+      ? [
+          liveShortcut('本月', now => {
+            const current = dateKey(now).slice(0, 7);
+            return [current, current];
+          }),
+          liveShortcut('上月', now => {
+            const previous = dateKey(calendarDate(now.getFullYear(), now.getMonth() - 1, 1)).slice(0, 7);
+            return [previous, previous];
+          }),
+        ]
+      : [
+          liveShortcut('本月', now => dateKey(now).slice(0, 7)),
+          liveShortcut('上月', now => dateKey(calendarDate(now.getFullYear(), now.getMonth() - 1, 1)).slice(0, 7)),
+        ];
+  }
+  if (!range.value) {
+    return [liveShortcut(props.datetime ? '现在' : '今日', now => {
+      const today = dateKey(now);
+      return props.datetime ? `${today} ${formatTime(now)}` : today;
+    })];
+  }
+  const withTime = (first: string, last: string): [string, string] => props.datetime
+    ? [`${first} 00:00:00`, `${last} 23:59:59`]
+    : [first, last];
+  return [
+    liveShortcut('今日', now => {
+      const today = dateKey(now);
+      return withTime(today, today);
+    }),
+    liveShortcut('本周', now => {
+      const day = (now.getDay() + 6) % 7;
+      return withTime(dateKey(addDays(now, -day)), dateKey(addDays(now, 6 - day)));
+    }),
+    liveShortcut('上月', now => {
+      const previousMonth = calendarDate(now.getFullYear(), now.getMonth() - 1, 1);
+      return withTime(dateKey(previousMonth), dateKey(calendarDate(now.getFullYear(), now.getMonth(), 0)));
+    }),
+  ];
+}
+const shortcuts = computed(() => props.shortcuts ?? defaultShortcuts());
 function isDisabled(date: Date | null) {
   return (
     !date ||
@@ -292,6 +372,28 @@ function confirm() {
   if (!disabled.value && !props.readonly && draft.value !== null)
     commit(draft.value);
 }
+function applyShortcut(shortcut: ZtDatePickerShortcut) {
+  if (disabled.value || props.readonly) return;
+  const value = typeof shortcut.value === 'function' ? shortcut.value() : shortcut.value;
+  const rawEntries = Array.isArray(value) ? value : value === null ? [] : [value];
+  if ((range.value && rawEntries.length !== 2) || (!range.value && rawEntries.length !== 1)) return;
+  const entries = range.value ? [...rawEntries].sort() : rawEntries;
+  const parsed = entries.map(entry => parseValue(entry));
+  if (parsed.some(date => !date || isDisabled(date))) return;
+  start.value = entries[0]!.slice(0, mode.value === 'year' ? 4 : mode.value === 'month' ? 7 : 10);
+  end.value = range.value ? entries[1]!.slice(0, mode.value === 'year' ? 4 : mode.value === 'month' ? 7 : 10) : '';
+  if (props.datetime) {
+    startTime.value = entries[0]!.slice(11) || '00:00:00';
+    endTime.value = entries[1]?.slice(11) || '23:59:59';
+  }
+  pickingEnd.value = false;
+  hovered.value = '';
+  const first = parsed[0]!;
+  month.value = clampMonth(calendarDate(first.getFullYear(), first.getMonth(), 1));
+  active.value = dateKey(first);
+  if (props.datetime) void nextTick(updatePosition);
+  else commit(range.value ? [entries[0]!, entries[1]!] : entries[0]!);
+}
 function setMonth(value: Date, index = 0) {
   month.value = clampMonth(
     calendarDate(value.getFullYear(), value.getMonth() - index, 1),
@@ -355,7 +457,7 @@ function keydown(event: KeyboardEvent) {
         month.value = clampMonth(
           calendarDate(
             date.getFullYear(),
-            date.getMonth() - (range.value ? 1 : 0),
+            date.getMonth() - (dualRange.value ? 1 : 0),
             1,
           ),
         );
@@ -364,10 +466,11 @@ function keydown(event: KeyboardEvent) {
     }
   }
 }
-function keepButtonFocus(event: MouseEvent) {
-  // Pointer selection must not blur the input before the button's click runs (Safari).
-  if (event.target instanceof Element && event.target.closest('button'))
-    event.preventDefault();
+function keepPanelFocus(event: MouseEvent) {
+  if (!(event.target instanceof Element)) return;
+  // Time fields intentionally receive focus. Calendar controls and whitespace
+  // keep the existing focus so an in-panel pointer action cannot look external.
+  if (!event.target.closest('input, select, textarea')) event.preventDefault();
 }
 async function focusout(event: FocusEvent) {
   // View changes may remove the focused button before its replacement is focused.
@@ -500,7 +603,10 @@ defineExpose({ focus, blur, open, close, clear });
       :class="[
         `zt-date-picker--status-${status}`,
         `zt-date-picker--${size}`,
-        { 'is-range': range && mode === 'date' },
+        {
+          'is-range': range && mode === 'date',
+          'is-range-single': range && mode === 'date' && rangePanelMode === 'single',
+        },
       ]"
       :role="inline ? 'group' : 'dialog'"
       :aria-label="placeholder"
@@ -508,7 +614,7 @@ defineExpose({ focus, blur, open, close, clear });
         providerStyle,
         inline ? { position: 'relative', maxWidth: '100%' } : position,
       ]"
-      @mousedown="keepButtonFocus"
+      @mousedown="keepPanelFocus"
       @keydown="keydown"
       @focusout="focusout"
     >
@@ -557,8 +663,8 @@ defineExpose({ focus, blur, open, close, clear });
                   v-else
                   type="button"
                   :data-date="key"
-                  :aria-label="holiday ? `${key} ${holiday}` : key"
-                  :title="holiday"
+                  :aria-label="holiday ? `${key} ${holiday.value}${holiday.type ? ` ${holiday.type === 'workday' ? '班' : '休'}` : ''}` : key"
+                  :title="holiday?.value"
                   :aria-pressed="key === start || key === end"
                   :aria-current="
                     key === dateKey(new Date()) ? 'date' : undefined
@@ -572,6 +678,8 @@ defineExpose({ focus, blur, open, close, clear });
                       range && bounds[0] && key > bounds[0] && key < bounds[1],
                     'is-today': key === dateKey(new Date()),
                     'has-holiday': Boolean(holiday),
+                    'is-holiday': holiday?.type === 'holiday',
+                    'is-workday': holiday?.type === 'workday',
                   }"
                   @mouseenter="hovered = key"
                   @focus="active = key"
@@ -584,7 +692,13 @@ defineExpose({ focus, blur, open, close, clear });
                     v-if="holiday"
                     class="zt-date-picker__holiday"
                     aria-hidden="true"
-                    >{{ holiday }}</span
+                    >{{ holiday.value }}</span
+                  >
+                  <span
+                    v-if="holiday?.type"
+                    class="zt-date-picker__holiday-badge"
+                    aria-hidden="true"
+                    >{{ holiday.type === 'workday' ? '班' : '休' }}</span
                   >
                 </button>
               </template>
@@ -609,11 +723,20 @@ defineExpose({ focus, blur, open, close, clear });
             aria-label="结束时间"
         /></label>
       </div>
-      <footer v-if="!inline || datetime" class="zt-date-picker__footer">
-        <span v-if="range" class="zt-date-picker__summary"
-          >{{ start || `开始${periodLabel}` }} 至 {{ end || `结束${periodLabel}` }}</span
-        >
+      <footer v-if="!inline || datetime || shortcuts.length" class="zt-date-picker__footer">
+        <span class="zt-date-picker__summary">{{ draftSummary }}</span>
+        <div v-if="shortcuts.length" class="zt-date-picker__shortcuts" aria-label="快捷选择">
+          <button
+            v-for="shortcut in shortcuts"
+            :key="shortcut.label"
+            type="button"
+            :data-shortcut="shortcut.label"
+            :disabled="disabled || readonly"
+            @click="applyShortcut(shortcut)"
+          >{{ shortcut.label }}</button>
+        </div>
         <button
+          v-if="!inline"
           type="button"
           @click="
             close();

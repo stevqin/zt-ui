@@ -21,19 +21,36 @@ const images = [demoImage1, demoImage2, demoImage3];
 </script>
 
 <template>
-  <div class="image-row">
-    <ZtImage
-      v-for="fit in ['cover', 'contain', 'fill', 'none', 'scale-down']"
-      :key="fit"
-      class="demo-image"
-      :src="demoImage1"
-      :fit="fit as any"
-      :preview-src-list="images"
-    />
+  <div class="image-demo">
+    <div class="image-row">
+      <ZtImage
+        v-for="fit in ['cover', 'contain', 'fill', 'none', 'scale-down']"
+        :key="fit"
+        class="demo-image"
+        :src="demoImage1"
+        :fit="fit as any"
+        :preview-src-list="images"
+      />
+    </div>
+
+    <div class="preview-row">
+      <div class="preview-item">
+        <span>默认预览 src</span>
+        <ZtImage class="preview-image" :src="demoImage2" fit="cover" />
+      </div>
+      <div class="preview-item">
+        <span>关闭点击预览</span>
+        <ZtImage class="preview-image" :src="demoImage3" fit="cover" :show-preview="false" />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
+.image-demo {
+  display: grid;
+  gap: 20px;
+}
 .image-row {
   display: flex;
   gap: 16px;
@@ -42,5 +59,20 @@ const images = [demoImage1, demoImage2, demoImage3];
 .demo-image {
   width: 220px;
   height: 140px;
+}
+.preview-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.preview-item {
+  display: grid;
+  gap: 8px;
+  color: var(--zt-color-text-secondary);
+  font-size: 13px;
+}
+.preview-image {
+  width: 140px;
+  height: 100px;
 }
 </style>

@@ -141,12 +141,12 @@
     border: 1px solid transparent;
     border-radius: glass.radius(13px);
     transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-    &:hover:not(.is-disabled) { color: var(--tabs-ink); background: rgba(255, 255, 255, .6); }
+    &:hover:not(.is-disabled) { color: var(--tabs-ink); background: color-mix(in srgb, var(--tabs-soft) 72%, transparent); }
     &.is-active {
       color: var(--tabs-ink);
       border-color: var(--tabs-line);
-      background: linear-gradient(165deg, rgba(255, 255, 255, .96), rgba(255, 255, 255, .15)), var(--tabs-soft);
-      box-shadow: 0 2px 5px rgba(35, 55, 75, .13), inset 0 1px 1px #fff, inset 0 -1px 1px rgba(255, 255, 255, .7);
+      background: linear-gradient(165deg, color-mix(in srgb, var(--tabs-soft) 88%, var(--zt-surface, #fff)), var(--tabs-soft));
+      box-shadow: 0 2px 5px rgba(16, 24, 40, .18), inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .55));
     }
   }
   &--island &__close {

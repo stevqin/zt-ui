@@ -238,6 +238,12 @@
         "description": "通过 `status` 属性来定义按钮的颜色状态，默认为 `default`。"
       },
       {
+        "title": "轻量模式与自定义颜色",
+        "kind": "live",
+        "file": "src/views/button/Variants.vue",
+        "description": "plain、dashed、text 提供三种轻量外观；color 接受任意 CSS 颜色并覆盖 status 的视觉颜色。多个模式同时设置时按 text、dashed、plain 的顺序生效。"
+      },
+      {
         "title": "尺寸",
         "kind": "live",
         "file": "src/views/button/Example02.vue",
@@ -378,6 +384,12 @@
         "kind": "live",
         "file": "src/views/checkbox/Example03.vue",
         "description": "CheckboxGroup 使用数组统一管理多选。"
+      },
+      {
+        "title": "连体按钮组",
+        "kind": "live",
+        "file": "src/views/checkbox/ButtonGroup.vue",
+        "description": "CheckboxGroup 设置 segmented 后以连体按钮展示，仍支持多选、单项禁用及 min / max 限制。"
       },
       {
         "title": "颜色状态",
@@ -569,13 +581,13 @@
         "title": "基础用法",
         "kind": "live",
         "file": "src/views/date-picker/Example01.vue",
-        "description": "空字符串和 null 显示占位提示。选择完成后立即提交。"
+        "description": "空字符串和 null 显示占位提示。面板底部显示当前草稿与类型适配的快捷选项；日期选择完成后立即提交。shortcuts 可传入自定义项，传空数组可隐藏。"
       },
       {
         "title": "范围选择",
         "kind": "live",
         "file": "src/views/date-picker/Example02.vue",
-        "description": "设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+        "description": "设置 range 后，rangePanelMode 可选择 single 单面板或 double 双面板（默认）；单面板可通过月份导航跨月选择。依次选择开始和结束日期，反向选择会自动排序。"
       },
       {
         "title": "年份、月份与范围",
@@ -605,7 +617,7 @@
         "title": "节假日标识",
         "kind": "live",
         "file": "src/views/date-picker/Example06.vue",
-        "description": "holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；长名称悬停查看。支持单值和范围，标识不改变可选状态，也不会自动禁用周末。"
+        "description": "holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；type 可设 holiday 或 workday，分别显示“休”“班”角标。长名称悬停查看；标识不改变可选状态，也不会自动禁用周末。"
       },
       {
         "title": "事件反馈与实例方法",
@@ -669,7 +681,7 @@
         "title": "范围选择",
         "kind": "live",
         "file": "src/views/date-time-picker/Example02.vue",
-        "description": "设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+        "description": "设置 range 后，rangePanelMode 可选择 single 单面板或 double 双面板（默认）；单面板可通过月份导航跨月选择。选择日期和时间后点击确定提交。"
       },
       {
         "title": "禁用日期、禁用与只读",
@@ -932,7 +944,7 @@
         "title": "适应与预览",
         "kind": "live",
         "file": "src/views/image/Example01.vue",
-        "description": ""
+        "description": "默认点击图片会使用 src 打开预览；传入 preview-src-list 可覆盖预览列表，设置 show-preview=false 可关闭点击预览。"
       },
       {
         "title": "错误后备",
@@ -1648,7 +1660,7 @@
         "title": "连体分段按钮",
         "kind": "live",
         "file": "src/views/radio/Segmented.vue",
-        "description": "segmented 将单选项连成一组按钮。支持五种 size、status 以及 ConfigProvider 的圆角与尺寸；Tab 聚焦，方向键切换，空格选择。为分组添加 aria-label，disabled 可单独禁用选项。"
+        "description": "segmented 将等高单选项连成一组按钮，每项拥有独立边框并折叠相邻边线。支持五种 size、status 以及 ConfigProvider 的圆角与尺寸；Tab 聚焦，方向键切换，空格选择。"
       },
       {
         "title": "颜色状态",
@@ -1914,7 +1926,7 @@
         "title": "远程批量粘贴与部分匹配",
         "kind": "live",
         "file": "src/views/select-box/Batch.vue",
-        "description": "进入批量粘贴，选择换行、逗号、分号或制表符。服务端按名称或值精确匹配完整数据集，跨页结果也能选中；匹配结果与已有草稿合并去重并立即提交。"
+        "description": "进入批量粘贴，选择换行、逗号、分号或制表符。服务端按名称或值精确匹配完整数据集，跨页结果也能选中；匹配结果与已有草稿合并去重。"
       },
       {
         "title": "清空、宽度与外观继承",

@@ -9,7 +9,8 @@ const value = ref<ZtDatePickerValue>(null);
 const holidayValue = ref<ZtDatePickerValue>('2026-01-01');
 const showHolidays = ref(true);
 const holidays: ZtDatePickerHoliday[] = [
-  { key: '2026-01-01', value: '元旦' },
+  { key: '2026-01-01', value: '元旦', type: 'holiday' },
+  { key: '2026-01-04', value: '调休上班', type: 'workday' },
   { key: '2026-01-15', value: '公司纪念日（示例）' },
 ];
 </script>

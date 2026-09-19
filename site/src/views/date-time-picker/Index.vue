@@ -27,7 +27,7 @@ import MethodsCode from './Methods.vue?raw';
     <h3>范围选择</h3>
     <DemoBlock
       :code="Example02Code"
-      desc="设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+      desc="设置 range 后，rangePanelMode 可选择 single 单面板或 double 双面板（默认）；单面板可通过月份导航跨月选择。选择日期和时间后点击确定提交。"
       ><Example02
     /></DemoBlock>
     <h3>禁用日期、禁用与只读</h3>

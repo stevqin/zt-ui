@@ -48,7 +48,7 @@ describe('imperative feedback boundary', () => {
 })
 
 
-it('shows SelectBox feedback through zt-alert after its popup closes', async () => {
+it('keeps SelectBox open for review after batch validation and commits separately', async () => {
   const wrapper = mount(ZtSelectBox, { attachTo: document.body, props: { options: [{ value: 'east', label: '华东' }] } })
   try {
     await wrapper.find('[role="combobox"]').trigger('click')
@@ -57,13 +57,14 @@ it('shows SelectBox feedback through zt-alert after its popup closes', async () 
     await panel.find('textarea').setValue('华东')
     await panel.find('.zt-select-box-panel__confirm').trigger('click')
     await flushPromises()
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect(document.querySelector('.zt-select-box__popup')).not.toBeNull()
+    expect(document.querySelector('.zt-select-box-panel__pager')).toBeNull()
+    await panel.find('.zt-select-box-panel__confirm').trigger('click')
     expect(wrapper.emitted('update:modelValue')).toEqual([[['east']]])
     expect(document.querySelector('.zt-select-box__popup')).toBeNull()
-    expect(document.body.textContent).toContain('批量粘贴 1 项，匹配 1 项，已自动勾选 1 项')
   } finally {
     wrapper.unmount()
-    // The test DOM does not load zt-alert CSS; close notices without an exit animation.
-    document.querySelectorAll<HTMLElement>('.zt-notice').forEach(element => { element.style.transitionDuration = '0s' })
     ZtMessage.clear()
     document.body.innerHTML = ''
   }

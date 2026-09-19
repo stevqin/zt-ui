@@ -53,11 +53,16 @@ function closeProduct() {
   display: grid;
   gap: 16px;
   padding: 16px;
-  background: linear-gradient(135deg, #eaf1f8, #f7f9fb 50%, #eef4f1);
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--zt-surface-soft, #eef3f8) 84%, var(--zt-accent-soft, #f0f5ff)),
+    var(--zt-surface, #fff) 50%,
+    var(--zt-surface-soft, #eef4f1)
+  );
 }
 h3 {
   margin: 0 0 8px;
   font-size: 12px;
-  color: #626262;
+  color: var(--zt-text-muted, #626262);
 }
 </style>

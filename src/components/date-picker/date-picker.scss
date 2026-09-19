@@ -149,6 +149,26 @@
   .zt-date-picker__day-number { display: block; transform: translateY(-6px); }
   &.is-today::after { top: 4px; bottom: auto; left: 4px; }
 }
+.zt-date-picker__holiday-badge {
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  font-size: max(8px, calc(var(--zt-date-panel-font) - 5px));
+  font-weight: 700;
+  line-height: 1;
+  background-color: #16a34a;
+  color: #fff;
+}
+.zt-date-picker__days .is-workday .zt-date-picker__holiday-badge {
+  background-color: var(--glass-danger-ink, #dc2626);
+  color: #fff;
+}
 .zt-date-picker__holiday {
   position: absolute;
   bottom: 2px;
@@ -165,29 +185,39 @@
 .zt-date-picker__days .is-selected .zt-date-picker__holiday { color: inherit; }
 .zt-date-picker__time {
   display: flex; gap: 8px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--glass-line);
-  label { flex: 1; min-width: 0; font-size: max(10px, calc(var(--zt-date-panel-font) - 1px)); color: var(--glass-muted); }
-  input { display: block; width: 100%; margin-top: 4px; padding: 5px; border: 1px solid var(--glass-default-line); border-radius: glass.radius(7px); color: var(--glass-default-ink); background: var(--zt-surface, #fff); }
+  label { display: flex; flex: 1; align-items: center; gap: 6px; min-width: 0; white-space: nowrap; font-size: max(10px, calc(var(--zt-date-panel-font) - 1px)); color: var(--glass-muted); }
+  input { display: block; flex: 1 1 auto; width: auto; min-width: 0; margin-top: 0; padding: 5px; border: 1px solid var(--glass-default-line); border-radius: glass.radius(7px); color: var(--glass-default-ink); background: var(--zt-surface, #fff); }
 }
 .zt-date-picker__footer {
-  display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--glass-line);
+  display: flex; justify-content: flex-end; align-items: center; flex-wrap: nowrap; gap: 6px; margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--glass-line);
   button { padding: 5px 12px; }
   .zt-date-picker__confirm, .zt-date-picker__confirm:hover:not(:disabled) { background: var(--zt-date-active); color: var(--zt-date-active-ink); }
 }
-.zt-date-picker__summary { width: 100%; color: var(--glass-muted); font-size: max(10px, calc(var(--zt-date-panel-font) - 1px)); }
+.zt-date-picker__summary { flex: 1 1 0; min-width: 0; overflow: hidden; color: var(--glass-muted); font-size: max(10px, calc(var(--zt-date-panel-font) - 1px)); text-overflow: ellipsis; white-space: nowrap; }
+.zt-date-picker__shortcuts {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  button { padding: 4px 7px; color: var(--zt-date-color); font-size: max(10px, calc(var(--zt-date-panel-font) - 1px)); white-space: nowrap; }
+}
 @media (prefers-reduced-motion: reduce) { .zt-date-picker, .zt-date-picker__days button, .zt-date-picker__period-grid button { transition: none; } }
 
-.zt-date-picker__panel.is-range { width: calc(var(--zt-date-panel-width) * 2 + 12px); }
 .zt-date-picker__calendars { display: grid; grid-template-columns: minmax(0, 1fr); }
 .zt-date-picker__calendar { min-width: 0; }
 .zt-date-picker__panel.is-range {
   .zt-date-picker__hint { margin: 0 0 8px; }
+}
+.zt-date-picker__panel.is-range:not(.is-range-single) {
+  width: calc(var(--zt-date-panel-width) * 2 + 12px);
   .zt-date-picker__calendars { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
   .zt-date-picker__calendar + .zt-date-picker__calendar { position: relative; }
   .zt-date-picker__calendar + .zt-date-picker__calendar::before { position: absolute; content: ''; top: 0; bottom: 0; left: -12px; border-left: 1px solid var(--glass-line); }
 }
 .zt-date-picker__empty-day { height: var(--zt-date-cell-height); }
 @media (max-width: 640px) {
-  .zt-date-picker__panel.is-range {
+  .zt-date-picker__panel.is-range:not(.is-range-single) {
     width: var(--zt-date-panel-width);
     .zt-date-picker__calendars { grid-template-columns: minmax(0, 1fr); gap: 16px; }
     .zt-date-picker__calendar + .zt-date-picker__calendar::before { top: -8px; left: 0; right: 0; bottom: auto; border-left: 0; border-top: 1px solid var(--glass-line); }

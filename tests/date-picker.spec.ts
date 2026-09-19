@@ -1,6 +1,6 @@
 import { flushPromises, mount, type VueWrapper } from '@vue/test-utils'
 import { h, nextTick, reactive } from 'vue'
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import * as library from '../src'
 
 const wrappers: VueWrapper[] = []
@@ -20,6 +20,67 @@ async function day(value: string) {
   await nextTick()
 }
 describe('date pickers', () => {
+  it('shows the current draft and applies the default range shortcuts', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 8, 19, 14, 35, 42))
+    const wrapper = await picker(false, { range: true, modelValue: ['2026-09-01', '2026-09-02'] })
+    expect(document.querySelector('.zt-date-picker__summary')?.textContent).toContain('2026-09-01 至 2026-09-02')
+    expect([...document.querySelectorAll<HTMLButtonElement>('[data-shortcut]')].map(button => button.textContent)).toEqual(['今日', '本周', '上月'])
+    document.querySelector<HTMLButtonElement>('[data-shortcut="本周"]')!.click()
+    await nextTick()
+    expect(wrapper.emitted('change')).toEqual([[['2026-09-14', '2026-09-20']]])
+    vi.useRealTimers()
+  })
+
+  it('supports custom shortcuts and current-time defaults', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 8, 19, 14, 35, 42))
+    const custom = await picker(false, { shortcuts: [{ label: '财年开始', value: '2026-01-01' }] })
+    expect(document.querySelector('.zt-date-picker__summary')?.textContent).toContain('2024-02-15')
+    expect([...document.querySelectorAll<HTMLButtonElement>('[data-shortcut]')].map(button => button.textContent)).toEqual(['财年开始'])
+    document.querySelector<HTMLButtonElement>('[data-shortcut="财年开始"]')!.click()
+    await nextTick()
+    expect(custom.emitted('change')).toEqual([['2026-01-01']])
+
+    const datetime = await picker(true)
+    expect([...document.querySelectorAll<HTMLButtonElement>('[data-shortcut]')].map(button => button.textContent)).toContain('现在')
+    document.querySelector<HTMLButtonElement>('[data-shortcut="现在"]')!.click()
+    await nextTick()
+    expect(datetime.emitted('change')).toBeUndefined()
+    document.querySelector<HTMLButtonElement>('[data-action="confirm"]')!.click()
+    await nextTick()
+    expect(datetime.emitted('change')).toEqual([['2026-09-19 14:35:42']])
+    vi.useRealTimers()
+  })
+
+  it('recomputes the default shortcut when a later opening crosses midnight', async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date(2026, 8, 19, 23, 59, 58))
+    const wrapper = await picker(false)
+    await wrapper.get('input').trigger('click')
+    vi.setSystemTime(new Date(2026, 8, 20, 0, 0, 2))
+    await wrapper.get('input').trigger('click')
+    document.querySelector<HTMLButtonElement>('[data-shortcut="今日"]')!.click()
+    await nextTick()
+    expect(wrapper.emitted('change')?.at(-1)).toEqual(['2026-09-20'])
+    vi.useRealTimers()
+  })
+
+  it.each([
+    ['daterange', ['2026-09-20', '2026-09-10'], ['2026-09-10', '2026-09-20']],
+    ['monthrange', ['2026-09', '2026-03'], ['2026-03', '2026-09']],
+    ['yearrange', ['2028', '2024'], ['2024', '2028']],
+  ])('orders a reversed custom %s shortcut', async (type, value, expected) => {
+    const wrapper = await picker(false, {
+      type,
+      modelValue: expected,
+      shortcuts: [{ label: '反向范围', value }],
+    })
+    document.querySelector<HTMLButtonElement>('[data-shortcut="反向范围"]')!.click()
+    await nextTick()
+    expect(wrapper.emitted('change')).toEqual([[expected]])
+  })
+
   it('selects leap day and closes the calendar', async () => {
     const wrapper = await picker()
     await day('2024-02-29')
@@ -85,6 +146,20 @@ describe('date pickers', () => {
 })
 
 describe('date picker integration', () => {
+  it.each([false, true])('keeps the %s datetime panel open when clicking calendar whitespace', async datetime => {
+    const wrapper = await picker(datetime)
+    const input = wrapper.get('input').element as HTMLInputElement
+    input.focus()
+    const blank = document.querySelector<HTMLElement>('.zt-date-picker__week')!
+    const mouseDown = new MouseEvent('mousedown', { bubbles: true, cancelable: true })
+    blank.dispatchEvent(mouseDown)
+    expect(mouseDown.defaultPrevented).toBe(true)
+    if (!mouseDown.defaultPrevented) input.dispatchEvent(new FocusEvent('focusout', { bubbles: true, relatedTarget: null }))
+    blank.click()
+    await nextTick()
+    expect(document.querySelector('.zt-date-picker__panel')).not.toBeNull()
+  })
+
   it('moves across leap day with the keyboard and skips disabled dates', async () => {
     const wrapper = await picker(false, { modelValue: '2024-02-28', disabledDate: (date: Date) => date.getDate() === 29 })
     await wrapper.get('input').trigger('keydown', { key: 'ArrowDown' })

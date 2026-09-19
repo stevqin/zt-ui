@@ -1,4 +1,54 @@
 @use '../../styles/tokens' as glass;
-.zt-segmented{@include glass.tokens;display:inline-flex;gap:3px;padding:3px;border:1px solid var(--glass-line);border-radius:glass.radius(10px);background:var(--glass-surface-muted);font:var(--glass-size-default)/1.2 var(--glass-font);button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:34px;padding:0 14px;border:0;border-radius:glass.radius(7px);background:transparent;color:var(--glass-muted);font:inherit;cursor:pointer;transition:.16s ease;&:hover:not(:disabled){color:var(--glass-ink);background:var(--glass-surface)}&.is-active{color:var(--glass-accent);background:var(--glass-surface);box-shadow:0 2px 8px rgba(16,24,40,.08)}&:focus-visible{outline:2px solid var(--glass-accent);outline-offset:1px}&:disabled{opacity:.45;cursor:not-allowed}}&.is-block{display:flex;width:100%;button{flex:1}}&--mini button{min-height:26px;padding:0 9px;font-size:var(--glass-size-mini)}&--small button{min-height:30px;padding:0 11px;font-size:var(--glass-size-small)}&--medium button{min-height:38px;font-size:var(--glass-size-medium)}&--large button{min-height:44px;padding:0 18px;font-size:var(--glass-size-large)}&--success{--glass-accent:var(--glass-success)}&--warning{--glass-accent:var(--glass-warning)}&--danger{--glass-accent:var(--glass-danger)}&--info{--glass-accent:var(--glass-info)}&--default{--glass-accent:var(--glass-ink)}}
+
+.zt-segmented {
+  @include glass.tokens;
+  --zt-segmented-ink: var(--zt-accent-ink, #244c9e);
+  --zt-segmented-soft: var(--zt-accent-soft, #f0f5ff);
+  --zt-segmented-line: var(--zt-accent-line, #bfd2ff);
+  display: inline-flex;
+  gap: 3px;
+  padding: 3px;
+  border: 1px solid var(--glass-line);
+  border-radius: glass.radius(10px);
+  background: var(--zt-surface-soft, var(--glass-default-soft));
+  font: var(--glass-size-default) / 1.2 var(--glass-font);
+
+  button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 34px;
+    padding: 0 14px;
+    border: 1px solid transparent;
+    border-radius: glass.radius(7px);
+    background: transparent;
+    color: var(--glass-muted);
+    font: inherit;
+    cursor: pointer;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+    &:hover:not(:disabled) { color: var(--zt-segmented-ink); background: color-mix(in srgb, var(--zt-segmented-soft) 72%, transparent); }
+    &.is-active {
+      color: var(--zt-segmented-ink);
+      background: var(--zt-segmented-soft);
+      border-color: var(--zt-segmented-line);
+      box-shadow: 0 1px 3px rgba(16, 24, 40, .18), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .45));
+      font-weight: 650;
+    }
+    &:focus-visible { outline: 2px solid var(--zt-segmented-line); outline-offset: 1px; }
+    &:disabled { opacity: .45; cursor: not-allowed; }
+  }
+
+  &.is-block { display: flex; width: 100%; button { flex: 1; } }
+  &--mini button { min-height: 26px; padding: 0 9px; font-size: var(--glass-size-mini); }
+  &--small button { min-height: 30px; padding: 0 11px; font-size: var(--glass-size-small); }
+  &--medium button { min-height: 38px; font-size: var(--glass-size-medium); }
+  &--large button { min-height: 44px; padding: 0 18px; font-size: var(--glass-size-large); }
+  &--status-success { --zt-segmented-ink: var(--zt-success-ink, #166534); --zt-segmented-soft: var(--zt-success-soft, #f0fdf4); --zt-segmented-line: var(--zt-success-line, #bbf7d0); }
+  &--status-warning { --zt-segmented-ink: var(--zt-warning-ink, #92400e); --zt-segmented-soft: var(--zt-warning-soft, #fffbeb); --zt-segmented-line: var(--zt-warning-line, #fde68a); }
+  &--status-danger { --zt-segmented-ink: var(--zt-danger-ink, #991b1b); --zt-segmented-soft: var(--zt-danger-soft, #fef2f2); --zt-segmented-line: var(--zt-danger-line, #fecaca); }
+  &--status-info { --zt-segmented-ink: var(--zt-info-ink, #374151); --zt-segmented-soft: var(--zt-info-soft, #f9fafb); --zt-segmented-line: var(--zt-info-line, #d1d5db); }
+  &--status-default { --zt-segmented-ink: var(--zt-default-ink, #414141); --zt-segmented-soft: var(--zt-default-soft, rgba(255, 255, 255, .85)); --zt-segmented-line: var(--zt-default-line, #e2e2e2); }
+}
 
 @media (prefers-reduced-motion: reduce) { .zt-segmented button { transition: none; } }

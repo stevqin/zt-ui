@@ -155,9 +155,9 @@
   max-width: 100%;
   gap: 0;
   flex-wrap: nowrap;
-  border: 1px solid var(--glass-default-line);
+  border: 0;
   border-radius: glass.radius(11px);
-  background: var(--zt-surface-soft, #f5f7fa);
+  background: transparent;
   &.zt-radio-group--mini { --zt-radio-height: 26px; }
   &.zt-radio-group--small { --zt-radio-height: 30px; }
   &.zt-radio-group--medium { --zt-radio-height: 36px; }
@@ -167,13 +167,16 @@
     --zt-radio-hover-soft: var(--glass-accent-soft);
     position: relative;
     justify-content: center;
-    min-height: var(--zt-radio-height);
+    height: var(--zt-radio-height);
+    min-height: 0;
+    margin-left: -1px;
     padding: 0 1em;
-    border: 0;
+    border: 1px solid var(--glass-default-line);
     border-radius: 0;
+    background: var(--zt-surface, #fff);
     box-shadow: none;
     transition: background-color 160ms, color 160ms;
-    &:first-child { border-radius: inherit; border-top-right-radius: 0; border-bottom-right-radius: 0; }
+    &:first-child { margin-left: 0; border-radius: inherit; border-top-right-radius: 0; border-bottom-right-radius: 0; }
     &:last-child { border-radius: inherit; border-top-left-radius: 0; border-bottom-left-radius: 0; }
     &:only-child { border-radius: inherit; }
     &--success { --zt-radio-color: #16a34a; --zt-radio-hover-soft: var(--glass-success-soft); }
@@ -181,8 +184,8 @@
     &--danger { --zt-radio-color: #dc2626; --zt-radio-hover-soft: var(--glass-danger-soft); }
     &--info { --zt-radio-color: #4b5563; --zt-radio-hover-soft: var(--glass-info-soft); }
     &--default { --zt-radio-color: #4b5563; --zt-radio-hover-soft: var(--glass-default-soft); }
-    &:hover:not(.is-disabled):not(.is-checked) { background: var(--zt-radio-hover-soft); color: var(--zt-radio-color); }
-    &.is-checked { background: var(--zt-radio-color); color: #fff; }
+    &:hover:not(.is-disabled):not(.is-checked) { z-index: 1; background: var(--zt-radio-hover-soft); border-color: var(--zt-radio-color); color: var(--zt-radio-color); }
+    &.is-checked { z-index: 2; background: var(--zt-radio-color); border-color: var(--zt-radio-color); color: #fff; }
     &:has(input:focus-visible) { outline: 2px solid var(--zt-radio-color); outline-offset: 3px; z-index: 1; }
   }
   .zt-radio__input { position: absolute; inset: 0; width: 100%; height: 100%; }

@@ -45,7 +45,7 @@ onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEv
   <RouterLink class="doc-brand" to="/"><span class="doc-brand__mark">zt<span>·</span></span><strong>Zt UI</strong><span class="doc-brand__sub">开发文档</span></RouterLink>
   <DocSearch />
   <DemoSettings />
-  <nav class="doc-header__links" aria-label="主要导航"><RouterLink to="/scenarios">场景指南</RouterLink><RouterLink to="/api">API 手册</RouterLink><span class="version">v0.5.0</span></nav>
+  <nav class="doc-header__links" aria-label="主要导航"><RouterLink to="/scenarios">场景指南</RouterLink><RouterLink to="/api">API 手册</RouterLink><span class="version">v0.6.0</span></nav>
   <button class="menu-toggle" :aria-expanded="menu" aria-controls="doc-sidebar" @click="menu=!menu">{{menu?'关闭导航':'导航'}}</button>
   </div>
  </header>

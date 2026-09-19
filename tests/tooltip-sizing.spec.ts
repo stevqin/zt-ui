@@ -27,7 +27,7 @@ async function render(props = {}) {
 function popup() { return document.querySelector<HTMLElement>('.zt-popover')! }
 
 describe('Tooltip dimensions', () => {
-  it('uses compact content width without changing the default Popover sizing contract', async () => {
+  it('uses compact content width for Tooltip and Popover by default', async () => {
     await render()
     const css = getComputedStyle(popup())
     expect(css.width).toBe('max-content')
@@ -36,8 +36,10 @@ describe('Tooltip dimensions', () => {
     wrappers[0]!.unmount(); wrappers.length = 0
     wrappers.push(mount(ZtPopover, { attachTo: document.body, props: { visible: true }, slots: { content: '短文' } }))
     await nextTick()
-    expect(getComputedStyle(popup()).minWidth).toBe('150px')
-    expect(getComputedStyle(popup()).maxWidth).toBe('min(360px, 1024px - 16px)')
+    const popoverCss = getComputedStyle(popup())
+    expect(popoverCss.width).toBe('max-content')
+    expect(popoverCss.minWidth).toBe('0')
+    expect(popoverCss.maxWidth).toBe('calc(1024px - 16px)')
   })
   it('wraps long text and unbroken tokens inside the viewport-safe maximum', async () => {
     const text = '很长的提示内容 '.repeat(30) + 'unbroken'.repeat(40)

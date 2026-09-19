@@ -2017,13 +2017,22 @@
             "description": "启用原生懒加载。"
           },
           {
+            "name": "showPreview",
+            "templateName": "show-preview",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "点击图片时是否打开预览。"
+          },
+          {
             "name": "previewSrcList",
             "templateName": "preview-src-list",
             "kind": "prop",
             "type": "string[]",
             "required": false,
-            "default": "[]",
-            "description": "预览图片地址列表。"
+            "default": "无默认值",
+            "description": "预览图片地址列表；未传时使用 src，显式传入后覆盖默认列表。"
           },
           {
             "name": "initialIndex",
@@ -2074,13 +2083,13 @@
         "events": [
           {
             "name": "load",
-            "type": "(event:Event) => void",
+            "type": "(event: Event) => void",
             "description": "图片资源成功加载并完成尺寸计算后触发。",
             "kind": "event"
           },
           {
             "name": "error",
-            "type": "(event:Event) => void",
+            "type": "(event: Event) => void",
             "description": "图片资源加载失败时触发，参数为原生 Event。",
             "kind": "event"
           },
@@ -2092,7 +2101,7 @@
           },
           {
             "name": "switch",
-            "type": "(index:number) => void",
+            "type": "(index: number) => void",
             "description": "主菜单分栏切换后触发。",
             "kind": "event"
           },
@@ -2230,7 +2239,7 @@
       },
       {
         "name": "ZtImageProps",
-        "code": "export interface ZtImageProps{\n /** 图片地址。 */src:string\n /** 替代文字。 */alt?:string\n /** object-fit 模式。 */fit?:ZtImageFit\n /** object-position。 */position?:string\n /** 启用原生懒加载。 */lazy?:boolean\n /** 预览图片地址列表。 */previewSrcList?:string[]\n /** 预览初始索引。 */initialIndex?:number\n /** 是否循环预览。 */infinite?:boolean\n /** 点击遮罩关闭预览。 */hideOnClickModal?:boolean\n /** Escape 关闭预览。 */closeOnPressEscape?:boolean\n /** 预览层级。 */zIndex?:number\n}",
+        "code": "export interface ZtImageProps{\n /** 图片地址。 */src:string\n /** 替代文字。 */alt?:string\n /** object-fit 模式。 */fit?:ZtImageFit\n /** object-position。 */position?:string\n /** 启用原生懒加载。 */lazy?:boolean\n /** 点击图片时是否打开预览。 */showPreview?:boolean\n /** 预览图片地址列表，未传时使用 src，显式传入后覆盖默认列表。 */previewSrcList?:string[]\n /** 预览初始索引。 */initialIndex?:number\n /** 是否循环预览。 */infinite?:boolean\n /** 点击遮罩关闭预览。 */hideOnClickModal?:boolean\n /** Escape 关闭预览。 */closeOnPressEscape?:boolean\n /** 预览层级。 */zIndex?:number\n}",
         "public": true
       },
       {
@@ -3689,6 +3698,42 @@
             "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
           },
           {
+            "name": "plain",
+            "templateName": "plain",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "浅色填充按钮，保留语义色文字与边框。"
+          },
+          {
+            "name": "dashed",
+            "templateName": "dashed",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "透明背景的语义色虚线边框按钮。"
+          },
+          {
+            "name": "text",
+            "templateName": "text",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "无边框文字按钮；优先级高于 dashed 和 plain。"
+          },
+          {
+            "name": "color",
+            "templateName": "color",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "自定义 CSS 颜色，覆盖 status 对应的视觉颜色。"
+          },
+          {
             "name": "circle",
             "templateName": "circle",
             "kind": "prop",
@@ -3771,7 +3816,7 @@
       },
       {
         "name": "ZtButtonProps",
-        "code": "export interface ZtButtonProps {\n  status?: ZtButtonStatus\n  size?: ZtButtonSize\n  circle?: boolean\n  disabled?: boolean\n  loading?: boolean\n  loadingText?: string\n  type?: ZtButtonType\n}",
+        "code": "export interface ZtButtonProps {\n  status?: ZtButtonStatus\n  size?: ZtButtonSize\n  /** 浅色填充按钮，保留语义色文字与边框。 */\n  plain?: boolean\n  /** 透明背景的语义色虚线边框按钮。 */\n  dashed?: boolean\n  /** 无边框文字按钮；优先级高于 dashed 和 plain。 */\n  text?: boolean\n  /** 自定义 CSS 颜色，覆盖 status 对应的视觉颜色。 */\n  color?: string\n  circle?: boolean\n  disabled?: boolean\n  loading?: boolean\n  loadingText?: string\n  type?: ZtButtonType\n}",
         "public": true
       },
       {
@@ -3782,6 +3827,7 @@
     ],
     "sections": [
       "基础用法",
+      "轻量模式与自定义颜色",
       "尺寸",
       "圆形按钮",
       "加载态",
@@ -4383,6 +4429,15 @@
             "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
           },
           {
+            "name": "segmented",
+            "templateName": "segmented",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "将复选框组显示为可多选的连体按钮。"
+          },
+          {
             "name": "disabled",
             "templateName": "disabled",
             "kind": "prop",
@@ -4471,7 +4526,7 @@
       },
       {
         "name": "ZtCheckboxGroupProps",
-        "code": "export interface ZtCheckboxGroupProps {\n  modelValue?: unknown[]\n  disabled?: boolean\n  min?: number\n  max?: number\n  size?: ZtCheckboxSize\n  status?: ZtCheckboxStatus\n}",
+        "code": "export interface ZtCheckboxGroupProps {\n  modelValue?: unknown[]\n  /** 将复选框组显示为可多选的连体按钮。 */\n  segmented?: boolean\n  disabled?: boolean\n  min?: number\n  max?: number\n  size?: ZtCheckboxSize\n  status?: ZtCheckboxStatus\n}",
         "public": true
       },
       {
@@ -4484,6 +4539,7 @@
       "基础用法",
       "禁用",
       "CheckboxGroup 组合",
+      "连体按钮组",
       "颜色状态",
       "半选状态",
       "带边框",
@@ -7391,6 +7447,15 @@
             "description": "是否启用范围选择；启用后 v-model 使用开始值和结束值组成的元组。"
           },
           {
+            "name": "rangePanelMode",
+            "templateName": "range-panel-mode",
+            "kind": "prop",
+            "type": "ZtDatePickerRangePanelMode",
+            "required": false,
+            "default": "'double'",
+            "description": "日期与日期时间范围选择时使用单面板或双面板。"
+          },
+          {
             "name": "holidays",
             "templateName": "holidays",
             "kind": "prop",
@@ -7407,6 +7472,15 @@
             "required": false,
             "default": "true",
             "description": "是否展示传入的节假日名称；不内置节假日数据"
+          },
+          {
+            "name": "shortcuts",
+            "templateName": "shortcuts",
+            "kind": "prop",
+            "type": "readonly ZtDatePickerShortcut[]",
+            "required": false,
+            "default": "无默认值",
+            "description": "Custom quick selections. Omit for type-aware defaults; use [] to hide them."
           },
           {
             "name": "placeholder",
@@ -7558,12 +7632,22 @@
       },
       {
         "name": "ZtDatePickerHoliday",
-        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n}",
+        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n  /** Optional work-calendar marker. Holiday renders 休; workday renders 班. */\n  type?: 'holiday' | 'workday';\n}",
+        "public": true
+      },
+      {
+        "name": "ZtDatePickerShortcut",
+        "code": "export interface ZtDatePickerShortcut {\n  label: string;\n  value: ZtDatePickerValue | (() => ZtDatePickerValue);\n}",
         "public": true
       },
       {
         "name": "ZtDatePickerType",
         "code": "export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';",
+        "public": true
+      },
+      {
+        "name": "ZtDatePickerRangePanelMode",
+        "code": "export type ZtDatePickerRangePanelMode = 'single' | 'double';",
         "public": true
       },
       {
@@ -7573,7 +7657,7 @@
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  /** 日期与日期时间范围选择时使用单面板或双面板。 */\n  rangePanelMode?: ZtDatePickerRangePanelMode;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  /** Custom quick selections. Omit for type-aware defaults; use [] to hide them. */\n  shortcuts?: readonly ZtDatePickerShortcut[];\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -7660,6 +7744,15 @@
             "description": "是否启用范围选择；启用后 v-model 使用开始值和结束值组成的元组。"
           },
           {
+            "name": "rangePanelMode",
+            "templateName": "range-panel-mode",
+            "kind": "prop",
+            "type": "ZtDatePickerRangePanelMode",
+            "required": false,
+            "default": "'double'",
+            "description": "日期与日期时间范围选择时使用单面板或双面板。"
+          },
+          {
             "name": "holidays",
             "templateName": "holidays",
             "kind": "prop",
@@ -7676,6 +7769,15 @@
             "required": false,
             "default": "true",
             "description": "是否展示传入的节假日名称；不内置节假日数据"
+          },
+          {
+            "name": "shortcuts",
+            "templateName": "shortcuts",
+            "kind": "prop",
+            "type": "readonly ZtDatePickerShortcut[]",
+            "required": false,
+            "default": "无默认值",
+            "description": "Custom quick selections. Omit for type-aware defaults; use [] to hide them."
           },
           {
             "name": "placeholder",
@@ -7827,12 +7929,22 @@
       },
       {
         "name": "ZtDatePickerHoliday",
-        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n}",
+        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n  /** Optional work-calendar marker. Holiday renders 休; workday renders 班. */\n  type?: 'holiday' | 'workday';\n}",
+        "public": true
+      },
+      {
+        "name": "ZtDatePickerShortcut",
+        "code": "export interface ZtDatePickerShortcut {\n  label: string;\n  value: ZtDatePickerValue | (() => ZtDatePickerValue);\n}",
         "public": true
       },
       {
         "name": "ZtDatePickerType",
         "code": "export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';",
+        "public": true
+      },
+      {
+        "name": "ZtDatePickerRangePanelMode",
+        "code": "export type ZtDatePickerRangePanelMode = 'single' | 'double';",
         "public": true
       },
       {
@@ -7842,7 +7954,7 @@
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  /** 日期与日期时间范围选择时使用单面板或双面板。 */\n  rangePanelMode?: ZtDatePickerRangePanelMode;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  /** Custom quick selections. Omit for type-aware defaults; use [] to hide them. */\n  shortcuts?: readonly ZtDatePickerShortcut[];\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -12543,6 +12655,15 @@
             "description": "是否启用范围选择；启用后 v-model 使用开始值和结束值组成的元组。"
           },
           {
+            "name": "rangePanelMode",
+            "templateName": "range-panel-mode",
+            "kind": "prop",
+            "type": "ZtDatePickerRangePanelMode",
+            "required": false,
+            "default": "'double'",
+            "description": "日期与日期时间范围选择时使用单面板或双面板。"
+          },
+          {
             "name": "holidays",
             "templateName": "holidays",
             "kind": "prop",
@@ -12559,6 +12680,15 @@
             "required": false,
             "default": "true",
             "description": "在日期单元内展示 holidays 对应的节日名称，默认 true。"
+          },
+          {
+            "name": "shortcuts",
+            "templateName": "shortcuts",
+            "kind": "prop",
+            "type": "readonly ZtDatePickerShortcut[]",
+            "required": false,
+            "default": "无默认值",
+            "description": "Custom quick selections. Omit for type-aware defaults; use [] to hide them."
           },
           {
             "name": "disabledDate",
@@ -12632,12 +12762,22 @@
       },
       {
         "name": "ZtDatePickerHoliday",
-        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n}",
+        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n  /** Optional work-calendar marker. Holiday renders 休; workday renders 班. */\n  type?: 'holiday' | 'workday';\n}",
+        "public": true
+      },
+      {
+        "name": "ZtDatePickerShortcut",
+        "code": "export interface ZtDatePickerShortcut {\n  label: string;\n  value: ZtDatePickerValue | (() => ZtDatePickerValue);\n}",
         "public": true
       },
       {
         "name": "ZtDatePickerType",
         "code": "export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';",
+        "public": true
+      },
+      {
+        "name": "ZtDatePickerRangePanelMode",
+        "code": "export type ZtDatePickerRangePanelMode = 'single' | 'double';",
         "public": true
       },
       {
@@ -12647,7 +12787,7 @@
       },
       {
         "name": "ZtDatePickerProps",
-        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
+        "code": "export interface ZtDatePickerProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** YYYY, YYYY-MM, YYYY-MM-DD, or YYYY-MM-DD HH:mm:ss for DateTimePicker. */\n  modelValue?: ZtDatePickerValue;\n  /** Selection granularity. Range suffix is equivalent to range=true. */\n  type?: ZtDatePickerType;\n  range?: boolean;\n  /** 日期与日期时间范围选择时使用单面板或双面板。 */\n  rangePanelMode?: ZtDatePickerRangePanelMode;\n  holidays?: readonly ZtDatePickerHoliday[];\n  showHolidays?: boolean;\n  /** Custom quick selections. Omit for type-aware defaults; use [] to hide them. */\n  shortcuts?: readonly ZtDatePickerShortcut[];\n  placeholder?: string;\n  size?: ZtComponentSize;\n  status?: ZtDatePickerStatus;\n  disabled?: boolean;\n  readonly?: boolean;\n  clearable?: boolean;\n  /** For month/year selection, receives the first local day of the period. */\n  disabledDate?: (date: Date) => boolean;\n}",
         "public": true
       },
       {
@@ -13327,7 +13467,7 @@
       },
       {
         "name": "ZtDatePickerHoliday",
-        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n}",
+        "code": "export interface ZtDatePickerHoliday {\n  /** Local calendar date, YYYY-MM-DD. */\n  key: string;\n  /** Holiday name displayed in the calendar cell. */\n  value: string;\n  /** Optional work-calendar marker. Holiday renders 休; workday renders 班. */\n  type?: 'holiday' | 'workday';\n}",
         "public": true
       },
       {

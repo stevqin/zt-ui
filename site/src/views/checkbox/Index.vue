@@ -16,6 +16,8 @@ import Example07 from './Example07.vue';
 import Example07Code from './Example07.vue?raw';
 import Limits from './Limits.vue';
 import LimitsCode from './Limits.vue?raw';
+import ButtonGroup from './ButtonGroup.vue';
+import ButtonGroupCode from './ButtonGroup.vue?raw';
 </script>
 
 <template>
@@ -28,6 +30,8 @@ import LimitsCode from './Limits.vue?raw';
     <DemoBlock :code="Example03Code" desc="CheckboxGroup 使用数组统一管理多选。"
       ><Example03
     /></DemoBlock>
+    <h3>连体按钮组</h3>
+    <DemoBlock :code="ButtonGroupCode" desc="CheckboxGroup 设置 segmented 后以连体按钮展示，仍支持多选、单项禁用及 min / max 限制。"><ButtonGroup /></DemoBlock>
     <h3>颜色状态</h3>
     <DemoBlock :code="Example04Code" desc="通过 CheckboxGroup 的 status 设置选中颜色。"
       ><Example04

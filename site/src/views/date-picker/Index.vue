@@ -21,13 +21,13 @@ import MethodsCode from './Methods.vue?raw';
 <template>
   <div class="component-examples">
     <h3>基础用法</h3>
-    <DemoBlock :code="Example01Code" desc="空字符串和 null 显示占位提示。选择完成后立即提交。"
+    <DemoBlock :code="Example01Code" desc="空字符串和 null 显示占位提示。面板底部显示当前草稿与类型适配的快捷选项；日期选择完成后立即提交。shortcuts 可传入自定义项，传空数组可隐藏。"
       ><Example01
     /></DemoBlock>
     <h3>范围选择</h3>
     <DemoBlock
       :code="Example02Code"
-      desc="设置 range，使用左右双面板展示连续两个月，切换年月时联动；小屏下上下排列。依次选择开始和结束日期；反向选择会自动按日期排序。未完成的选择不会触发 change。"
+      desc="设置 range 后，rangePanelMode 可选择 single 单面板或 double 双面板（默认）；单面板可通过月份导航跨月选择。依次选择开始和结束日期，反向选择会自动排序。"
       ><Example02
     /></DemoBlock>
     <h3>年份、月份与范围</h3>
@@ -49,7 +49,7 @@ import MethodsCode from './Methods.vue?raw';
     <h3>节假日标识</h3>
     <DemoBlock
       :code="Example06Code"
-      desc="holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；长名称悬停查看。支持单值和范围，标识不改变可选状态，也不会自动禁用周末。"
+      desc="holidays 数组中 key 为 YYYY-MM-DD，value 为节日名；type 可设 holiday 或 workday，分别显示“休”“班”角标。长名称悬停查看；标识不改变可选状态，也不会自动禁用周末。"
       ><Example06
     /></DemoBlock>
 

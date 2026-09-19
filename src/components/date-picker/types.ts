@@ -10,9 +10,17 @@ export interface ZtDatePickerHoliday {
   key: string;
   /** Holiday name displayed in the calendar cell. */
   value: string;
+  /** Optional work-calendar marker. Holiday renders 休; workday renders 班. */
+  type?: 'holiday' | 'workday';
+}
+
+export interface ZtDatePickerShortcut {
+  label: string;
+  value: ZtDatePickerValue | (() => ZtDatePickerValue);
 }
 
 export type ZtDatePickerType = 'date' | 'daterange' | 'month' | 'monthrange' | 'year' | 'yearrange';
+export type ZtDatePickerRangePanelMode = 'single' | 'double';
 export type ZtDatePickerValue = string | [string, string] | null;
 export interface ZtDatePickerProps {
   /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */
@@ -22,8 +30,12 @@ export interface ZtDatePickerProps {
   /** Selection granularity. Range suffix is equivalent to range=true. */
   type?: ZtDatePickerType;
   range?: boolean;
+  /** 日期与日期时间范围选择时使用单面板或双面板。 */
+  rangePanelMode?: ZtDatePickerRangePanelMode;
   holidays?: readonly ZtDatePickerHoliday[];
   showHolidays?: boolean;
+  /** Custom quick selections. Omit for type-aware defaults; use [] to hide them. */
+  shortcuts?: readonly ZtDatePickerShortcut[];
   placeholder?: string;
   size?: ZtComponentSize;
   status?: ZtDatePickerStatus;

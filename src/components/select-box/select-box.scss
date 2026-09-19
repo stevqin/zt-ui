@@ -370,3 +370,13 @@
     > .zt-select-box__trigger { border-bottom-color: var(--select-box-underline-line); }
   }
 }
+
+.zt-select-box-panel__unmatched {
+  max-height: 220px;
+  margin: 0;
+  padding: 4px 0 4px 22px;
+  overflow: auto;
+  color: var(--zt-text, #334155);
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}

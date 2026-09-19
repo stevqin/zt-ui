@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUpdated, ref, toRef, watch } from 'vue'
-import { ZtMessage } from '@ztechjs/zt-alert'
+import { ZtMessage, ZtMessageBox } from '@ztechjs/zt-alert'
 import ZtCheckbox from '../checkbox/ZtCheckbox.vue'
 import ZtButton from '../button/ZtButton.vue'
 import ZtInput from '../input/ZtInput.vue'
@@ -43,6 +43,7 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number]
   confirm: [values: ZtSelectValue[], options: ZtSelectOption[]]
   cancel: []
+  'batch-dialog-change': [visible: boolean]
 }>()
 defineSlots<{
   option?: (scope: { option: ZtSelectOption; selected: boolean; disabled: boolean }) => unknown
@@ -82,7 +83,11 @@ const filtered = computed(() => {
 const serverPaged = computed(() => props.remote && !selectedOnly.value)
 const total = computed(() => serverPaged.value ? Math.max(0, props.total ?? 0) : filtered.value.length)
 const pageCount = computed(() => Math.max(1, Math.ceil(total.value / pageSize.value)))
-const current = computed(() => serverPaged.value ? filtered.value : filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
+const current = computed(() => selectedOnly.value
+  ? filtered.value
+  : serverPaged.value
+    ? filtered.value
+    : filtered.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value))
 const available = computed(() => current.value.filter(option => !option.disabled))
 const all = computed(() => available.value.length > 0 && available.value.every(option => values.value.includes(option.value)))
 const some = computed(() => !all.value && available.value.some(option => values.value.includes(option.value)))
@@ -181,16 +186,46 @@ async function applyPaste(confirmationTrigger?: EventTarget | null) {
   for (const option of matchedOptions.values()) {
     if (!values.value.includes(option.value)) draft.toggle(option)
   }
-  const count = `批量粘贴 ${entries.length} 项${entries.length > keywords.length ? `（去重后 ${keywords.length} 项）` : ''}`
-  pasteResult.value = `${count}，匹配 ${matchedKeywords.size} 项，已自动勾选 ${values.value.length - previousSize} 项`
-  if (matchedKeywords.size === keywords.length) ZtMessage.success(pasteResult.value)
-  else ZtMessage.warning(pasteResult.value)
+  const unmatched = keywords.filter(keyword => !matchedKeywords.has(keyword))
+  if (unmatched.length) {
+    const list = document.createElement('ul')
+    list.className = 'zt-select-box-panel__unmatched'
+    for (const keyword of unmatched) {
+      const item = document.createElement('li')
+      item.textContent = keyword
+      list.append(item)
+    }
+    emit('batch-dialog-change', true)
+    try {
+      await ZtMessageBox.alert({
+        title: '以下内容未能匹配',
+        text: `共 ${unmatched.length} 项，请确认后检查已选择内容。`,
+        icon: 'warning',
+        content: list,
+        button: '确定',
+      })
+    } finally {
+      // MessageBox restores focus on its next frame. Keep the containing
+      // SelectBox protected from document focusout until that handoff lands.
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+      emit('batch-dialog-change', false)
+    }
+    if (revision !== modelRevision) return false
+  }
+  pasteResult.value = `已匹配 ${matchedKeywords.size} 项，新增勾选 ${values.value.length - previousSize} 项`
+  pasteOpen.value = false
+  selectedOnly.value = true
+  keyword.value = ''
+  page.value = 1
   return true
 }
 async function confirm(event?: MouseEvent) {
   if (props.disabled || props.batchLoading) return
   const revision = modelRevision
-  if (pasteOpen.value && !await applyPaste(event?.currentTarget)) return
+  if (pasteOpen.value) {
+    await applyPaste(event?.currentTarget)
+    return
+  }
   if (revision !== modelRevision) return
   emit('confirm', draft.confirm(), [...draft.selectedOptions.value])
 }
@@ -229,7 +264,7 @@ function cancel() {
           </template>
         </ZtLoading>
       </ZtScrollbar>
-      <ZtPagination class="zt-select-box-panel__pager" :current-page="page" :page-size="pageSize" :size="size" :disabled="disabled" :total="total" :page-sizes="pageSizes" :pager-count="5" layout="prev, pager, next, sizes, total" @update:current-page="changePage" @update:page-size="changePageSize" />
+      <ZtPagination v-if="!selectedOnly" class="zt-select-box-panel__pager" :current-page="page" :page-size="pageSize" :size="size" :disabled="disabled" :total="total" :page-sizes="pageSizes" :pager-count="5" layout="prev, pager, next, sizes, total" @update:current-page="changePage" @update:page-size="changePageSize" />
     </template>
     <div v-else class="zt-select-box-panel__paste">
       <div class="zt-select-box-panel__paste-editor">

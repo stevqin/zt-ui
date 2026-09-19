@@ -38,12 +38,22 @@ describe('DatePickerPanel', () => {
 });
 it('keeps year/month navigation in the inline panel and disables picking via Form', async () => {
   const w = mount(ZtDatePickerPanel, { props: { modelValue: '2026-09-17' } });
+  expect(w.find('.zt-date-picker__footer').exists()).toBe(true);
+  expect(w.find('.zt-date-picker__footer').text()).not.toContain('取消');
+  expect(w.find('[data-shortcut="今日"]').attributes('disabled')).toBeUndefined();
   await w.find('[aria-label="选择年份"]').trigger('click');
   expect(w.find('.zt-date-picker__period-grid').exists()).toBe(true);
   expect(w.find('.zt-date-picker__panel').attributes('style')).toContain(
     'position: relative',
   );
   await w.setProps({ disabled: true });
+  expect(w.find('[data-shortcut="今日"]').attributes('disabled')).toBeDefined();
   expect(w.emitted('change')).toBeUndefined();
+  w.unmount();
+});
+
+it('disables inline shortcuts while readonly', () => {
+  const w = mount(ZtDatePickerPanel, { props: { modelValue: '2026-09-17', readonly: true } });
+  expect(w.find('[data-shortcut="今日"]').attributes('disabled')).toBeDefined();
   w.unmount();
 });
