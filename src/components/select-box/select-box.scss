@@ -13,7 +13,8 @@
   --select-box-row-padding: 6px;
   --select-box-list-height: 360px;
   --select-box-option-gap: 6px;
-  --select-box-paste-height: 220px;
+  --select-box-paste-height: 230px;
+  --select-box-separator-height: 28px;
   display: flex;
   flex-direction: column;
   flex: 1 1 auto;
@@ -23,7 +24,7 @@
   background: var(--zt-surface, #fff);
   font-size: var(--glass-size-default);
 
-  &__header, &__pager, &__footer, &__separator, &__paste-result { flex-shrink: 0; }
+  &__header, &__pager, &__footer, &__separator { flex-shrink: 0; }
 
   &__header {
     padding: var(--select-box-space) var(--select-box-space) 0;
@@ -71,7 +72,14 @@
     overflow: hidden;
   }
   &__list { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 4px 0; overscroll-behavior: contain; }
-  &__loading.is-loading { min-height: 72px; }
+  // Fill the list viewport so the loading mask centers the spinner in the result area.
+  &__loading.is-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: var(--select-box-list-height);
+    box-sizing: border-box;
+  }
   &__state {
     display: block;
     margin: 0;
@@ -156,6 +164,15 @@
     overflow: hidden;
     padding: var(--select-box-space);
   }
+  &__paste-loading {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+  &__paste-loading.is-loading {
+    min-height: calc(var(--select-box-paste-height) + var(--select-box-separator-height) + 2px);
+  }
   &__paste-editor {
     display: flex;
     flex-direction: column;
@@ -174,13 +191,13 @@
     height: var(--select-box-paste-height);
     min-height: 0;
     box-sizing: border-box;
-    padding: 12px;
+    padding: 10px 12px;
     border: 0;
     outline: 0;
     background: transparent;
     color: inherit;
     font: inherit;
-    line-height: 1.7;
+    line-height: 1.6;
     resize: none;
   }
   &__paste textarea::placeholder { color: var(--select-box-muted); }
@@ -188,20 +205,31 @@
     display: flex;
     align-items: center;
     justify-content: flex-end;
-    min-height: 44px;
-    padding: 8px 12px;
+    gap: 4px;
+    height: var(--select-box-separator-height);
+    min-height: var(--select-box-separator-height);
+    padding: 0 8px;
     border-top: 1px solid var(--select-box-line);
     background: var(--zt-surface-soft, var(--glass-info-soft));
     color: var(--select-box-muted);
+    font-size: var(--glass-size-small);
   }
-  &__separator .zt-select { width: 145px; }
+  &__separator .zt-select {
+    width: 120px;
+    --zt-select-height: 22px;
+    --zt-select-padding: 6px;
+    --zt-select-end: 18px;
+    --zt-select-font-size: var(--glass-size-small);
+  }
   &__separator .zt-select__control {
+    height: 22px;
+    min-height: 22px;
     border: 0;
     border-radius: glass.radius(3px);
     background: transparent;
     box-shadow: none;
+    font-size: var(--glass-size-small);
   }
-  &__paste-result { display: block; margin: 10px 0 0; overflow-wrap: anywhere; line-height: 1.6; }
 
   &--mini {
     --select-box-trigger-gap: 4px;
@@ -212,7 +240,8 @@
     --select-box-row-padding: 3px;
     --select-box-list-height: 280px;
     --select-box-option-gap: 4px;
-    --select-box-paste-height: 140px;
+    --select-box-paste-height: 230px;
+    --select-box-separator-height: 24px;
   }
   &--small {
     --select-box-trigger-gap: 5px;
@@ -223,7 +252,8 @@
     --select-box-row-padding: 4px;
     --select-box-list-height: 320px;
     --select-box-option-gap: 5px;
-    --select-box-paste-height: 180px;
+    --select-box-paste-height: 230px;
+    --select-box-separator-height: 26px;
   }
   &--medium {
     --select-box-trigger-gap: 7px;
@@ -233,7 +263,8 @@
     --select-box-row-height: 38px;
     --select-box-list-height: 380px;
     --select-box-option-gap: 7px;
-    --select-box-paste-height: 240px;
+    --select-box-paste-height: 230px;
+    --select-box-separator-height: 30px;
   }
   &--large {
     --select-box-trigger-gap: 8px;
@@ -244,7 +275,8 @@
     --select-box-row-padding: 7px;
     --select-box-list-height: 420px;
     --select-box-option-gap: 8px;
-    --select-box-paste-height: 260px;
+    --select-box-paste-height: 230px;
+    --select-box-separator-height: 32px;
   }
 }
 
@@ -369,14 +401,4 @@
     --select-box-underline-line: #{$color};
     > .zt-select-box__trigger { border-bottom-color: var(--select-box-underline-line); }
   }
-}
-
-.zt-select-box-panel__unmatched {
-  max-height: 220px;
-  margin: 0;
-  padding: 4px 0 4px 22px;
-  overflow: auto;
-  color: var(--zt-text, #334155);
-  line-height: 1.8;
-  overflow-wrap: anywhere;
 }

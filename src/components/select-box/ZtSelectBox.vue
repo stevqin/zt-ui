@@ -53,7 +53,6 @@ const page = ref(1)
 const pageSize = ref(normalizePageSize(props.pageSize))
 const keyword = ref('')
 const total = ref(0)
-const batchDialogOpen = ref(false)
 const remoteOptions = ref<ZtSelectOption[]>([])
 const popupZIndex = ref(2000)
 const width = computed(() => typeof props.width === 'number' ? `${props.width}px` : props.width)
@@ -64,9 +63,8 @@ watch(() => props.options, options => draft.mergeOptions(options), { immediate: 
 
 function focus(options?: FocusOptions) { triggerElement.value?.focus(options) }
 function blur() { triggerElement.value?.blur() }
-function close(force = false) {
-  if (!visible.value || (batchDialogOpen.value && !force)) return
-  if (force) batchDialogOpen.value = false
+function close() {
+  if (!visible.value) return
   draft.cancel()
   remoteSearch.reset()
   remoteBatch.reset()
@@ -208,7 +206,6 @@ function handleFocusOut(event: FocusEvent) {
   // Wait for nested overlays and close/clear handlers to finish restoring focus.
   // Listening on the document also covers teleported child Select popups.
   void nextTick(() => {
-    if (batchDialogOpen.value) return
     if (disposed || (document.activeElement && dropdown.containsTarget(document.activeElement))) return
     emit('blur', event)
     close()
@@ -218,8 +215,8 @@ function handleFocusOut(event: FocusEvent) {
 onMounted(() => document.addEventListener('focusout', handleFocusOut, true))
 watch(() => props.pageSize, value => changePageSize(value, false))
 watch(visible, value => emit('visible-change', value), { flush: 'sync' })
-watch(disabled, value => { if (value) close(true) })
-watch(() => parentOverlay?.interactive.value, value => { if (value === false) close(true) }, { flush: 'sync' })
+watch(disabled, value => { if (value) close() })
+watch(() => parentOverlay?.interactive.value, value => { if (value === false) close() }, { flush: 'sync' })
 watch([() => props.remote, () => props.remoteMethod], () => {
   remoteSearch.reset()
   remoteBatch.reset()
@@ -234,7 +231,7 @@ onBeforeUnmount(() => {
   remoteSearch.dispose()
   remoteBatch.dispose()
 })
-defineExpose({ focus, blur, open, close: () => close(true), clear })
+defineExpose({ focus, blur, open, close, clear })
 </script>
 
 <template>
@@ -246,7 +243,7 @@ defineExpose({ focus, blur, open, close: () => close(true), clear })
     <button v-if="canClear" type="button" class="zt-select-box__clear" aria-label="清空选择" @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
     <Teleport :to="dropdown.teleportTarget.value">
       <div v-if="visible" :id="popupId" ref="popupElement" class="zt-select-box__popup" :data-zt-theme="theme" :style="popupStyle" role="dialog" aria-label="选择选项" tabindex="-1" @mousedown="keepPopupFocus" @keydown.esc="handleEscape">
-        <SelectBoxPanel ref="panel" :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @resize="dropdown.updatePosition" @search="search" @update:page="changePage" @update:page-size="changePageSize" @batch-dialog-change="batchDialogOpen = $event" @confirm="commit" @cancel="close">
+        <SelectBoxPanel ref="panel" :model-value="modelValue" :options="remote ? remoteOptions : options" :known-options="knownOptions" :size="size" :disabled="disabled" :filterable="filterable" :remote="remote" :match-batch="matchBatch" :batch-loading="remoteBatch.loading.value" :loading="remote && remoteSearch.loading.value" :failed="remote && remoteSearch.failed.value" :page="page" :page-size="pageSize" :page-sizes="pageSizes" :total="total" :no-data-text="noDataText" :remote-error-text="remoteErrorText" @resize="dropdown.updatePosition" @search="search" @update:page="changePage" @update:page-size="changePageSize" @confirm="commit" @cancel="close">
           <template v-if="$slots.option" #option="scope"><slot name="option" v-bind="scope" /></template>
         </SelectBoxPanel>
       </div>

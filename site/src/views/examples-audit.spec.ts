@@ -249,7 +249,8 @@ describe('complete and executable documentation examples', () => {
       'utf8',
     );
     expect(page).toContain('部分匹配');
-    expect(page).toContain('MessageBox');
+    expect(page).toContain('再次点击确定才正式提交');
+    expect(page).toContain('Message');
     expect(page).toContain('仅在 clearable=true 时生效');
     const document = api['select-box'];
     expect(document.types.map((type) => type.name)).toEqual(

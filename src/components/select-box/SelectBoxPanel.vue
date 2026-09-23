@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUpdated, ref, toRef, watch } from 'vue'
-import { ZtMessage, ZtMessageBox } from '@ztechjs/zt-alert'
+import { ZtMessage } from '@ztechjs/zt-alert'
 import ZtCheckbox from '../checkbox/ZtCheckbox.vue'
 import ZtButton from '../button/ZtButton.vue'
 import ZtInput from '../input/ZtInput.vue'
@@ -43,7 +43,6 @@ const emit = defineEmits<{
   'update:pageSize': [pageSize: number]
   confirm: [values: ZtSelectValue[], options: ZtSelectOption[]]
   cancel: []
-  'batch-dialog-change': [visible: boolean]
 }>()
 defineSlots<{
   option?: (scope: { option: ZtSelectOption; selected: boolean; disabled: boolean }) => unknown
@@ -64,7 +63,6 @@ const pageSize = ref(normalizePageSize(props.pageSize))
 const pageSizes = computed(() => normalizePageSizes(props.pageSizes ?? [10, 20, 50, 100, 200, 500], pageSize.value))
 const pasteOpen = ref(false)
 const pasteText = ref('')
-const pasteResult = ref('')
 const separator = ref('newline')
 const searchInput = ref<InstanceType<typeof ZtInput>>()
 const pasteInput = ref<HTMLTextAreaElement>()
@@ -115,7 +113,6 @@ watch(() => props.pageSize, next => { pageSize.value = normalizePageSize(next); 
 watch(keyword, () => { page.value = 1 })
 watch(selectedOnly, selected => { page.value = selected ? 1 : props.remote ? (props.page ?? 1) : 1 })
 watch(pageCount, () => { if (!serverPaged.value) changePage(page.value) }, { immediate: true })
-watch([pasteText, separator], () => { pasteResult.value = '' })
 watch(pasteOpen, async open => {
   await nextTick()
   if (open) pasteInput.value?.focus()
@@ -133,7 +130,6 @@ function reset() {
   page.value = 1
   selectedOnly.value = false
   pasteText.value = ''
-  pasteResult.value = ''
 }
 defineExpose({ reset })
 
@@ -150,14 +146,19 @@ function clickLabel(event: MouseEvent, action: () => void) {
   event.preventDefault()
   action()
 }
+function formatPasteFeedback(rawCount: number, uniqueCount: number, matchedCount: number, selectedCount: number) {
+  const base = rawCount !== uniqueCount
+    ? `批量粘贴 ${rawCount} 项（去重后 ${uniqueCount} 项）`
+    : `批量粘贴 ${rawCount} 项`
+  return `${base}，匹配 ${matchedCount} 项，已自动勾选 ${selectedCount} 项`
+}
 async function applyPaste(confirmationTrigger?: EventTarget | null) {
   const revision = modelRevision
   const patterns: Record<string, RegExp> = { newline: /[\r\n]+/, comma: /[,，]+/, semicolon: /[;；]+/, tab: /\t+/ }
-  const entries = pasteText.value.split(patterns[separator.value]!).map(text => text.trim()).filter(Boolean)
-  const keywords = [...new Set(entries)]
+  const rawEntries = pasteText.value.split(patterns[separator.value]!).map(text => text.trim()).filter(Boolean)
+  const keywords = [...new Set(rawEntries)]
   if (!keywords.length) {
-    pasteResult.value = '没有可匹配的粘贴内容'
-    ZtMessage.info(pasteResult.value)
+    ZtMessage.info('没有可匹配的粘贴内容')
     return true
   }
   // Loading disables the focused confirm button. Move focus before that update
@@ -186,33 +187,13 @@ async function applyPaste(confirmationTrigger?: EventTarget | null) {
   for (const option of matchedOptions.values()) {
     if (!values.value.includes(option.value)) draft.toggle(option)
   }
-  const unmatched = keywords.filter(keyword => !matchedKeywords.has(keyword))
-  if (unmatched.length) {
-    const list = document.createElement('ul')
-    list.className = 'zt-select-box-panel__unmatched'
-    for (const keyword of unmatched) {
-      const item = document.createElement('li')
-      item.textContent = keyword
-      list.append(item)
-    }
-    emit('batch-dialog-change', true)
-    try {
-      await ZtMessageBox.alert({
-        title: '以下内容未能匹配',
-        text: `共 ${unmatched.length} 项，请确认后检查已选择内容。`,
-        icon: 'warning',
-        content: list,
-        button: '确定',
-      })
-    } finally {
-      // MessageBox restores focus on its next frame. Keep the containing
-      // SelectBox protected from document focusout until that handoff lands.
-      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
-      emit('batch-dialog-change', false)
-    }
-    if (revision !== modelRevision) return false
-  }
-  pasteResult.value = `已匹配 ${matchedKeywords.size} 项，新增勾选 ${values.value.length - previousSize} 项`
+  const matchedCount = matchedKeywords.size
+  const selectedCount = values.value.length - previousSize
+  const text = formatPasteFeedback(rawEntries.length, keywords.length, matchedCount, selectedCount)
+  if (matchedCount === keywords.length) ZtMessage.success(text)
+  else ZtMessage.warning(text)
+  // Keep the panel open so the user can review matched selections before final commit.
+  if (revision !== modelRevision) return false
   pasteOpen.value = false
   selectedOnly.value = true
   keyword.value = ''
@@ -257,27 +238,30 @@ function cancel() {
         <ZtLoading class="zt-select-box-panel__loading" :class="{ 'is-loading': loading && !selectedOnly }" :loading="loading && !selectedOnly" :size="size" text="加载中">
           <ZtText v-if="failed && !selectedOnly" class="zt-select-box-panel__state" tag="p" status="danger" :size="size" role="alert">{{ remoteErrorText }}</ZtText>
           <template v-else>
-            <ZtCheckbox v-for="option in current" :key="`${typeof option.value}:${option.value}`" class="zt-select-box-panel__option" :size="size" :model-value="values.includes(option.value)" :disabled="listBlocked || option.disabled" role="checkbox" :aria-label="option.label" :aria-checked="values.includes(option.value)" :aria-disabled="listBlocked || Boolean(option.disabled)" :tabindex="listBlocked || option.disabled ? -1 : 0" @click="clickLabel($event, () => toggle(option))" @change="toggle(option)" @keydown.space.prevent="toggle(option)" @keydown.enter.prevent="toggle(option)">
-              <ZtText class="zt-select-box-panel__option-content" :size="size" :title="option.label" truncated><slot name="option" :option="option" :selected="values.includes(option.value)" :disabled="Boolean(listBlocked || option.disabled)">{{ option.label }}</slot></ZtText>
-            </ZtCheckbox>
-            <ZtText v-if="!current.length && (!loading || selectedOnly)" class="zt-select-box-panel__state" tag="p" status="info" :size="size">{{ selectedOnly ? '暂无已选项' : noDataText }}</ZtText>
+            <template v-if="!loading || selectedOnly">
+              <ZtCheckbox v-for="option in current" :key="`${typeof option.value}:${option.value}`" class="zt-select-box-panel__option" :size="size" :model-value="values.includes(option.value)" :disabled="listBlocked || option.disabled" role="checkbox" :aria-label="option.label" :aria-checked="values.includes(option.value)" :aria-disabled="listBlocked || Boolean(option.disabled)" :tabindex="listBlocked || option.disabled ? -1 : 0" @click="clickLabel($event, () => toggle(option))" @change="toggle(option)" @keydown.space.prevent="toggle(option)" @keydown.enter.prevent="toggle(option)">
+                <ZtText class="zt-select-box-panel__option-content" :size="size" :title="option.label" truncated><slot name="option" :option="option" :selected="values.includes(option.value)" :disabled="Boolean(listBlocked || option.disabled)">{{ option.label }}</slot></ZtText>
+              </ZtCheckbox>
+              <ZtText v-if="!current.length" class="zt-select-box-panel__state" tag="p" status="info" :size="size">{{ selectedOnly ? '暂无已选项' : noDataText }}</ZtText>
+            </template>
           </template>
         </ZtLoading>
       </ZtScrollbar>
       <ZtPagination v-if="!selectedOnly" class="zt-select-box-panel__pager" :current-page="page" :page-size="pageSize" :size="size" :disabled="disabled" :total="total" :page-sizes="pageSizes" :pager-count="5" layout="prev, pager, next, sizes, total" @update:current-page="changePage" @update:page-size="changePageSize" />
     </template>
     <div v-else class="zt-select-box-panel__paste">
-      <div class="zt-select-box-panel__paste-editor">
-        <textarea ref="pasteInput" class="zt-select-box-panel__list" v-model="pasteText" :disabled="disabled || batchLoading" aria-label="选项文本粘贴处" placeholder="选项文本粘贴处" />
-        <div class="zt-select-box-panel__separator"><ZtText :size="size">分隔符：</ZtText><ZtSelect v-model="separator" :size="size" :options="separators" :disabled="disabled || batchLoading" aria-label="分隔符" /></div>
-      </div>
-      <ZtText v-if="pasteResult" class="zt-select-box-panel__paste-result" tag="p" status="info" :size="size" role="status">{{ pasteResult }}</ZtText>
+      <ZtLoading class="zt-select-box-panel__paste-loading" :class="{ 'is-loading': batchLoading }" :loading="batchLoading" :size="size" text="正在校验数据中">
+        <div class="zt-select-box-panel__paste-editor">
+          <textarea ref="pasteInput" class="zt-select-box-panel__list" v-model="pasteText" :disabled="disabled || batchLoading" aria-label="选项文本粘贴处" placeholder="选项文本粘贴处" />
+          <div class="zt-select-box-panel__separator"><ZtText :size="size">分隔符：</ZtText><ZtSelect v-model="separator" :size="size" :options="separators" :disabled="disabled || batchLoading" aria-label="分隔符" /></div>
+        </div>
+      </ZtLoading>
     </div>
     <div class="zt-select-box-panel__footer">
       <ZtButton class="zt-select-box-panel__mode" :size="size" :disabled="disabled || batchLoading" :aria-expanded="pasteOpen" @click="pasteOpen = !pasteOpen"><ZtIcon :name="pasteOpen ? 'checklist' : 'clipboard'" :size="16" />{{ pasteOpen ? '勾选框选择' : '批量粘贴' }}</ZtButton>
       <span />
       <ZtButton class="zt-select-box-panel__cancel" :size="size" @click="cancel">取消</ZtButton>
-      <ZtButton class="zt-select-box-panel__confirm" :size="size" status="primary" :disabled="disabled" :loading="batchLoading" loading-text="匹配中…" @click="confirm">确定</ZtButton>
+      <ZtButton class="zt-select-box-panel__confirm" :size="size" status="primary" :disabled="disabled" :loading="batchLoading" loading-text="正在校验数据中" @click="confirm">确定</ZtButton>
     </div>
   </div>
 </template>

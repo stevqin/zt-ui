@@ -21,7 +21,7 @@ import ClearableCode from './Clearable.vue?raw'
     <p>使用 v-model:page-size 保存用户选择的每页条数。搜索或修改每页条数会回到第 1 页，翻页立即请求；请求失败会保留草稿与上次成功结果，重新搜索即可恢复。</p>
     <h3>远程批量粘贴与部分匹配</h3>
     <DemoBlock :code="BatchCode" desc="进入批量粘贴，选择换行、逗号、分号或制表符。服务端按名称或值精确匹配完整数据集，跨页结果也能选中；匹配结果与已有草稿合并去重。"><Batch /></DemoBlock>
-    <p>批量页点击确定只执行验证：未匹配项通过 MessageBox 集中列出；确认提示后返回不分页的“已选择”复选框列表，再次点击确定才正式提交。禁用项按未匹配处理；批量请求失败会保留文本和草稿，供重试。</p>
+    <p>批量页点击确定会请求接口完成校验，匹配项自动勾选后进入「已选择」列表供检查，再次点击确定才正式提交。全部匹配提示成功，部分或零匹配提示警告；统计通过 Message 非阻断反馈。禁用项按未匹配处理；批量请求失败会保留文本和草稿，供重试。</p>
     <h3>清空、宽度与外观继承</h3>
     <DemoBlock :code="ClearableCode" desc="数字 width 按 px 处理，也支持 100% 等 CSS 长度。摘要保持单行省略，悬停可查看全文。ConfigProvider 统一设置五档 size、light/dark 主题与 borderRadius，面板和嵌套选择器一并继承。"><Clearable /></DemoBlock>
     <p>clearable 显示清空按钮，实例 clear() 仅在 clearable=true 时生效，并执行相同操作：立即输出空值、change 和 clear，清空搜索并保留焦点。已打开的面板保持打开，草稿同步清空；后续取消不会恢复旧值。禁用或已为空时不重复清空。</p>

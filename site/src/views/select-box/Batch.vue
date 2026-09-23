@@ -37,7 +37,7 @@ async function loadOptions(request: ZtSelectBoxRemoteRequest): Promise<ZtSelectB
     <ZtSelectBox v-model="selected" :width="360" remote :remote-method="loadOptions" clearable aria-label="批量经营区域" />
     <p>复制下面的文本，以“换行”分隔粘贴。两项位于其他页，一项重复，一项不存在，经营区域 4 已禁用。</p>
     <pre class="batch-example">{{ pasteExample }}</pre>
-    <p>验证后先检查完整的已选择列表，再点击确定提交。当前已确认：{{ selected.join('、') || '无' }}。粘贴“失败”可检查失败后重试。</p>
+    <p>点击确定后请求接口校验：匹配项自动勾选，未匹配项不进入结果，并进入「已选择」列表供检查，再次点击确定才正式提交。当前已确认：{{ selected.join('、') || '无' }}。粘贴“失败”可检查失败后重试。</p>
   </div>
 </template>
 
