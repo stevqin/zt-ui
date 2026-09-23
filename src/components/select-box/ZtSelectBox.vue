@@ -238,7 +238,7 @@ defineExpose({ focus, blur, open, close, clear })
   <div ref="controlElement" :data-zt-theme="theme" :class="['zt-select-box', `zt-select-box--${size}`, attrs.class, { 'is-form-underline': underline, 'is-disabled': disabled, 'is-open': visible, 'is-error': formItem?.validateState.value === 'error' }]" :style="[providerStyle, attrs.style as StyleValue, { width }]">
     <button v-bind="Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'))" :id="(attrs.id as string) ?? formItem?.inputId" ref="triggerElement" type="button" class="zt-select-box__trigger" role="combobox" aria-haspopup="dialog" :aria-expanded="visible" :aria-controls="visible ? popupId : undefined" :aria-invalid="formItem?.validateState.value === 'error' || undefined" :aria-describedby="describedBy" :disabled="disabled" @click="toggle" @keydown.down.prevent="open" @keydown.esc="handleEscape" @focus="emit('focus', $event)">
       <span class="zt-select-box__summary" :class="{ 'is-placeholder': !summary }" :title="summary || undefined">{{ summary || placeholder }}</span>
-      <ZtIcon class="zt-select-box__arrow" name="arrow-down" :size="14" />
+      <ZtIcon class="zt-select-box__arrow" name="checklist" :size="14" />
     </button>
     <button v-if="canClear" type="button" class="zt-select-box__clear" aria-label="清空选择" @pointerdown.stop.prevent @mousedown.stop.prevent @click.stop="clear"><ZtIcon name="close" :size="14" /></button>
     <Teleport :to="dropdown.teleportTarget.value">

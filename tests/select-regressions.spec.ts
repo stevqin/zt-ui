@@ -42,40 +42,68 @@ function key(element: HTMLElement, key: string, extra = {}) {
 }
 
 describe('Select search completion and committed values', () => {
-  it.each([false, true])('keeps the local keyword after search selection (multiple=%s)', async multiple => {
-    const wrapper = select({ filterable: true, multiple })
+  it('restores the single selected label after a local search pick', async () => {
+    const wrapper = select({ filterable: true, multiple: false })
     await (await searchInput(wrapper)).setValue('上')
     document.querySelector<HTMLElement>('[role="option"]')!.click()
-    await wrapper.setProps({ modelValue: multiple ? ['sh'] : 'sh' })
-    expect(wrapper.classes()).toContain('has-keyword')
-    expect((await searchInput(wrapper)).element.value).toBe('上')
-    expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe(String(multiple))
-    if (multiple) {
-      expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
-      expect(getComputedStyle(wrapper.get('.zt-select__tags').element).opacity).not.toBe('0')
-    }
+    await wrapper.setProps({ modelValue: 'sh' })
+    await nextTick()
+    expect(wrapper.classes()).not.toContain('has-keyword')
+    expect(wrapper.classes()).not.toContain('is-searching')
+    expect((await searchInput(wrapper)).element.value).toBe('上海')
+    expect(wrapper.get('.zt-select__value').text()).toBe('上海')
+    expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
   })
 
-  it.each([false, true].flatMap(multiple => ['escape', 'outside', 'blur', 'api'].map(ending => ({ multiple, ending }))))(
-    'keeps an unfinished keyword on $ending (multiple=$multiple)', async ({ multiple, ending }) => {
-      const wrapper = select({ filterable: true, multiple, modelValue: multiple ? ['hz'] : 'hz' })
+  it('keeps the local keyword after search selection (multiple=true)', async () => {
+    const wrapper = select({ filterable: true, multiple: true })
+    await (await searchInput(wrapper)).setValue('上')
+    document.querySelector<HTMLElement>('[role="option"]')!.click()
+    await wrapper.setProps({ modelValue: ['sh'] })
+    expect(wrapper.classes()).toContain('has-keyword')
+    expect((await searchInput(wrapper)).element.value).toBe('上')
+    expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
+    expect(getComputedStyle(wrapper.get('.zt-select__tags').element).opacity).not.toBe('0')
+  })
+
+  it.each(['escape', 'outside', 'blur', 'api'])(
+    'restores the single selected label on %s without picking', async ending => {
+      const wrapper = select({ filterable: true, multiple: false, modelValue: 'hz' })
       const input = await searchInput(wrapper)
       input.element.focus()
-    await input.setValue('上')
-    if (ending === 'escape') key(input.element, 'Escape')
-    if (ending === 'outside') document.body.click()
-    if (ending === 'blur') wrapper.vm.blur()
-    if (ending === 'api') wrapper.vm.close()
-    await nextTick()
-    expect(wrapper.classes()).toContain('has-keyword')
-    expect(input.element.value).toBe('上')
-    if (multiple) expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
-    expect(wrapper.emitted('change')).toBeUndefined()
-    wrapper.vm.open()
-    await nextTick()
-    expect(document.querySelectorAll('[role="option"]')).toHaveLength(1)
-    expect(document.querySelector('[role="option"]')?.textContent).toContain('上海')
-  })
+      await input.setValue('上')
+      if (ending === 'escape') key(input.element, 'Escape')
+      if (ending === 'outside') document.body.click()
+      if (ending === 'blur') wrapper.vm.blur()
+      if (ending === 'api') wrapper.vm.close()
+      await nextTick()
+      expect(wrapper.classes()).not.toContain('has-keyword')
+      expect(input.element.value).toBe('杭州')
+      expect(wrapper.get('.zt-select__value').text()).toBe('杭州')
+      expect(wrapper.emitted('change')).toBeUndefined()
+    })
+
+  it.each(['escape', 'outside', 'blur', 'api'])(
+    'keeps an unfinished keyword on %s (multiple=true)', async ending => {
+      const wrapper = select({ filterable: true, multiple: true, modelValue: ['hz'] })
+      const input = await searchInput(wrapper)
+      input.element.focus()
+      await input.setValue('上')
+      if (ending === 'escape') key(input.element, 'Escape')
+      if (ending === 'outside') document.body.click()
+      if (ending === 'blur') wrapper.vm.blur()
+      if (ending === 'api') wrapper.vm.close()
+      await nextTick()
+      expect(wrapper.classes()).toContain('has-keyword')
+      expect(input.element.value).toBe('上')
+      expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
+      expect(wrapper.emitted('change')).toBeUndefined()
+      wrapper.vm.open()
+      await nextTick()
+      expect(document.querySelectorAll('[role="option"]')).toHaveLength(1)
+      expect(document.querySelector('[role="option"]')?.textContent).toContain('上海')
+    })
 
   it.each([false, true])('clears both the model and search text (multiple=%s)', async multiple => {
     const wrapper = select({ filterable: true, multiple, modelValue: multiple ? ['hz'] : 'hz', clearable: true })
@@ -100,7 +128,7 @@ describe('Select search completion and committed values', () => {
     expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('true')
   })
 
-  it('keeps the remote keyword and current result after selecting it', async () => {
+  it('shows the single selected remote label after picking a search result', async () => {
     vi.useFakeTimers()
     const remoteMethod = vi.fn(async () => [{ label: '上海', value: 'sh' }])
     const wrapper = select({ remote: true, remoteMethod, debounce: 0 })
@@ -111,13 +139,12 @@ describe('Select search completion and committed values', () => {
     await nextTick()
     document.querySelector<HTMLElement>('[role="option"]')!.click()
     await wrapper.setProps({ modelValue: 'sh' })
-
-    expect(input.element.value).toBe('上')
-    expect(wrapper.classes()).toContain('has-keyword')
-    wrapper.vm.open()
     await nextTick()
-    expect(document.querySelectorAll('[role="option"]')).toHaveLength(1)
-    expect(document.querySelector('[role="option"]')?.textContent).toContain('上海')
+
+    expect(input.element.value).toBe('上海')
+    expect(wrapper.get('.zt-select__value').text()).toBe('上海')
+    expect(wrapper.classes()).not.toContain('has-keyword')
+    expect(wrapper.classes()).not.toContain('is-searching')
   })
 
   it('treats a scalar controlled model as empty after switching to multiple', async () => {
@@ -444,20 +471,31 @@ describe('Select overflow interaction and viewport geometry', () => {
 })
 
 describe('Select missing remote methods and falsy failures', () => {
-  it.each([false, true])('keeps the remote keyword after committing a selection (multiple=%s)', async multiple => {
+  it('restores the single selected remote label after committing a selection', async () => {
     vi.useFakeTimers()
-    const wrapper = select({ multiple, remote: true, remoteMethod: async () => options, debounce: 0 })
+    const wrapper = select({ multiple: false, remote: true, remoteMethod: async () => options, debounce: 0 })
     await (await searchInput(wrapper)).setValue('城市')
     await vi.runAllTimersAsync()
     document.querySelector<HTMLElement>('[role="option"]')!.click()
-    await wrapper.setProps({ modelValue: multiple ? ['hz'] : 'hz' })
+    await wrapper.setProps({ modelValue: 'hz' })
+    await nextTick()
+    expect(wrapper.classes()).not.toContain('has-keyword')
+    expect((await searchInput(wrapper)).element.value).toBe('杭州')
+    expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+  })
+
+  it('keeps the remote keyword after committing a selection (multiple=true)', async () => {
+    vi.useFakeTimers()
+    const wrapper = select({ multiple: true, remote: true, remoteMethod: async () => options, debounce: 0 })
+    await (await searchInput(wrapper)).setValue('城市')
+    await vi.runAllTimersAsync()
+    document.querySelector<HTMLElement>('[role="option"]')!.click()
+    await wrapper.setProps({ modelValue: ['hz'] })
     expect(wrapper.classes()).toContain('has-keyword')
     expect((await searchInput(wrapper)).element.value).toBe('城市')
-    expect(wrapper.get('input').attributes('aria-expanded')).toBe(String(multiple))
-    if (multiple) {
-      expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
-      expect(getComputedStyle(wrapper.get('.zt-select__tags').element).opacity).not.toBe('0')
-    }
+    expect(wrapper.get('input').attributes('aria-expanded')).toBe('true')
+    expect(wrapper.get('.zt-select__tags').attributes('inert')).toBeUndefined()
+    expect(getComputedStyle(wrapper.get('.zt-select__tags').element).opacity).not.toBe('0')
   })
 
   it('shows no data when remote is enabled without a method, even with initial options', async () => {

@@ -3,9 +3,13 @@ import type { Component } from 'vue'
 export const ztIconNames = [
   'add','minus','close','check','search','info','warning','error','success',
   'chevron-up','chevron-right','chevron-down','chevron-left',
-  'arrow-up','arrow-right','arrow-down','arrow-left','more','user','image',
-  'upload','download','calendar','edit','delete','home','settings','refresh','visibility',
-  'clipboard','checklist','filter-list',
+  'arrow-up','arrow-right','arrow-down','arrow-left','more','more-vertical','menu',
+  'user','users','image','file','folder','paperclip',
+  'upload','download','calendar','clock','edit','delete','home','settings','refresh',
+  'visibility','eye-off','lock','unlock','save','copy','link','external-link','share',
+  'clipboard','checklist','filter-list','filter','tag','star','heart','bookmark',
+  'mail','phone','location','help','ban','play','pause','undo','redo',
+  'login','logout','maximize','chart','sun','moon',
 ] as const
 export type ZtIconName = typeof ztIconNames[number]
 export type ZtIconStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'

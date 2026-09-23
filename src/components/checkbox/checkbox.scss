@@ -43,7 +43,7 @@
     &.zt-checkbox--default { --zt-checkbox-color: var(--glass-default-ink); --zt-checkbox-soft: var(--glass-default-soft); }
     &:hover:not(.is-disabled):not(.is-checked) { z-index: 1; color: var(--zt-checkbox-color); background: var(--zt-checkbox-soft); border-color: var(--zt-checkbox-color); }
     &.is-checked { z-index: 2; color: #fff; background: var(--zt-checkbox-color); border-color: var(--zt-checkbox-color); }
-    &:focus-within { z-index: 3; outline: 2px solid var(--zt-checkbox-color); outline-offset: 2px; }
+    &:has(input:focus-visible) { z-index: 3; outline: 2px solid var(--zt-checkbox-color); outline-offset: 2px; }
   }
   .zt-checkbox__input { position: absolute; inset: 0; width: 100%; height: 100%; }
   .zt-checkbox__inner { display: none; }
@@ -195,7 +195,7 @@
   &--default.is-indeterminate .zt-checkbox__inner { background: #6b7280; }
 
   // ── Focus-visible ──
-  &:focus-within .zt-checkbox__inner {
+  &:has(input:focus-visible) .zt-checkbox__inner {
     box-shadow: 0 0 0 2px var(--glass-accent-soft);
   }
 

@@ -22,6 +22,45 @@ const navigation=computed<ZtMenuItem[]>(()=>[
  ...componentGroups.map(group=>({key:'group-'+group.id,label:group.title,type:'group' as const,children:components.filter(c=>c.group===group.id).map(c=>({key:c.path,label:c.title,description:c.name,href:c.path}))})),
 ])
 function navigate(key:string,_item:ZtMenuItem,event:MouseEvent){event.preventDefault();menu.value=false;void router.push(key)}
+const navKeys=computed(()=>[...guides.map(g=>g.path),...components.map(c=>c.path)])
+const menuValue=computed(()=>{
+ const path=component.value?.path??route.path
+ if(navKeys.value.includes(path))return path
+ return navKeys.value.filter(p=>p!=='/'&&(path===p||path.startsWith(p+'/'))).sort((a,b)=>b.length-a.length)[0]??path
+})
+const SIDEBAR_SCROLL_KEY='zt-docs-sidebar-scroll'
+function sidebarEl(){return document.querySelector<HTMLElement>('#doc-sidebar')}
+function saveSidebarScroll(){const aside=sidebarEl();if(aside)sessionStorage.setItem(SIDEBAR_SCROLL_KEY,String(aside.scrollTop))}
+function findSelectedNav(){
+ const aside=sidebarEl();if(!aside)return null
+ const key=menuValue.value
+ return aside.querySelector<HTMLElement>('.zt-menu__row.is-selected')
+  ??aside.querySelector<HTMLElement>(`[data-menu-key="${CSS.escape(key)}"]`)
+  ??[...aside.querySelectorAll<HTMLElement>('[data-menu-key]')].find(el=>{const k=el.dataset.menuKey??'';return k===key||(k!=='/'&&key.startsWith(k+'/'))})
+}
+function scrollSidebarToSelection(){
+ const aside=sidebarEl(),selected=findSelectedNav()
+ if(!aside||!selected)return false
+ const asideRect=aside.getBoundingClientRect(),itemRect=selected.getBoundingClientRect(),pad=28
+ if(itemRect.top>=asideRect.top+pad&&itemRect.bottom<=asideRect.bottom-pad)return true
+ aside.scrollTop+=itemRect.top<asideRect.top+pad?itemRect.top-asideRect.top-pad:itemRect.bottom-asideRect.bottom+pad
+ return true
+}
+function syncSidebar(mode:'restore'|'follow'){
+ void nextTick(()=>{
+  if(mode==='restore'){
+   const saved=sessionStorage.getItem(SIDEBAR_SCROLL_KEY)
+   if(saved!=null){const aside=sidebarEl();if(aside){aside.scrollTop=Number(saved);return}}
+  }
+  let tries=0
+  const tick=()=>{
+   if(scrollSidebarToSelection()||tries++>8){saveSidebarScroll();return}
+   requestAnimationFrame(tick)
+  }
+  requestAnimationFrame(tick)
+ })
+}
+let booted=false
 let observer:MutationObserver|undefined
 let pendingHash=true
 function collect(){
@@ -33,9 +72,9 @@ function collect(){
  updateActive()
 }
 function updateActive(){const items=outline.value.filter(h=>(document.getElementById(h.id)?.getBoundingClientRect().top??Infinity)<160);active.value=items.at(-1)?.id??outline.value[0]?.id??''}
-watch(()=>route.fullPath,async()=>{menu.value=false;pendingHash=true;await nextTick();collect();document.title=`${component.value?component.value.name+' '+component.value.title:route.meta.title??'文档'} · Zt UI`},{immediate:true})
-onMounted(()=>{window.addEventListener('resize',resize);window.addEventListener('keydown',escapeMenu);observer=new MutationObserver(collect);if(content.value)observer.observe(content.value,{childList:true,subtree:true});collect();scrollArea.value?.addEventListener('scroll',updateActive,{passive:true})})
-onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEventListener('keydown',escapeMenu);observer?.disconnect();scrollArea.value?.removeEventListener('scroll',updateActive)})
+watch(()=>route.fullPath,async()=>{menu.value=false;pendingHash=true;await nextTick();collect();document.title=`${component.value?component.value.name+' '+component.value.title:route.meta.title??'文档'} · Zt UI`;if(!booted){booted=true;syncSidebar('restore')}else syncSidebar('follow')},{immediate:true})
+onMounted(()=>{window.addEventListener('resize',resize);window.addEventListener('keydown',escapeMenu);window.addEventListener('beforeunload',saveSidebarScroll);observer=new MutationObserver(collect);if(content.value)observer.observe(content.value,{childList:true,subtree:true});collect();sidebarEl()?.addEventListener('scroll',saveSidebarScroll,{passive:true});scrollArea.value?.addEventListener('scroll',updateActive,{passive:true})})
+onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEventListener('keydown',escapeMenu);window.removeEventListener('beforeunload',saveSidebarScroll);observer?.disconnect();sidebarEl()?.removeEventListener('scroll',saveSidebarScroll);scrollArea.value?.removeEventListener('scroll',updateActive)})
 </script>
 <template>
  <ZtConfigProvider v-bind="demoConfig" class="doc-site" :class="`doc-site--${demoConfig.size}`">
@@ -52,7 +91,7 @@ onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEv
  <div ref="scrollArea" class="doc-layout" :class="{'is-home':route.path==='/' }">
   <button v-if="menu" class="nav-backdrop" aria-label="关闭导航" @click="menu=false" />
   <aside id="doc-sidebar" class="doc-aside" :inert="mobile && !menu" :class="{'is-open':menu}">
-   <ZtMenu :items="navigation" :model-value="component?.path ?? route.path" aria-label="文档导航" @select="navigate" />
+   <ZtMenu :items="navigation" :model-value="menuValue" aria-label="文档导航" @select="navigate" />
    <div class="doc-sidebar-note"><span>{{components.length}} components</span><strong>Vue 3 · TypeScript</strong><p>为业务界面提供一致的交互。</p></div>
   </aside>
   <main id="doc-content" ref="content" class="doc-main" tabindex="-1">

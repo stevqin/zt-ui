@@ -338,6 +338,10 @@ function open() {
 }
 
 function close() {
+  // Single-select keeps the combobox label in the input; clear the search
+  // overlay so the selected option is visible again. Multiple panel search
+  // intentionally retains its keyword across close/reopen.
+  if (!panelSearch.value) resetSearch();
   setVisible(false);
 }
 

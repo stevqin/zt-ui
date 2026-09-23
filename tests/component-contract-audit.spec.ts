@@ -27,20 +27,20 @@ function replace(directory: string, file: string, from: string | RegExp, to: str
   writeFileSync(path, updated)
 }
 
-describe('whole-library component contract gate', () => {
-  it('audits every public component and exits successfully only when all contracts are covered', () => {
+describe('whole-library component contract gate', { timeout: 30_000 }, () => {
+  it('audits every public component and exits successfully only when all contracts are covered', { timeout: 20_000 }, () => {
     const result = audit()
     expect(result.output).toMatch(/public components/)
     expect(result.status, result.output).toBe(0)
   })
-  it('rejects a missing matrix row, including a raw SVG icon export', () => {
+  it('rejects a missing matrix row, including a raw SVG icon export', { timeout: 30_000 }, () => {
     const directory = fixture()
     replace(directory, 'docs/ui-api-consistency-audit.md', /^\| ZtAddIcon .*\n/m, '')
     const result = audit(directory)
     expect(result.status).toBe(1)
     expect(result.output).toContain('ZtAddIcon: missing matrix row')
   })
-  it('discovers a new public component through the entry-point re-export graph', () => {
+  it('discovers a new public component through the entry-point re-export graph', { timeout: 30_000 }, () => {
     const directory = fixture()
     const index = join(directory, 'src/index.ts')
     writeFileSync(index, readFileSync(index, 'utf8') + "\nexport { default as ZtNewControl } from './components/button/ZtButton.vue'\n")

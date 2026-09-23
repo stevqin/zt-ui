@@ -1,7 +1,7 @@
 import { mount } from '@vue/test-utils'
 import { defineComponent, h } from 'vue'
 import { describe, expect, it, vi } from 'vitest'
-import { ZtConfigProvider, ZtIcon } from '../src'
+import { ZtConfigProvider, ZtIcon, ztIconNames } from '../src'
 
 describe('Icon', () => {
   it('renders a named icon with independent default size and accessible labeling', () => {
@@ -83,5 +83,14 @@ describe('Icon', () => {
     const wrapper = mount(ZtIcon, { props: { name } })
     expect(wrapper.find('svg').exists()).toBe(true)
     expect(wrapper.findAll('path').length).toBeGreaterThan(0)
+  })
+
+  it.each(ztIconNames)('renders the built-in %s glyph', (name) => {
+    const wrapper = mount(ZtIcon, { props: { name, strokeWidth: 1.75 } })
+    const svg = wrapper.find('svg')
+    expect(svg.exists()).toBe(true)
+    expect(svg.attributes('viewBox')).toBe('0 0 24 24')
+    expect(svg.attributes('stroke-width')).toBe('1.75')
+    expect(svg.element.childElementCount).toBeGreaterThan(0)
   })
 })

@@ -15,3 +15,14 @@ describe('checkbox mark alignment', () => {
     expect(source).not.toMatch(/&--large[\s\S]*?&::after\s*\{[^}]*left:\s*5px/)
   })
 })
+
+describe('checkbox focus rings', () => {
+  it('shows focus rings only for keyboard focus, not pointer clicks', () => {
+    expect(source).toMatch(/&:has\(input:focus-visible\)\s*\{[^}]*outline:/)
+    expect(source).toMatch(
+      /&:has\(input:focus-visible\)\s+\.zt-checkbox__inner/,
+    )
+    expect(source).not.toMatch(/&:focus-within\s*\{[^}]*outline:/)
+    expect(source).not.toMatch(/&:focus-within\s+\.zt-checkbox__inner/)
+  })
+})

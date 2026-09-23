@@ -60,6 +60,34 @@ it('renders the custom loading slot while the current remote request is pending'
   }
 })
 
+it('shows the selected remote label immediately after a search and pick', async () => {
+  vi.useFakeTimers()
+  const method = vi.fn().mockResolvedValueOnce([{ label: '远程杭州', value: 'hz' }])
+  const wrapper = mount(ZtSelect, {
+    attachTo: document.body,
+    props: { remote: true, remoteMethod: method, debounce: 0 },
+  })
+
+  try {
+    const input = await searchInput(wrapper)
+    await input.setValue('杭')
+    await vi.advanceTimersByTimeAsync(0)
+    await Promise.resolve()
+    await nextTick()
+    await document.querySelector<HTMLElement>('[role="option"]')!.click()
+    await wrapper.setProps({ modelValue: 'hz' })
+    await nextTick()
+    expect(wrapper.emitted('update:modelValue')).toEqual([['hz']])
+    expect(input.element.value).toBe('远程杭州')
+    expect(wrapper.get('.zt-select__value').text()).toBe('远程杭州')
+    expect(wrapper.classes()).not.toContain('is-searching')
+    expect(wrapper.classes()).not.toContain('has-keyword')
+  } finally {
+    wrapper.unmount()
+    vi.useRealTimers()
+  }
+})
+
 it('keeps a selected remote label after a later search replaces the results', async () => {
   vi.useFakeTimers()
   const method = vi.fn()

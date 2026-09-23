@@ -72,6 +72,58 @@ describe('ZtSelect single selection', () => {
     }
   })
 
+  it('shows the selected label after searching and picking a filtered option', async () => {
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options, filterable: true, modelValue: null },
+    })
+
+    try {
+      const input = await searchInput(wrapper)
+      await input.setValue('上')
+      await nextTick()
+      expect(input.element.value).toBe('上')
+      expect(wrapper.classes()).toContain('is-searching')
+
+      await document.querySelector<HTMLElement>('[role="option"]')!.click()
+      await wrapper.setProps({ modelValue: 'sh' })
+      await nextTick()
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([['sh']])
+      expect(wrapper.emitted('change')).toEqual([['sh']])
+      expect(input.element.value).toBe('上海')
+      expect(wrapper.get('.zt-select__value').text()).toBe('上海')
+      expect(wrapper.classes()).not.toContain('is-searching')
+      expect(wrapper.classes()).not.toContain('has-keyword')
+      expect(wrapper.get('[role="combobox"]').attributes('aria-expanded')).toBe('false')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
+  it('restores the selected label when closing after a search without picking', async () => {
+    const wrapper = mount(ZtSelect, {
+      attachTo: document.body,
+      props: { options, filterable: true, modelValue: 'hz' },
+    })
+
+    try {
+      const input = await searchInput(wrapper)
+      await input.setValue('上')
+      await nextTick()
+      expect(input.element.value).toBe('上')
+
+      await input.trigger('keydown', { key: 'Escape' })
+      await nextTick()
+
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+      expect(input.element.value).toBe('杭州')
+      expect(wrapper.get('.zt-select__value').text()).toBe('杭州')
+    } finally {
+      wrapper.unmount()
+    }
+  })
+
   it('keeps an editable search dropdown open when the input is clicked again', async () => {
     const wrapper = mount(ZtSelect, {
       attachTo: document.body,
