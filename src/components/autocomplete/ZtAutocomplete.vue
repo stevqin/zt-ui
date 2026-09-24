@@ -5,6 +5,7 @@ import { toRef, computed, inject, ref, useId, watch, nextTick, useAttrs } from '
 import { ZtInput } from '../input';
 import { ZtPopover } from '../popover';
 import { ztFormItemKey } from '../form/context';
+import { useZtControlDisabled } from '../form/useControlDisabled';
 import { useSuggestions } from './suggestions';
 import type { ZtAutocompleteOption, ZtAutocompleteProps } from './types';
 import './entry.scss';
@@ -23,12 +24,13 @@ const props = withDefaults(defineProps<ZtAutocompleteProps>(), {
 const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: string];
+  input: [value: string];
   change: [value: string];
   select: [option: ZtAutocompleteOption];
   clear: [];
 }>();
 const form = inject(ztFormItemKey, undefined),
-  disabled = computed(() => props.disabled || form?.disabled.value),
+  disabled = useZtControlDisabled(() => props.disabled),
   input = ref<InstanceType<typeof ZtInput>>(),
   composing = ref(false),
   id = useId(),
@@ -50,15 +52,18 @@ function search(value: string) {
 }
 function update(value: string) {
   emit('update:modelValue', value);
-  emit('change', value);
+  emit('input', value);
   search(value);
+}
+function commitChange(value: string) {
+  emit('change', value);
+  void form?.validate('change');
 }
 function select(option: ZtAutocompleteOption) {
   if (option.disabled || disabled.value || props.readonly) return;
   emit('update:modelValue', option.value);
-  emit('change', option.value);
+  commitChange(option.value);
   emit('select', option);
-  void form?.validate('change');
   close();
   input.value?.focus();
 }
@@ -137,9 +142,14 @@ defineExpose({
         :aria-activedescendant="active >= 0 ? `${id}-${active}` : undefined"
         @update:model-value="update"
         @focus="search(modelValue)"
-        @blur="close"
+        @blur="
+          close();
+          void form?.validate('blur');
+        "
+        @change="commitChange"
         @clear="
           close();
+          commitChange('');
           emit('clear');
         "
         @keydown="key"

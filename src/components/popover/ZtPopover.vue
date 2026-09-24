@@ -257,6 +257,12 @@ function unbind() {
   window.removeEventListener('scroll', updatePosition, true);
 }
 watch(
+  () => props.disabled,
+  (value) => {
+    if (value && opened.value) void setVisible(false);
+  },
+);
+watch(
   () => props.visible,
   (value) => {
     if (value !== opened.value) void setVisible(value);

@@ -45,6 +45,14 @@ function key(e: KeyboardEvent) {
       '[role="menuitem"]:not(:disabled)',
     ) ?? []),
   ];
+  if (!items.length) {
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      changed(false);
+      reference.value?.focus();
+    }
+    return;
+  }
   const index = items.indexOf(document.activeElement as HTMLButtonElement);
   let next = -1;
   if (e.key === 'ArrowDown') next = (index + 1) % items.length;

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { hierarchyStyle } from '../tree/appearance';
-import { computed, ref, watch, nextTick, onBeforeUnmount } from 'vue';
+import { computed, ref, watch, nextTick, onBeforeUnmount, useId } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import {
   flattenTree,
@@ -63,7 +63,7 @@ const visible = computed(() => {
     : [];
   return rows.value.filter((r) =>
     q
-      ? matches.some((m) => m.path.includes(r.key))
+      ? matches.some((m) => m.path.includes(r.key) || r.path.slice(0, -1).includes(m.key))
       : r.path.slice(0, -1).every((k) => open.value.includes(k)),
   );
 });
@@ -219,7 +219,7 @@ function keydown(e: KeyboardEvent) {
   } else if (e.key === 'Enter') select(row);
   else if (e.key === ' ' && props.checkable) check(row);
 }
-const uid = `zt-tree-${Math.random().toString(36).slice(2)}`;
+const uid = useId();
 </script>
 <template>
   <div

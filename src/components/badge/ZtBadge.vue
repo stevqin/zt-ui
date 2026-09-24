@@ -51,6 +51,7 @@ const badgeStyle = computed(() => {
 const isHidden = computed(() => {
   if (props.hidden) return true
   if (props.isDot) return false
+  if (content.value === '' && !slots.default) return true
   if (content.value === '0' && !props.showZero) return true
   return false
 })

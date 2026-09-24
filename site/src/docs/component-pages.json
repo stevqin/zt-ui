@@ -1837,7 +1837,7 @@
     ]
   },
   "select": {
-    "purpose": "从结构化选项中选择一个或多个值，支持本地筛选、远程搜索、键盘操作和业务化插槽。",
+    "purpose": "从结构化选项中选择一个或多个值，支持本地筛选、远程搜索、键盘操作和业务化插槽。disabled / readonly 隐藏标签移除与清空图标。",
     "guidance": [
       "选项使用稳定唯一值；远程搜索应展示加载、空结果与失败后的恢复方式。"
     ],
@@ -1852,7 +1852,7 @@
         "title": "多选与可移除标签",
         "kind": "live",
         "file": "src/views/select/Example02.vue",
-        "description": "multiple 输出去重后的值数组；配合 filterable 时，搜索框固定在下拉面板顶部，打开后自动聚焦。搜索框内的清空按钮只清除关键词，已选标签保持不变。"
+        "description": "multiple 输出去重后的值数组；配合 filterable 时，搜索框固定在下拉面板顶部。disabled / readonly 时隐藏标签关闭与清空图标（与 InputTag 一致）。"
       },
       {
         "title": "折叠已选标签",
@@ -1894,7 +1894,7 @@
         "title": "外部控制与无匹配结果",
         "kind": "live",
         "file": "src/views/select/Methods.vue",
-        "description": ""
+        "description": "focus / open / close / clear 实例方法；readonly 时隐藏清空与标签移除图标。"
       },
       {
         "title": "万级选项虚拟滚动",
@@ -1932,7 +1932,7 @@
         "title": "清空、宽度与外观继承",
         "kind": "live",
         "file": "src/views/select-box/Clearable.vue",
-        "description": "数字 width 按 px 处理，也支持 100% 等 CSS 长度。摘要保持单行省略，悬停可查看全文。ConfigProvider 统一设置五档 size、light/dark 主题与 borderRadius，面板和嵌套选择器一并继承。"
+        "description": "clearable 清空与 clear()；readonly / disabled 时隐藏清空图标。数字 width 按 px 处理，也支持 100% 等 CSS 长度。摘要保持单行省略，悬停可查看全文。ConfigProvider 统一设置五档 size、light/dark 主题与 borderRadius。"
       }
     ]
   },

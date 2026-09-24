@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, inject, ref, watch } from 'vue'
+import { computed, inject, onBeforeUnmount, ref, watch } from 'vue'
 import { useZtSize } from '../config-provider/context'
 import { ztFormItemKey } from '../form/context'
 import type { ZtSliderProps, ZtSliderValue } from './types'
@@ -41,6 +41,11 @@ function update(index: number, next: number) {
   emit('update:modelValue', value()); emit('input', value())
 }
 function commit() { emit('change', value()); void form?.validate('change') }
+function release() {
+  if (pointerId === null) return
+  pointerId = null
+  active.value = null
+}
 function atPointer(event: PointerEvent) {
   const bounds = track.value!.getBoundingClientRect()
   return bounds.width ? min.value + (event.clientX-bounds.left)/bounds.width*(max.value-min.value) : min.value
@@ -72,9 +77,10 @@ function key(event: KeyboardEvent, index: number) {
   const before = JSON.stringify(value()); update(index, options[event.key]!)
   if (before !== JSON.stringify(value())) commit()
 }
+onBeforeUnmount(release)
 </script>
 <template>
- <div class="zt-slider" :class="[`zt-slider--${size}`, `zt-slider--status-${status}`, { 'is-disabled':disabled, 'is-dragging':active!==null }]" v-bind="$attrs">
+ <div class="zt-slider" :class="[`zt-slider--${size}`, `zt-slider--status-${status}`, { 'is-disabled':disabled, 'is-dragging':active!==null }]" v-bind="$attrs" @focusout="void form?.validate('blur')">
   <div ref="track" class="zt-slider__track" @pointerdown="down" @pointermove="move" @pointerup="up" @pointercancel="up" @lostpointercapture="up">
    <span class="zt-slider__rail" /><span class="zt-slider__fill" :style="fill" />
    <button v-for="(number,index) in draft" :key="index" ref="thumbs" type="button" role="slider" class="zt-slider__thumb" :data-thumb="index" :id="index===0 ? form?.inputId : undefined" :disabled="disabled" :aria-disabled="disabled" :aria-label="range ? `${ariaLabel ?? '范围'}${index===0?'起点':'终点'}` : ariaLabel ?? (form ? undefined : '滑块')" :aria-valuemin="range && index===1 ? draft[0] : min" :aria-valuemax="range && index===0 ? draft[1] : max" :aria-valuenow="number" :aria-valuetext="text(number)" :aria-describedby="form?.validateState.value==='error' ? form.errorId : undefined" :style="{left:`${percent(number)}%`}" @keydown="key($event,index)">

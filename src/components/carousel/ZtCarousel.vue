@@ -39,7 +39,8 @@ function flatten(nodes: VNode[]): VNode[] {
 }
 function slides() {
   const nodes = flatten(slots.default?.() ?? []);
-  count.value = nodes.length;
+  // Update count during render list build; guarded to avoid redundant writes.
+  if (count.value !== nodes.length) count.value = nodes.length;
   return nodes;
 }
 const current = computed(() =>

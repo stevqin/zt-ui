@@ -15,6 +15,7 @@ export interface ZtImageProps{
 }
 export interface ZtImageViewerProps{
  /** 图片地址列表。 */urls:string[]
+ /** 与 urls 对齐的替代文本列表。 */alts?:string[]
  /** 初始索引。 */initialIndex?:number
  /** 是否循环。 */infinite?:boolean
  /** 缩放倍率。 */zoomRate?:number

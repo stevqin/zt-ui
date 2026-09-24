@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtSelect, ZtButton } from '@ztechjs/zt-ui';
-const select = ref<InstanceType<typeof ZtSelect>>();
+import { ZtSelect, ZtButton, type ZtSelectInstance } from '@ztechjs/zt-ui';
+const select = ref<ZtSelectInstance>();
 const value = ref<string | number | null>(null);
+const readonly = ref(false);
 const options = [
   { label: '杭州', value: 'hangzhou' },
   { label: '上海', value: 'shanghai' },
@@ -14,7 +15,9 @@ const options = [
     <div class="example-row">
       <ZtButton @click="select?.focus()">聚焦</ZtButton
       ><ZtButton @click="select?.open()">打开下拉</ZtButton
-      ><ZtButton @click="select?.close()">关闭下拉</ZtButton>
+      ><ZtButton @click="select?.close()">关闭下拉</ZtButton
+      ><ZtButton @click="select?.clear()">clear()</ZtButton>
+      <label><input v-model="readonly" type="checkbox" /> readonly</label>
     </div>
     <ZtSelect
       ref="select"
@@ -22,10 +25,11 @@ const options = [
       :options="options"
       filterable
       clearable
+      :readonly="readonly"
       no-data-text="没有匹配的城市，请换个关键词"
       aria-label="城市方法演示"
     />
-    <p>输入不存在的城市可查看无数据状态。</p>
+    <p>输入不存在的城市可查看无数据状态；clear() 清空选中值，readonly 隐藏清空与标签移除图标。</p>
   </div>
 </template>
 
@@ -40,6 +44,7 @@ const options = [
   flex-wrap: wrap;
   align-items: center;
   gap: 12px;
+  font-size: 13px;
 }
 .example-note {
   color: var(--zt-text-muted, #68768a);

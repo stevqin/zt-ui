@@ -4,6 +4,7 @@ import { computed, provide, toRef, inject, useId } from 'vue'
 import type { ZtRadioGroupProps, RadioGroupContext } from './types'
 import { radioGroupKey } from './types'
 import { ztFormItemKey } from '../form/context'
+import { useZtControlDisabled } from '../form/useControlDisabled'
 import './radio.scss'
 
 defineOptions({ name: 'ZtRadioGroup', inheritAttrs: false })
@@ -26,12 +27,13 @@ const emit = defineEmits<{
 provide<RadioGroupContext>(radioGroupKey, {
   name: computed(() => props.name ?? `zt-radio-${groupId}`),
   modelValue: toRef(props, 'modelValue'),
-  disabled: computed(() => props.disabled || formItem?.disabled.value || false),
+  disabled: useZtControlDisabled(() => props.disabled),
   size: computed(() => configSize.value),
   status: computed(() => props.status),
   change(val) {
     emit('update:modelValue', val)
     emit('change', val)
+    void formItem?.validate('change')
   },
 })
 </script>

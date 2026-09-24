@@ -35,7 +35,7 @@ const tooltipStyle = ref<CSSProperties>({ position: 'fixed', pointerEvents: 'non
 const fieldKey = computed(() => props.prop == null ? '' : pathKey(props.prop))
 const inputId = `zt-form-input-${instance?.uid ?? Math.random().toString(36).slice(2)}`
 const errorId = `${inputId}-error`
-const initialValue = cloneFormValue(props.prop != null && form ? getPathValue(form.model, props.prop) : undefined)
+const initialValue = cloneFormValue(props.prop != null && form ? getPathValue(form.model.value, props.prop) : undefined)
 let validationRun = 0
 let autoHideTimer: ReturnType<typeof setTimeout> | undefined
 
@@ -171,9 +171,9 @@ async function validate(trigger?: ZtFormValidateTrigger) {
   if (!activeRules.length) return true
   const run = ++validationRun
   validateState.value = 'validating'
-  const message = await validateValue(getPathValue(form.model, props.prop), activeRules, {
+  const message = await validateValue(getPathValue(form.model.value, props.prop), activeRules, {
     trigger,
-    model: form.model,
+    model: form.model.value,
     field: fieldKey.value,
   })
   if (run !== validationRun) return !message
@@ -190,7 +190,7 @@ function clearValidate() {
 }
 
 function resetField() {
-  if (form && props.prop) setPathValue(form.model, props.prop, cloneFormValue(initialValue))
+  if (form && props.prop) setPathValue(form.model.value, props.prop, cloneFormValue(initialValue))
   clearValidate()
 }
 

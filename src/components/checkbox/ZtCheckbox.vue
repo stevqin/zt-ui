@@ -4,6 +4,7 @@ import { computed, inject, nextTick, onMounted, ref, watch } from 'vue'
 import type { ZtCheckboxProps } from './types'
 import { checkboxGroupKey } from './types'
 import { ztFormItemKey } from '../form/context'
+import { useZtControlDisabled } from '../form/useControlDisabled'
 import './checkbox.scss'
 
 defineOptions({ name: 'ZtCheckbox', inheritAttrs: false })
@@ -47,9 +48,7 @@ const isChecked = computed(() => {
   return selfVal.value
 })
 
-const isDisabled = computed(() => {
-  return props.disabled || group?.disabled.value || formItem?.disabled.value || false
-})
+const isDisabled = useZtControlDisabled(() => props.disabled || group?.disabled.value || false)
 
 const actualSize = useZtSize(props, () => group?.size.value ?? formItem?.size.value)
 const actualStatus = computed(() => group?.status.value ?? props.status)
@@ -75,6 +74,7 @@ async function handleChange(event: Event) {
       selfVal.value = next
       emit('update:modelValue', next)
       emit('change', next)
+      void formItem?.validate('change')
     }
   }
   // Native activation mutates these properties before change fires. A group

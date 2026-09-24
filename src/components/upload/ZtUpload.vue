@@ -43,7 +43,13 @@ onBeforeUnmount(()=>{disposed=true;epoch++;for(const uid of sessions.keys())stop
 const buttonAttrs=computed(()=>{const {class:_class,style:_style,...rest}=attrs;return rest})
 const errorDescription=computed(()=>[attrs['aria-describedby'],form?.validateMessage.value?form.errorId:undefined].filter(Boolean).join(' ')||undefined)
 function open(){if(!disabled.value&&!busy.value)input.value?.click()}
-function image(file:ZtUploadFile){return Boolean(file.url)&&(/^image\//.test(file.raw?.type??'')||/\.(png|jpe?g|gif|webp|avif|bmp|svg)$/i.test(file.name))}
+function safeUrl(url: string | undefined) {
+  if (!url) return undefined
+  // Only allow http(s) and relative/blob/data-image URLs for preview.
+  if (/^javascript:/i.test(url.trim())) return undefined
+  return url
+}
+function image(file:ZtUploadFile){return Boolean(safeUrl(file.url))&&(/^image\//.test(file.raw?.type??'')||/\.(png|jpe?g|gif|webp|avif|bmp|svg)$/i.test(file.name))}
 function reason(file:File){return !accepts(file,props.accept)?'文件类型不符合要求':props.maxSize>0&&file.size>props.maxSize*1024*1024?`文件不能超过 ${props.maxSize} MB`:''}
 function addFiles(candidates:File[]){
  const generation=epoch
@@ -121,13 +127,13 @@ defineExpose({submit,abort,retry,remove,clearFiles,open})
   <ul v-if="showFileList&&files.length" class="zt-upload__list" :class="`zt-upload__list--${listType}`" aria-label="上传文件列表">
    <li v-for="file in files" :key="file.uid" class="zt-upload__file" :class="`is-${file.status}`"><slot name="file" :file="file" :remove="()=>remove(file)" :abort="()=>abort(file)" :retry="()=>retry(file)" :preview="()=>preview(file)">
     <template v-if="listType==='picture-card'">
-     <div class="zt-upload__card-media"><img v-if="image(file)" :src="file.url" :alt="file.name"/><span v-else class="zt-upload__card-placeholder">{{file.name.split('.').pop()?.toUpperCase()??'文件'}}</span></div>
+     <div class="zt-upload__card-media"><img v-if="image(file)" :src="safeUrl(file.url)" :alt="file.name"/><span v-else class="zt-upload__card-placeholder">{{file.name.split('.').pop()?.toUpperCase()??'文件'}}</span></div>
      <div class="zt-upload__card-actions"><button v-if="image(file)" type="button" :aria-label="`预览 ${file.name}`" @click="preview(file)">预览</button><button v-if="file.status==='uploading'" type="button" :disabled="disabled" :aria-label="`取消上传 ${file.name}`" @click="abort(file)">取消</button><button v-if="file.status==='fail'&&file.raw" type="button" :disabled="disabled" :aria-label="`重试 ${file.name}`" @click="retry(file)">重试</button><button type="button" :disabled="disabled" :aria-label="`移除 ${file.name}`" @click="remove(file)">删除</button></div>
      <div class="zt-upload__card-caption"><span class="zt-upload__card-name" :title="file.name">{{file.name}}</span><span class="zt-upload__card-status" :title="file.error">{{file.status==='uploading'?`上传中 ${file.percentage??0}%`:file.status==='fail'?'上传失败':file.status==='success'?'已上传':'待上传'}}</span></div>
      <div v-if="file.status==='uploading'" class="zt-upload__progress" role="progressbar" :aria-label="`${file.name} 上传进度`" :aria-valuenow="file.percentage??0" :aria-valuemin="0" :aria-valuemax="100"><span :style="{width:`${file.percentage??0}%`}"/></div>
     </template>
     <template v-else>
-    <button v-if="listType==='picture'&&image(file)" type="button" class="zt-upload__thumbnail" :aria-label="`预览 ${file.name}`" @click="preview(file)"><img :src="file.url" alt=""/></button>
+    <button v-if="listType==='picture'&&image(file)" type="button" class="zt-upload__thumbnail" :aria-label="`预览 ${file.name}`" @click="preview(file)"><img :src="safeUrl(file.url)" alt=""/></button>
     <span v-else class="zt-upload__file-icon" aria-hidden="true">↥</span>
     <div class="zt-upload__details"><button type="button" class="zt-upload__name" :title="file.name" @click="preview(file)">{{file.name}}</button><div class="zt-upload__meta"><span>{{formatSize(file.size)}}</span><span>{{file.status==='ready'?'待上传':file.status==='uploading'?`上传中 ${file.percentage??0}%`:file.status==='success'?'上传成功':'上传失败'}}</span></div><small v-if="file.error" class="zt-upload__error">{{file.error}}</small><div v-if="file.status==='uploading'" class="zt-upload__progress" role="progressbar" :aria-label="`${file.name} 上传进度`" :aria-valuenow="file.percentage??0" :aria-valuemin="0" :aria-valuemax="100"><span :style="{width:`${file.percentage??0}%`}"/></div></div>
     <div class="zt-upload__actions"><button v-if="file.status==='uploading'" type="button" :disabled="disabled" :aria-label="`取消上传 ${file.name}`" @click="abort(file)">取消</button><button v-if="file.status==='fail'&&file.raw" type="button" :disabled="disabled" :aria-label="`重试 ${file.name}`" @click="retry(file)">重试</button><button type="button" :disabled="disabled" :aria-label="`移除 ${file.name}`" @click="remove(file)">×</button></div>

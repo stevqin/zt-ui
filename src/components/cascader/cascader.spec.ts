@@ -47,7 +47,7 @@ it('supports mapped fields, strict branch selection, and controlled clear', asyn
   await w.get('input[type=radio]').trigger('change');
   expect(w.emitted('update:modelValue')?.[0]).toEqual([[1]]);
   await w.get('[aria-label=清空]').trigger('click');
-  expect(w.emitted('update:modelValue')?.at(-1)).toEqual([[]]);
+  expect(w.emitted('update:modelValue')?.at(-1)).toEqual([null]);
 });
 it('search matches a full path and multiple selections retain paths', async () => {
   const w = mount(Cascader, {

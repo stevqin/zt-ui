@@ -54,7 +54,17 @@ const model = computed({
   get: () => props.modelValue,
   set: value => emit('update:modelValue', value),
 })
-const overlay = useOverlay({ modelValue: model, props, emit: emit as any })
+// Keep Escape/mask/API close behind the same confirmLoading gate as Drawer.
+const overlayProps = new Proxy(props, {
+  get(target, key) {
+    if (key === 'beforeClose') return (reason: ZtOverlayCloseReason) => {
+      if (target.confirmLoading) return false
+      return target.beforeClose?.(reason)
+    }
+    return Reflect.get(target, key)
+  },
+})
+const overlay = useOverlay({ modelValue: model, props: overlayProps, emit: emit as any })
 const panel = overlay.panel
 const titleId = useId()
 const currentFullscreen = ref(props.fullscreen)
@@ -71,7 +81,9 @@ let minPositionY = 0
 let maxPositionY = 0
 
 function cssLength(value: number | string | undefined) {
-  return typeof value === 'number' ? `${value}px` : value
+  if (typeof value === 'number') return `${value}px`
+  if (typeof value === 'string' && /^\d+(?:\.\d+)?$/.test(value.trim())) return `${Number(value)}px`
+  return value
 }
 
 const overlayStyle = computed(() => ({

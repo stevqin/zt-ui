@@ -451,7 +451,8 @@ function exportCsv(filename = 'data.csv') {
     anchor.href = url
     anchor.download = filename
     anchor.click()
-    URL.revokeObjectURL(url)
+    // Defer revoke so the download can start before the blob is collected.
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
   return content
 }

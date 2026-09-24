@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, getCurrentInstance, inject, onBeforeUnmount, onMounted, ref } from 'vue'
+import ZtIcon from '../icon/ZtIcon.vue'
 import type { CSSProperties } from 'vue'
 import type { ZtStepProps, ZtStepStatus } from './types'
 import { ztStepsKey } from './types'
@@ -57,7 +58,8 @@ const isCurrent = computed(() => index.value === steps?.active.value)
     <div class="zt-step__head">
       <div class="zt-step__icon">
         <slot name="icon">
-          <component :is="icon" v-if="icon" />
+          <component :is="icon" v-if="icon && typeof icon !== 'string'" />
+          <ZtIcon v-else-if="icon" :name="icon as any" />
           <svg v-else-if="status === 'success'" class="zt-step__status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg>
           <svg v-else-if="status === 'error'" class="zt-step__status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg>
           <span v-else class="zt-step__number">{{ index + 1 }}</span>

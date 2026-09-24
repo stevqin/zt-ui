@@ -534,6 +534,24 @@
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
             "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
+          },
+          {
+            "name": "focusable",
+            "templateName": "focusable",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "undefined",
+            "description": "滚动容器是否进入 Tab 序列，默认 true。"
+          },
+          {
+            "name": "ariaLabel",
+            "templateName": "aria-label",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'可滚动区域'",
+            "description": "传递给主要交互元素的无障碍名称。"
           }
         ],
         "events": [
@@ -594,7 +612,7 @@
       },
       {
         "name": "ZtScrollbarProps",
-        "code": "export interface ZtScrollbarProps{\n /** 滚动区域高度，数值按像素处理。 */\n height?:number|string\n /** 滚动区域最大高度，数值按像素处理。 */\n maxHeight?:number|string\n /** 使用系统原生滚动条。 */\n native?:boolean\n /** 内容溢出时始终显示自定义轨道。 */\n always?:boolean\n /** 自定义滑块最小长度，单位像素。 */\n minSize?:number\n /** 关闭 ResizeObserver 自动尺寸更新。 */\n noresize?:boolean\n /** 滚动容器的附加类。 */\n wrapClass?:string|string[]|Record<string,boolean>\n /** 滚动容器的附加样式。 */\n wrapStyle?:CSSProperties|string\n /** 内容视图的附加类。 */\n viewClass?:string|string[]|Record<string,boolean>\n /** 内容视图的附加样式。 */\n viewStyle?:CSSProperties|string\n /** 内容视图使用的 HTML 标签。 */\n tag?:string\n /** 轨道密度尺寸，默认继承 ConfigProvider。 */\n size?:ZtComponentSize\n}",
+        "code": "export interface ZtScrollbarProps{\n /** 滚动区域高度，数值按像素处理。 */\n height?:number|string\n /** 滚动区域最大高度，数值按像素处理。 */\n maxHeight?:number|string\n /** 使用系统原生滚动条。 */\n native?:boolean\n /** 内容溢出时始终显示自定义轨道。 */\n always?:boolean\n /** 自定义滑块最小长度，单位像素。 */\n minSize?:number\n /** 关闭 ResizeObserver 自动尺寸更新。 */\n noresize?:boolean\n /** 滚动容器的附加类。 */\n wrapClass?:string|string[]|Record<string,boolean>\n /** 滚动容器的附加样式。 */\n wrapStyle?:CSSProperties|string\n /** 内容视图的附加类。 */\n viewClass?:string|string[]|Record<string,boolean>\n /** 内容视图的附加样式。 */\n viewStyle?:CSSProperties|string\n /** 内容视图使用的 HTML 标签。 */\n tag?:string\n /** 轨道密度尺寸，默认继承 ConfigProvider。 */\n size?:ZtComponentSize\n /** 滚动容器是否进入 Tab 序列，默认 true。 */\n focusable?:boolean\n /** 滚动区域的无障碍名称。 */\n ariaLabel?:string\n}",
         "public": true
       },
       {
@@ -1737,7 +1755,7 @@
             "name": "modelValue",
             "templateName": "model-value",
             "kind": "prop",
-            "type": "ZtCollapseName|ZtCollapseName[]",
+            "type": "ZtCollapseName|ZtCollapseName[]|null",
             "required": false,
             "default": "无默认值",
             "description": "当前绑定值；使用 v-model 读取和更新。空值结构由组件值类型决定。"
@@ -1764,13 +1782,13 @@
         "events": [
           {
             "name": "update:modelValue",
-            "type": "(value: ZtCollapseName | ZtCollapseName[]) => void",
+            "type": "(value: ZtCollapseName | ZtCollapseName[] | null) => void",
             "description": "双向绑定更新事件，对应 v-model。",
             "kind": "event"
           },
           {
             "name": "change",
-            "type": "(value: ZtCollapseName | ZtCollapseName[]) => void",
+            "type": "(value: ZtCollapseName | ZtCollapseName[] | null) => void",
             "description": "用户提交新值后触发；仅程序写入是否触发以组件说明为准。",
             "kind": "event"
           }
@@ -1851,7 +1869,7 @@
       },
       {
         "name": "ZtCollapseProps",
-        "code": "export interface ZtCollapseProps {\n /** 展开的面板名称，支持 v-model。 */ modelValue?:ZtCollapseName|ZtCollapseName[]\n /** 手风琴模式。 */ accordion?:boolean\n /** 尺寸，默认继承 ConfigProvider。 */ size?:ZtComponentSize\n}",
+        "code": "export interface ZtCollapseProps {\n /** 展开的面板名称，支持 v-model；手风琴收起时为 null。 */ modelValue?:ZtCollapseName|ZtCollapseName[]|null\n /** 手风琴模式。 */ accordion?:boolean\n /** 尺寸，默认继承 ConfigProvider。 */ size?:ZtComponentSize\n}",
         "public": true
       },
       {
@@ -2141,6 +2159,15 @@
             "description": "图片地址列表。"
           },
           {
+            "name": "alts",
+            "templateName": "alts",
+            "kind": "prop",
+            "type": "string[]",
+            "required": false,
+            "default": "无默认值",
+            "description": "与 urls 对齐的替代文本列表。"
+          },
+          {
             "name": "initialIndex",
             "templateName": "initial-index",
             "kind": "prop",
@@ -2244,7 +2271,7 @@
       },
       {
         "name": "ZtImageViewerProps",
-        "code": "export interface ZtImageViewerProps{\n /** 图片地址列表。 */urls:string[]\n /** 初始索引。 */initialIndex?:number\n /** 是否循环。 */infinite?:boolean\n /** 缩放倍率。 */zoomRate?:number\n /** 最小缩放。 */minScale?:number\n /** 最大缩放。 */maxScale?:number\n /** 点击遮罩关闭。 */hideOnClickModal?:boolean\n /** Escape 关闭。 */closeOnPressEscape?:boolean\n /** 层级。 */zIndex?:number\n}",
+        "code": "export interface ZtImageViewerProps{\n /** 图片地址列表。 */urls:string[]\n /** 与 urls 对齐的替代文本列表。 */alts?:string[]\n /** 初始索引。 */initialIndex?:number\n /** 是否循环。 */infinite?:boolean\n /** 缩放倍率。 */zoomRate?:number\n /** 最小缩放。 */minScale?:number\n /** 最大缩放。 */maxScale?:number\n /** 点击遮罩关闭。 */hideOnClickModal?:boolean\n /** Escape 关闭。 */closeOnPressEscape?:boolean\n /** 层级。 */zIndex?:number\n}",
         "public": true
       }
     ],
@@ -5523,6 +5550,15 @@
             "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
+            "name": "readonly",
+            "templateName": "readonly",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "启用后允许聚焦和查看，但不允许用户修改值。"
+          },
+          {
             "name": "size",
             "templateName": "size",
             "kind": "prop",
@@ -5674,6 +5710,12 @@
             "type": "() => void",
             "kind": "method",
             "description": "请求关闭面板或弹层，并执行关闭守卫。"
+          },
+          {
+            "name": "clear",
+            "type": "() => void",
+            "kind": "method",
+            "description": "清空当前值并触发对应的更新事件。"
           }
         ]
       }
@@ -5691,12 +5733,12 @@
       },
       {
         "name": "ZtSelectProps",
-        "code": "export interface ZtSelectProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */\n  virtual?: boolean;\n  /** 虚拟列表行高（px），未设置时跟随 size。 */\n  itemHeight?: number;\n  /** 下拉列表最大高度（px），视口不足时自动缩小。 */\n  height?: number;\n  modelValue?: ZtSelectModelValue;\n  options?: ZtSelectOption[];\n  multiple?: boolean;\n  /** 多选时折叠超出数量的标签，剩余项显示为 +N。 */\n  collapseTags?: boolean;\n  /** 开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。 */\n  maxCollapseTags?: number;\n  filterable?: boolean;\n  remote?: boolean;\n  remoteMethod?: ZtSelectRemoteMethod;\n  debounce?: number;\n  clearable?: boolean;\n  placeholder?: string;\n  disabled?: boolean;\n  size?: ZtComponentSize;\n  noDataText?: string;\n  remoteErrorText?: string;\n}",
+        "code": "export interface ZtSelectProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 仅挂载可视选项窗口，适合大量数据；自定义选项需保持固定行高。 */\n  virtual?: boolean;\n  /** 虚拟列表行高（px），未设置时跟随 size。 */\n  itemHeight?: number;\n  /** 下拉列表最大高度（px），视口不足时自动缩小。 */\n  height?: number;\n  modelValue?: ZtSelectModelValue;\n  options?: ZtSelectOption[];\n  multiple?: boolean;\n  /** 多选时折叠超出数量的标签，剩余项显示为 +N。 */\n  collapseTags?: boolean;\n  /** 开启 collapseTags 后最多展示的标签数，默认 1，最小为 1。 */\n  maxCollapseTags?: number;\n  filterable?: boolean;\n  remote?: boolean;\n  remoteMethod?: ZtSelectRemoteMethod;\n  debounce?: number;\n  clearable?: boolean;\n  placeholder?: string;\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改；隐藏标签移除与清空图标。 */\n  readonly?: boolean;\n  size?: ZtComponentSize;\n  noDataText?: string;\n  remoteErrorText?: string;\n}",
         "public": true
       },
       {
         "name": "ZtSelectInstance",
-        "code": "export interface ZtSelectInstance {\n  focus: (options?: FocusOptions) => void;\n  blur: () => void;\n  open: () => void;\n  close: () => void;\n}",
+        "code": "export interface ZtSelectInstance {\n  focus: (options?: FocusOptions) => void;\n  blur: () => void;\n  open: () => void;\n  close: () => void;\n  clear: () => void;\n}",
         "public": true
       },
       {
@@ -9580,6 +9622,15 @@
             "description": "插图 URL；未设置时使用内置 SVG。"
           },
           {
+            "name": "imageAlt",
+            "templateName": "image-alt",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "''",
+            "description": "自定义插图的替代文本。"
+          },
+          {
             "name": "imageSize",
             "templateName": "image-size",
             "kind": "prop",
@@ -9625,7 +9676,7 @@
     "types": [
       {
         "name": "ZtEmptyProps",
-        "code": "export interface ZtEmptyProps {\n  /** 空状态说明，默认 暂无数据，可由 description 插槽替换。 */\n  description?: string;\n  /** 插图 URL；未设置时使用内置 SVG。 */\n  image?: string;\n  /** 插图区域宽高 px，默认 80。 */\n  imageSize?: number;\n  /** 文字和内边距尺寸，默认继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtEmptyProps {\n  /** 空状态说明，默认 暂无数据，可由 description 插槽替换。 */\n  description?: string;\n  /** 插图 URL；未设置时使用内置 SVG。 */\n  image?: string;\n  /** 自定义插图的替代文本。 */\n  imageAlt?: string;\n  /** 插图区域宽高 px，默认 80。 */\n  imageSize?: number;\n  /** 文字和内边距尺寸，默认继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -9953,6 +10004,15 @@
             "required": false,
             "default": "true",
             "description": "是否显示语义图标。"
+          },
+          {
+            "name": "modelValue",
+            "templateName": "model-value",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "undefined",
+            "description": "受控显示状态，支持 v-model；关闭后可再次打开。"
           }
         ],
         "events": [
@@ -9960,6 +10020,12 @@
             "name": "close",
             "type": "() => void",
             "description": "组件开始关闭或请求关闭时触发。",
+            "kind": "event"
+          },
+          {
+            "name": "update:modelValue",
+            "type": "(value: boolean) => void",
+            "description": "双向绑定更新事件，对应 v-model。",
             "kind": "event"
           }
         ],
@@ -9994,7 +10060,7 @@
       },
       {
         "name": "ZtAlertProps",
-        "code": "export interface ZtAlertProps {\n  /** 标题文本，不解析 HTML。 */ title?: string;\n  /** 正文说明。 */ description?: string;\n  /** 提示语义颜色。 */ status?: ZtAlertStatus;\n  /** 是否展示关闭按钮。 */ closable?: boolean;\n  /** 是否显示语义图标。 */ showIcon?: boolean;\n}",
+        "code": "export interface ZtAlertProps {\n  /** 标题文本，不解析 HTML。 */ title?: string;\n  /** 正文说明。 */ description?: string;\n  /** 提示语义颜色。 */ status?: ZtAlertStatus;\n  /** 是否展示关闭按钮。 */ closable?: boolean;\n  /** 是否显示语义图标。 */ showIcon?: boolean;\n  /** 受控显示状态，支持 v-model；关闭后可再次打开。 */ modelValue?: boolean;\n}",
         "public": true
       }
     ],
@@ -10617,7 +10683,7 @@
             "type": "ZtCascaderValue",
             "required": false,
             "default": "[]",
-            "description": "单选为完整 key 路径，多选为路径数组；清空发出 []。"
+            "description": "单选为完整 key 路径，多选为路径数组；单选清空发出 null，多选清空发出 []。"
           },
           {
             "name": "options",
@@ -10770,12 +10836,12 @@
       },
       {
         "name": "ZtCascaderValue",
-        "code": "export type ZtCascaderValue = ZtCascaderPath | ZtCascaderPath[];",
+        "code": "export type ZtCascaderValue = ZtCascaderPath | ZtCascaderPath[] | null;",
         "public": true
       },
       {
         "name": "ZtCascaderProps",
-        "code": "export interface ZtCascaderProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 单选为完整 key 路径，多选为路径数组；清空发出 []。 */\n  modelValue?: ZtCascaderValue;\n  /** 层级选项数组，所有节点 key 唯一。 */\n  options?: ZtTreeNode[];\n  /** 映射 key、label、children、disabled、isLeaf 字段。 */\n  fields?: ZtTreeFields;\n  /** 允许独立选择多条完整路径。 */\n  multiple?: boolean;\n  /** 允许选择分支节点；关闭时只能选择叶节点。 */\n  checkStrictly?: boolean;\n  /** 显示按完整标签路径匹配的搜索框。 */\n  filterable?: boolean;\n  /** 有值时显示清空按钮。 */\n  clearable?: boolean;\n  /** 禁用控件；继承 Form 禁用状态。 */\n  disabled?: boolean;\n  /** 未选择路径时显示的文本。 */\n  placeholder?: string;\n  /** 展开未加载分支时请求子节点；失败显示重试，过期响应被忽略。 */\n  load?: ZtTreeLoader;\n  /** 五档尺寸，继承 Form 和 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 是否将浮层传送到 body，默认 true。 */\n  teleported?: boolean;\n}",
+        "code": "export interface ZtCascaderProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 单选为完整 key 路径，多选为路径数组；单选清空发出 null，多选清空发出 []。 */\n  modelValue?: ZtCascaderValue;\n  /** 层级选项数组，所有节点 key 唯一。 */\n  options?: ZtTreeNode[];\n  /** 映射 key、label、children、disabled、isLeaf 字段。 */\n  fields?: ZtTreeFields;\n  /** 允许独立选择多条完整路径。 */\n  multiple?: boolean;\n  /** 允许选择分支节点；关闭时只能选择叶节点。 */\n  checkStrictly?: boolean;\n  /** 显示按完整标签路径匹配的搜索框。 */\n  filterable?: boolean;\n  /** 有值时显示清空按钮。 */\n  clearable?: boolean;\n  /** 禁用控件；继承 Form 禁用状态。 */\n  disabled?: boolean;\n  /** 未选择路径时显示的文本。 */\n  placeholder?: string;\n  /** 展开未加载分支时请求子节点；失败显示重试，过期响应被忽略。 */\n  load?: ZtTreeLoader;\n  /** 五档尺寸，继承 Form 和 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 是否将浮层传送到 body，默认 true。 */\n  teleported?: boolean;\n}",
         "public": true
       },
       {
@@ -11341,6 +11407,12 @@
             "name": "update:modelValue",
             "type": "(value: string) => void",
             "description": "双向绑定更新事件，对应 v-model。",
+            "kind": "event"
+          },
+          {
+            "name": "input",
+            "type": "(value: string) => void",
+            "description": "用户输入过程中触发，参数为当前临时值。",
             "kind": "event"
           },
           {
@@ -14644,6 +14716,15 @@
             "description": "启用后阻止用户交互，并应用禁用状态样式。"
           },
           {
+            "name": "readonly",
+            "templateName": "readonly",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "只读模式，保留值展示与聚焦，不允许修改；隐藏清空图标。"
+          },
+          {
             "name": "placeholder",
             "templateName": "placeholder",
             "kind": "prop",
@@ -14864,7 +14945,7 @@
       },
       {
         "name": "ZtSelectBoxProps",
-        "code": "export interface ZtSelectBoxProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  /** 已确认的选项值；面板草稿只在确定时提交。 */\n  modelValue?: ZtSelectValue[]\n  options?: ZtSelectOption[]\n  /** 选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。 */\n  width?: number | string\n  disabled?: boolean\n  placeholder?: string\n  size?: ZtComponentSize\n  filterable?: boolean\n  clearable?: boolean\n  /** 远程搜索返回的结果在面板内分页。 */\n  remote?: boolean\n  remoteMethod?: ZtSelectBoxRemoteMethod\n  debounce?: number\n  pageSize?: number\n  pageSizes?: number[]\n  noDataText?: string\n  remoteErrorText?: string\n}",
+        "code": "export interface ZtSelectBoxProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  /** 已确认的选项值；面板草稿只在确定时提交。 */\n  modelValue?: ZtSelectValue[]\n  options?: ZtSelectOption[]\n  /** 选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。 */\n  width?: number | string\n  disabled?: boolean\n  /** 只读模式，保留值展示与聚焦，不允许修改；隐藏清空图标。 */\n  readonly?: boolean\n  placeholder?: string\n  size?: ZtComponentSize\n  filterable?: boolean\n  clearable?: boolean\n  /** 远程搜索返回的结果在面板内分页。 */\n  remote?: boolean\n  remoteMethod?: ZtSelectBoxRemoteMethod\n  debounce?: number\n  pageSize?: number\n  pageSizes?: number[]\n  noDataText?: string\n  remoteErrorText?: string\n}",
         "public": true
       },
       {

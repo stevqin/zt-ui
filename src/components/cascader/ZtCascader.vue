@@ -48,7 +48,7 @@ const rows = computed(() =>
   paths = computed<ZtCascaderPath[]>(() =>
     props.multiple
       ? (props.modelValue as ZtCascaderPath[])
-      : props.modelValue.length
+      : props.modelValue?.length
         ? [props.modelValue as ZtCascaderPath]
         : [],
   );
@@ -341,7 +341,7 @@ onBeforeUnmount(() => {
       :disabled="disabled"
       aria-label="清空"
       @click="
-        commit([]);
+        commit(multiple ? [] : null);
         emit('clear');
       "
     >

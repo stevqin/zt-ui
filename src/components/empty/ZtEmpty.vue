@@ -4,6 +4,7 @@ import type { ZtEmptyProps } from './types';
 const props = withDefaults(defineProps<ZtEmptyProps>(), {
   description: '暂无数据',
   imageSize: 80,
+  imageAlt: '',
 });
 const size = useZtSize(props);
 </script>
@@ -14,7 +15,7 @@ const size = useZtSize(props);
       :style="{ width: imageSize + 'px', height: imageSize + 'px' }"
     >
       <slot name="image"
-        ><img v-if="image" :src="image" alt="" /><svg
+        ><img v-if="image" :src="image" :alt="imageAlt" /><svg
           v-else
           viewBox="0 0 80 64"
           fill="none"

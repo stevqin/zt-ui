@@ -26,6 +26,10 @@ export interface ZtScrollbarProps{
  tag?:string
  /** 轨道密度尺寸，默认继承 ConfigProvider。 */
  size?:ZtComponentSize
+ /** 滚动容器是否进入 Tab 序列，默认 true。 */
+ focusable?:boolean
+ /** 滚动区域的无障碍名称。 */
+ ariaLabel?:string
 }
 export interface ZtScrollbarInstance{
  readonly wrapRef:HTMLElement|undefined

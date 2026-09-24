@@ -351,6 +351,8 @@
   &.is-open &__trigger { border-color: var(--glass-accent); }
   &.is-error &__trigger { border-color: var(--glass-danger-ink); }
   &.is-disabled &__trigger { cursor: not-allowed; opacity: .55; }
+  &.is-readonly &__trigger { cursor: default; }
+  &.is-readonly &__arrow { opacity: .55; }
   &__summary { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   &__summary.is-placeholder { color: var(--zt-text-muted, var(--glass-muted)); }
   &__arrow { flex: 0 0 auto; color: var(--zt-text-muted, var(--glass-muted)); }

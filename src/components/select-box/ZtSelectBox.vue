@@ -17,7 +17,7 @@ defineOptions({ name: 'ZtSelectBox', inheritAttrs: false })
 const props = withDefaults(defineProps<ZtSelectBoxProps>(), {
   underline: undefined,
   modelValue: () => [], options: () => [], placeholder: '请选择', filterable: true,
-  disabled: false, clearable: false, remote: false, debounce: 300, pageSize: 10,
+  disabled: false, readonly: false, clearable: false, remote: false, debounce: 300, pageSize: 10,
   pageSizes: () => [10, 20, 50, 100, 200, 500], noDataText: '暂无匹配选项', remoteErrorText: '加载失败，请重新搜索',
 })
 const { underline } = useFormControlAppearance(toRef(props, 'underline'));
@@ -41,7 +41,8 @@ provide(ztFormItemKey as symbol, undefined)
 const size = useZtSize(props, () => formItem?.size.value)
 const { style: providerStyle, theme } = useZtConfig()
 const disabled = computed(() => props.disabled || formItem?.disabled.value || false)
-const canClear = computed(() => props.clearable && props.modelValue.length > 0 && !disabled.value)
+const editable = computed(() => !disabled.value && !props.readonly)
+const canClear = computed(() => props.clearable && props.modelValue.length > 0 && editable.value)
 const controlElement = ref<HTMLElement>()
 const panel = ref<InstanceType<typeof SelectBoxPanel>>()
 const draft = useSelectBoxDraft(toRef(props, 'modelValue'))
@@ -128,7 +129,7 @@ watch(remoteSearch.result, response => {
   }
 }, { flush: 'sync' })
 function open() {
-  if (disabled.value || visible.value) return
+  if (disabled.value || props.readonly || visible.value) return
   keyword.value = ''
   page.value = 1
   // A nested overlay may be above the default dropdown layer.
@@ -157,7 +158,7 @@ function keepPopupFocus(event: MouseEvent) {
 }
 function toggle() { if (visible.value) close(); else open() }
 function commit(values: ZtSelectValue[], options: ZtSelectOption[] = []) {
-  if (disabled.value) return
+  if (disabled.value || props.readonly) return
   draft.mergeOptions(options)
   emit('update:modelValue', values)
   emit('change', values)
@@ -235,8 +236,8 @@ defineExpose({ focus, blur, open, close, clear })
 </script>
 
 <template>
-  <div ref="controlElement" :data-zt-theme="theme" :class="['zt-select-box', `zt-select-box--${size}`, attrs.class, { 'is-form-underline': underline, 'is-disabled': disabled, 'is-open': visible, 'is-error': formItem?.validateState.value === 'error' }]" :style="[providerStyle, attrs.style as StyleValue, { width }]">
-    <button v-bind="Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'))" :id="(attrs.id as string) ?? formItem?.inputId" ref="triggerElement" type="button" class="zt-select-box__trigger" role="combobox" aria-haspopup="dialog" :aria-expanded="visible" :aria-controls="visible ? popupId : undefined" :aria-invalid="formItem?.validateState.value === 'error' || undefined" :aria-describedby="describedBy" :disabled="disabled" @click="toggle" @keydown.down.prevent="open" @keydown.esc="handleEscape" @focus="emit('focus', $event)">
+  <div ref="controlElement" :data-zt-theme="theme" :class="['zt-select-box', `zt-select-box--${size}`, attrs.class, { 'is-form-underline': underline, 'is-disabled': disabled, 'is-readonly': readonly && !disabled, 'is-open': visible, 'is-error': formItem?.validateState.value === 'error' }]" :style="[providerStyle, attrs.style as StyleValue, { width }]">
+    <button v-bind="Object.fromEntries(Object.entries(attrs).filter(([key]) => key !== 'class' && key !== 'style'))" :id="(attrs.id as string) ?? formItem?.inputId" ref="triggerElement" type="button" class="zt-select-box__trigger" role="combobox" aria-haspopup="dialog" :aria-expanded="visible" :aria-controls="visible ? popupId : undefined" :aria-invalid="formItem?.validateState.value === 'error' || undefined" :aria-describedby="describedBy" :disabled="disabled" :aria-readonly="readonly || undefined" :aria-disabled="disabled || readonly || undefined" @click="toggle" @keydown.down.prevent="open" @keydown.esc="handleEscape" @focus="emit('focus', $event)">
       <span class="zt-select-box__summary" :class="{ 'is-placeholder': !summary }" :title="summary || undefined">{{ summary || placeholder }}</span>
       <ZtIcon class="zt-select-box__arrow" name="checklist" :size="14" />
     </button>

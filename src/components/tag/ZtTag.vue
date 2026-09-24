@@ -32,6 +32,7 @@ const classes = computed(() => [
 ])
 
 function handleClose(event: MouseEvent) {
+  event.stopPropagation()
   emit('close', event)
 }
 </script>

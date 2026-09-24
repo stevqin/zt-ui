@@ -5,7 +5,7 @@ import { calculateThumb } from './scrollbar'
 import type { ZtScrollbarProps, ZtScrollbarScroll } from './types'
 import './scrollbar.scss'
 defineOptions({name:'ZtScrollbar',inheritAttrs:false})
-const props=withDefaults(defineProps<ZtScrollbarProps>(),{native:false,always:false,minSize:20,noresize:false,tag:'div'})
+const props=withDefaults(defineProps<ZtScrollbarProps>(),{native:false,always:false,minSize:20,noresize:false,tag:'div',focusable:undefined,ariaLabel:'可滚动区域'})
 const emit=defineEmits<{scroll:[value:ZtScrollbarScroll]}>()
 const size=useZtSize(props),wrap=ref<HTMLElement>(),view=ref<HTMLElement>()
 const vertical=reactive({size:0,offset:0}),horizontal=reactive({size:0,offset:0})
@@ -29,4 +29,4 @@ onMounted(()=>{void nextTick(update);if(!props.noresize&&typeof ResizeObserver!=
 onBeforeUnmount(()=>{observer?.disconnect();window.removeEventListener('resize',resized);stopDrag()})
 defineExpose({wrapRef:wrap,update,scrollTo,setScrollTop,setScrollLeft})
 </script>
-<template><div :class="classes"><div ref="wrap" v-bind="$attrs" class="zt-scrollbar__wrap" :class="[wrapClass,{'is-native':native}]" :style="wrapStyle" tabindex="0" @scroll="scrolled"><component :is="tag" ref="view" class="zt-scrollbar__view" :class="viewClass" :style="viewStyle"><slot/></component></div><template v-if="!native"><div v-if="vertical.size" class="zt-scrollbar__bar zt-scrollbar__bar--vertical" aria-hidden="true" @pointerdown="page('vertical',$event)"><span class="zt-scrollbar__thumb zt-scrollbar__thumb--vertical" :style="vStyle" @pointerdown="startDrag('vertical',$event)"/></div><div v-if="horizontal.size" class="zt-scrollbar__bar zt-scrollbar__bar--horizontal" aria-hidden="true" @pointerdown="page('horizontal',$event)"><span class="zt-scrollbar__thumb zt-scrollbar__thumb--horizontal" :style="hStyle" @pointerdown="startDrag('horizontal',$event)"/></div></template></div></template>
+<template><div :class="classes"><div ref="wrap" v-bind="$attrs" class="zt-scrollbar__wrap" :class="[wrapClass,{'is-native':native}]" :style="wrapStyle" :tabindex="focusable === false ? undefined : 0" role="region" :aria-label="ariaLabel" @scroll="scrolled"><component :is="tag" ref="view" class="zt-scrollbar__view" :class="viewClass" :style="viewStyle"><slot/></component></div><template v-if="!native"><div v-if="vertical.size" class="zt-scrollbar__bar zt-scrollbar__bar--vertical" aria-hidden="true" @pointerdown="page('vertical',$event)"><span class="zt-scrollbar__thumb zt-scrollbar__thumb--vertical" :style="vStyle" @pointerdown="startDrag('vertical',$event)"/></div><div v-if="horizontal.size" class="zt-scrollbar__bar zt-scrollbar__bar--horizontal" aria-hidden="true" @pointerdown="page('horizontal',$event)"><span class="zt-scrollbar__thumb zt-scrollbar__thumb--horizontal" :style="hStyle" @pointerdown="startDrag('horizontal',$event)"/></div></template></div></template>

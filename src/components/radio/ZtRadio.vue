@@ -3,6 +3,7 @@ import { useZtSize } from '../config-provider/context'
 import { computed, inject } from 'vue'
 import type { ZtRadioProps } from './types'
 import { ztFormItemKey } from '../form/context'
+import { useZtControlDisabled } from '../form/useControlDisabled'
 import { radioGroupKey } from './types'
 import './radio.scss'
 
@@ -22,7 +23,7 @@ const group = inject(radioGroupKey, null)
 
 const formItem = inject(ztFormItemKey, undefined)
 const isGroup = computed(() => !!group)
-const isDisabled = computed(() => props.disabled || group?.disabled.value || formItem?.disabled.value || false)
+const isDisabled = useZtControlDisabled(() => props.disabled || group?.disabled.value || false)
 const actualSize = useZtSize(props, () => group?.size.value ?? formItem?.size.value)
 const actualStatus = computed(() => group?.status.value ?? props.status)
 
@@ -48,6 +49,7 @@ function handleChange() {
   } else {
     emit('update:modelValue', val)
     emit('change', val)
+    void formItem?.validate('change')
   }
 }
 </script>

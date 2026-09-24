@@ -61,8 +61,12 @@ function load(input: string) {
   return true;
 }
 function reset() {
-  text.value = props.modelValue || '#ff0000';
-  load(text.value);
+  // Keep an empty model as empty draft instead of forcing red.
+  text.value = props.modelValue || '';
+  if (text.value) load(text.value);
+  else {
+    error.value = '';
+  }
 }
 function sync() {
   if (disabled.value) return;

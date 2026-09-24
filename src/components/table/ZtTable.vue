@@ -34,8 +34,10 @@ const config = useZtConfig(),
 function key(row: ZtTableRow): ZtTableKey {
   const value =
     typeof props.rowKey === 'function' ? props.rowKey(row) : row[props.rowKey];
-  if (typeof value !== 'string' && typeof value !== 'number')
-    throw new Error('ZtTable rowKey must resolve to a stable string or number');
+  if (typeof value !== 'string' && typeof value !== 'number') {
+    // Avoid tearing down the whole tree; fall back to a stable-ish index key.
+    return `__zt-row-${props.data.indexOf(row)}`
+  }
   return value;
 }
 const rows = computed(() => {
@@ -178,6 +180,7 @@ const span = computed(
           <tr>
             <th
               v-if="selection"
+              scope="col"
               class="zt-table__utility zt-table__selection"
               :style="
                 maxHeight ? { position: 'sticky', top: 0, zIndex: 4 } : {}
@@ -203,6 +206,7 @@ const span = computed(
             />
             <th
               v-for="(column, i) in columns"
+              scope="col"
               :key="column.prop"
               :style="columnStyle(column, i, true)"
               :aria-sort="

@@ -11,6 +11,12 @@ const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtCascaderValue>([]),
   multiple = ref<ZtCascaderValue>([]),
   strict = ref(false);
+function clearSingle() {
+  value.value = null;
+}
+function clearMultiple() {
+  multiple.value = [];
+}
 const options: ZtTreeNode[] = [
   {
     key: 'east',
@@ -49,8 +55,12 @@ const options: ZtTreeNode[] = [
       filterable
       clearable
     />
-    <p>单条路径：{{ value }}</p>
-    <p>多条路径：{{ multiple }}</p>
+    <p>单条路径：{{ value === null ? 'null（清空）' : JSON.stringify(value) }}</p>
+    <p>多条路径：{{ JSON.stringify(multiple) }}</p>
+    <p>
+      <button type="button" @click="clearSingle">单选清空 → null</button>
+      <button type="button" @click="clearMultiple">多选清空 → []</button>
+    </p>
   </div>
 </template>
 <style scoped>

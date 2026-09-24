@@ -114,8 +114,16 @@ watch(
 );
 onMounted(() => {
   if (typeof MutationObserver !== 'undefined') {
-    mutation = new MutationObserver(update);
-    mutation.observe(document.body, { childList: true, subtree: true });
+    let scheduled = false
+    mutation = new MutationObserver(() => {
+      if (scheduled) return
+      scheduled = true
+      requestAnimationFrame(() => {
+        scheduled = false
+        update()
+      })
+    })
+    mutation.observe(document.body, { childList: true, subtree: true })
   }
   if (typeof ResizeObserver !== 'undefined') {
     resize = new ResizeObserver(update);
@@ -145,6 +153,18 @@ async function next() {
     emit('change', index.value + 1);
   } else if (await overlay.requestClose('confirm')) emit('finish');
 }
+const maskClip = computed(() => {
+  if (!rect.value || typeof window === 'undefined') return undefined
+  const w = window.innerWidth
+  const h = window.innerHeight
+  const pad = 4
+  const x = Math.max(0, rect.value.left - pad)
+  const y = Math.max(0, rect.value.top - pad)
+  const rw = rect.value.width + pad * 2
+  const rh = rect.value.height + pad * 2
+  // evenodd hole lets pointer events reach the highlighted target.
+  return `path(evenodd, "M0 0H${w}V${h}H0Z M${x} ${y}H${x + rw}V${y + rh}H${x}Z")`
+})
 const panelStyle = computed(() => ({
   ...config.style.value,
   width: `min(${props.width}px, calc(100vw - 24px))`,
@@ -164,6 +184,7 @@ const panelStyle = computed(() => ({
         v-if="mask"
         class="zt-tour__mask"
         :class="{ 'is-full': !rect }"
+        :style="maskClip ? { clipPath: maskClip } : undefined"
         aria-hidden="true"
       >
         <div

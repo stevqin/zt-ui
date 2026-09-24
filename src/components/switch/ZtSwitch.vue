@@ -2,6 +2,7 @@
 import { useZtSize } from '../config-provider/context'
 import { computed, inject } from 'vue'
 import { ztFormItemKey } from '../form/context'
+import { useZtControlDisabled } from '../form/useControlDisabled'
 import type { ZtSwitchProps } from './types'
 import './switch.scss'
 
@@ -17,7 +18,7 @@ const props = withDefaults(defineProps<ZtSwitchProps>(), {
 })
 const formItem = inject(ztFormItemKey, undefined)
 const configSize = useZtSize(props, () => formItem?.size.value)
-const isDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
+const isDisabled = useZtControlDisabled(() => props.disabled)
 
 
 const emit = defineEmits<{
@@ -46,11 +47,12 @@ function toggle() {
   const next = isChecked.value ? props.inactiveValue : props.activeValue
   emit('update:modelValue', next)
   emit('change', next)
+  void formItem?.validate('change')
 }
 </script>
 
 <template>
-  <div :class="classes" :style="trackStyle" v-bind="$attrs" role="switch" :aria-checked="isChecked" :aria-disabled="isDisabled || loading" :aria-busy="loading" :tabindex="isDisabled || loading ? -1 : 0" @click="toggle" @keydown.space.prevent="toggle" @keydown.enter.prevent="toggle">
+  <div :class="classes" :style="trackStyle" v-bind="$attrs" role="switch" :id="formItem?.inputId" :aria-checked="isChecked" :aria-disabled="isDisabled || loading" :aria-busy="loading" :tabindex="isDisabled || loading ? -1 : 0" @click="toggle" @keydown.space.prevent="toggle" @keydown.enter.prevent="toggle" @focusout="formItem?.validate('blur')">
     <span v-if="inactiveText" class="zt-switch__label zt-switch__label--left" :class="{ 'is-active': !isChecked }">
       {{ inactiveText }}
     </span>

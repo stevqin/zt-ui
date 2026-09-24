@@ -29,6 +29,8 @@ export interface ZtSelectBoxProps {
   /** 选择框宽度，数字按 px 处理，也支持百分比等 CSS 长度。 */
   width?: number | string
   disabled?: boolean
+  /** 只读模式，保留值展示与聚焦，不允许修改；隐藏清空图标。 */
+  readonly?: boolean
   placeholder?: string
   size?: ZtComponentSize
   filterable?: boolean

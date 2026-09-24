@@ -6,4 +6,5 @@ export interface ZtAlertProps {
   /** 提示语义颜色。 */ status?: ZtAlertStatus;
   /** 是否展示关闭按钮。 */ closable?: boolean;
   /** 是否显示语义图标。 */ showIcon?: boolean;
+  /** 受控显示状态，支持 v-model；关闭后可再次打开。 */ modelValue?: boolean;
 }

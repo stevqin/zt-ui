@@ -31,6 +31,8 @@ export interface ZtSelectProps {
   clearable?: boolean;
   placeholder?: string;
   disabled?: boolean;
+  /** 只读模式，保留值展示与聚焦，不允许修改；隐藏标签移除与清空图标。 */
+  readonly?: boolean;
   size?: ZtComponentSize;
   noDataText?: string;
   remoteErrorText?: string;
@@ -41,4 +43,5 @@ export interface ZtSelectInstance {
   blur: () => void;
   open: () => void;
   close: () => void;
+  clear: () => void;
 }

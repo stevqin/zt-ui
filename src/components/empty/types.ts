@@ -4,6 +4,8 @@ export interface ZtEmptyProps {
   description?: string;
   /** 插图 URL；未设置时使用内置 SVG。 */
   image?: string;
+  /** 自定义插图的替代文本。 */
+  imageAlt?: string;
   /** 插图区域宽高 px，默认 80。 */
   imageSize?: number;
   /** 文字和内边距尺寸，默认继承 ConfigProvider。 */

@@ -23,7 +23,8 @@ export interface ZtFormFieldContext {
 
 export interface ZtFormContext {
   underline: ComputedRef<boolean>
-  model: Record<string, unknown>
+  /** Always the latest `props.model` object; read `.value` so replaced models stay in sync. */
+  model: ComputedRef<Record<string, unknown>>
   rules: ComputedRef<ZtFormRules>
   size: ComputedRef<ZtComponentSize>
   disabled: ComputedRef<boolean>
@@ -39,5 +40,10 @@ export interface ZtFormContext {
   notifyValidate: (prop: string, valid: boolean, message: string) => void
 }
 
+export interface ZtFormGroupContext {
+  disabled: ComputedRef<boolean>
+}
+
 export const ztFormKey: InjectionKey<ZtFormContext> = Symbol('ztForm')
 export const ztFormItemKey: InjectionKey<ZtFormFieldContext> = Symbol('ztFormItem')
+export const ztFormGroupKey: InjectionKey<ZtFormGroupContext> = Symbol('ztFormGroup')

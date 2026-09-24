@@ -3,6 +3,7 @@ import { entryStatusStyle } from '../autocomplete/status';
 import { computed, inject, ref } from 'vue';
 import { useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
+import { useZtControlDisabled } from '../form/useControlDisabled';
 import type { ZtRateProps } from './types';
 import './rate.scss';
 defineOptions({ name: 'ZtRate' });
@@ -24,7 +25,7 @@ const emit = defineEmits<{
 }>();
 const form = inject(ztFormItemKey, undefined),
   size = useZtSize(props, () => form?.size.value),
-  disabled = computed(() => props.disabled || form?.disabled.value),
+  disabled = useZtControlDisabled(() => props.disabled),
   max = computed(() =>
     Number.isFinite(props.max) ? Math.max(1, Math.floor(props.max)) : 5,
   ),
@@ -44,6 +45,7 @@ function set(value: number, toggle = false) {
   if (!editable.value) return;
   value = Math.min(max.value, Math.max(0, value));
   if (toggle && props.clearable && value === score.value) value = 0;
+  if (value === props.modelValue) return;
   emit('update:modelValue', value);
   emit('change', value);
   void form?.validate('change');

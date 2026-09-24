@@ -34,7 +34,7 @@ import VirtualCode from './Virtual.vue?raw';
     <h3>多选与可移除标签</h3>
     <DemoBlock
       :code="Example02Code"
-      desc="multiple 输出去重后的值数组；配合 filterable 时，搜索框固定在下拉面板顶部，打开后自动聚焦。搜索框内的清空按钮只清除关键词，已选标签保持不变。"
+      desc="multiple 输出去重后的值数组；配合 filterable 时，搜索框固定在下拉面板顶部。disabled / readonly 时隐藏标签关闭与清空图标（与 InputTag 一致）。"
       ><Example02
     /></DemoBlock>
 
@@ -77,7 +77,11 @@ import VirtualCode from './Virtual.vue?raw';
     /></DemoBlock>
 
     <h3>外部控制与无匹配结果</h3>
-    <DemoBlock :code="MethodsCode" desc=""><Methods /></DemoBlock>
+    <DemoBlock
+      :code="MethodsCode"
+      desc="focus / open / close / clear 实例方法；readonly 时隐藏清空与标签移除图标。"
+      ><Methods
+    /></DemoBlock>
     <h3>万级选项虚拟滚动</h3>
     <DemoBlock
       :code="VirtualCode"

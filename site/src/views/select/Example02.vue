@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui';
+import { ZtButton, ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui';
 const storeOptions: ZtSelectOption[] = [
   { label: '杭州大厦店', value: 'hz-tower' },
   { label: '上海港汇店', value: 'sh-grand-gateway' },
@@ -8,20 +8,28 @@ const storeOptions: ZtSelectOption[] = [
   { label: '深圳万象城店', value: 'sz-mixc' },
 ];
 const selectedStores = ref<Array<string | number | boolean>>(['hz-tower', 'sh-grand-gateway']);
+const disabled = ref(false);
+const readonly = ref(false);
 </script>
 
 <template>
   <div class="select-demo-stack">
+    <div class="example-row">
+      <label><input v-model="disabled" type="checkbox" /> disabled</label>
+      <label><input v-model="readonly" type="checkbox" /> readonly</label>
+    </div>
     <ZtSelect
       v-model="selectedStores"
       :options="storeOptions"
       multiple
       filterable
       clearable
+      :disabled="disabled"
+      :readonly="readonly"
       aria-label="活动门店"
       placeholder="选择参与活动的门店"
     />
-    <span>已选 {{ selectedStores.length }} 家门店</span>
+    <span>已选 {{ selectedStores.length }} 家门店；disabled / readonly 时标签关闭与清空图标隐藏（与 InputTag 一致）</span>
   </div>
 </template>
 
@@ -33,6 +41,13 @@ const selectedStores = ref<Array<string | number | boolean>>(['hz-tower', 'sh-gr
 }
 .select-demo-stack > span {
   color: #6b7280;
+  font-size: 13px;
+}
+.example-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
   font-size: 13px;
 }
 .select-demo-grid {

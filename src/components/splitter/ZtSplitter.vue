@@ -212,7 +212,8 @@ onBeforeUnmount(cleanup);
   }
   &--vertical {
     flex-direction: column;
-    height: 300px;
+    height: 100%;
+    min-height: 120px;
     .zt-splitter__handle {
       height: 12px;
       width: 100%;

@@ -7,13 +7,13 @@ import type {
   ZtTreeLoader,
 } from '../tree/types';
 export type ZtCascaderPath = ZtTreeKey[];
-export type ZtCascaderValue = ZtCascaderPath | ZtCascaderPath[];
+export type ZtCascaderValue = ZtCascaderPath | ZtCascaderPath[] | null;
 export interface ZtCascaderProps {
   /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */
   underline?: boolean;
   /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */
   status?: ZtButtonStatus;
-  /** 单选为完整 key 路径，多选为路径数组；清空发出 []。 */
+  /** 单选为完整 key 路径，多选为路径数组；单选清空发出 null，多选清空发出 []。 */
   modelValue?: ZtCascaderValue;
   /** 层级选项数组，所有节点 key 唯一。 */
   options?: ZtTreeNode[];

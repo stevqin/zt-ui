@@ -45,6 +45,13 @@ function escape() {
   open.value = false;
   emit('update:visible', false);
 }
+function onKeydown(event: KeyboardEvent) {
+  if (event.key === 'Escape') {
+    event.preventDefault();
+    event.stopPropagation();
+    escape();
+  }
+}
 function show(value: boolean, delay = 0) {
   clearTimeout(timer);
   if (value && props.disabled) return;
@@ -72,7 +79,18 @@ watch(
     }
   },
 );
-onBeforeUnmount(() => clearTimeout(timer));
+onBeforeUnmount(() => {
+  clearTimeout(timer);
+  document.removeEventListener('keydown', onKeydown, true);
+});
+watch(
+  open,
+  (value) => {
+    if (value) document.addEventListener('keydown', onKeydown, true);
+    else document.removeEventListener('keydown', onKeydown, true);
+  },
+  { immediate: true },
+);
 </script>
 <template>
   <ZtPopover

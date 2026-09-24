@@ -51,6 +51,7 @@ const props = withDefaults(defineProps<ZtSelectProps>(), {
   clearable: false,
   placeholder: '请选择',
   disabled: false,
+  readonly: false,
   noDataText: '暂无数据',
   remoteErrorText: '加载失败，请重试',
 });
@@ -140,8 +141,9 @@ const hasSelection = computed(() =>
       (singleValue(props.modelValue) !== null &&
         singleValue(props.modelValue) !== ''),
 );
+const editable = computed(() => !effectiveDisabled.value && !props.readonly)
 const canClear = computed(
-  () => props.clearable && hasSelection.value && !effectiveDisabled.value,
+  () => props.clearable && hasSelection.value && editable.value,
 );
 const displayedOptions = computed(() => {
   if (props.remote)
@@ -363,7 +365,7 @@ function handleClick() {
 }
 
 function selectOption(option: ZtSelectOption) {
-  if (effectiveDisabled.value || option.disabled) return;
+  if (!editable.value || option.disabled) return;
   if (
     props.remote &&
     !retainedRemoteOptions.value.some(
@@ -392,7 +394,7 @@ function selectOption(option: ZtSelectOption) {
 }
 
 function removeValue(value: ZtSelectValue) {
-  if (effectiveDisabled.value || !selectedValues.value.includes(value)) return;
+  if (!editable.value || !selectedValues.value.includes(value)) return;
   const focused = document.activeElement;
   const focusedTag = focused instanceof HTMLElement && rootElement.value?.contains(focused) && focused.closest('.zt-select__tag');
   const next = selectedValues.value.filter((item) => item !== value);
@@ -606,7 +608,7 @@ onBeforeUnmount(() => {
   remoteSearch.dispose();
 });
 
-defineExpose({ focus, blur, open, close });
+defineExpose({ focus, blur, open, close, clear });
 </script>
 
 <template>
@@ -636,14 +638,14 @@ defineExpose({ focus, blur, open, close });
           <slot
             name="tag"
             :option="option"
-            :remove="() => removeValue(option.value)"
+            :remove="editable ? () => removeValue(option.value) : () => {}"
           >
             <span class="zt-select__tag-label" :title="option.label">{{ option.label }}</span>
             <button
+              v-if="editable"
               type="button"
               class="zt-select__tag-remove"
               :aria-label="`移除${option.label}`"
-              :disabled="effectiveDisabled"
               @mousedown.prevent
               @click.stop="removeValue(option.value)"
             >
@@ -669,7 +671,7 @@ defineExpose({ focus, blur, open, close });
         :id="String(attrs.id ?? formItem?.inputId ?? selectId)"
         role="combobox"
         :disabled="effectiveDisabled"
-        :readonly="panelSearch || (!filterable && !remote)"
+        :readonly="props.readonly || panelSearch || (!filterable && !remote)"
         :value="inputValue"
         :placeholder="
           !selectedOption && !selectedValues.length

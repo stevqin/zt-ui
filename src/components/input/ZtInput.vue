@@ -64,11 +64,11 @@ function handleInput(event: Event) {
   const value = valueFrom(event)
   emit('update:modelValue', value)
   emit('input', value)
-  void formItem?.validate('change')
 }
 
 function handleChange(event: Event) {
   emit('change', valueFrom(event))
+  void formItem?.validate('change')
 }
 
 function handleFocus(event: FocusEvent) {

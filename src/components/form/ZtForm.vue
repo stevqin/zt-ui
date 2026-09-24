@@ -53,7 +53,7 @@ function notifyValidate(prop: string, valid: boolean, message: string) {
 }
 
 provide<ZtFormContext>(ztFormKey, {
-  model: props.model,
+  model: computed(() => props.model),
   underline: computed(() => props.underline),
   rules: computed(() => props.rules),
   size: computed(() => configSize.value),

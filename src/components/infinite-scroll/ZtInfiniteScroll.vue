@@ -45,7 +45,17 @@ async function check(force = false) {
       emit('error', error);
     }
   } finally {
-    if (alive) pending.value = false;
+    if (alive) {
+      pending.value = false;
+      // One page may not fill the viewport; recheck once after layout settles.
+      // Guard against tight loops when load() adds no content.
+      const before = root.value?.scrollHeight ?? 0
+      void nextTick(() => {
+        if (!alive) return
+        const after = root.value?.scrollHeight ?? 0
+        if (after > before) void check()
+      })
+    }
   }
 }
 const binding = useScrollTarget(

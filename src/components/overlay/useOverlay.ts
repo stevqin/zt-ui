@@ -77,7 +77,7 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
 
   function focusableElements(root = panel.value) {
     const elements = root?.querySelectorAll<HTMLElement>(
-      'button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),a[href],summary,[tabindex]:not([tabindex="-1"])',
+      'button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),a[href],summary,iframe,object,embed,audio[controls],video[controls],details,[contenteditable]:not([contenteditable="false"]),[tabindex]:not([tabindex="-1"])',
     )
     return [...(elements ?? [])].filter(element => {
       const style = getComputedStyle(element)

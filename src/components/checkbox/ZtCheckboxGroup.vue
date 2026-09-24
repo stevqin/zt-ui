@@ -5,6 +5,7 @@ import type { ZtCheckboxGroupProps, CheckboxGroupContext } from './types'
 import { checkboxGroupKey } from './types'
 import './checkbox.scss'
 import { ztFormItemKey } from '../form/context'
+import { useZtControlDisabled } from '../form/useControlDisabled'
 
 defineOptions({ name: 'ZtCheckboxGroup', inheritAttrs: false })
 
@@ -18,7 +19,7 @@ const props = withDefaults(defineProps<ZtCheckboxGroupProps>(), {
 })
 const formItem = inject(ztFormItemKey, undefined)
 const configSize = useZtSize(props, () => formItem?.size.value)
-const isDisabled = computed(() => props.disabled || formItem?.disabled.value || false)
+const isDisabled = useZtControlDisabled(() => props.disabled)
 
 
 const emit = defineEmits<{
@@ -39,6 +40,7 @@ function toggle(val: unknown) {
   }
   emit('update:modelValue', arr)
   emit('change', arr)
+  void formItem?.validate('change')
 }
 
 provide<CheckboxGroupContext>(checkboxGroupKey, {

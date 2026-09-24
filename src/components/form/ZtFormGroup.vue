@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, provide } from 'vue'
+import type { ZtFormGroupContext } from './context'
+import { ztFormGroupKey } from './context'
 import type { ZtFormGroupProps } from './types'
 
 defineOptions({ name: 'ZtFormGroup' })
@@ -9,6 +11,12 @@ const props = withDefaults(defineProps<ZtFormGroupProps>(), {
   description: '',
   disabled: false,
   bordered: false,
+})
+
+// fieldset[disabled] only covers native form controls; custom role-based
+// widgets consume this context instead.
+provide<ZtFormGroupContext>(ztFormGroupKey, {
+  disabled: computed(() => props.disabled),
 })
 
 const classes = computed(() => [

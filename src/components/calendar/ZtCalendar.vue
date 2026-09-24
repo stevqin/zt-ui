@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from 'vue';
+import { computed, ref, watch, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import {
   calendarDate,
@@ -23,16 +23,36 @@ const emit = defineEmits<{
 }>();
 const config = useZtConfig(),
   size = useZtSize(props),
-  today = calendarDate(
-    new Date().getFullYear(),
-    new Date().getMonth(),
-    new Date().getDate(),
+  today = ref(
+    calendarDate(
+      new Date().getFullYear(),
+      new Date().getMonth(),
+      new Date().getDate(),
+    ),
   ),
-  anchor = ref(parseDate(props.modelValue ?? undefined) ?? today),
+  anchor = ref(parseDate(props.modelValue ?? undefined) ?? today.value),
   localView = ref<ZtCalendarView>('month'),
   view = computed(() => props.view ?? localView.value),
   root = ref<HTMLElement>(),
   focusDate = ref(dateKey(anchor.value));
+// Refresh "today" when the calendar day rolls over.
+let dayTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  const schedule = () => {
+    const now = new Date()
+    const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+    dayTimer = setTimeout(() => {
+      today.value = calendarDate(
+        new Date().getFullYear(),
+        new Date().getMonth(),
+        new Date().getDate(),
+      )
+      schedule()
+    }, Math.max(1000, next.getTime() - now.getTime()))
+  }
+  schedule()
+})
+onBeforeUnmount(() => clearTimeout(dayTimer))
 watch(
   () => props.modelValue,
   (value) => {

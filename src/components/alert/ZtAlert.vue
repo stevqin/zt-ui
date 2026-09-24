@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import type { ZtAlertProps } from './types';
 import './alert.scss';
 defineOptions({ name: 'ZtAlert' });
@@ -9,12 +9,20 @@ const props = withDefaults(defineProps<ZtAlertProps>(), {
   status: 'info',
   closable: true,
   showIcon: true,
+  modelValue: undefined,
 });
-const emit = defineEmits<{ close: [] }>();
-const visible = ref(true);
+const emit = defineEmits<{ close: []; 'update:modelValue': [value: boolean] }>();
+const visible = ref(props.modelValue ?? true);
+watch(
+  () => props.modelValue,
+  (value) => {
+    if (value !== undefined) visible.value = value;
+  },
+);
 function close() {
   if (visible.value) {
     visible.value = false;
+    emit('update:modelValue', false);
     emit('close');
   }
 }
