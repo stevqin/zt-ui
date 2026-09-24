@@ -188,6 +188,9 @@ export function useAnchoredDropdown(
       viewportTop,
       viewportHeight - gutter,
     )
+    // Clamp only for free-space / direction math. Anchoring must use the real
+    // trigger rect so a scrolled-away control does not pin the popup to the
+    // viewport edge.
     const triggerTop = Math.max(
       viewportTop,
       Math.min(triggerRect.top, viewportBottom),
@@ -208,7 +211,9 @@ export function useAnchoredDropdown(
 
     placement.value = opensAbove ? 'top' : 'bottom'
     const nextGeometry: PopupGeometry = {
-      top: opensAbove ? triggerTop - visibleHeight : triggerBottom,
+      top: opensAbove
+        ? triggerRect.top - visibleHeight
+        : triggerRect.bottom,
       left: preserveWidth
         ? triggerRect.left
         : Math.max(gutter, Math.min(triggerRect.left, furthestLeft)),

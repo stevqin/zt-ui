@@ -233,14 +233,16 @@ describe('useAnchoredDropdown', () => {
     triggerRect = rectangle(80, 1000, 120, 40)
     notifyResize!()
     await nextTick()
-    expect(popup.style.top).toBe('412px')
+    // Off-screen triggers keep the popup anchored to the real rect (not the
+    // viewport edge), so a scrolled-away control never pins chrome over the page.
+    expect(popup.style.top).toBe('820px')
     expect(popup.style.maxHeight).toBe('584px')
     expect(popup.dataset.placement).toBe('top')
 
     triggerRect = rectangle(80, -100, 120, 40)
     notifyResize!()
     await nextTick()
-    expect(popup.style.top).toBe('8px')
+    expect(popup.style.top).toBe('-60px')
     expect(popup.style.maxHeight).toBe('584px')
     expect(popup.dataset.placement).toBe('bottom')
 
