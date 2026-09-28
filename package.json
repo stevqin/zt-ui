@@ -1,7 +1,7 @@
 {
   "name": "@ztechjs/zt-ui",
   "version": "0.8.0",
-  "description": "A lightweight Vue 3 UI component library with TypeScript support",
+  "description": "Zt UI — Vue 3 中后台企业级组件库，TypeScript 优先，玻璃拟态视觉，约 80 个开箱即用组件",
   "type": "module",
   "license": "MIT",
   "author": "ztech",
@@ -11,13 +11,18 @@
     "typescript",
     "ui",
     "components",
-    "component-library"
+    "component-library",
+    "element",
+    "design-system",
+    "admin",
+    "dashboard",
+    "vue-components"
   ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/stevqin/zt-ui.git"
   },
-  "homepage": "https://github.com/stevqin/zt-ui#readme",
+  "homepage": "https://stevqin.github.io/zt-ui/",
   "bugs": {
     "url": "https://github.com/stevqin/zt-ui/issues"
   },

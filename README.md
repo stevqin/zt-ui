@@ -1,11 +1,25 @@
 # Zt UI
 
-基于 **Vue 3 + TypeScript** 的轻量级企业级组件库，采用玻璃拟态（Glass-inspired）视觉风格，提供约 80 个开箱即用的业务组件。
+**Vue 3 中后台企业级组件库** · TypeScript 优先 · 玻璃拟态视觉
 
-- **包名**：`@ztechjs/zt-ui`
-- **技术栈**：Vue 3 Composition API · TypeScript · SCSS · Vite
-- **文档站**：[https://stevqin.github.io/zt-ui/](https://stevqin.github.io/zt-ui/)
-- **仓库**：[https://github.com/stevqin/zt-ui](https://github.com/stevqin/zt-ui)
+`@ztechjs/zt-ui` 为中后台产品提供约 80 个稳定组件：从布局、表单、数据展示到浮层与媒体，统一尺寸、主题、圆角与表单校验契约，开箱即可拼装业务页面。
+
+| | |
+| --- | --- |
+| **安装** | `npm install @ztechjs/zt-ui` |
+| **文档** | [stevqin.github.io/zt-ui](https://stevqin.github.io/zt-ui/) |
+| **仓库** | [github.com/stevqin/zt-ui](https://github.com/stevqin/zt-ui) |
+| **技术栈** | Vue 3 Composition API · TypeScript · SCSS · Vite |
+| **许可** | MIT |
+
+```bash
+npm install @ztechjs/zt-ui
+```
+
+```ts
+import '@ztechjs/zt-ui/style.css'
+import { ZtButton, ZtConfigProvider, ZtModal } from '@ztechjs/zt-ui'
+```
 
 ---
 
