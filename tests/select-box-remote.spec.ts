@@ -395,6 +395,55 @@ describe('SelectBox batch confirmation', () => {
     await click('.zt-select-box-panel__confirm')
     expect(w.emitted('update:modelValue')).toEqual([[['east', 'east2']]])
   })
+  it.each([false, true])('marks remote batch matches as checked in the draft list (remote=%s)', async remote => {
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('搜索页')).mockResolvedValueOnce(batch([eastMatch, southMatch]))
+    const w = box({ remote, remoteMethod, options: remote ? [] : options })
+    await open(w); await enterPaste(w, '华东\n华南'); await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    expect(popup()).not.toBeNull()
+    expect(rows().map(row => [row.textContent, row.getAttribute('aria-checked')])).toEqual([
+      ['华东', 'true'],
+      ['华南', 'true'],
+    ])
+    await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['east', 'south']]])
+  })
+  it('keeps auto-checked batch matches when the parent replaces modelValue with the same contents', async () => {
+    const pending = deferred()
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('页面')).mockImplementationOnce(() => pending.promise)
+    const w = box({ remote: true, remoteMethod, modelValue: ['confirmed'] })
+    await open(w); await enterPaste(w, '华东')
+    await click('.zt-select-box-panel__confirm')
+    await w.setProps({ modelValue: ['confirmed'] })
+    pending.resolve(batch([eastMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    expect(popup()).not.toBeNull()
+    expect(ZtMessage.success).toHaveBeenCalledWith('批量粘贴 1 项，匹配 1 项，已自动勾选 1 项')
+    expect(rows().map(row => [row.textContent, row.getAttribute('aria-checked')])).toEqual([
+      ['confirmed', 'true'],
+      ['华东', 'true'],
+    ])
+    await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['confirmed', 'east']]])
+  })
+  it('keeps auto-checked batch matches when remote options refresh during the batch request', async () => {
+    const pending = deferred()
+    const remoteMethod = vi.fn().mockResolvedValueOnce(result('页面')).mockImplementationOnce(() => pending.promise)
+    const w = box({ remote: true, remoteMethod, modelValue: ['confirmed'] })
+    await open(w); await enterPaste(w, '华东')
+    await click('.zt-select-box-panel__confirm')
+    await w.setProps({ options: [{ value: 'confirmed', label: 'confirmed' }, { value: 'east', label: '华东' }] })
+    pending.resolve(batch([eastMatch])); await flushPromises()
+    expect(w.emitted('update:modelValue')).toBeUndefined()
+    expect(popup()).not.toBeNull()
+    expect(ZtMessage.success).toHaveBeenCalledWith('批量粘贴 1 项，匹配 1 项，已自动勾选 1 项')
+    expect(rows().map(row => [row.textContent, row.getAttribute('aria-checked')])).toEqual([
+      ['confirmed', 'true'],
+      ['华东', 'true'],
+    ])
+    await click('.zt-select-box-panel__confirm')
+    expect(w.emitted('update:modelValue')).toEqual([[['confirmed', 'east']]])
+  })
   it('keeps batch loading independent from search results and suppresses duplicate clicks', async () => {
     const pending = deferred(); const pageRequest = deferred()
     const remoteMethod = vi.fn().mockResolvedValueOnce(result('原页面')).mockImplementationOnce(() => pageRequest.promise).mockImplementationOnce(() => pending.promise)

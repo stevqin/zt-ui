@@ -22,6 +22,15 @@ function uniqueValues(values: readonly ZtSelectValue[]) {
   return result
 }
 
+/** Identity-stable parents often replace arrays with equal contents; only real value changes should reset drafts or in-flight batches. */
+export function sameValueList(a: readonly ZtSelectValue[] | undefined, b: readonly ZtSelectValue[] | undefined) {
+  const left = a ?? []
+  const right = b ?? []
+  if (left === right) return true
+  if (left.length !== right.length) return false
+  return left.every((value, index) => value === right[index])
+}
+
 function fallbackOption(value: ZtSelectValue): ZtSelectOption {
   return { value, label: String(value) }
 }
@@ -142,7 +151,11 @@ export function useSelectBoxDraft(
 
   // Snapshot primitive values so parent splice/push/index writes also replace a draft.
   // Draft edits never touch this source; confirmation returns a separate snapshot.
-  watch(() => [...(model.value ?? [])], rebuild, { immediate: true, flush: 'sync' })
+  // Equal-content replacements must not wipe an open draft (or in-flight batch selections).
+  watch(() => (model.value ?? []).slice(), (next, previous) => {
+    if (previous && sameValueList(previous, next)) return
+    rebuild()
+  }, { immediate: true, flush: 'sync' })
 
   return {
     isOpen,

@@ -95,6 +95,17 @@ describe('useSelectBoxDraft', () => {
     expect(state.values.value).toEqual([])
   })
 
+  it('keeps an open draft when the model is replaced with the same contents', () => {
+    const model = ref<ZtSelectValue[]>([1])
+    const state = useSelectBoxDraft(model)
+    state.open()
+    state.toggle(2)
+
+    model.value = [1]
+
+    expect(state.values.value).toEqual([1, 2])
+  })
+
   it('merges option labels by value while preserving labels for unknown confirmed values', () => {
     const model = ref<ZtSelectValue[]>([1, 3])
     const state = useSelectBoxDraft(model)

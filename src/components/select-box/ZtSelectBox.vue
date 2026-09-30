@@ -9,7 +9,7 @@ import { overlayContextKey } from '../overlay/context'
 import { getUnconstrainedPopupHeight, useAnchoredDropdown } from '../selection/useAnchoredDropdown'
 import { useRemoteOptions } from '../selection/useRemoteOptions'
 import SelectBoxPanel from './SelectBoxPanel.vue'
-import { normalizePageSize, useSelectBoxDraft } from './useSelectBoxDraft'
+import { normalizePageSize, sameValueList, useSelectBoxDraft } from './useSelectBoxDraft'
 import type { ZtSelectBoxProps, ZtSelectBoxRemoteRequest, ZtSelectBoxRemoteResult, ZtSelectOption, ZtSelectValue } from './types'
 import './select-box.scss'
 
@@ -94,7 +94,10 @@ const batchMethod = computed(() => {
 })
 // Separate coordinators keep search pages, loading, and request generations independent.
 const remoteBatch = useRemoteOptions<ZtSelectBoxRemoteRequest, ZtSelectBoxRemoteResult>(batchMethod, toRef(props, 'debounce'), () => ({ mode: 'batch', matches: [] }))
-watch(() => [...props.modelValue], () => remoteBatch.reset(), { flush: 'sync' })
+watch(() => props.modelValue.slice(), (next, previous) => {
+  if (previous && sameValueList(previous, next)) return
+  remoteBatch.reset()
+}, { flush: 'sync' })
 async function matchBatch(keywords: string[]) {
   if (!props.remote || !visible.value || remoteBatch.loading.value) return undefined
   const response = await remoteBatch.run({ mode: 'batch', keywords }, {

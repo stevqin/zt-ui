@@ -13,7 +13,7 @@ import ZtText from '../text/ZtText.vue'
 import { useZtSize } from '../config-provider/context'
 import type { ZtComponentSize } from '../types'
 import type { ZtSelectBoxBatchMatch, ZtSelectOption, ZtSelectValue } from './types'
-import { normalizePageSize, normalizePageSizes, useSelectBoxDraft } from './useSelectBoxDraft'
+import { normalizePageSize, normalizePageSizes, sameValueList, useSelectBoxDraft } from './useSelectBoxDraft'
 import './select-box.scss'
 
 defineOptions({ name: 'SelectBoxPanel' })
@@ -51,7 +51,10 @@ const size = useZtSize(props)
 const draft = useSelectBoxDraft(toRef(props, 'modelValue'))
 const values = draft.values
 let modelRevision = 0
-watch(() => [...(props.modelValue ?? [])], () => { modelRevision++ }, { flush: 'sync' })
+watch(() => (props.modelValue ?? []).slice(), (next, previous) => {
+  if (previous && sameValueList(previous, next)) return
+  modelRevision++
+}, { flush: 'sync' })
 watch([() => props.options, () => props.knownOptions], ([options, known]) => {
   draft.mergeOptions([...(known ?? []), ...options])
 }, { immediate: true })
