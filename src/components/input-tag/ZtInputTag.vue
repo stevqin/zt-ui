@@ -13,10 +13,11 @@ const props = withDefaults(defineProps<ZtInputTagProps>(), {
   deduplicate: true,
   max: Infinity,
   separators: () => [',', ';', '，', '；', '\n'],
+  commitOn: 'both',
   disabled: false,
   readonly: false,
   clearable: false,
-  placeholder: '输入后按回车',
+  placeholder: undefined,
 });
 const emit = defineEmits<{
   'update:modelValue': [value: string[]];
@@ -39,6 +40,13 @@ if (form)
       trigger === 'blur' ? form.validate(trigger) : Promise.resolve(true),
   });
 const editable = computed(() => !disabled.value && !props.readonly);
+const commitOnEnter = computed(() => props.commitOn === 'enter' || props.commitOn === 'both');
+const commitOnBlur = computed(() => props.commitOn === 'blur' || props.commitOn === 'both');
+const placeholderText = computed(() => props.placeholder ?? (
+  props.commitOn === 'blur' ? '输入后失焦添加'
+    : props.commitOn === 'enter' ? '输入后按回车'
+      : '输入后按回车或失焦添加'
+));
 function update(values: string[]) {
   emit('update:modelValue', values);
   emit('change', values);
@@ -77,9 +85,12 @@ function key(e: KeyboardEvent) {
   if (!editable.value || composing.value || e.isComposing) return;
   if (e.key === 'Enter' || props.separators.includes(e.key)) {
     e.preventDefault();
-    add(draft.value);
+    if (commitOnEnter.value) add(draft.value);
   } else if (e.key === 'Backspace' && !draft.value && props.modelValue.length)
     remove(props.modelValue.length - 1);
+}
+function blur() {
+  if (commitOnBlur.value && !composing.value) add(draft.value);
 }
 function paste(e: ClipboardEvent) {
   if (!editable.value || composing.value) return;
@@ -124,9 +135,10 @@ function clear() {
       :size="size"
       :disabled="disabled"
       :readonly="readonly"
-      :placeholder="placeholder"
+      :placeholder="placeholderText"
       @keydown="key"
       @paste="paste"
+      @blur="blur"
       @compositionstart="composing = true"
       @compositionend="composing = false"
     /><button
