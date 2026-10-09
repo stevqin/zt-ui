@@ -13,6 +13,11 @@ export interface ZtInputTagProps {
   max?: number;
   /** 除 Enter 外的提交分隔符，同时用于拆分粘贴文本。 */
   separators?: string[];
+  /**
+   * 提交时机：`enter` 仅回车/分隔符提交，`blur` 仅失焦提交，`both` 两者皆可。
+   * 粘贴始终立即拆分提交。默认 `both`。
+   */
+  commitOn?: 'enter' | 'blur' | 'both';
   /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */
   disabled?: boolean;
   /** 只读模式，保留值展示与聚焦，不允许修改。 */

@@ -4,6 +4,7 @@ export default {
   'password.ZtPassword.props.underline': { description: '显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。', defaultValue: '继承最近 Form（最终为 false）' },
   'input-number.ZtInputNumber.props.underline': { description: '显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。', defaultValue: '继承最近 Form（最终为 false）' },
   'input-tag.ZtInputTag.props.underline': { description: '显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。', defaultValue: '继承最近 Form（最终为 false）' },
+  'input-tag.ZtInputTag.props.commitOn': { description: '提交时机：enter 仅回车/分隔符，blur 仅失焦，both 两者皆可。粘贴始终立即拆分提交。', defaultValue: 'both' },
   'input-otp.ZtInputOtp.props.underline': { description: '显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。', defaultValue: '继承最近 Form（最终为 false）' },
   'select.ZtSelect.props.underline': { description: '显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。', defaultValue: '继承最近 Form（最终为 false）' },
   'select-box.ZtSelectBox.props.underline': { description: '显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。', defaultValue: '继承最近 Form（最终为 false）' },

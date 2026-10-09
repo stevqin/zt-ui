@@ -11564,6 +11564,15 @@
             "description": "除 Enter 外的提交分隔符，同时用于拆分粘贴文本。"
           },
           {
+            "name": "commitOn",
+            "templateName": "commit-on",
+            "kind": "prop",
+            "type": "'enter' | 'blur' | 'both'",
+            "required": false,
+            "default": "both",
+            "description": "提交时机：`enter` 仅回车/分隔符提交，`blur` 仅失焦提交，`both` 两者皆可。\n粘贴始终立即拆分提交。默认 `both`。"
+          },
+          {
             "name": "disabled",
             "templateName": "disabled",
             "kind": "prop",
@@ -11605,7 +11614,7 @@
             "kind": "prop",
             "type": "string",
             "required": false,
-            "default": "'输入后按回车'",
+            "default": "undefined",
             "description": "无输入内容时的提示文本。"
           }
         ],
@@ -11655,7 +11664,7 @@
     "types": [
       {
         "name": "ZtInputTagProps",
-        "code": "export interface ZtInputTagProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 受控标签数组，空值为 []；仅标签变化时触发 update/change。 */\n  modelValue?: string[];\n  /** 是否精确去重，区分大小写，默认 true。 */\n  deduplicate?: boolean;\n  /** 标签数量上限，超出项丢弃并触发 limit；默认不限制。 */\n  max?: number;\n  /** 除 Enter 外的提交分隔符，同时用于拆分粘贴文本。 */\n  separators?: string[];\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n}",
+        "code": "export interface ZtInputTagProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 受控标签数组，空值为 []；仅标签变化时触发 update/change。 */\n  modelValue?: string[];\n  /** 是否精确去重，区分大小写，默认 true。 */\n  deduplicate?: boolean;\n  /** 标签数量上限，超出项丢弃并触发 limit；默认不限制。 */\n  max?: number;\n  /** 除 Enter 外的提交分隔符，同时用于拆分粘贴文本。 */\n  separators?: string[];\n  /**\n   * 提交时机：`enter` 仅回车/分隔符提交，`blur` 仅失焦提交，`both` 两者皆可。\n   * 粘贴始终立即拆分提交。默认 `both`。\n   */\n  commitOn?: 'enter' | 'blur' | 'both';\n  /** 禁用交互，默认 false；同时继承 Form 的禁用状态。 */\n  disabled?: boolean;\n  /** 只读模式，保留值展示与聚焦，不允许修改。 */\n  readonly?: boolean;\n  /** 是否显示清空操作，默认 false。 */\n  clearable?: boolean;\n  /** 支持 mini、small、default、medium、large，省略时继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n  /** 无输入内容时的提示文本。 */\n  placeholder?: string;\n}",
         "public": true
       },
       {
