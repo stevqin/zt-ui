@@ -2,14 +2,12 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
-import {
-  ZtDatePickerPanel,
+import { ZtCheckbox, ZtDatePickerPanel,
   ZtForm,
   ZtFormItem,
   ZtButton,
   type ZtFormInstance,
-  type ZtDatePickerValue,
-} from '@ztechjs/zt-ui';
+  type ZtDatePickerValue, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const model = reactive<{ value: ZtDatePickerValue }>({ value: null }),
   form = ref<ZtFormInstance>(),
@@ -21,8 +19,7 @@ async function submit() {
 </script>
 <template>
   <div class="picker-demo">
-    <label><input v-model="disabled" type="checkbox" />整个表单禁用</label
-    ><ZtForm
+    <ZtCheckbox v-model="disabled">整个表单禁用</ZtCheckbox><ZtForm
       ref="form"
       :model="model"
       :disabled="disabled"

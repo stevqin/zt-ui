@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtModal, ZtButton, ZtSwitch } from '@ztechjs/zt-ui';
+import { ZtInput, ZtModal, ZtButton, ZtSwitch } from '@ztechjs/zt-ui';
+const note = ref('');
 const visible = ref(false),
   allowClose = ref(false),
   message = ref('');
@@ -19,9 +20,9 @@ async function beforeClose() {
       destroy-on-close
       show-footer
       :before-close="beforeClose"
-      @closed="message = '关闭动画结束，内容已销毁'"
+      @closed="note = ''; message = '关闭动画结束，内容已销毁'"
       ><template #title>编辑业务草稿</template
-      ><label>备注 <input placeholder="关闭并重新打开后此输入会重建" /></label
+      ><label>备注 <ZtInput v-model="note" placeholder="关闭并重新打开后此输入会重建" /></label
       ><ZtSwitch v-model="allowClose" active-text="允许关闭" />
       <p role="status">{{ message }}</p>
       <template #footer

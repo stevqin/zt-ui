@@ -2,11 +2,9 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import {
-  ZtCascader,
+import { ZtCheckbox, ZtButton, ZtCascader,
   type ZtCascaderValue,
-  type ZtTreeNode,
-} from '@ztechjs/zt-ui';
+  type ZtTreeNode, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtCascaderValue>([]),
   multiple = ref<ZtCascaderValue>([]),
@@ -38,8 +36,7 @@ const options: ZtTreeNode[] = [
 </script>
 <template>
   <div class="stack">
-    <label><input v-model="strict" type="checkbox" />允许选择任意层级</label
-    ><ZtCascader
+    <ZtCheckbox v-model="strict">允许选择任意层级</ZtCheckbox><ZtCascader
       :status="demoStatus"
       v-model="value"
       :options="options"
@@ -58,8 +55,8 @@ const options: ZtTreeNode[] = [
     <p>单条路径：{{ value === null ? 'null（清空）' : JSON.stringify(value) }}</p>
     <p>多条路径：{{ JSON.stringify(multiple) }}</p>
     <p>
-      <button type="button" @click="clearSingle">单选清空 → null</button>
-      <button type="button" @click="clearMultiple">多选清空 → []</button>
+      <ZtButton type="button" @click="clearSingle">单选清空 → null</ZtButton>
+      <ZtButton type="button" @click="clearMultiple">多选清空 → []</ZtButton>
     </p>
   </div>
 </template>

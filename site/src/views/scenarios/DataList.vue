@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue';
-import { ZtInput, ZtPagination, ZtTag } from '@ztechjs/zt-ui';
+import { ZtInput, ZtPagination, ZtTag, ZtTable, type ZtTableColumn } from '@ztechjs/zt-ui';
+const columns: ZtTableColumn[] = [
+  {prop: 'id', label: '货号', minWidth: 100},
+  {prop: 'name', label: '商品', minWidth: 120},
+  {prop: 'stock', label: '库存', width: 80},
+  {prop: 'active', label: '状态', width: 100},
+];
 const keyword = ref(''),
   page = ref(1),
   pageSize = ref(5);
@@ -28,33 +34,11 @@ watch([keyword, pageSize], () => (page.value = 1));
       style="max-width: 300px"
     />
     <div style="overflow-x: auto; margin: 16px 0">
-      <table style="width: 100%; border-collapse: collapse; text-align: left; min-width: 380px">
-        <thead>
-          <tr>
-            <th style="padding: 12px">货号</th>
-            <th>商品</th>
-            <th>库存</th>
-            <th>状态</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="row in visible" :key="row.id" style="border-top: 1px solid #e4e9f0">
-            <td style="padding: 12px">{{ row.id }}</td>
-            <td>{{ row.name }}</td>
-            <td>{{ row.stock }}</td>
-            <td>
-              <ZtTag :status="row.active ? 'success' : 'default'">{{
-                row.active ? '已上架' : '待上架'
-              }}</ZtTag>
-            </td>
-          </tr>
-          <tr v-if="!visible.length">
-            <td colspan="4" style="padding: 32px; text-align: center">
-              没有匹配的商品，请调整关键词。
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <ZtTable :data="visible" :columns="columns" empty-text="没有匹配的商品，请调整关键词。">
+        <template #active="{ row }">
+          <ZtTag :status="row.active ? 'success' : 'default'">{{ row.active ? '已上架' : '待上架' }}</ZtTag>
+        </template>
+      </ZtTable>
     </div>
     <ZtPagination
       v-model:current-page="page"

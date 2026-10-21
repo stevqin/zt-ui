@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtTimeline, type ZtTimelineItem } from '@ztechjs/zt-ui';
+import { ZtCheckbox, ZtTimeline, type ZtTimelineItem } from '@ztechjs/zt-ui';
 const reverse = ref(false);
 const items: ZtTimelineItem[] = [
   { key: 1, time: '2026-09-15 09:00', content: '订单创建', status: 'primary' },
@@ -15,8 +15,7 @@ const items: ZtTimelineItem[] = [
 ];
 </script>
 <template>
-  <label><input v-model="reverse" type="checkbox" />倒序</label
-  ><ZtTimeline :items="items" :reverse="reverse" placement="alternate"
+  <ZtCheckbox v-model="reverse">倒序</ZtCheckbox><ZtTimeline :items="items" :reverse="reverse" placement="alternate"
     ><template #default="{ item }"
       ><strong>{{ item.content }}</strong>
       <p>订单 #20260915001</p></template

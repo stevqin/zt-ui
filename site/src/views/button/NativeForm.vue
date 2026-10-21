@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtButton } from '@ztechjs/zt-ui';
+import { ZtInput, ZtButton } from '@ztechjs/zt-ui';
+const name = ref('林青');
 const result = ref('尚未提交');
 function submit(event: Event) {
   const data = new FormData(event.target as HTMLFormElement);
@@ -10,8 +11,8 @@ function submit(event: Event) {
 
 <template>
   <div class="example-stack">
-    <form class="example-row" @submit.prevent="submit" @reset="result = '已重置'">
-      <label>姓名 <input name="name" value="林青" /></label
+    <form class="example-row" @submit.prevent="submit" @reset.prevent="name = '林青'; result = '已重置'">
+      <label>姓名 <ZtInput v-model="name" name="name" /></label
       ><ZtButton type="submit" status="primary">提交</ZtButton
       ><ZtButton type="reset">重置</ZtButton>
     </form>

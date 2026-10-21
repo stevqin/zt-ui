@@ -1,2 +1,95 @@
 @use '../../styles/tokens' as glass;
-.zt-popconfirm{@include glass.tokens;display:flex;gap:10px;max-width:280px;&__icon{margin-top:2px;font-size:18px}&--warning &__icon{color:var(--glass-warning-ink)}&--danger &__icon{color:var(--glass-danger-ink)}&--success &__icon{color:var(--glass-success-ink)}&--primary &__icon{color:var(--glass-accent)}&__body{min-width:0;flex:1}strong{display:block;color:var(--glass-ink);font-size:13px}p{margin:4px 0 0;color:var(--glass-muted);font-size:12px}&__actions{display:flex;justify-content:flex-end;gap:8px;margin-top:13px}button{display:inline-flex;align-items:center;gap:5px;padding:5px 10px;border:1px solid var(--glass-line);border-radius:glass.radius(7px);background:var(--glass-default-button);color:var(--glass-default-ink);cursor:pointer;&.is-confirm{border-color:transparent;background:var(--glass-accent-button);color:#fff}&:disabled{opacity:.5;cursor:not-allowed}&:focus-visible{outline:2px solid var(--glass-accent);outline-offset:2px}}}
+
+.zt-popover--confirm {
+  --zt-popconfirm-padding: 16px;
+  --zt-popconfirm-title-size: 14px;
+  --zt-popconfirm-description-size: 13px;
+  --zt-popconfirm-icon-size: 20px;
+  --zt-popconfirm-gap: 11px;
+  --zt-popconfirm-action-margin: 16px;
+  --zt-popconfirm-action-gap: 8px;
+  --zt-popconfirm-max-width: 280px;
+  padding: var(--zt-popconfirm-padding);
+}
+.zt-popover--confirm-mini {
+  --zt-popconfirm-padding: 10px;
+  --zt-popconfirm-title-size: 12px;
+  --zt-popconfirm-description-size: 11px;
+  --zt-popconfirm-icon-size: 16px;
+  --zt-popconfirm-gap: 8px;
+  --zt-popconfirm-action-margin: 10px;
+  --zt-popconfirm-action-gap: 6px;
+  --zt-popconfirm-max-width: 240px;
+  border-radius: glass.radius(10px);
+}
+.zt-popover--confirm-small {
+  --zt-popconfirm-padding: 13px;
+  --zt-popconfirm-title-size: 13px;
+  --zt-popconfirm-description-size: 12px;
+  --zt-popconfirm-icon-size: 18px;
+  --zt-popconfirm-gap: 9px;
+  --zt-popconfirm-action-margin: 12px;
+  --zt-popconfirm-action-gap: 7px;
+  --zt-popconfirm-max-width: 260px;
+  border-radius: glass.radius(11px);
+}
+.zt-popover--confirm-medium {
+  --zt-popconfirm-padding: 18px;
+  --zt-popconfirm-title-size: 15px;
+  --zt-popconfirm-description-size: 14px;
+  --zt-popconfirm-icon-size: 22px;
+  --zt-popconfirm-gap: 12px;
+  --zt-popconfirm-action-margin: 18px;
+  --zt-popconfirm-action-gap: 9px;
+  --zt-popconfirm-max-width: 300px;
+  border-radius: glass.radius(13px);
+}
+.zt-popover--confirm-large {
+  --zt-popconfirm-padding: 20px;
+  --zt-popconfirm-title-size: 16px;
+  --zt-popconfirm-description-size: 15px;
+  --zt-popconfirm-icon-size: 24px;
+  --zt-popconfirm-gap: 14px;
+  --zt-popconfirm-action-margin: 20px;
+  --zt-popconfirm-action-gap: 10px;
+  --zt-popconfirm-max-width: 320px;
+  border-radius: glass.radius(14px);
+}
+
+.zt-popconfirm {
+  @include glass.tokens;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--zt-popconfirm-gap, 11px);
+  max-width: var(--zt-popconfirm-max-width, 280px);
+  &__icon {
+    margin-top: 2px;
+    font-size: var(--zt-popconfirm-icon-size, 20px);
+  }
+  &--default &__icon, &--info &__icon { color: var(--glass-info-ink); }
+  &--warning &__icon { color: var(--glass-warning-ink); }
+  &--danger &__icon { color: var(--glass-danger-ink); }
+  &--success &__icon { color: var(--glass-success-ink); }
+  &--primary &__icon { color: var(--glass-accent); }
+  &__body { min-width: 0; flex: 1; }
+  &__body > strong {
+    display: block;
+    color: var(--glass-ink);
+    font-size: var(--zt-popconfirm-title-size, 14px);
+    font-weight: 600;
+    line-height: 1.6;
+  }
+  &__body > p {
+    margin: 5px 0 0;
+    color: var(--glass-muted);
+    font-size: var(--zt-popconfirm-description-size, 13px);
+    line-height: 1.65;
+  }
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--zt-popconfirm-action-gap, 8px);
+    margin-top: var(--zt-popconfirm-action-margin, 16px);
+  }
+}

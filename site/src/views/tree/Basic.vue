@@ -2,7 +2,7 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import { ZtTree, type ZtTreeNode, type ZtTreeKey } from '@ztechjs/zt-ui';
+import { ZtCheckbox, ZtInput, ZtTree, type ZtTreeNode, type ZtTreeKey } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const checked = ref<ZtTreeKey[]>([]),
   selected = ref<ZtTreeKey[]>([]),
@@ -28,9 +28,8 @@ const data: ZtTreeNode[] = [
 </script>
 <template>
   <div class="demo">
-    <label>筛选节点 <input v-model="filter" placeholder="搜索门店" /></label
-    ><label><input v-model="strict" type="checkbox" />严格勾选</label
-    ><ZtTree
+    <label>筛选节点 <ZtInput v-model="filter" placeholder="搜索门店" /></label
+    ><ZtCheckbox v-model="strict">严格勾选</ZtCheckbox><ZtTree
       :status="demoStatus"
       v-model:checked-keys="checked"
       v-model:selected-keys="selected"
@@ -54,8 +53,5 @@ const data: ZtTreeNode[] = [
   display: grid;
   gap: 12px;
   max-width: 600px;
-}
-.demo input:not([type='checkbox']) {
-  padding: 6px;
 }
 </style>

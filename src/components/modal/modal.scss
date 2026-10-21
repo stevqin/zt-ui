@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../styles/tokens' as glass;
 
 .zt-modal {
@@ -78,7 +79,7 @@
 
   &--fullscreen { padding: 0 !important; }
   &--fullscreen &__panel {
-    width: 100% !important;
+    width: 100%;
     height: 100%;
     max-height: 100%;
     border: 0;
@@ -88,6 +89,21 @@
   &--dragging,
   &--dragging &__header { cursor: grabbing; }
   &--dragging &__panel { transition: none !important; }
+  // Prevent entry motion from competing with the fullscreen transition.
+  &--resizing &__panel {
+    animation: none !important;
+    contain: layout style;
+    will-change: transform;
+    // Re-blurring the backdrop on every size change causes large repaints.
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+  &--resizing &__header,
+  &--resizing &__footer {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
 
   &--mini {
     font-size: var(--glass-size-mini);
@@ -123,13 +139,78 @@
   &--fullscreen &__panel { border-radius: 0; }
 }
 
-.zt-modal-enter-active { transition: opacity 220ms ease; }
-.zt-modal-leave-active { transition: opacity 160ms ease; pointer-events: none; }
-.zt-modal-enter-active .zt-modal__panel { transition: transform 240ms cubic-bezier(.22, 1, .36, 1), opacity 180ms ease; }
-.zt-modal-leave-active .zt-modal__panel { transition: transform 160ms ease, opacity 140ms ease; }
-.zt-modal-enter-from, .zt-modal-leave-to { opacity: 0; }
-.zt-modal-enter-from .zt-modal__panel { opacity: 0; transform: translateY(12px) scale(.98); }
-.zt-modal-leave-to .zt-modal__panel { opacity: 0; transform: translateY(8px) scale(.99); }
+.zt-modal-enter-active { transition: opacity 560ms cubic-bezier(.16, 1, .3, 1); }
+.zt-modal-leave-active { transition: background-color 350ms ease; pointer-events: none; }
+.zt-modal-enter-active .zt-modal__panel {
+  animation: zt-modal-float-in 560ms linear both;
+  transform-origin: center;
+}
+.zt-modal-enter-active.zt-modal--fullscreen .zt-modal__panel {
+  animation-name: zt-modal-fade-in;
+  animation-duration: 180ms;
+}
+.zt-modal-enter-active.zt-modal--fullscreen { transition-duration: 180ms; }
+.zt-modal-leave-active .zt-modal__panel {
+  animation: zt-modal-float-out 350ms linear both;
+  transform-origin: center;
+}
+.zt-modal-leave-active.zt-modal--fullscreen { transition-duration: 160ms; }
+.zt-modal-leave-active.zt-modal--fullscreen .zt-modal__panel {
+  animation-name: zt-modal-fade-out;
+  animation-duration: 160ms;
+}
+.zt-modal-enter-from { opacity: 0; }
+// Fade only the mask on exit; root opacity would hide the panel's spring motion.
+.zt-modal-leave-to { background-color: transparent; }
+.zt-modal-enter-from .zt-modal__panel { opacity: 0; }
+.zt-modal-leave-to .zt-modal__panel { opacity: 0; }
+
+// Sample continuous curves so rebounds retain momentum.
+// Individual translate/scale leave the inline drag transform untouched.
+@function modal-spring($t) {
+  @return math.pow(math.$e, -4.8 * $t) * (math.cos(13 * $t * 1rad) + math.div(4.8, 13) * math.sin(13 * $t * 1rad));
+}
+@function modal-spring-velocity($t) {
+  @return - math.div(4.8 * 4.8 + 13 * 13, 13) * math.pow(math.$e, -4.8 * $t) * math.sin(13 * $t * 1rad);
+}
+
+@keyframes zt-modal-float-in {
+  @for $i from 0 through 119 {
+    $t: math.div($i, 120);
+    // Smoothly remove residual displacement so the final pose rests exactly.
+    $spring: modal-spring($t) - modal-spring(1) * $t * $t * (3 - 2 * $t);
+    // Shape trails travel: stretch on launch, squash on landing, then settle.
+    $deform: -.022 * modal-spring-velocity(math.max(0, $t - .035)) * (1 - $t);
+    #{math.percentage($t)} {
+      opacity: math.min(1, math.div($t, .14));
+      // Moderate travel keeps the delayed shape response readable.
+      translate: 0 (54px * $spring);
+      scale: (1 - .1 * $spring - $deform) (1 - .16 * $spring + $deform);
+    }
+  }
+  100% { opacity: 1; translate: 0 0; scale: 1; }
+}
+// A 350ms exit: shrink in place for exactly 150ms, then fall for 200ms.
+@keyframes zt-modal-float-out {
+  0% {
+    opacity: 1; translate: 0 0; scale: 1;
+    animation-timing-function: cubic-bezier(.16, 1, .3, 1);
+  }
+  #{math.percentage(math.div(3, 7))} {
+    opacity: 1; translate: 0 0; scale: .9;
+    animation-timing-function: cubic-bezier(.4, 0, 1, 1);
+  }
+  100% { opacity: 0; translate: 0 120px; scale: .86; }
+}
+@keyframes zt-modal-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zt-modal-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
 @media (max-width: 640px) {
   .zt-modal { padding: 14px; }
@@ -138,5 +219,5 @@
 
 @media (prefers-reduced-motion: reduce) {
   .zt-modal,
-  .zt-modal .zt-modal__panel { transition: none !important; transform: none !important; }
+  .zt-modal .zt-modal__panel { transition: none !important; animation: none !important; translate: none !important; scale: none !important; }
 }

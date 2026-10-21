@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import DemoBlock from '@/components/DemoBlock.vue';
+import PopupReadability from './Readability.vue';
+import PopupReadabilityCode from './Readability.vue?raw';
 import Example01 from './Example01.vue';
 import Example01Code from './Example01.vue?raw';
 import Example02 from './Example02.vue';
@@ -21,6 +23,10 @@ import PlacementCode from './Placement.vue?raw';
     <DemoBlock :code="Example03Code"><Example03 /></DemoBlock>
     <h3>方位、箭头与禁用</h3>
     <DemoBlock :code="PlacementCode" desc=""><Placement /></DemoBlock>
+    <h3>白底与密集内容</h3>
+    <DemoBlock :code="PopupReadabilityCode" desc="在白色页面和订单文字上打开浮层，检查玻璃背景、箭头与文字的清晰度；弹出时轻缩放淡入，关闭时快速淡出。">
+      <PopupReadability />
+    </DemoBlock>
   </div>
 </template>
 

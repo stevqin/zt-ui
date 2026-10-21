@@ -5,6 +5,8 @@ export interface ZtTreeNode {
   key?: ZtTreeKey;
   label?: string;
   disabled?: boolean;
+  /** false 隐藏勾选框且不参与勾选结果；子节点仍可参与父子联动。 */
+  checkable?: boolean;
   isLeaf?: boolean;
   children?: ZtTreeNode[];
   [field: string]: unknown;
@@ -14,6 +16,7 @@ export interface ZtTreeFields {
   label?: string;
   children?: string;
   disabled?: string;
+  checkable?: string;
   isLeaf?: string;
 }
 export type ZtTreeLoader = (node: ZtTreeNode) => Promise<ZtTreeNode[]>;
@@ -22,7 +25,7 @@ export interface ZtTreeProps {
   status?: ZtButtonStatus;
   /** 层级节点数组；节点 key 必须在整棵树中唯一。 */
   data?: ZtTreeNode[];
-  /** 自定义 key、label、children、disabled、isLeaf 的源数据字段名。 */
+  /** 自定义 key、label、children、disabled、checkable、isLeaf 的源数据字段名。 */
   fields?: ZtTreeFields;
   /** 受控勾选 key；非严格模式展示时补齐启用的子孙和完整父节点。 */
   checkedKeys?: ZtTreeKey[];
@@ -32,7 +35,7 @@ export interface ZtTreeProps {
   expandedKeys?: ZtTreeKey[];
   /** 非受控模式首次展开的 key 数组。 */
   defaultExpandedKeys?: ZtTreeKey[];
-  /** 显示勾选框，空格触发勾选。 */
+  /** 显示勾选框，空格触发勾选；节点 checkable=false 时不参与勾选。 */
   checkable?: boolean;
   /** 父子勾选独立，不计算半选或自动联动。 */
   checkStrictly?: boolean;
@@ -48,6 +51,8 @@ export interface ZtTreeProps {
   height?: number;
   /** 虚拟及普通行高，像素，最小 20，默认随 size 为 24/28/32/36/40。 */
   itemHeight?: number;
+  /** 非虚拟模式使用自适应行高，itemHeight 作为最小高度；虚拟模式仍使用固定行高。默认 false。 */
+  autoItemHeight?: boolean;
   /** 五档字体尺寸，默认继承 ConfigProvider。 */
   size?: ZtComponentSize;
 }

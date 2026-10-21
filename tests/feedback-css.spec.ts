@@ -75,11 +75,11 @@ describe.each([false, true])('feedback CSS coexistence (production build=%s)', p
     })
 
     it.each([
-      { placement: 'right' as const, transform: /translate(?:X)?\(100%\)/ },
-      { placement: 'left' as const, transform: /translate(?:X)?\(-100%\)/ },
-      { placement: 'top' as const, transform: /translateY\(-100%\)/ },
-      { placement: 'bottom' as const, transform: /translateY\(100%\)/ },
-    ])('keeps the $placement Drawer visible when open and hides it after closing', async ({ placement, transform }) => {
+      { placement: 'right' as const, x: '100%', y: '0%' },
+      { placement: 'left' as const, x: '-100%', y: '0%' },
+      { placement: 'top' as const, x: '0%', y: '-100%' },
+      { placement: 'bottom' as const, x: '0%', y: '100%' },
+    ])('keeps the $placement Drawer visible when open and hides it after closing', async ({ placement, x, y }) => {
       applyStyles(production, alertLast)
       vi.useFakeTimers()
       const wrapper = mount(ZtDrawer, {
@@ -90,11 +90,16 @@ describe.each([false, true])('feedback CSS coexistence (production build=%s)', p
       wrappers.push(wrapper)
       const panel = document.querySelector<HTMLElement>('[role="dialog"]')!
       const root = panel.parentElement!
-      expect(getComputedStyle(panel).transform).toMatch(transform)
+      // Happy DOM exposes the keyframe binding, but does not sample animations.
+      expect(getComputedStyle(panel).animation).toContain('zt-drawer-slide-in')
+      expect(getComputedStyle(root).getPropertyValue('--zt-drawer-motion-x').trim()).toBe(x)
+      expect(getComputedStyle(root).getPropertyValue('--zt-drawer-motion-y').trim()).toBe(y)
       await vi.runAllTimersAsync()
       expect(getComputedStyle(panel).transform).toMatch(/^(?:none)?$/)
       expect(getComputedStyle(root).display).not.toBe('none')
       await wrapper.setProps({ modelValue: false })
+      expect(getComputedStyle(panel).animation).toContain('zt-drawer-slide-out')
+      expect(getComputedStyle(root).display).not.toBe('none')
       await vi.runAllTimersAsync()
       expect(getComputedStyle(root).display).toBe('none')
       await wrapper.setProps({ modelValue: true })

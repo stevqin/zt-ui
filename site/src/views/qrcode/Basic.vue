@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtQRCode, ZtButton } from '@ztechjs/zt-ui';
+import { ZtInput, ZtQRCode, ZtButton } from '@ztechjs/zt-ui';
 import type { ZtQRCodeInstance } from '@ztechjs/zt-ui';
 const code = ref<ZtQRCodeInstance>(),
   value = ref('https://example.com/订单?id=42'),
@@ -9,7 +9,7 @@ const code = ref<ZtQRCodeInstance>(),
 <template>
   <div class="demo">
     <label
-      >编码内容<input v-model="value" placeholder="输入纯文本或链接" /></label
+      >编码内容<ZtInput v-model="value" placeholder="输入纯文本或链接" /></label
     ><ZtQRCode
       ref="code"
       :value="value"
@@ -32,16 +32,6 @@ const code = ref<ZtQRCodeInstance>(),
   display: grid;
   gap: 8px;
   width: 100%;
-}
-.demo input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 9px 12px;
-  border: 1px solid #8a9ab066;
-  border-radius: 6px;
-  font: inherit;
-  color: inherit;
-  background: transparent;
 }
 .demo p {
   margin: 0;

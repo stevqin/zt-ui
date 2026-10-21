@@ -17,6 +17,7 @@ export interface ZtDrawerProps extends ZtOverlayCommonProps {
   /** Fill the viewport below this breakpoint; 0 disables it. */
   fullscreenBelow?: number
   bodyScroll?: boolean
+  /** Body padding in pixels or CSS shorthand. 0 removes padding; omit for size defaults. */
   bodyPadding?: number | string
   loading?: boolean
   loadingText?: string

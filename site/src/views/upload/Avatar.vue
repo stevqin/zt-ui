@@ -2,7 +2,7 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtUploadStatus } from '@ztechjs/zt-ui';
 import { computed, ref } from 'vue';
-import { ZtUpload } from '@ztechjs/zt-ui';
+import { ZtButton, ZtUpload } from '@ztechjs/zt-ui';
 import type { ZtUploadFile } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtUploadStatus>('primary');
 const files = ref<ZtUploadFile[]>([]),
@@ -23,7 +23,7 @@ const avatar = computed({
     :show-file-list="false"
     @reject="(_file, reason) => (message = reason)"
     ><template #trigger="{ open, disabled }"
-      ><button
+      ><ZtButton
         class="avatar-upload"
         type="button"
         :disabled="disabled"
@@ -37,7 +37,7 @@ const avatar = computed({
         ><span v-if="files.length" class="avatar-upload__replace"
           >更换头像</span
         >
-      </button></template
+      </ZtButton></template
     ><template #tip
       >自定义 trigger；JPG / PNG / WebP，不超过 2
       MB。仅本地预览，点击图片可替换。</template

@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import DemoBlock from '@/components/DemoBlock.vue';
-import Basic from './Basic.vue';
-import BasicCode from './Basic.vue?raw';
-import Virtual from './Virtual.vue';
-import VirtualCode from './Virtual.vue?raw';
-import Lazy from './Lazy.vue';
-import LazyCode from './Lazy.vue?raw';
-import Status from './Status.vue';
-import StatusCode from './Status.vue?raw';
+import DemoBlock from "@/components/DemoBlock.vue";
+import Basic from "./Basic.vue";
+import BasicCode from "./Basic.vue?raw";
+import Virtual from "./Virtual.vue";
+import VirtualCode from "./Virtual.vue?raw";
+import Lazy from "./Lazy.vue";
+import LazyCode from "./Lazy.vue?raw";
+import Status from "./Status.vue";
+import StatusCode from "./Status.vue?raw";
+import AutoHeight from "./AutoHeight.vue";
+import AutoHeightCode from "./AutoHeight.vue?raw";
+import NodeChecking from "./NodeChecking.vue";
+import NodeCheckingCode from "./NodeChecking.vue?raw";
+import Slots from "./Slots.vue";
+import SlotsCode from "./Slots.vue?raw";
 </script>
 <template>
   <div class="component-examples">
@@ -15,6 +21,12 @@ import StatusCode from './Status.vue?raw';
     <DemoBlock :code="BasicCode" desc="勾选、过滤与键盘导航"
       ><Basic
     /></DemoBlock>
+    <h3>自适应行高与多行内容</h3>
+    <DemoBlock :code="AutoHeightCode"><AutoHeight /></DemoBlock>
+    <h3>节点级勾选与展示分组</h3>
+    <DemoBlock :code="NodeCheckingCode"><NodeChecking /></DemoBlock>
+    <h3>自定义展开图标与行内交互</h3>
+    <DemoBlock :code="SlotsCode"><Slots /></DemoBlock>
     <h3>万级节点虚拟窗口</h3>
     <DemoBlock :code="VirtualCode" desc="万级节点虚拟窗口"
       ><Virtual

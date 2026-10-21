@@ -2,7 +2,7 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import { ZtTimeSelect } from '@ztechjs/zt-ui';
+import { ZtCheckbox, ZtTimeSelect } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const value = ref<string | null>('10:00'),
   invalid = ref(false);
@@ -20,7 +20,7 @@ const value = ref<string | null>('10:00'),
       :disabled-ranges="[['12:00', '13:00']]"
       clearable
       aria-label="受限预约时间"
-    /><label><input v-model="invalid" type="checkbox" />测试零步长</label>
+    /><ZtCheckbox v-model="invalid">测试零步长</ZtCheckbox>
     <p>08:30 及之前、17:30 及之后不可选；12:00–13:00（含端点）休息。</p>
   </div>
 </template>

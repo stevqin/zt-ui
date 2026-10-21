@@ -1,3 +1,4 @@
+@use 'sass:math';
 @use '../../styles/tokens' as glass;
 
 .zt-drawer-surface {
@@ -138,19 +139,76 @@
   }
 }
 
-.zt-drawer-surface-enter-active { transition: opacity 220ms ease; }
-.zt-drawer-surface-leave-active { transition: opacity 170ms ease; pointer-events: none; }
-.zt-drawer-surface-enter-active .zt-drawer-surface__panel { transition: transform 280ms cubic-bezier(.22, 1, .36, 1); }
-.zt-drawer-surface-leave-active .zt-drawer-surface__panel { transition: transform 180ms ease; }
-.zt-drawer-surface-enter-from, .zt-drawer-surface-leave-to { opacity: 0; }
-.zt-drawer-surface--right.zt-drawer-surface-enter-from .zt-drawer-surface__panel,
-.zt-drawer-surface--right.zt-drawer-surface-leave-to .zt-drawer-surface__panel { transform: translateX(100%); }
-.zt-drawer-surface--left.zt-drawer-surface-enter-from .zt-drawer-surface__panel,
-.zt-drawer-surface--left.zt-drawer-surface-leave-to .zt-drawer-surface__panel { transform: translateX(-100%); }
-.zt-drawer-surface--top.zt-drawer-surface-enter-from .zt-drawer-surface__panel,
-.zt-drawer-surface--top.zt-drawer-surface-leave-to .zt-drawer-surface__panel { transform: translateY(-100%); }
-.zt-drawer-surface--bottom.zt-drawer-surface-enter-from .zt-drawer-surface__panel,
-.zt-drawer-surface--bottom.zt-drawer-surface-leave-to .zt-drawer-surface__panel { transform: translateY(100%); }
+// Stretch along the travel axis, anchored to the viewport edge so rebound
+// never opens a gap between the drawer and that edge.
+.zt-drawer-surface {
+  --zt-drawer-motion-x: 100%;
+  --zt-drawer-motion-y: 0%;
+  --zt-drawer-axis-x: 1;
+  --zt-drawer-axis-y: 0;
+  &--right &__panel { transform-origin: right center; }
+  &--left {
+    --zt-drawer-motion-x: -100%;
+    .zt-drawer-surface__panel { transform-origin: left center; }
+  }
+  &--top, &--bottom {
+    --zt-drawer-motion-x: 0%;
+    --zt-drawer-axis-x: 0;
+    --zt-drawer-axis-y: 1;
+  }
+  &--top {
+    --zt-drawer-motion-y: -100%;
+    .zt-drawer-surface__panel { transform-origin: center top; }
+  }
+  &--bottom {
+    --zt-drawer-motion-y: 100%;
+    .zt-drawer-surface__panel { transform-origin: center bottom; }
+  }
+}
+.zt-drawer-surface-enter-active { transition: opacity 520ms cubic-bezier(.16, 1, .3, 1); }
+.zt-drawer-surface-leave-active { transition: background-color 300ms ease; pointer-events: none; }
+.zt-drawer-surface-enter-active .zt-drawer-surface__panel {
+  animation: zt-drawer-slide-in 520ms linear both;
+}
+.zt-drawer-surface-leave-active .zt-drawer-surface__panel {
+  animation: zt-drawer-slide-out 300ms linear both;
+}
+.zt-drawer-surface-enter-from { opacity: 0; }
+.zt-drawer-surface-leave-to { background-color: transparent; }
+
+@function drawer-spring($t) {
+  @return math.pow(math.$e, -9 * $t) * (math.cos(8 * $t * 1rad) + math.div(9, 8) * math.sin(8 * $t * 1rad));
+}
+@mixin drawer-pose($travel, $stretch) {
+  transform:
+    translate(calc(var(--zt-drawer-motion-x) * #{$travel}), calc(var(--zt-drawer-motion-y) * #{$travel}))
+    scale(calc(1 + var(--zt-drawer-axis-x) * #{$stretch}), calc(1 + var(--zt-drawer-axis-y) * #{$stretch}));
+}
+
+// Damped travel gives the slide weight. Shape trails the slide with a mild
+// extension/compression wave, anchored at the viewport edge to avoid gaps.
+@keyframes zt-drawer-slide-in {
+  @for $i from 0 through 64 {
+    $t: math.div($i, 64);
+    $spring: drawer-spring($t) - drawer-spring(1) * $t * $t * (3 - 2 * $t);
+    // Delay shape response until the panel has momentum, then decay naturally.
+    $shape-time: math.max(0, math.div($t - .12, .88));
+    $deform: .05 * math.sin(3 * math.$pi * $shape-time * 1rad) * math.sin(math.$pi * $shape-time * 1rad) * (1 - $shape-time);
+    #{math.percentage($t)} {
+      @include drawer-pose(math.max(0, $spring), math.max(0, -$spring) + $deform);
+    }
+  }
+}
+@keyframes zt-drawer-slide-out {
+  @for $i from 0 through 64 {
+    $t: math.div($i, 64);
+    // Start moving immediately; a mild wave softens the accelerating slide.
+    $stretch: .018 * math.sin(2 * math.$pi * $t * 1rad) * math.sin(math.$pi * $t * 1rad);
+    #{math.percentage($t)} {
+      @include drawer-pose(.25 * $t + .75 * $t * $t, $stretch);
+    }
+  }
+}
 
 @media (max-width: 640px) {
   .zt-drawer-surface--left .zt-drawer-surface__panel,
@@ -159,7 +217,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .zt-drawer-surface,
-  .zt-drawer-surface .zt-drawer-surface__panel { transition: none !important; transform: none !important; }
+  .zt-drawer-surface .zt-drawer-surface__panel { transition: none !important; animation: none !important; transform: none !important; }
 }
 
 @keyframes zt-drawer-surface-spin { to { transform: rotate(360deg); } }

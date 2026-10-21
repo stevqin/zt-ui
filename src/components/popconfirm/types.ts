@@ -4,6 +4,7 @@ import type { ZtIconName } from '../icon'
 import type { ZtPopoverPlacement } from '../popover'
 export type ZtPopconfirmStatus='default'|'primary'|'success'|'warning'|'danger'|'info'
 export interface ZtPopconfirmProps{
+ /** 整体尺寸，控制面板、文字、图标和按钮；未设置时继承 ConfigProvider。 */ size?:ZtComponentSize
  /** 是否显示，支持 v-model:visible。 */ visible?:boolean
  /** 确认标题。 */ title:string
  /** 补充说明。 */ description?:string
@@ -12,7 +13,7 @@ export interface ZtPopconfirmProps{
  /** 隐藏状态图标。 */ hideIcon?:boolean
  /** 确认按钮文字。 */ confirmText?:string
  /** 取消按钮文字。 */ cancelText?:string
- /** 按钮尺寸。 */ buttonSize?:ZtComponentSize
+ /** 单独覆盖确认和取消按钮的尺寸；未设置时跟随 size。 */ buttonSize?:ZtComponentSize
  /** 外部确认加载状态。 */ confirmLoading?:boolean
  /** 禁用确认按钮。 */ confirmDisabled?:boolean
  /** 禁用取消按钮。 */ cancelDisabled?:boolean

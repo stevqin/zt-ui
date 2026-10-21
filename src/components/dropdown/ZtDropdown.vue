@@ -1,11 +1,14 @@
 <script setup lang="ts">
-import { ref, computed, nextTick, watch } from 'vue';
+import { ref, computed, nextTick, watch, provide, shallowReactive, useSlots } from 'vue';
 import ZtPopover from '../popover/ZtPopover.vue';
+import ZtIcon from '../icon/ZtIcon.vue';
 import { useZtSize } from '../config-provider/context';
-import type { ZtDropdownProps, ZtDropdownItem } from './types';
+import { dropdownKey } from './context';
+import type { ZtDropdownProps, ZtDropdownItem, ZtDropdownItemProps } from './types';
 import './dropdown.scss';
 defineOptions({ name: 'ZtDropdown', inheritAttrs: false });
 const props = withDefaults(defineProps<ZtDropdownProps>(), {
+  items: () => [],
   trigger: 'click',
   disabled: false,
   placement: 'bottom-start',
@@ -19,6 +22,22 @@ const open = ref(false),
   menu = ref<HTMLElement>(),
   reference = ref<HTMLButtonElement>(),
   size = useZtSize(props);
+const slots = useSlots();
+const slotItems = shallowReactive(new Map<symbol, ZtDropdownItemProps>());
+const hasIcons = computed(() => {
+  const items = slots.dropdown ? [...slotItems.values()] : props.items;
+  return items.some(item => item.type !== 'divider' && item.type !== 'group' && item.icon);
+});
+provide(dropdownKey, {
+  disabled: computed(() => props.disabled),
+  hasIcons,
+  choose,
+  register(item) {
+    const id = Symbol();
+    slotItems.set(id, item);
+    return () => slotItems.delete(id);
+  },
+});
 function changed(v: boolean) {
   if (open.value === v) return;
   open.value = v;
@@ -92,6 +111,7 @@ function choose(item: ZtDropdownItem) {
     :trigger="trigger"
     :disabled="disabled"
     :placement="placement"
+    :show-arrow="false"
     :restore-focus="false"
     @update:visible="changed"
     ><button
@@ -105,16 +125,23 @@ function choose(item: ZtDropdownItem) {
       :aria-expanded="open"
       @keydown="referenceKey"
     >
-      <slot>操作 ▾</slot></button
+      <span class="zt-dropdown__trigger-content"><slot>操作</slot></span>
+      <ZtIcon name="chevron-down" class="zt-dropdown__arrow" />
+    </button
     ><template #content
       ><div
         ref="menu"
         role="menu"
         aria-label="操作菜单"
         class="zt-dropdown"
-        :class="`zt-dropdown--${size}`"
+        :class="[`zt-dropdown--${size}`, { 'zt-dropdown--auto-width': width === undefined }]"
         @keydown="key"
       >
+        <template v-if="$slots.dropdown">
+          <slot name="dropdown" />
+          <span v-if="!slotItems.size" class="zt-dropdown__empty">暂无操作</span>
+        </template>
+        <template v-else>
         <template v-for="item in items" :key="item.key"
           ><hr v-if="item.type === 'divider'" role="separator" />
           <div v-else-if="item.type === 'group'" class="zt-dropdown__group">
@@ -124,15 +151,17 @@ function choose(item: ZtDropdownItem) {
             v-else
             type="button"
             role="menuitem"
+            class="zt-dropdown__item"
             :disabled="item.disabled"
             @click="choose(item)"
           >
             <slot name="item" :item="item"
-              ><span v-if="item.icon" aria-hidden="true">{{ item.icon }}</span
-              >{{ item.label }}</slot
+              ><span v-if="hasIcons" class="zt-dropdown__icon" aria-hidden="true">{{ item.icon }}</span
+              ><span class="zt-dropdown__label">{{ item.label }}</span></slot
             >
           </button></template
-        ><span v-if="!items.length">暂无操作</span>
+        ><span v-if="!items.length" class="zt-dropdown__empty">暂无操作</span>
+        </template>
       </div></template
     ></ZtPopover
   >

@@ -2,13 +2,11 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
-import {
-  ZtColorPickerPanel,
+import { ZtCheckbox, ZtColorPickerPanel,
   ZtForm,
   ZtFormItem,
   ZtButton,
-  type ZtFormInstance,
-} from '@ztechjs/zt-ui';
+  type ZtFormInstance, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const model = reactive<{ value: string }>({ value: '' }),
   form = ref<ZtFormInstance>(),
@@ -20,8 +18,7 @@ async function submit() {
 </script>
 <template>
   <div class="picker-demo">
-    <label><input v-model="disabled" type="checkbox" />整个表单禁用</label
-    ><ZtForm
+    <ZtCheckbox v-model="disabled">整个表单禁用</ZtCheckbox><ZtForm
       ref="form"
       :model="model"
       :disabled="disabled"

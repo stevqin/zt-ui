@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui';
+import { ZtButton, ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui';
 const brandOptions: ZtSelectOption[] = [
   { label: '玖姿 JUZUI', value: 'JZ' },
   { label: '尹默 IMM', value: 'IMM' },
@@ -52,14 +52,14 @@ function searchRegions(keyword: string): Promise<ZtSelectOption[]> {
     >
       <template #tag="{ option, remove }">
         <span>{{ option.label }}</span>
-        <button
+        <ZtButton
           type="button"
           class="slot-tag-remove"
           :aria-label="'移除经营区域：' + option.label"
           @click.stop="remove"
         >
           移除
-        </button>
+        </ZtButton>
       </template>
       <template #empty>没有匹配的经营区域，请检查关键词。</template>
       <template #loading>正在同步经营区域和门店数...</template>

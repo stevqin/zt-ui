@@ -2,11 +2,9 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
-import {
-  ZtAutocomplete,
+import { ZtCheckbox, ZtAutocomplete,
   ZtConfigProvider,
-  type ZtComponentSize,
-} from '@ztechjs/zt-ui';
+  type ZtComponentSize, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const sizes: ZtComponentSize[] = [
   'mini',
@@ -20,8 +18,7 @@ const dark = ref(false);
 </script>
 <template>
   <div class="entry-demo">
-    <label><input v-model="dark" type="checkbox" />深色主题</label
-    ><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="8"
+    <ZtCheckbox v-model="dark">深色主题</ZtCheckbox><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="8"
       ><div class="entry-demo">
         <div v-for="(size, i) in sizes" :key="size">
           <p>{{ size }}</p>

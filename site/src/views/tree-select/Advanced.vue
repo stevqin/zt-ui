@@ -2,13 +2,11 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import {
-  ZtTreeSelect,
+import { ZtCheckbox, ZtTreeSelect,
   ZtConfigProvider,
   type ZtTreeSelectValue,
   type ZtTreeNode,
-  type ZtComponentSize,
-} from '@ztechjs/zt-ui';
+  type ZtComponentSize, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtTreeSelectValue>([]),
   strict = ref(false),
@@ -32,10 +30,7 @@ async function load(node: ZtTreeNode): Promise<ZtTreeNode[]> {
 </script>
 <template>
   <div>
-    <label><input v-model="dark" type="checkbox" />暗色</label
-    ><label><input v-model="strict" type="checkbox" />严格模式</label
-    ><label><input v-model="disabled" type="checkbox" />禁用</label
-    ><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
+    <ZtCheckbox v-model="dark">暗色</ZtCheckbox><ZtCheckbox v-model="strict">严格模式</ZtCheckbox><ZtCheckbox v-model="disabled">禁用</ZtCheckbox><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
       ><div class="stack">
         <ZtTreeSelect
           :status="demoStatus"

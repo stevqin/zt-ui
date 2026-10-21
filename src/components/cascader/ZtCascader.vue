@@ -5,6 +5,7 @@ import { toRef, computed, inject, ref, watch, nextTick, onBeforeUnmount } from '
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
 import ZtPopover from '../popover/ZtPopover.vue';
+import ZtIcon from '../icon/ZtIcon.vue';
 import { flattenTree, type TreeRow } from '../tree/model';
 import type { ZtTreeKey, ZtTreeNode } from '../tree/types';
 import type { ZtCascaderProps, ZtCascaderValue, ZtCascaderPath } from './types';
@@ -223,6 +224,7 @@ onBeforeUnmount(() => {
       :disabled="disabled"
       :teleported="teleported"
       placement="bottom-start"
+      :show-arrow="false"
       ><button
         :id="form?.inputId"
         class="zt-hierarchy__control"
@@ -238,7 +240,8 @@ onBeforeUnmount(() => {
         "
         @keydown="openKey"
       >
-        {{ paths.length ? paths.map(label).join('、') : placeholder }} ▾</button
+        <span :class="paths.length ? 'zt-hierarchy__value' : 'zt-hierarchy__placeholder'">{{ paths.length ? paths.map(label).join('、') : placeholder }}</span>
+        <ZtIcon name="chevron-down" class="zt-hierarchy__arrow" aria-hidden="true" /></button
       ><template #content
         ><div
           :id="uid"
@@ -248,13 +251,15 @@ onBeforeUnmount(() => {
           @focusout="blur"
           :style="hierarchyStyle(status)"
         >
-          <input
-            v-if="filterable"
-            v-model="query"
-            class="zt-hierarchy__search"
-            aria-label="搜索路径"
-            placeholder="搜索完整路径"
-          />
+          <div v-if="filterable" class="zt-hierarchy__search-field">
+            <ZtIcon name="search" aria-hidden="true" />
+            <input
+              v-model="query"
+              class="zt-hierarchy__search"
+              aria-label="搜索路径"
+              placeholder="搜索完整路径"
+            />
+          </div>
           <div
             v-if="query"
             class="zt-cascader__results"
@@ -270,7 +275,7 @@ onBeforeUnmount(() => {
               :disabled="row.disabled || disabled"
               @click="choose(row)"
             >
-              {{ label(row.path) }} {{ selected(row) ? '✓' : '' }}</button
+              <span class="zt-cascader__result-label">{{ label(row.path) }}</span><ZtIcon v-if="selected(row)" name="check" class="zt-cascader__selected-icon" aria-hidden="true" /></button
             ><span v-if="!results.length">暂无数据</span>
           </div>
           <div v-else class="zt-cascader__columns">
@@ -286,6 +291,7 @@ onBeforeUnmount(() => {
                 v-for="row in column"
                 :key="row.key"
                 class="zt-cascader__row"
+                :class="{ 'is-active': activePath.includes(row.key), 'is-selected': selected(row), 'is-disabled': row.disabled || disabled }"
               >
                 <input
                   v-if="multiple || checkStrictly"
@@ -310,16 +316,16 @@ onBeforeUnmount(() => {
                   @click="expand(row)"
                   @keydown="keydown($event, row, i)"
                 >
-                  <slot :node="row.node">{{ row.label }}</slot
-                  ><span>{{
-                    loading.has(row.key)
-                      ? '…'
-                      : row.branch
-                        ? '›'
-                        : selected(row)
-                          ? '✓'
-                          : ''
-                  }}</span></button
+                  <span class="zt-cascader__label">
+                    <slot :node="row.node">{{ row.label }}</slot>
+                  </span>
+                  <ZtIcon
+                    v-if="loading.has(row.key) || row.branch || selected(row)"
+                    :name="loading.has(row.key) ? 'refresh' : row.branch ? 'chevron-right' : 'check'"
+                    :spin="loading.has(row.key)"
+                    class="zt-cascader__option-icon"
+                    aria-hidden="true"
+                  /></button
                 ><button
                   v-if="errors.has(row.key)"
                   data-retry

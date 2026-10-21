@@ -1,6 +1,6 @@
 # Public component contract audit
 
-All value exports reachable from src/index.ts are inventoried, including named/default barrel imports and aliases, the VTableGrid JS bridge, and named SVG icons: **161 components (94 SFCs + 67 SVG icons)**. Helpers, types and registry objects are not components.
+All value exports reachable from src/index.ts are inventoried, including named/default barrel imports and aliases, the VTableGrid JS bridge, and named SVG icons: **166 components (97 SFCs + 69 SVG icons)**. Helpers, types and registry objects are not components.
 
 Run `npm run audit:components`. There are no waived findings. New exports, absent rows, unresolved dispositions, missing evidence, and failed source/metadata checks exit nonzero. Static checks are combined with the behavioral/computed-style suites listed per row; this is not a claim of exhaustive browser accessibility certification.
 
@@ -70,6 +70,7 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtDownloadIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtDrawer | compliant | inherited | tokens | none | keyboard | modal | public-types | generated | tests/drawer.spec.ts |
 | ZtDropdown | compliant | inherited | tokens | none | keyboard | delegated | public-types | generated | tests/selection-dropdown.spec.ts |
+| ZtDropdownItem | compliant | delegated | tokens | none | native | delegated | public-types | generated | tests/dropdown-template.spec.ts |
 | ZtEditIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtEmpty | compliant | inherited | intrinsic | none | structural | none | public-types | generated | src/components/empty/empty.spec.ts |
 | ZtErrorIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
@@ -108,6 +109,8 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtMailIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtMain | compliant | structural | intrinsic | none | structural | none | public-types | generated | src/components/layout/layout.spec.ts |
 | ZtMaximizeIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
+| ZtMaximize2Icon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
+| ZtMinimize2Icon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtMention | compliant | inherited | tokens | visual | keyboard | delegated | public-types | generated | src/components/mention/mention.spec.ts |
 | ZtMenu | fixed | inherited | tokens | visual | keyboard | owned-popup | public-types | generated | tests/component-contract-interaction.spec.ts, tests/menu.spec.ts, tests/menu-horizontal.spec.ts |
 | ZtMenuIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
@@ -123,7 +126,7 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtPauseIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtPhoneIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtPlayIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
-| ZtPopconfirm | compliant | structural | tokens | visual | native | delegated | public-types | generated | tests/popconfirm.spec.ts |
+| ZtPopconfirm | fixed | inherited | tokens | visual | native | delegated | public-types | generated | tests/popconfirm.spec.ts, tests/popconfirm-size.spec.ts, tests/popup-readability.spec.ts |
 | ZtPopover | fixed | structural | tokens | none | delegated | anchored | public-types | generated | tests/tooltip-sizing.spec.ts, tests/popover-nested-ownership.spec.ts |
 | ZtProgress | compliant | inherited | tokens | visual | structural | none | public-types | generated | tests/slider-progress.spec.ts |
 | ZtQRCode | compliant | intrinsic | tokens | none | structural | none | public-types | generated | src/components/qrcode/qrcode.spec.ts |
@@ -155,6 +158,7 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtSunIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtSwitch | fixed | inherited | intrinsic | visual | switch | none | public-types | generated | tests/component-contract-interaction.spec.ts |
 | ZtTable | compliant | inherited | tokens | none | native | none | public-types | generated | src/components/table/table.spec.ts |
+| ZtTableColumn | compliant | structural | intrinsic | none | structural | none | public-types | generated | tests/table-template.spec.ts |
 | ZtTabPane | compliant | structural | tokens | none | structural | none | public-types | generated | tests/tabs.spec.ts |
 | ZtTabs | compliant | inherited | tokens | visual | keyboard | none | public-types | generated | tests/tabs.spec.ts |
 | ZtTag | fixed | inherited | tokens | visual | native | none | public-types | generated | tests/component-contract-interaction.spec.ts |
@@ -163,10 +167,11 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtTimeline | compliant | inherited | intrinsic | none | structural | none | public-types | generated | src/components/timeline/timeline.spec.ts |
 | ZtTimePicker | compliant | inherited | tokens | visual | keyboard | delegated | public-types | generated | src/components/time-picker/time-picker.spec.ts |
 | ZtTimeSelect | compliant | delegated | delegated | visual | delegated | delegated | public-types | generated | src/components/time-select/time-select.spec.ts |
+| ZtTimelineItem | compliant | structural | intrinsic | visual | structural | none | public-types | generated | tests/timeline-template.spec.ts |
 | ZtTooltip | fixed | structural | tokens | none | keyboard | delegated | public-types | generated | tests/tooltip-sizing.spec.ts |
 | ZtTour | compliant | structural | tokens | none | native | modal | public-types | generated | src/components/tour/tour.spec.ts |
 | ZtTransfer | compliant | inherited | tokens | visual | native | none | public-types | generated | src/components/transfer/transfer.spec.ts |
-| ZtTree | compliant | inherited | tokens | visual | keyboard | none | public-types | generated | src/components/tree/tree.spec.ts |
+| ZtTree | compliant | inherited | tokens | visual | keyboard | none | public-types | generated | src/components/tree/tree.spec.ts, tests/tree-enhancements.spec.ts |
 | ZtTreeSelect | compliant | inherited | tokens | visual | keyboard | delegated | public-types | generated | src/components/tree-select/tree-select.spec.ts |
 | ZtTypography | compliant | inherited | tokens | visual | native | none | public-types | generated | src/components/typography/typography.spec.ts |
 | ZtUndoIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |

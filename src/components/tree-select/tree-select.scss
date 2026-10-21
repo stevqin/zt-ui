@@ -1,5 +1,6 @@
 @use '../../styles/form-underline' as underline;
 @use '../../styles/clear-action' as clear;
+@use 'panel';
 .zt-tree-select,.zt-cascader{display:inline-flex;align-items:center;max-width:100%;font-size:var(--zt-size-default,13px);color:var(--zt-text,#303133)}.zt-hierarchy__control{display:flex;align-items:center;flex-wrap:wrap;gap:6px;min-height:34px;padding:4px 9px;box-sizing:border-box;min-width:200px;max-width:100%;font:inherit;color:inherit;background:var(--zt-surface,#fff);border:1px solid var(--zt-border,#dcdfe6);border-radius:var(--zt-radius,8px);cursor:pointer}.zt-hierarchy__control:disabled{opacity:.5;cursor:not-allowed}.zt-hierarchy__control:focus-visible,.zt-hierarchy__search:focus-visible{outline:2px solid var(--hierarchy-accent,var(--zt-accent,#409eff))}.zt-hierarchy__tag{background:var(--zt-surface-soft,#f3f5f7);padding:2px 4px;border-radius:4px}.zt-hierarchy__clear{border:0;background:none;font:inherit;color:inherit;cursor:pointer}.zt-hierarchy__search{width:100%;box-sizing:border-box;padding:8px;border:1px solid var(--zt-border,#ddd);border-radius:var(--zt-radius,8px);background:var(--zt-surface,#fff);color:inherit;margin-bottom:8px}.zt-tree-select--mini,.zt-cascader--mini{font-size:var(--zt-size-mini,11px)}.zt-tree-select--small,.zt-cascader--small{font-size:var(--zt-size-small,12px)}.zt-tree-select--medium,.zt-cascader--medium{font-size:var(--zt-size-medium,14px)}.zt-tree-select--large,.zt-cascader--large{font-size:var(--zt-size-large,15px)}.zt-tree-select--mini .zt-hierarchy__control,.zt-cascader--mini .zt-hierarchy__control{min-height:26px}.zt-tree-select--small .zt-hierarchy__control,.zt-cascader--small .zt-hierarchy__control{min-height:30px}.zt-tree-select--medium .zt-hierarchy__control,.zt-cascader--medium .zt-hierarchy__control{min-height:36px}.zt-tree-select--large .zt-hierarchy__control,.zt-cascader--large .zt-hierarchy__control{min-height:40px}
 
 .zt-tree-select input[type=checkbox],.zt-tree-select input[type=radio]{accent-color:var(--hierarchy-accent,var(--zt-accent,#409eff))}
@@ -38,4 +39,24 @@
     --hierarchy-underline-color: #{$color};
     --hierarchy-underline-line: #{$color};
   }
+}
+
+.zt-hierarchy__control {
+  column-gap: 8px;
+  transition: border-color .15s ease, box-shadow .15s ease;
+  &[aria-expanded='true']:not(:disabled) { border-color: var(--hierarchy-accent, var(--zt-accent, #409eff)); }
+  &[aria-expanded='true'] > .zt-hierarchy__arrow { transform: rotate(180deg); }
+}
+.zt-hierarchy__placeholder { color: var(--zt-text-muted, #909399); }
+.zt-hierarchy__value { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.zt-hierarchy__arrow { flex: none; margin-left: auto; color: var(--zt-text-muted, #909399); transition: transform .18s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .zt-hierarchy__arrow, .zt-hierarchy__control { transition: none; }
+}
+
+// Keep the trigger and its clear action on the same surface in grid/flex layouts.
+.zt-tree-select, .zt-cascader {
+  width: fit-content;
+  > .zt-popover__reference { width: 100%; max-width: 100%; }
+  .zt-hierarchy__control { width: 100%; }
 }

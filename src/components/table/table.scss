@@ -1,3 +1,78 @@
-.zt-table{position:relative;color:var(--zt-text,#303133);font-size:var(--zt-size-default,13px);background:var(--zt-surface,#fff);border-radius:var(--zt-radius,8px);border:1px solid var(--zt-border,#dcdfe6);overflow:hidden}.zt-table__scroll{overflow:auto}.zt-table table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed}.zt-table th,.zt-table td{box-sizing:border-box;padding:12px;border-bottom:1px solid var(--zt-border,#e4e7ed);background:var(--zt-surface,#fff);overflow-wrap:break-word}.zt-table th{font-weight:600;background:var(--zt-surface-soft,#f5f7fa)}.zt-table th button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font:inherit;color:inherit;border:0;background:none;cursor:pointer;text-align:inherit}.zt-table__utility{width:44px;min-width:44px!important;text-align:center}.zt-table td.zt-table__utility button{border:0;background:none;color:inherit;cursor:pointer}.zt-table.is-striped tbody tr:nth-child(even)>td{background:var(--zt-surface-soft,#fafafa)}.zt-table tbody tr.is-selected>td{background:var(--zt-accent-soft,#ecf5ff)}.zt-table.is-bordered th,.zt-table.is-bordered td{border-right:1px solid var(--zt-border,#e4e7ed)}.zt-table__empty{text-align:center;padding:36px!important;color:var(--zt-text-muted,#909399)}.zt-table__loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--zt-surface,#fff);opacity:.85;z-index:5}.zt-table--mini{font-size:var(--zt-size-mini,11px)}.zt-table--small{font-size:var(--zt-size-small,12px)}.zt-table--medium{font-size:var(--zt-size-medium,14px)}.zt-table--large{font-size:var(--zt-size-large,15px)}.zt-table--mini td,.zt-table--mini th{padding:5px}.zt-table--small td,.zt-table--small th{padding:8px}.zt-table--medium td,.zt-table--medium th{padding:14px}.zt-table--large td,.zt-table--large th{padding:16px}
+.zt-table{position:relative;color:var(--zt-text,#303133);font-size:var(--zt-size-default,13px);background:var(--zt-surface,#fff);border-radius:var(--zt-radius,8px);border:1px solid var(--zt-border,#dcdfe6);overflow:hidden}.zt-table__scroll{overflow:auto}.zt-table table{border-collapse:separate;border-spacing:0;width:100%;table-layout:fixed}.zt-table th,.zt-table td{box-sizing:border-box;padding:12px;border-bottom:1px solid var(--zt-border,#e4e7ed);background:var(--zt-surface,#fff);overflow-wrap:break-word}.zt-table th{font-weight:600;background:var(--zt-surface-soft,#f5f7fa)}.zt-table th button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;font:inherit;color:inherit;border:0;background:none;cursor:pointer;text-align:inherit}.zt-table__utility{width:44px;min-width:44px;text-align:center}.zt-table td.zt-table__utility button{border:0;background:none;color:inherit;cursor:pointer}.zt-table.is-striped tbody tr:nth-child(even)>td{background:var(--zt-surface-soft,#fafafa)}.zt-table tbody tr.is-selected>td{background:var(--zt-accent-soft,#ecf5ff)}.zt-table.is-bordered th,.zt-table.is-bordered td{border-right:1px solid var(--zt-border,#e4e7ed)}.zt-table__empty{text-align:center;padding:36px!important;color:var(--zt-text-muted,#909399)}.zt-table__loading{position:absolute;inset:0;display:grid;place-items:center;background:var(--zt-surface,#fff);opacity:.85;z-index:5}.zt-table--mini{font-size:var(--zt-size-mini,11px)}.zt-table--small{font-size:var(--zt-size-small,12px)}.zt-table--medium{font-size:var(--zt-size-medium,14px)}.zt-table--large{font-size:var(--zt-size-large,15px)}.zt-table--mini td,.zt-table--mini th{padding:5px}.zt-table--small td,.zt-table--small th{padding:8px}.zt-table--medium td,.zt-table--medium th{padding:14px}.zt-table--large td,.zt-table--large th{padding:16px}
 
-.zt-table__selection{position:sticky;left:0;z-index:2}.zt-table__expansion{position:sticky;z-index:2}.zt-table thead .zt-table__expansion{z-index:4}
+.zt-table__selection{position:sticky;z-index:2}.zt-table__expansion{position:sticky;z-index:2}.zt-table thead .zt-table__expansion{z-index:4}
+
+.zt-table th { position: relative; }
+.zt-table th.is-resizable { padding-right: 20px; }
+.zt-table th [data-sort] { padding: 0; }
+.zt-table__sort-icons {
+  display: inline-flex;
+  flex: 0 0 var(--zt-table-sort-size, 12px);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  width: var(--zt-table-sort-size, 12px);
+  height: calc(var(--zt-table-sort-size, 12px) * 4 / 3 + 2px);
+  color: var(--zt-text-muted, #626262);
+  .zt-icon-glyph {
+    height: calc(var(--zt-table-sort-size, 12px) * 2 / 3);
+    opacity: .65;
+    transition: color .14s ease, opacity .14s ease;
+  }
+  &.has-order {
+    .zt-icon-glyph { opacity: .22; }
+    .zt-icon-glyph.is-active { color: var(--zt-accent, #245edb); opacity: 1; }
+  }
+}
+.zt-table__selection-control { display: inline-flex; vertical-align: middle; }
+.zt-table__selection-control :is(.zt-checkbox__label, .zt-radio__label) { padding: 0; margin: 0; }
+.zt-table__selection-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.zt-table__resize-handle {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+  user-select: none;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 1px;
+    background: transparent;
+  }
+  &[aria-disabled='true'] { cursor: not-allowed; opacity: .4; }
+}
+.zt-table th.is-resizable:hover > .zt-table__resize-handle::after {
+  background: var(--zt-border, #dcdfe6);
+}
+.zt-table th.is-resizable > .zt-table__resize-handle:is(:hover, :focus-visible, :active)::after {
+  width: 2px;
+  background: var(--zt-accent, #245edb);
+}
+.zt-table__resize-handle:focus-visible { outline: none; }
+.zt-table th.is-resizable > .zt-table__resize-handle:focus-visible::after {
+  width: 3px;
+}
+.zt-table.is-resizing {
+  user-select: none;
+  &, * { cursor: col-resize !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zt-table__sort-icons .zt-icon-glyph { transition: none; }
+}

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ZtButton } from '@ztechjs/zt-ui';
 import {
   Teleport,
   computed,
@@ -18,7 +19,7 @@ const mobile = ref(typeof window !== 'undefined' && window.innerWidth <= 1280);
 const opened = ref(false);
 const root = ref<HTMLElement>();
 const overlayHost = ref<HTMLElement>();
-const pill = ref<HTMLButtonElement>();
+const pill = ref<InstanceType<typeof ZtButton>>();
 const panelId = `demo-status-${useId()}`;
 async function resize() {
   const nextMobile = window.innerWidth <= 1280;
@@ -28,7 +29,7 @@ async function resize() {
   opened.value = false;
   if (hadFocus) {
     await nextTick();
-    if (nextMobile) pill.value?.focus();
+    if (nextMobile) pill.value?.$el.focus();
     else focusChoice();
   }
 }
@@ -45,7 +46,7 @@ async function open() {
 async function close() {
   opened.value = false;
   await nextTick();
-  pill.value?.focus();
+  pill.value?.$el.focus();
 }
 function choose(value: DemoVisualStatus) {
   context?.select(value);
@@ -136,7 +137,7 @@ onBeforeUnmount(() => {
     class="demo-status"
     :class="{ 'is-mobile': mobile, 'is-open': opened }"
   >
-    <button
+    <ZtButton
       v-if="mobile"
       ref="pill"
       type="button"
@@ -151,7 +152,7 @@ onBeforeUnmount(() => {
         :class="`is-${status}`"
         aria-hidden="true"
       />状态 · {{ status }}
-    </button>
+    </ZtButton>
     <div
       v-if="mobile && opened"
       class="demo-status__backdrop"
@@ -167,17 +168,17 @@ onBeforeUnmount(() => {
     >
       <div class="demo-status__heading">
         <strong>示例状态</strong
-        ><button
+        ><ZtButton
           v-if="mobile"
           type="button"
           aria-label="关闭状态面板"
           @click="close"
         >
           ×
-        </button>
+        </ZtButton>
       </div>
       <div class="demo-status__grid" role="radiogroup" aria-label="视觉状态">
-        <button
+        <ZtButton
           v-for="choice in choices"
           :key="choice"
           type="button"
@@ -196,7 +197,7 @@ onBeforeUnmount(() => {
             ></span
           >
           <span class="demo-status__label">{{ choice }}</span>
-        </button>
+        </ZtButton>
       </div>
       <p class="demo-status__hint">同步本页示例</p>
     </section>

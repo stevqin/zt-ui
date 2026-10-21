@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { ref, useId, watch, onBeforeUnmount } from 'vue';
+import { provide, ref, useId, watch, onBeforeUnmount } from 'vue';
 import ZtPopover from '../popover/ZtPopover.vue';
+import { popoverSurfaceKey } from '../popover/surface';
 import type { ZtTooltipProps } from './types';
 defineOptions({ name: 'ZtTooltip' });
+provide(popoverSurfaceKey, 'tooltip');
 const props = withDefaults(defineProps<ZtTooltipProps>(), {
   content: '',
   width: 'max-content',

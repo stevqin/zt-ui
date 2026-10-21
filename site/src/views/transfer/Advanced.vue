@@ -2,12 +2,10 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import {
-  ZtTransfer,
+import { ZtCheckbox, ZtButton, ZtTransfer,
   ZtConfigProvider,
   type ZtTransferKey,
-  type ZtComponentSize,
-} from '@ztechjs/zt-ui';
+  type ZtComponentSize, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtTransferKey[]>([]),
   disabled = ref(false),
@@ -28,12 +26,11 @@ const data = [
 </script>
 <template>
   <div>
-    <label><input v-model="disabled" type="checkbox" />整体禁用</label
-    ><label><input v-model="dark" type="checkbox" />暗色</label>
+    <ZtCheckbox v-model="disabled">整体禁用</ZtCheckbox><ZtCheckbox v-model="dark">暗色</ZtCheckbox>
     <div class="sizes">
-      <button v-for="s in sizes" :key="s" type="button" @click="size = s">
+      <ZtButton v-for="s in sizes" :key="s" type="button" @click="size = s">
         {{ s }}
-      </button>
+      </ZtButton>
     </div>
     <ZtConfigProvider :theme="dark ? 'dark' : 'light'" :size="size"
       ><div class="pad">

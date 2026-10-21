@@ -6,7 +6,7 @@ import { slug } from './docs/reference'
 import DocSearch from './components/DocSearch.vue'
 import DemoSettings from './components/DemoSettings.vue'
 import ComponentPageShell from './components/ComponentPageShell.vue'
-import { ZtConfigProvider, ZtMenu } from '@ztechjs/zt-ui'
+import { ZtButton, ZtConfigProvider, ZtMenu } from '@ztechjs/zt-ui';
 import type { ZtMenuItem } from '@ztechjs/zt-ui'
 import { demoConfig } from './docs/demo-config'
 import { ztUiVersion } from './docs/version'
@@ -86,11 +86,11 @@ onBeforeUnmount(()=>{window.removeEventListener('resize',resize);window.removeEv
   <DocSearch />
   <DemoSettings />
   <nav class="doc-header__links" aria-label="主要导航"><RouterLink to="/scenarios">场景指南</RouterLink><RouterLink to="/api">API 手册</RouterLink><span class="version">{{ ztUiVersion }}</span></nav>
-  <button class="menu-toggle" :aria-expanded="menu" aria-controls="doc-sidebar" @click="menu=!menu">{{menu?'关闭导航':'导航'}}</button>
+  <ZtButton class="menu-toggle" :aria-expanded="menu" aria-controls="doc-sidebar" @click="menu=!menu">{{menu?'关闭导航':'导航'}}</ZtButton>
   </div>
  </header>
  <div ref="scrollArea" class="doc-layout" :class="{'is-home':route.path==='/' }">
-  <button v-if="menu" class="nav-backdrop" aria-label="关闭导航" @click="menu=false" />
+  <ZtButton v-if="menu" class="nav-backdrop" aria-label="关闭导航" @click="menu=false" />
   <aside id="doc-sidebar" class="doc-aside" :inert="mobile && !menu" :class="{'is-open':menu}">
    <ZtMenu :items="navigation" :model-value="menuValue" aria-label="文档导航" @select="navigate" />
    <div class="doc-sidebar-note"><span>{{components.length}} components</span><strong>Vue 3 · TypeScript</strong><p>为业务界面提供一致的交互。</p></div>

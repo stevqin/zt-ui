@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtButton, ZtModal } from '@ztechjs/zt-ui';
+import { ZtInput, ZtButton, ZtModal } from '@ztechjs/zt-ui';
+const name = ref('安小正'), department = ref('信息中心');
 const footerVisible = ref(false);
 const confirmLoading = ref(false);
 function save() {
@@ -23,7 +24,7 @@ function save() {
     :confirm-loading="confirmLoading"
     @confirm="save"
     ><div class="overlay-demo-form">
-      <label>姓名<input value="安小正" /></label><label>部门<input value="信息中心" /></label></div
+      <label>姓名<ZtInput v-model="name" /></label><label>部门<ZtInput v-model="department" /></label></div
   ></ZtModal>
 </template>
 
@@ -48,12 +49,6 @@ function save() {
   gap: 6px;
   color: #4b5563;
   font-size: 13px;
-}
-.overlay-demo-form input {
-  padding: 9px 11px;
-  border: 1px solid #d1d5db;
-  border-radius: 9px;
-  font: inherit;
 }
 .demo-state {
   color: #64748b;

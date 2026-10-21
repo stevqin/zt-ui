@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { ZtSelect, ZtSlider } from '@ztechjs/zt-ui'
+import { ZtButton, ZtSelect, ZtSlider } from '@ztechjs/zt-ui';
 import { demoConfig, resetDemoConfig } from '../docs/demo-config'
 const keyboard = ref(false)
-const open = ref(false), root = ref<HTMLElement>(), trigger = ref<HTMLButtonElement>()
+const open = ref(false), root = ref<HTMLElement>(), trigger = ref<InstanceType<typeof ZtButton>>()
 const sizes = [{label:'迷你',value:'mini'},{label:'紧凑',value:'small'},{label:'默认',value:'default'},{label:'宽松',value:'medium'},{label:'加大',value:'large'}]
-function close(){open.value=false;trigger.value?.focus()}
+function close(){open.value=false;trigger.value?.$el.focus()}
 function markKeyboard(e:KeyboardEvent){if(e.key==='Tab')keyboard.value=true}
 function outside(e:PointerEvent){keyboard.value=false;const target=e.target as HTMLElement;if(!root.value?.contains(target)&&!target.closest('.zt-select__dropdown'))open.value=false}
 onMounted(()=>{document.addEventListener('pointerdown',outside);document.addEventListener('keydown',markKeyboard)})
@@ -13,14 +13,14 @@ onBeforeUnmount(()=>{document.removeEventListener('pointerdown',outside);documen
 </script>
 <template>
  <div ref="root" class="demo-settings" :class="{'is-keyboard':keyboard}" @keydown="keyboard=true" @pointerdown="keyboard=false" @keydown.esc="close">
-  <button ref="trigger" class="appearance-trigger" type="button" :aria-expanded="open" aria-controls="site-appearance" @click="open=!open">外观</button>
+  <ZtButton ref="trigger" class="appearance-trigger" type="button" :aria-expanded="open" aria-controls="site-appearance" @click="open=!open">外观</ZtButton>
   <div id="site-appearance" class="appearance-panel" :class="{'is-open':open}" role="group" aria-label="全站外观配置">
    <div class="appearance-size" title="全站组件尺寸"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M3 5h14M6 10h11M9 15h8" /></svg><ZtSelect v-model="demoConfig.size" :options="sizes" size="mini" aria-label="全站尺寸" /></div>
    <label class="appearance-radius" title="全站圆角基准"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 16V9a5 5 0 0 1 5-5h7" /></svg><ZtSlider :model-value="demoConfig.borderRadius" @update:model-value="value => { if (typeof value === 'number') demoConfig.borderRadius = value }" :min="0" :max="24" size="mini" :show-tooltip="false" aria-label="全站圆角" /><span>{{demoConfig.borderRadius}}<small>px</small></span></label>
-   <button class="appearance-theme" type="button" :aria-pressed="demoConfig.theme==='dark'" aria-label="暗色主题" :title="demoConfig.theme==='dark'?'切换为亮色':'切换为暗色'" @click="demoConfig.theme=demoConfig.theme==='dark'?'light':'dark'">
+   <ZtButton class="appearance-theme" type="button" :aria-pressed="demoConfig.theme==='dark'" aria-label="暗色主题" :title="demoConfig.theme==='dark'?'切换为亮色':'切换为暗色'" @click="demoConfig.theme=demoConfig.theme==='dark'?'light':'dark'">
     <svg v-if="demoConfig.theme==='light'" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="3" /><path d="M10 2v1m0 14v1M2 10h1m14 0h1M4 4l1 1m10 10 1 1M4 16l1-1M15 5l1-1" /></svg><svg v-else viewBox="0 0 20 20" aria-hidden="true"><path d="M16.5 12.2A7 7 0 0 1 7.8 3.5a7 7 0 1 0 8.7 8.7Z" /></svg><span>{{demoConfig.theme==='dark'?'暗色':'亮色'}}</span>
-   </button>
-   <button type="button" class="appearance-reset" aria-label="重置外观" title="恢复默认外观" @click="resetDemoConfig"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a6 6 0 1 1 0 6M4 3v4h4" /></svg></button>
+   </ZtButton>
+   <ZtButton type="button" class="appearance-reset" aria-label="重置外观" title="恢复默认外观" @click="resetDemoConfig"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 7a6 6 0 1 1 0 6M4 3v4h4" /></svg></ZtButton>
   </div>
  </div>
 </template>

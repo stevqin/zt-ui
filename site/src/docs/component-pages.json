@@ -781,6 +781,12 @@
         "description": "width / height 控制宽高；size 控制密度，并传递给内部控件。"
       },
       {
+        "title": "正文内边距",
+        "kind": "live",
+        "file": "src/views/drawer/BodyPadding.vue",
+        "description": "body-padding 支持数字和 CSS padding 简写；传 0 去掉内边距，不传则沿用当前 size 的默认值。"
+      },
+      {
         "title": "插槽、销毁与关闭守卫",
         "kind": "live",
         "file": "src/views/drawer/CustomContent.vue",
@@ -795,9 +801,21 @@
     ],
     "examples": [
       {
-        "title": "分组、分隔、禁用与命令反馈",
+        "title": "items 数据方式：分组、分隔与禁用",
         "kind": "live",
         "file": "src/views/dropdown/Basic.vue",
+        "description": ""
+      },
+      {
+        "title": "template 方式：直接声明菜单项",
+        "kind": "live",
+        "file": "src/views/dropdown/Template.vue",
+        "description": ""
+      },
+      {
+        "title": "items 数据方式：自定义菜单项插槽",
+        "kind": "live",
+        "file": "src/views/dropdown/ItemSlot.vue",
         "description": ""
       },
       {
@@ -1389,6 +1407,12 @@
         "description": "size 提供五档密度，同时调整标题栏、正文、底部和内部控件；子控件显式 size 优先。"
       },
       {
+        "title": "正文内边距",
+        "kind": "live",
+        "file": "src/views/modal/BodyPadding.vue",
+        "description": "body-padding 支持数字和 CSS padding 简写；传 0 去掉内边距，不传则沿用当前 size 的默认值。"
+      },
+      {
         "title": "插槽、销毁与关闭守卫",
         "kind": "live",
         "file": "src/views/modal/CustomContent.vue",
@@ -1539,6 +1563,18 @@
         "kind": "live",
         "file": "src/views/popconfirm/Controlled.vue",
         "description": ""
+      },
+      {
+        "title": "尺寸与全局继承",
+        "kind": "live",
+        "file": "src/views/popconfirm/Sizes.vue",
+        "description": "size 控制整体密度，未设置时继承 ConfigProvider；button-size 可单独覆盖操作按钮尺寸。"
+      },
+      {
+        "title": "白底与密集内容",
+        "kind": "live",
+        "file": "src/views/popconfirm/Readability.vue",
+        "description": "在白色页面和订单文字上打开浮层，检查玻璃背景、箭头与文字的清晰度；弹出时轻缩放淡入，关闭时快速淡出。"
       }
     ]
   },
@@ -1571,6 +1607,12 @@
         "kind": "live",
         "file": "src/views/popover/Placement.vue",
         "description": ""
+      },
+      {
+        "title": "白底与密集内容",
+        "kind": "live",
+        "file": "src/views/popover/Readability.vue",
+        "description": "在白色页面和订单文字上打开浮层，检查玻璃背景、箭头与文字的清晰度；弹出时轻缩放淡入，关闭时快速淡出。"
       }
     ]
   },
@@ -2167,16 +2209,94 @@
     ],
     "examples": [
       {
-        "title": "基础用法",
+        "title": "columns 配置数组与格式化",
         "kind": "live",
         "file": "src/views/table/Basic.vue",
-        "description": "基础交互与受控数据"
+        "description": "通过 data 与 columns 定义表格，formatter 处理展示值。"
       },
       {
-        "title": "进阶用法",
+        "title": "ZtTableColumn 模板列与作用域插槽",
+        "kind": "live",
+        "file": "src/views/table/TemplateColumns.vue",
+        "description": "用模板声明动态列，组合表头、单元格和操作插槽，支持排序、固定列与调宽。"
+      },
+      {
+        "title": "模板工具列：复选与全选",
+        "kind": "live",
+        "file": "src/views/table/TemplateSelection.vue",
+        "description": "type=selection 声明复选列，复用受控选择、半选与禁用行。"
+      },
+      {
+        "title": "模板工具列：单选",
+        "kind": "live",
+        "file": "src/views/table/TemplateRadio.vue",
+        "description": "type=radio 声明单选列，使用 ZtRadio 选择默认门店。"
+      },
+      {
+        "title": "模板工具列：展开与行详情",
+        "kind": "live",
+        "file": "src/views/table/TemplateExpansion.vue",
+        "description": "type=expand 声明展开列，默认插槽直接提供行详情，列顺序与模板一致。"
+      },
+      {
+        "title": "边框、斑马纹与五档尺寸",
+        "kind": "live",
+        "file": "src/views/table/Appearance.vue",
+        "description": "切换五档尺寸，表头排序图标随文字与行密度同步缩放。"
+      },
+      {
+        "title": "本地排序与三态反馈",
+        "kind": "live",
+        "file": "src/views/table/Sorting.vue",
+        "description": "对比未排序、升序和降序，支持点击表头与外部控制。"
+      },
+      {
+        "title": "行选择、全选与禁用行",
+        "kind": "live",
+        "file": "src/views/table/Selection.vue",
+        "description": "通过 selected-keys 读取、设置和清空选择；selectable 约束可选行。"
+      },
+      {
+        "title": "单选与默认门店",
+        "kind": "live",
+        "file": "src/views/table/SingleSelection.vue",
+        "description": "selection-type=radio 使用库内单选组件，受控选择一行，支持禁用与清空。"
+      },
+      {
+        "title": "展开行与详情内容",
+        "kind": "live",
+        "file": "src/views/table/Expansion.vue",
+        "description": "展开插槽与受控 expanded-keys，可从表格外部展开或收起。"
+      },
+      {
+        "title": "固定表头与左右固定列",
         "kind": "live",
         "file": "src/views/table/Advanced.vue",
-        "description": "主题、插槽与边界场景"
+        "description": "横向查看宽表，纵向滚动时保持表头，左右关键列始终可见。"
+      },
+      {
+        "title": "拖动调整列宽",
+        "kind": "live",
+        "file": "src/views/table/Resizable.vue",
+        "description": "拖动列边框或使用方向键调宽，支持最小宽度、锁定列与调宽事件。"
+      },
+      {
+        "title": "服务端排序与加载反馈",
+        "kind": "live",
+        "file": "src/views/table/Remote.vue",
+        "description": "模拟异步接口：Table 发出排序事件，由调用方更新结果。"
+      },
+      {
+        "title": "加载、空状态与暗色主题",
+        "kind": "live",
+        "file": "src/views/table/States.vue",
+        "description": "独立查看加载、默认空数据、自定义空状态和局部主题。"
+      },
+      {
+        "title": "自定义表头、单元格与操作列",
+        "kind": "live",
+        "file": "src/views/table/Slots.vue",
+        "description": "用具名插槽组合门店信息、金额、状态标签和操作按钮。"
       }
     ]
   },
@@ -2377,16 +2497,22 @@
     ],
     "examples": [
       {
-        "title": "基础用法",
+        "title": "items 数组与作用域内容",
         "kind": "live",
         "file": "src/views/timeline/Basic.vue",
-        "description": "基础交互与受控数据"
+        "description": "通过 items 配置节点，支持倒序、交替布局和内容插槽。"
+      },
+      {
+        "title": "ZtTimelineItem 模板节点",
+        "kind": "live",
+        "file": "src/views/timeline/Template.vue",
+        "description": "用模板声明节点及其内容、图标插槽，支持动态显隐、倒序与布局切换。"
       },
       {
         "title": "进阶用法",
         "kind": "live",
         "file": "src/views/timeline/Advanced.vue",
-        "description": "主题、插槽与边界场景"
+        "description": "items 方式组合主题、布局与统一的图标插槽。"
       }
     ]
   },
@@ -2407,6 +2533,12 @@
         "kind": "live",
         "file": "src/views/tooltip/Controlled.vue",
         "description": ""
+      },
+      {
+        "title": "白底与密集内容",
+        "kind": "live",
+        "file": "src/views/tooltip/Readability.vue",
+        "description": "在白色页面和订单文字上打开浮层，检查玻璃背景、箭头与文字的清晰度；弹出时轻缩放淡入，关闭时快速淡出。"
       }
     ]
   },
@@ -2467,6 +2599,24 @@
         "kind": "live",
         "file": "src/views/tree/Basic.vue",
         "description": "勾选、过滤与键盘导航"
+      },
+      {
+        "title": "自适应行高与多行内容",
+        "kind": "live",
+        "file": "src/views/tree/AutoHeight.vue",
+        "description": ""
+      },
+      {
+        "title": "节点级勾选与展示分组",
+        "kind": "live",
+        "file": "src/views/tree/NodeChecking.vue",
+        "description": ""
+      },
+      {
+        "title": "自定义展开图标与行内交互",
+        "kind": "live",
+        "file": "src/views/tree/Slots.vue",
+        "description": ""
       },
       {
         "title": "万级节点虚拟窗口",

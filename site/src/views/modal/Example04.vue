@@ -21,7 +21,7 @@ function handleFullscreenChange(value: boolean) {
     show-fullscreen-button
     draggable
     @fullscreen-change="handleFullscreenChange"
-    ><p>拖动标题栏可在视口内移动弹窗，点击右上角按钮进入或退出全屏。</p></ZtModal
+    ><p>拖动标题栏可在视口内移动弹窗，点击右上角按钮平滑进入或退出全屏，退出时恢复原来的位置与尺寸。</p></ZtModal
   >
 </template>
 

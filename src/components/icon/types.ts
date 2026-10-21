@@ -9,7 +9,7 @@ export const ztIconNames = [
   'visibility','eye-off','lock','unlock','save','copy','link','external-link','share',
   'clipboard','checklist','filter-list','filter','tag','star','heart','bookmark',
   'mail','phone','location','help','ban','play','pause','undo','redo',
-  'login','logout','maximize','chart','sun','moon',
+  'login','logout','maximize','maximize-2','minimize-2','chart','sun','moon',
 ] as const
 export type ZtIconName = typeof ztIconNames[number]
 export type ZtIconStatus = 'default' | 'primary' | 'success' | 'warning' | 'danger' | 'info'

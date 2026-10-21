@@ -166,7 +166,8 @@
     "description": "紧凑操作列表、分组、禁用与键盘导航。",
     "directory": "dropdown",
     "owners": [
-      "ZtDropdown"
+      "ZtDropdown",
+      "ZtDropdownItem"
     ]
   },
   {
@@ -320,7 +321,8 @@
     "description": "基于原生表格的排序、选择、展开和固定列。",
     "directory": "table",
     "owners": [
-      "ZtTable"
+      "ZtTable",
+      "ZtTableColumn"
     ]
   },
   {
@@ -331,7 +333,8 @@
     "description": "按时间展示事件、状态与自定义节点。",
     "directory": "timeline",
     "owners": [
-      "ZtTimeline"
+      "ZtTimeline",
+      "ZtTimelineItem"
     ]
   },
   {

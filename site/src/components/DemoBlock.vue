@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ZtButton } from '@ztechjs/zt-ui'
 import { computed, onBeforeUnmount, ref, useId } from 'vue'
 import { injectDemoStatus } from '../docs/demo-status'
 import { renderExampleSource } from '../../scripts/render-example-source.mjs'
@@ -72,7 +73,7 @@ onBeforeUnmount(() => {
     </div>
 
     <div class="doc-demo__actions">
-      <button
+      <ZtButton
         type="button"
         class="doc-demo__toggle"
         :aria-expanded="expanded"
@@ -92,8 +93,8 @@ onBeforeUnmount(() => {
           <polyline points="6 9 12 15 18 9" />
         </svg>
         {{ expanded ? '隐藏代码' : '查看代码' }}
-      </button>
-      <button
+      </ZtButton>
+      <ZtButton
         type="button"
         class="doc-demo__copy"
         :class="{ 'is-copied': copyState === 'copied', 'is-failed': copyState === 'failed' }"
@@ -126,7 +127,7 @@ onBeforeUnmount(() => {
           <path d="m5 12 4 4L19 6" />
         </svg>
         <span aria-live="polite">{{ copyLabel }}</span>
-      </button>
+      </ZtButton>
     </div>
 
     <Transition name="code-expand">

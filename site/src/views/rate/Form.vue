@@ -2,13 +2,11 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtEntryStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
-import {
-  ZtRate,
+import { ZtCheckbox, ZtRate,
   ZtForm,
   ZtFormItem,
   ZtButton,
-  type ZtFormInstance,
-} from '@ztechjs/zt-ui';
+  type ZtFormInstance, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtEntryStatus>('primary');
 const model = reactive<{ value: number }>({ value: 0 }),
   form = ref<ZtFormInstance>(),
@@ -21,8 +19,7 @@ async function submit() {
 </script>
 <template>
   <div class="entry-demo">
-    <label><input v-model="disabled" type="checkbox" />整个表单禁用</label
-    ><ZtForm
+    <ZtCheckbox v-model="disabled">整个表单禁用</ZtCheckbox><ZtForm
       ref="form"
       :model="model"
       :disabled="disabled"

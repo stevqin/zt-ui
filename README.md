@@ -9,6 +9,7 @@
 | **安装** | `npm install @ztechjs/zt-ui` |
 | **文档** | [stevqin.github.io/zt-ui](https://stevqin.github.io/zt-ui/) |
 | **仓库** | [github.com/stevqin/zt-ui](https://github.com/stevqin/zt-ui) |
+| **更新日志** | [CHANGELOG.md](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) |
 | **技术栈** | Vue 3 Composition API · TypeScript · SCSS · Vite |
 | **许可** | MIT |
 

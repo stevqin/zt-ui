@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtSelect, ZtButton, type ZtSelectInstance } from '@ztechjs/zt-ui';
+import { ZtCheckbox, ZtSelect, ZtButton, type ZtSelectInstance } from '@ztechjs/zt-ui';
 const select = ref<ZtSelectInstance>();
 const value = ref<string | number | null>(null);
 const readonly = ref(false);
@@ -17,7 +17,7 @@ const options = [
       ><ZtButton @click="select?.open()">打开下拉</ZtButton
       ><ZtButton @click="select?.close()">关闭下拉</ZtButton
       ><ZtButton @click="select?.clear()">clear()</ZtButton>
-      <label><input v-model="readonly" type="checkbox" /> readonly</label>
+      <ZtCheckbox v-model="readonly"> readonly</ZtCheckbox>
     </div>
     <ZtSelect
       ref="select"

@@ -1,7 +1,135 @@
 @use '../../styles/tokens' as glass;
-.zt-popover__reference{display:inline-flex}.zt-popover{@include glass.tokens;box-sizing:border-box;display:flex;flex-direction:column;width:max-content;height:auto;max-width:calc(100vw - 16px);max-height:calc(100vh - 16px);min-width:0;padding:12px;border:1px solid var(--glass-line);border-radius:glass.radius(10px);background:var(--zt-panel-bg,var(--glass-default-soft));box-shadow:var(--glass-shadow);color:var(--glass-ink);font:var(--glass-size-default)/1.5 var(--glass-font);&__arrow{position:absolute;width:10px;height:10px;border:inherit;background:inherit;transform:rotate(45deg)}&--top &__arrow,&--top-start &__arrow,&--top-end &__arrow{bottom:-6px;left:calc(var(--zt-popover-arrow-x) - 5px);border-left:0;border-top:0}&--bottom &__arrow,&--bottom-start &__arrow,&--bottom-end &__arrow{top:-6px;left:calc(var(--zt-popover-arrow-x) - 5px);border-right:0;border-bottom:0}&--left &__arrow,&--left-start &__arrow,&--left-end &__arrow{right:-6px;top:calc(var(--zt-popover-arrow-y) - 5px);border-left:0;border-bottom:0}&--right &__arrow,&--right-start &__arrow,&--right-end &__arrow{left:-6px;top:calc(var(--zt-popover-arrow-y) - 5px);border-right:0;border-top:0}}
-.zt-popover-enter-active,.zt-popover-leave-active{transition:opacity .14s ease,transform .14s ease}.zt-popover-enter-from,.zt-popover-leave-to{opacity:0;transform:translateY(3px)}@media(prefers-reduced-motion:reduce){.zt-popover-enter-active,.zt-popover-leave-active{transition:none}}
+
+.zt-popover__reference { display: inline-flex; }
+
+.zt-popover {
+  @include glass.tokens;
+  --zt-popup-foreground: var(--glass-ink);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: max-content;
+  height: auto;
+  max-width: calc(100vw - 16px);
+  max-height: calc(100vh - 16px);
+  min-width: 0;
+  padding: 14px 16px;
+  border: 1px solid var(--zt-border, rgba(15, 23, 42, .13));
+  border-radius: glass.radius(12px);
+  // A dense tint and background-only blur preserve crisp text over busy pages.
+  background: var(--zt-popover-bg, var(--zt-panel-bg, rgba(255, 255, 255, .94)));
+  isolation: isolate;
+  -webkit-backdrop-filter: blur(18px) saturate(1.35);
+  backdrop-filter: blur(18px) saturate(1.35);
+  box-shadow: var(--zt-popover-shadow, var(--zt-shadow, 0 12px 32px rgba(15, 23, 42, .14), 0 2px 8px rgba(15, 23, 42, .06))), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .7));
+  color: var(--zt-popup-foreground);
+  font: var(--glass-size-default)/1.65 var(--glass-font);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(145deg, rgba(255, 255, 255, .035), transparent 55%, rgba(255, 255, 255, .015));
+    pointer-events: none;
+  }
+
+  &__arrow {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border: inherit;
+    background: inherit;
+    transform: rotate(45deg);
+    pointer-events: none;
+  }
+  &--top &__arrow, &--top-start &__arrow, &--top-end &__arrow {
+    bottom: -6px;
+    left: calc(var(--zt-popover-arrow-x) - 5px);
+    border-left: 0;
+    border-top: 0;
+  }
+  &--bottom &__arrow, &--bottom-start &__arrow, &--bottom-end &__arrow {
+    top: -6px;
+    left: calc(var(--zt-popover-arrow-x) - 5px);
+    border-right: 0;
+    border-bottom: 0;
+  }
+  &--left &__arrow, &--left-start &__arrow, &--left-end &__arrow {
+    right: -6px;
+    top: calc(var(--zt-popover-arrow-y) - 5px);
+    border-left: 0;
+    border-bottom: 0;
+  }
+  &--right &__arrow, &--right-start &__arrow, &--right-end &__arrow {
+    left: -6px;
+    top: calc(var(--zt-popover-arrow-y) - 5px);
+    border-right: 0;
+    border-top: 0;
+  }
+}
 
 .zt-popover--sized-width { min-width: 0; max-width: calc(100vw - 16px); }
+.zt-popover__content {
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
 
-.zt-popover__content { min-width: 0; min-height: 0; overflow: auto; overflow-wrap: anywhere; white-space: normal; }
+// The owning wrapper marks this surface, so nested tooltips cannot recolor it.
+.zt-popover--tooltip {
+  --zt-popup-foreground: var(--zt-tooltip-color, #f8fafc);
+  padding: 8px 11px;
+  border-color: var(--zt-tooltip-border, rgba(255, 255, 255, .16));
+  border-radius: glass.radius(8px);
+  background: var(--zt-tooltip-bg, rgba(38, 52, 69, .95));
+  line-height: 1.6;
+  box-shadow: var(--zt-tooltip-shadow, 0 6px 18px rgba(15, 23, 42, .2), 0 2px 5px rgba(15, 23, 42, .1));
+}
+
+// Each nested popup resets its foreground, including inline (non-teleported)
+// Popovers. Rich tooltip text follows that local surface without changing themes.
+.zt-popover--tooltip > .zt-popover__content .zt-text--default { color: var(--zt-popup-foreground); }
+
+.zt-popover--top, .zt-popover--top-start, .zt-popover--top-end {
+  --zt-popover-enter-x: 0px;
+  --zt-popover-enter-y: 3px;
+  transform-origin: var(--zt-popover-arrow-x, 50%) bottom;
+}
+.zt-popover--bottom, .zt-popover--bottom-start, .zt-popover--bottom-end {
+  --zt-popover-enter-x: 0px;
+  --zt-popover-enter-y: -3px;
+  transform-origin: var(--zt-popover-arrow-x, 50%) top;
+}
+.zt-popover--left, .zt-popover--left-start, .zt-popover--left-end {
+  --zt-popover-enter-x: 3px;
+  --zt-popover-enter-y: 0px;
+  transform-origin: right var(--zt-popover-arrow-y, 50%);
+}
+.zt-popover--right, .zt-popover--right-start, .zt-popover--right-end {
+  --zt-popover-enter-x: -3px;
+  --zt-popover-enter-y: 0px;
+  transform-origin: left var(--zt-popover-arrow-y, 50%);
+}
+
+.zt-popover-enter-active {
+  transition: opacity 180ms cubic-bezier(.16, 1, .3, 1), transform 220ms cubic-bezier(.16, 1, .3, 1);
+  will-change: opacity, transform;
+}
+.zt-popover-enter-from {
+  opacity: 0;
+  transform: translate3d(var(--zt-popover-enter-x, 0px), var(--zt-popover-enter-y, -3px), 0) scale(.97);
+}
+.zt-popover-leave-active {
+  transition: opacity 100ms ease-out, transform 100ms ease-out;
+  will-change: opacity, transform;
+  pointer-events: none;
+}
+.zt-popover-leave-to { opacity: 0; }
+@media (prefers-reduced-motion: reduce) {
+  .zt-popover-enter-active, .zt-popover-leave-active { transition: none; will-change: auto; }
+  .zt-popover-enter-from { transform: none; }
+}

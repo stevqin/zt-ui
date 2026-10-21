@@ -60,6 +60,9 @@ const shapes:Record<ZtIconName,Shape[]> = {
   login:[['path','M14 5h4a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1h-4'],['path','m10 8-4 4 4 4M6 12h9']],
   logout:[['path','M10 5H6a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h4'],['path','m15 8 4 4-4 4M19 12H9']],
   maximize:[['path','M8 4H4v4M16 4h4v4M4 16v4h4M20 16v4h-4']],
+  // Lucide Maximize2 / Minimize2 (ISC/MIT); see THIRD_PARTY_NOTICES.
+  'maximize-2':[['path','M15 3h6v6'],['path','m21 3-7 7'],['path','m3 21 7-7'],['path','M9 21H3v-6']],
+  'minimize-2':[['path','m14 10 7-7'],['path','M20 10h-6V4'],['path','m3 21 7-7'],['path','M4 14h6v6']],
   chart:[['path','M3 3v18h18'],['path','m7 15 4-5 3 3 5-7']],
   sun:[['circle',12,12,4],['path','M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4']],
   moon:[['path','M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z']],
@@ -143,6 +146,8 @@ export const ZtRedoIcon=iconComponents.redo
 export const ZtLoginIcon=iconComponents.login
 export const ZtLogoutIcon=iconComponents.logout
 export const ZtMaximizeIcon=iconComponents.maximize
+export const ZtMaximize2Icon=iconComponents['maximize-2']
+export const ZtMinimize2Icon=iconComponents['minimize-2']
 export const ZtChartIcon=iconComponents.chart
 export const ZtSunIcon=iconComponents.sun
 export const ZtMoonIcon=iconComponents.moon

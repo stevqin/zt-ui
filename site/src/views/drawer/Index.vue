@@ -6,6 +6,8 @@ import Example02 from './Example02.vue';
 import Example02Code from './Example02.vue?raw';
 import Example03 from './Example03.vue';
 import Example03Code from './Example03.vue?raw';
+import BodyPadding from './BodyPadding.vue';
+import BodyPaddingCode from './BodyPadding.vue?raw';
 import CustomContent from './CustomContent.vue';
 import CustomContentCode from './CustomContent.vue?raw';
 </script>
@@ -22,6 +24,11 @@ import CustomContentCode from './CustomContent.vue?raw';
     <DemoBlock :code="Example03Code" desc="width / height 控制宽高；size 控制密度，并传递给内部控件。"
       ><Example03
     /></DemoBlock>
+
+    <h3>正文内边距</h3>
+    <DemoBlock :code="BodyPaddingCode" desc="body-padding 支持数字和 CSS padding 简写；传 0 去掉内边距，不传则沿用当前 size 的默认值。">
+      <BodyPadding />
+    </DemoBlock>
 
     <h3>插槽、销毁与关闭守卫</h3>
     <DemoBlock

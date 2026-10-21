@@ -153,18 +153,31 @@ async function next() {
     emit('change', index.value + 1);
   } else if (await overlay.requestClose('confirm')) emit('finish');
 }
+const spotlight = computed(() => {
+  if (!rect.value) return undefined;
+  const pad = 4;
+  const width = rect.value.width + pad * 2;
+  const height = rect.value.height + pad * 2;
+  return {
+    left: rect.value.left - pad,
+    top: rect.value.top - pad,
+    width,
+    height,
+    radius: Math.min(config.borderRadius.value, width / 2, height / 2),
+  };
+});
 const maskClip = computed(() => {
-  if (!rect.value || typeof window === 'undefined') return undefined
-  const w = window.innerWidth
-  const h = window.innerHeight
-  const pad = 4
-  const x = Math.max(0, rect.value.left - pad)
-  const y = Math.max(0, rect.value.top - pad)
-  const rw = rect.value.width + pad * 2
-  const rh = rect.value.height + pad * 2
-  // evenodd hole lets pointer events reach the highlighted target.
-  return `path(evenodd, "M0 0H${w}V${h}H0Z M${x} ${y}H${x + rw}V${y + rh}H${x}Z")`
-})
+  const box = spotlight.value;
+  if (!box || typeof window === 'undefined') return undefined;
+  const { left: x, top: y, width, height, radius: r } = box;
+  const right = x + width;
+  const bottom = y + height;
+  const hole = r === 0
+    ? `M${x} ${y}H${right}V${bottom}H${x}Z`
+    : `M${x + r} ${y}H${right - r}A${r} ${r} 0 0 1 ${right} ${y + r}V${bottom - r}A${r} ${r} 0 0 1 ${right - r} ${bottom}H${x + r}A${r} ${r} 0 0 1 ${x} ${bottom - r}V${y + r}A${r} ${r} 0 0 1 ${x + r} ${y}Z`;
+  // The mask's hit region excludes exactly the same rounded rectangle as the outline.
+  return `path(evenodd, "M0 0H${window.innerWidth}V${window.innerHeight}H0Z ${hole}")`;
+});
 const panelStyle = computed(() => ({
   ...config.style.value,
   width: `min(${props.width}px, calc(100vw - 24px))`,
@@ -178,7 +191,7 @@ const panelStyle = computed(() => ({
     ><div
       v-if="model && step"
       class="zt-tour"
-      :style="{ zIndex: overlay.layer.value }"
+      :style="{ ...config.style.value, zIndex: overlay.layer.value }"
     >
       <div
         v-if="mask"
@@ -186,18 +199,19 @@ const panelStyle = computed(() => ({
         :class="{ 'is-full': !rect }"
         :style="maskClip ? { clipPath: maskClip } : undefined"
         aria-hidden="true"
-      >
-        <div
-          v-if="rect"
-          class="zt-tour__spotlight"
-          :style="{
-            top: rect.top - 4 + 'px',
-            left: rect.left - 4 + 'px',
-            width: rect.width + 8 + 'px',
-            height: rect.height + 8 + 'px',
-          }"
-        />
-      </div>
+      />
+      <div
+        v-if="mask && spotlight"
+        class="zt-tour__spotlight"
+        :style="{
+          top: spotlight.top + 'px',
+          left: spotlight.left + 'px',
+          width: spotlight.width + 'px',
+          height: spotlight.height + 'px',
+          borderRadius: spotlight.radius + 'px',
+        }"
+        aria-hidden="true"
+      />
       <section
         ref="panel"
         role="dialog"
@@ -242,14 +256,10 @@ const panelStyle = computed(() => ({
     inset: 0;
     overflow: hidden;
     pointer-events: auto;
-    &.is-full {
-      background: #0007;
-    }
+    background: #0007;
   }
   &__spotlight {
     position: absolute;
-    border-radius: 8px;
-    box-shadow: 0 0 0 9999px #0007;
     border: 2px solid #fff;
     box-sizing: border-box;
     pointer-events: none;

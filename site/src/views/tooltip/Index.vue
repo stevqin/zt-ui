@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import DemoBlock from '@/components/DemoBlock.vue';
+import PopupReadability from './Readability.vue';
+import PopupReadabilityCode from './Readability.vue?raw';
 import Basic from './Basic.vue';
 import BasicCode from './Basic.vue?raw';
 import Controlled from './Controlled.vue';
@@ -12,5 +14,9 @@ import ControlledCode from './Controlled.vue?raw';
     <DemoBlock :code="BasicCode"><Basic /></DemoBlock>
     <h3>受控显示、延迟与禁用</h3>
     <DemoBlock :code="ControlledCode"><Controlled /></DemoBlock>
+    <h3>白底与密集内容</h3>
+    <DemoBlock :code="PopupReadabilityCode" desc="在白色页面和订单文字上打开浮层，检查玻璃背景、箭头与文字的清晰度；弹出时轻缩放淡入，关闭时快速淡出。">
+      <PopupReadability />
+    </DemoBlock>
   </div>
 </template>

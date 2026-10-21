@@ -2,11 +2,13 @@
 import { hierarchyStyle } from '../tree/appearance';
 import { computed, ref, watch, nextTick, onBeforeUnmount, useId } from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
+import ZtIcon from '../icon/ZtIcon.vue';
 import {
   flattenTree,
   toggleChecked,
   partialChecked,
   normalizeChecked,
+  checkedKeysForRows,
   type TreeRow,
 } from './model';
 import type { ZtTreeProps, ZtTreeKey, ZtTreeNode } from './types';
@@ -19,6 +21,7 @@ const props = withDefaults(defineProps<ZtTreeProps>(), {
   defaultExpandedKeys: () => [],
   height: 280,
   filter: '',
+  autoItemHeight: false,
 });
 const emit = defineEmits<{
   'update:checkedKeys': [keys: ZtTreeKey[]];
@@ -63,7 +66,9 @@ const visible = computed(() => {
     : [];
   return rows.value.filter((r) =>
     q
-      ? matches.some((m) => m.path.includes(r.key) || r.path.slice(0, -1).includes(m.key))
+      ? matches.some(
+          (m) => m.path.includes(r.key) || r.path.slice(0, -1).includes(m.key),
+        )
       : r.path.slice(0, -1).every((k) => open.value.includes(k)),
   );
 });
@@ -74,6 +79,7 @@ const rowHeight = computed(() =>
         { mini: 24, small: 28, default: 32, medium: 36, large: 40 }[size.value],
     ),
   ),
+  autoHeight = computed(() => props.autoItemHeight && !props.virtual),
   start = computed(() =>
     props.virtual
       ? Math.max(0, Math.floor(scroll.value / rowHeight.value) - 3)
@@ -88,15 +94,27 @@ const rowHeight = computed(() =>
       : visible.value,
   );
 watch(
-  visible,
-  () => {
+  [visible, rowHeight, autoHeight, () => props.height, () => props.virtual],
+  async () => {
     if (!visible.value.some((r) => r.key === active.value))
       active.value = visible.value.find((r) => !r.disabled)?.key;
-    scroll.value = Math.min(
-      scroll.value,
-      Math.max(0, visible.value.length * rowHeight.value - props.height),
-    );
-    if (root.value) root.value.scrollTop = scroll.value;
+    if (props.virtual) {
+      scroll.value = Math.min(
+        scroll.value,
+        Math.max(0, visible.value.length * rowHeight.value - props.height),
+      );
+      if (root.value) root.value.scrollTop = scroll.value;
+    } else {
+      await nextTick();
+      const element = root.value;
+      if (element?.clientHeight) {
+        scroll.value = Math.min(
+          scroll.value,
+          Math.max(0, element.scrollHeight - element.clientHeight),
+        );
+        element.scrollTop = scroll.value;
+      }
+    }
   },
   { immediate: true },
 );
@@ -133,11 +151,11 @@ async function expand(row: TreeRow, retry = false) {
 }
 const displayChecked = computed(() =>
   props.checkStrictly
-    ? props.checkedKeys
+    ? checkedKeysForRows(rows.value, props.checkedKeys)
     : normalizeChecked(rows.value, props.checkedKeys),
 );
 function check(row: TreeRow, event?: Event) {
-  if (props.disabled || row.disabled) return;
+  if (props.disabled || row.disabled || !row.checkable) return;
   const keys = toggleChecked(
     rows.value,
     displayChecked.value,
@@ -151,8 +169,14 @@ function check(row: TreeRow, event?: Event) {
       row.key,
     );
 }
-function select(row: TreeRow) {
-  if (props.disabled || row.disabled) return;
+function select(row: TreeRow, event?: MouseEvent) {
+  if (
+    props.disabled ||
+    row.disabled ||
+    event?.defaultPrevented ||
+    (event && isInnerControl(event.target))
+  )
+    return;
   active.value = row.key;
   emit('update:selectedKeys', [row.key]);
   emit('select', row.node);
@@ -169,9 +193,40 @@ async function focusRow(index: number) {
     scroll.value = root.value.scrollTop;
   }
   await nextTick();
+  if (!props.virtual && root.value?.clientHeight) {
+    const element = root.value.firstElementChild?.children.item(index) as
+      HTMLElement | undefined;
+    if (!element) return;
+    const bounds = element.getBoundingClientRect();
+    const top = root.value.getBoundingClientRect().top + root.value.clientTop;
+    if (bounds.top < top || bounds.height > root.value.clientHeight)
+      root.value.scrollTop += bounds.top - top;
+    else if (bounds.bottom > top + root.value.clientHeight)
+      root.value.scrollTop += bounds.bottom - top - root.value.clientHeight;
+    scroll.value = root.value.scrollTop;
+  }
+}
+function isInnerControl(eventTarget: EventTarget | null) {
+  const target = eventTarget instanceof Element ? eventTarget : undefined;
+  if (target && target !== root.value) {
+    if (target.closest('[role="tree"]') !== root.value) return true;
+    const label = target.closest('label');
+    if (label?.control) return true;
+    const control = target.closest(
+      'input,textarea,select,button,a[href],summary,[contenteditable]:not([contenteditable="false"]),[role="textbox"],[role="combobox"],[role="button"],[role="checkbox"],[role="switch"],[tabindex]:not([tabindex="-1"])',
+    );
+    return !!control && control !== root.value;
+  }
+  return false;
 }
 function keydown(e: KeyboardEvent) {
-  if (props.disabled) return;
+  if (
+    props.disabled ||
+    e.defaultPrevented ||
+    e.isComposing ||
+    isInnerControl(e.target)
+  )
+    return;
   const enabled = visible.value.filter((r) => !r.disabled),
     i = enabled.findIndex((r) => r.key === active.value),
     row = enabled[Math.max(0, i)];
@@ -225,7 +280,7 @@ const uid = useId();
   <div
     ref="root"
     class="zt-tree"
-    :class="`zt-tree--${size}`"
+    :class="[`zt-tree--${size}`, { 'zt-tree--auto-height': autoHeight }]"
     :style="[
       config.style.value,
       hierarchyStyle(status),
@@ -259,7 +314,7 @@ const uid = useId();
         :aria-expanded="row.branch ? open.includes(row.key) : undefined"
         :aria-selected="selectedKeys.includes(row.key)"
         :aria-checked="
-          checkable
+          checkable && row.checkable
             ? partialChecked(rows, displayChecked, row.key) && !checkStrictly
               ? 'mixed'
               : displayChecked.includes(row.key)
@@ -273,7 +328,8 @@ const uid = useId();
         }"
         :style="{
           paddingLeft: `${row.depth * 20 + 8}px`,
-          height: `${rowHeight}px`,
+          height: autoHeight ? 'auto' : `${rowHeight}px`,
+          minHeight: autoHeight ? `${rowHeight}px` : undefined,
           ...(virtual
             ? {
                 position: 'absolute',
@@ -283,22 +339,37 @@ const uid = useId();
               }
             : {}),
         }"
-        @click="select(row)"
+        @click="select(row, $event)"
       >
         <button
           v-if="row.branch"
           data-expand
+          class="zt-tree__expand"
           type="button"
           tabindex="-1"
           :disabled="disabled || row.disabled"
           :aria-label="open.includes(row.key) ? '收起' : '展开'"
+          :aria-busy="loading.has(row.key) || undefined"
           @click.stop="expand(row)"
         >
-          {{
-            loading.has(row.key) ? '…' : open.includes(row.key) ? '▾' : '▸'
-          }}</button
+          <slot
+            name="expand-icon"
+            :node="row.node"
+            :expanded="open.includes(row.key)"
+            :loading="loading.has(row.key)"
+            :disabled="disabled || row.disabled"
+          >
+            <ZtIcon
+              :name="loading.has(row.key) ? 'refresh' : 'chevron-right'"
+              :spin="loading.has(row.key)"
+              class="zt-tree__expand-icon"
+              :class="{
+                'is-expanded': open.includes(row.key) && !loading.has(row.key),
+              }"
+            />
+          </slot></button
         ><span v-else class="zt-tree__indent" /><input
-          v-if="checkable"
+          v-if="checkable && row.checkable"
           type="checkbox"
           tabindex="-1"
           :aria-label="row.label"
@@ -309,10 +380,18 @@ const uid = useId();
           "
           @click.stop
           @change="check(row, $event)"
-        /><slot :node="row.node" :checked="displayChecked.includes(row.key)">{{
-          row.label
-        }}</slot
-        ><button
+        />
+        <div class="zt-tree__content">
+          <slot
+            :node="row.node"
+            :checked="displayChecked.includes(row.key)"
+            :expanded="open.includes(row.key)"
+            :disabled="disabled || row.disabled"
+            :checkable="checkable && row.checkable"
+            >{{ row.label }}</slot
+          >
+        </div>
+        <button
           v-if="errors.has(row.key)"
           data-retry
           type="button"

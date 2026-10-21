@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import {
-  ZtButton,
+import { ZtInput, ZtButton,
   ZtVTableGrid,
   type ZtVTableGridColumn,
-  type ZtVTableGridQueryParams,
-} from '@ztechjs/zt-ui';
+  type ZtVTableGridQueryParams, } from '@ztechjs/zt-ui';
 type Product = {
   id: number;
   sku: string;
@@ -113,7 +111,7 @@ async function failQuery(query: (resetPage?: boolean) => Promise<void>) {
     >
       <template #form="{ query, reload }">
         <div class="grid-search">
-          <input
+          <ZtInput
             v-model="keyword"
             placeholder="输入编码、名称或品类"
             @keyup.enter="query(true)"
@@ -162,23 +160,11 @@ async function failQuery(query: (resetPage?: boolean) => Promise<void>) {
   color: #536175;
   font-size: 13px;
 }
+.grid-search > .zt-input { width: 260px; }
 .grid-search {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-}
-.grid-search input {
-  min-width: 240px;
-  padding: 8px 12px;
-  border: 1px solid #d8dee8;
-  border-radius: 8px;
-  color: #293242;
-  background: #fff;
-  outline: none;
-}
-.grid-search input:focus {
-  border-color: #3977eb;
-  box-shadow: 0 0 0 3px rgb(57 119 235 / 12%);
 }
 .slot-chip {
   padding: 4px 8px;
@@ -197,7 +183,7 @@ async function failQuery(query: (resetPage?: boolean) => Promise<void>) {
   color: #334155;
 }
 @media (max-width: 720px) {
-  .grid-search input {
+  .grid-search .zt-input {
     min-width: 0;
     width: 100%;
   }

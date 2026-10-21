@@ -2,7 +2,7 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import { ZtTree, type ZtTreeKey } from '@ztechjs/zt-ui';
+import { ZtInput, ZtTree, type ZtTreeKey } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const filter = ref(''),
   checked = ref<ZtTreeKey[]>([]),
@@ -20,7 +20,7 @@ const expanded = ref<ZtTreeKey[]>(data.map((n) => n.key));
 <template>
   <div>
     <p>10,100 个节点只挂载可视窗口。End 可直接跳到最后一行。</p>
-    <input
+    <ZtInput
       v-model="filter"
       aria-label="筛选万级节点"
       placeholder="例如 门店 100"

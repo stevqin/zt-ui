@@ -9,6 +9,7 @@
   --tabs-padding: 15px;
   --tabs-gap: 6px;
   --tabs-close: 20px;
+  min-width: 0;
   color: var(--glass-ink);
   font: var(--glass-size-default)/1.5 var(--glass-font);
 
@@ -16,12 +17,15 @@
   &__nav {
     display: flex;
     align-items: stretch;
+    gap: 4px;
     border-bottom: 1px solid var(--glass-line);
     overflow: auto;
+    overscroll-behavior: contain;
     scrollbar-width: none;
     &::-webkit-scrollbar { display: none; }
   }
   &__tab {
+    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -29,17 +33,18 @@
     flex: 0 0 auto;
     min-height: var(--tabs-height);
     box-sizing: border-box;
-    padding: 3px var(--tabs-padding);
+    padding: 4px var(--tabs-padding);
     border: 0;
-    border-bottom: 2px solid transparent;
-    background: none;
+    background: transparent;
     color: var(--glass-muted);
     font: inherit;
     white-space: nowrap;
     cursor: pointer;
-    &.is-active { color: var(--tabs-ink); border-bottom-color: currentColor; }
-    &.is-disabled { opacity: .45; cursor: not-allowed; }
-    &:focus-visible { outline: 2px solid var(--tabs-ink); outline-offset: -3px; }
+    transition: background-color .16s ease, color .16s ease, border-color .16s ease, box-shadow .16s ease;
+    &:hover:not(.is-disabled) { color: var(--tabs-ink); background: var(--tabs-soft); }
+    &.is-active { color: var(--tabs-ink); font-weight: 500; }
+    &.is-disabled { opacity: .4; cursor: not-allowed; }
+    &:focus-visible { outline: 2px solid var(--tabs-ink); outline-offset: -3px; z-index: 1; }
   }
   &__close, &__add {
     display: inline-grid;
@@ -48,46 +53,119 @@
     width: var(--tabs-close);
     height: var(--tabs-close);
     box-sizing: border-box;
-    padding: 2px;
+    padding: 3px;
     border: 0;
-    border-radius: 50%;
+    border-radius: glass.radius(5px);
     background: transparent;
-    color: inherit;
+    color: var(--glass-muted);
     font: inherit;
     cursor: pointer;
+    transition: color .14s ease, background-color .14s ease;
     &:hover { background: var(--tabs-soft); color: var(--tabs-ink); }
     &:focus-visible { outline: 2px solid var(--tabs-ink); outline-offset: -2px; }
   }
-  &__add { align-self: center; margin: 0 5px; }
+  &__close:hover { background: var(--glass-danger-soft); color: var(--glass-danger-ink); }
+  &__add {
+    align-self: center;
+    margin: 0 5px;
+    border: 1px dashed var(--glass-line);
+    &:hover { border-color: var(--tabs-line); }
+  }
   &__content { min-width: 0; padding: 16px 0; }
 
-  &--card &__tab, &--border-card &__tab {
+  // Inset indicator keeps long labels and icon slots from crowding the active line.
+  &--line &__tab {
+    border-radius: glass.radius(6px) glass.radius(6px) 0 0;
+    &::after {
+      content: '';
+      position: absolute;
+      right: 10px;
+      bottom: 0;
+      left: 10px;
+      height: 2px;
+      border-radius: 2px;
+      background: var(--tabs-ink);
+      opacity: 0;
+      transform: scaleX(.5);
+      transition: transform .18s ease, opacity .18s ease;
+    }
+    &.is-active::after { opacity: 1; transform: scaleX(1); }
+  }
+
+  &--card &__nav { padding: 3px 3px 0; gap: 5px; }
+  &--card &__tab {
     border: 1px solid var(--glass-line);
     border-bottom: 0;
     border-radius: glass.radius(8px) glass.radius(8px) 0 0;
-    &.is-active { background: var(--tabs-soft); }
+    background: var(--zt-surface-soft, #f3f5f7);
+    &.is-active {
+      color: var(--tabs-ink);
+      border-color: var(--tabs-line);
+      background: var(--tabs-soft);
+      box-shadow: inset 0 2px 0 var(--tabs-ink);
+    }
   }
+
+  &--border-card {
+    border: 1px solid var(--glass-line);
+    border-radius: glass.radius(10px);
+    background: var(--zt-surface, #fff);
+    overflow: hidden;
+  }
+  &--border-card &__nav-wrap { background: var(--zt-surface-soft, #f3f5f7); }
+  &--border-card &__nav { gap: 0; }
+  &--border-card &__tab {
+    border-right: 1px solid var(--glass-line);
+    &.is-active {
+      background: var(--zt-surface, #fff);
+      box-shadow: inset 0 2px 0 var(--tabs-ink);
+    }
+  }
+  &--border-card &__content { padding: 18px; }
+
   &--bottom { display: flex; flex-direction: column-reverse; }
   &--bottom &__nav { border-top: 1px solid var(--glass-line); border-bottom: 0; }
-  &--bottom &__tab {
-    border-top: 2px solid transparent; border-bottom: 0;
-    &.is-active { border-top-color: currentColor; }
+  &--line.zt-tabs--bottom &__tab {
+    border-radius: 0 0 glass.radius(6px) glass.radius(6px);
+    &::after { top: 0; bottom: auto; }
   }
+  &--card.zt-tabs--bottom &__nav { padding: 0 3px 3px; }
+  &--card.zt-tabs--bottom &__tab {
+    border: 1px solid var(--glass-line);
+    border-top: 0;
+    border-radius: 0 0 glass.radius(8px) glass.radius(8px);
+    &.is-active { border-color: var(--tabs-line); box-shadow: inset 0 -2px 0 var(--tabs-ink); }
+  }
+  &--border-card.zt-tabs--bottom &__tab.is-active { box-shadow: inset 0 -2px 0 var(--tabs-ink); }
+
   &--left, &--right { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px; }
   &--right { grid-template-columns: minmax(0, 1fr) auto; }
-  .zt-tabs__nav-wrap, .zt-tabs__content { grid-row: 1; }
+  &--left &__nav-wrap, &--right &__nav-wrap,
+  &--left &__content, &--right &__content { grid-row: 1; }
   &--right &__nav-wrap { grid-column: 2; }
   &--right &__content { grid-column: 1; }
   &--left &__nav, &--right &__nav { flex-direction: column; border-bottom: 0; border-right: 1px solid var(--glass-line); }
   &--right &__nav { border-right: 0; border-left: 1px solid var(--glass-line); }
-  &--left &__tab, &--right &__tab {
-    border-bottom: 0; border-right: 2px solid transparent;
-    &.is-active { border-right-color: currentColor; }
+  &--left &__tab, &--right &__tab { justify-content: flex-start; }
+  &--line:is(.zt-tabs--left, .zt-tabs--right) &__tab {
+    border-radius: glass.radius(6px);
+    &::after { top: 8px; bottom: 8px; left: auto; right: 0; height: auto; width: 2px; transform: scaleY(.5); }
+    &.is-active::after { transform: scaleY(1); }
   }
-  &--right &__tab {
-    border-right: 0; border-left: 2px solid transparent;
-    &.is-active { border-left-color: currentColor; }
+  &--line.zt-tabs--right &__tab::after { right: auto; left: 0; }
+  &--card.zt-tabs--left &__nav { padding: 3px 0 3px 3px; }
+  &--card.zt-tabs--right &__nav { padding: 3px 3px 3px 0; }
+  &--card:is(.zt-tabs--left, .zt-tabs--right) &__tab {
+    border: 1px solid var(--glass-line);
+    &.is-active { border-color: var(--tabs-line); }
   }
+  &--card.zt-tabs--left &__tab { border-right: 0; border-radius: glass.radius(8px) 0 0 glass.radius(8px); &.is-active { box-shadow: inset 2px 0 0 var(--tabs-ink); } }
+  &--card.zt-tabs--right &__tab { border-left: 0; border-radius: 0 glass.radius(8px) glass.radius(8px) 0; &.is-active { box-shadow: inset -2px 0 0 var(--tabs-ink); } }
+  &--border-card:is(.zt-tabs--left, .zt-tabs--right) { gap: 0; }
+  &--border-card:is(.zt-tabs--left, .zt-tabs--right) &__tab { border-right: 0; border-bottom: 1px solid var(--glass-line); }
+  &--border-card.zt-tabs--left &__tab.is-active { box-shadow: inset 2px 0 0 var(--tabs-ink); }
+  &--border-card.zt-tabs--right &__tab.is-active { box-shadow: inset -2px 0 0 var(--tabs-ink); }
+
   @each $status in default, success, warning, danger, info {
     &--status-#{$status} {
       --tabs-ink: var(--glass-#{$status}-ink);
@@ -112,41 +190,29 @@
 
   // One glass dock with softly raised, independent tab islands.
   &--island { margin-bottom: 5px; }
-
   &--island &__nav-wrap {
     padding: 2px;
     border: 1px solid var(--glass-island-line);
-    border-radius: glass.radius(18px);
+    border-radius: glass.radius(14px);
     background: var(--glass-island);
-    box-shadow: var(--glass-shadow);
+    box-shadow: 0 2px 8px rgba(16, 24, 40, .06), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .55));
     -webkit-backdrop-filter: blur(18px) saturate(145%);
     backdrop-filter: blur(18px) saturate(145%);
   }
-  &--island &__nav {
-    gap: 3px;
-    padding: 1px;
-    border: 0;
-  }
-  // Compact docks should not add more height than the mini controls need.
-  &--island.zt-tabs--mini &__nav-wrap {
-    padding: 1px;
-    border-radius: glass.radius(15px);
-  }
+  &--island &__nav { gap: 3px; padding: 1px; border: 0; }
+  &--island.zt-tabs--mini &__nav-wrap { padding: 1px; border-radius: glass.radius(11px); }
   &--island.zt-tabs--mini &__nav { padding: 1px; gap: 2px; }
   &--island.zt-tabs--medium &__nav-wrap,
   &--island.zt-tabs--large &__nav-wrap { padding: 3px; }
   &--island.zt-tabs--large &__nav { padding: 2px; gap: 4px; }
   &--island &__tab {
-    position: relative;
     border: 1px solid transparent;
-    border-radius: glass.radius(13px);
-    transition: background-color 180ms ease, color 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
-    &:hover:not(.is-disabled) { color: var(--tabs-ink); background: color-mix(in srgb, var(--tabs-soft) 72%, transparent); }
+    border-radius: glass.radius(9px);
     &.is-active {
       color: var(--tabs-ink);
       border-color: var(--tabs-line);
-      background: linear-gradient(165deg, color-mix(in srgb, var(--tabs-soft) 88%, var(--zt-surface, #fff)), var(--tabs-soft));
-      box-shadow: 0 2px 5px rgba(16, 24, 40, .18), inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .55));
+      background: var(--tabs-soft);
+      box-shadow: 0 1px 3px rgba(16, 24, 40, .1), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .55));
     }
   }
   &--island &__close {
@@ -157,17 +223,17 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transition: width 140ms ease, margin-left 140ms ease, opacity 140ms ease;
+    transition: width .14s ease, margin-left .14s ease, opacity .14s ease;
   }
   &--island &__tab.is-active &__close {
     width: var(--tabs-close);
-    padding: 2px;
+    padding: 3px;
     margin-left: 0;
     opacity: 1;
     visibility: visible;
     pointer-events: auto;
   }
   @media (prefers-reduced-motion: reduce) {
-    &--island &__tab, &--island &__close { transition: none; }
+    &__tab, &__tab::after, &__close, &__add { transition: none; }
   }
 }

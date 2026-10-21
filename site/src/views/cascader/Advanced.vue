@@ -2,12 +2,10 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtButtonStatus } from '@ztechjs/zt-ui';
 import { ref } from 'vue';
-import {
-  ZtCascader,
+import { ZtCheckbox, ZtCascader,
   ZtConfigProvider,
   type ZtCascaderValue,
-  type ZtTreeNode,
-} from '@ztechjs/zt-ui';
+  type ZtTreeNode, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtButtonStatus>('primary');
 const value = ref<ZtCascaderValue>([]),
   dark = ref(true),
@@ -27,8 +25,7 @@ async function load(node: ZtTreeNode): Promise<ZtTreeNode[]> {
 }
 </script>
 <template>
-  <label><input v-model="dark" type="checkbox" />暗色浮层</label
-  ><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="4"
+  <ZtCheckbox v-model="dark">暗色浮层</ZtCheckbox><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="4"
     ><div class="pad">
       <ZtCascader
         :status="demoStatus"

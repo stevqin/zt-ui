@@ -14,7 +14,7 @@ const items: ZtDropdownItem[] = [
 <template>
   <div class="demo-row">
     <ZtDropdown :items="items" @command="(key) => (selected = String(key))"
-      >订单操作 ▾</ZtDropdown
+      >订单操作</ZtDropdown
     ><span role="status">{{ selected }}</span>
   </div>
 </template>

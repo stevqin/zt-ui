@@ -60,3 +60,20 @@ it.each([[88, '88px'], ['9rem', '9rem']] as const)('supports low-level Popover h
  try { await nextTick(); expect(document.querySelector<HTMLElement>('.zt-popover')!.style.height).toBe(expected) }
  finally {wrapper.unmount()}
 })
+
+
+it('positions from unscaled layout dimensions during the entrance animation', async () => {
+ const wrapper = mount(ZtPopover, { attachTo: document.body, props: { visible: true, placement: 'top' }, slots: { default: '<button>打开</button>', content: '内容' } })
+ try {
+  await nextTick()
+  const trigger = wrapper.get('.zt-popover__reference').element
+  const popup = document.querySelector<HTMLElement>('.zt-popover')!
+  vi.spyOn(trigger, 'getBoundingClientRect').mockReturnValue(new DOMRect(200, 200, 40, 30))
+  vi.spyOn(popup, 'getBoundingClientRect').mockReturnValue(new DOMRect(0, 0, 194, 97))
+  Object.defineProperties(popup, { offsetWidth: { value: 200 }, offsetHeight: { value: 100 } })
+  ;(wrapper.vm as unknown as { updatePosition: () => void }).updatePosition()
+  await nextTick()
+  expect(popup.style.top).toBe('92px')
+  expect(popup.style.left).toBe('120px')
+ } finally { wrapper.unmount() }
+})

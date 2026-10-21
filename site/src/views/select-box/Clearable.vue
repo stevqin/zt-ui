@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { ZtButton, ZtConfigProvider, ZtSelectBox, type ZtComponentSize, type ZtSelectBoxInstance, type ZtTheme } from '@ztechjs/zt-ui'
+import { ZtCheckbox, ZtButton, ZtConfigProvider, ZtSelect, ZtSelectBox, type ZtComponentSize, type ZtSelectBoxInstance, type ZtTheme } from '@ztechjs/zt-ui';
 
 const size = ref<ZtComponentSize>('default')
 const theme = ref<ZtTheme>('light')
@@ -17,10 +17,10 @@ const options = [
 
 <template>
   <div class="appearance-controls">
-    <label>尺寸 <select v-model="size" aria-label="演示尺寸"><option v-for="value in ['mini', 'small', 'default', 'medium', 'large']" :key="value">{{ value }}</option></select></label>
-    <label>主题 <select v-model="theme" aria-label="演示主题"><option>light</option><option>dark</option></select></label>
-    <label>圆角 <select v-model="radius" aria-label="演示圆角"><option :value="0">0</option><option :value="16">16</option></select></label>
-    <label><input v-model="readonly" type="checkbox" /> readonly（隐藏清空图标）</label>
+    <label>尺寸 <ZtSelect v-model="size" :options="['mini', 'small', 'default', 'medium', 'large'].map(value => ({label: value, value}))" aria-label="演示尺寸" /></label>
+    <label>主题 <ZtSelect v-model="theme" :options="[{label: 'light', value: 'light'}, {label: 'dark', value: 'dark'}]" aria-label="演示主题" /></label>
+    <label>圆角 <ZtSelect v-model="radius" :options="[{label: '0', value: 0}, {label: '16', value: 16}]" aria-label="演示圆角" /></label>
+    <ZtCheckbox v-model="readonly"> readonly（隐藏清空图标）</ZtCheckbox>
   </div>
   <ZtConfigProvider :size="size" :theme="theme" :border-radius="radius" class="appearance-demo">
     <label>100px <ZtSelectBox v-model="selected" :options="options" :width="100" clearable :readonly="readonly" aria-label="100px 区域" /></label>
@@ -36,7 +36,7 @@ const options = [
 
 <style scoped>
 .appearance-controls { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 16px; align-items: center; }
-.appearance-controls select { padding: 4px 8px; font: inherit; }
+.appearance-controls .zt-select { width: 130px; }
 .appearance-demo { display: flex; flex-direction: column; gap: 18px; padding: 18px; background: var(--zt-surface); color: var(--zt-text); border: 1px solid var(--zt-border); }
 .appearance-demo label { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; }
 .full-width { width: 100%; }

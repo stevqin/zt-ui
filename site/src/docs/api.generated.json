@@ -866,7 +866,8 @@
       "基础用法",
       "触发方式",
       "手动控制",
-      "方位、箭头与禁用"
+      "方位、箭头与禁用",
+      "白底与密集内容"
     ]
   },
   "popconfirm": {
@@ -874,6 +875,15 @@
       {
         "name": "ZtPopconfirm",
         "props": [
+          {
+            "name": "size",
+            "templateName": "size",
+            "kind": "prop",
+            "type": "ZtComponentSize",
+            "required": false,
+            "default": "继承 ConfigProvider（最终为 default）",
+            "description": "整体尺寸，统一控制面板间距、标题、说明、图标和按钮；未设置时继承 ConfigProvider。"
+          },
           {
             "name": "visible",
             "templateName": "visible",
@@ -952,8 +962,8 @@
             "kind": "prop",
             "type": "ZtComponentSize",
             "required": false,
-            "default": "'small'",
-            "description": "确认与取消按钮的尺寸。"
+            "default": "跟随 size",
+            "description": "独立设置确认、取消按钮的尺寸，优先于 size；不影响面板、文字、图标和触发器。"
           },
           {
             "name": "confirmLoading",
@@ -1064,17 +1074,17 @@
       },
       {
         "name": "ZtPopconfirmProps",
-        "code": "export interface ZtPopconfirmProps{\n /** 是否显示，支持 v-model:visible。 */ visible?:boolean\n /** 确认标题。 */ title:string\n /** 补充说明。 */ description?:string\n /** 语义主题颜色。 */ status?:ZtPopconfirmStatus\n /** 内置图标名或 Vue 图标组件。 */ icon?:ZtIconName|Component\n /** 隐藏状态图标。 */ hideIcon?:boolean\n /** 确认按钮文字。 */ confirmText?:string\n /** 取消按钮文字。 */ cancelText?:string\n /** 按钮尺寸。 */ buttonSize?:ZtComponentSize\n /** 外部确认加载状态。 */ confirmLoading?:boolean\n /** 禁用确认按钮。 */ confirmDisabled?:boolean\n /** 禁用取消按钮。 */ cancelDisabled?:boolean\n /** 成功确认后关闭。 */ hideAfterConfirm?:boolean\n /** 确认前钩子；返回 false 或拒绝时保持打开。 */ beforeConfirm?:()=>boolean|void|Promise<boolean|void>\n /** 浮层方位。 */ placement?:ZtPopoverPlacement\n /** 整体禁用。 */ disabled?:boolean\n}",
-        "public": true
-      },
-      {
-        "name": "ZtIconName",
-        "code": "export type ZtIconName = typeof ztIconNames[number]",
+        "code": "export interface ZtPopconfirmProps{\n /** 整体尺寸，控制面板、文字、图标和按钮；未设置时继承 ConfigProvider。 */ size?:ZtComponentSize\n /** 是否显示，支持 v-model:visible。 */ visible?:boolean\n /** 确认标题。 */ title:string\n /** 补充说明。 */ description?:string\n /** 语义主题颜色。 */ status?:ZtPopconfirmStatus\n /** 内置图标名或 Vue 图标组件。 */ icon?:ZtIconName|Component\n /** 隐藏状态图标。 */ hideIcon?:boolean\n /** 确认按钮文字。 */ confirmText?:string\n /** 取消按钮文字。 */ cancelText?:string\n /** 单独覆盖确认和取消按钮的尺寸；未设置时跟随 size。 */ buttonSize?:ZtComponentSize\n /** 外部确认加载状态。 */ confirmLoading?:boolean\n /** 禁用确认按钮。 */ confirmDisabled?:boolean\n /** 禁用取消按钮。 */ cancelDisabled?:boolean\n /** 成功确认后关闭。 */ hideAfterConfirm?:boolean\n /** 确认前钩子；返回 false 或拒绝时保持打开。 */ beforeConfirm?:()=>boolean|void|Promise<boolean|void>\n /** 浮层方位。 */ placement?:ZtPopoverPlacement\n /** 整体禁用。 */ disabled?:boolean\n}",
         "public": true
       },
       {
         "name": "ZtComponentSize",
         "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
+        "public": true
+      },
+      {
+        "name": "ZtIconName",
+        "code": "export type ZtIconName = typeof ztIconNames[number]",
         "public": true
       },
       {
@@ -1086,7 +1096,9 @@
     "sections": [
       "危险操作",
       "异步确认",
-      "受控确认与保留弹层"
+      "受控确认与保留弹层",
+      "尺寸与全局继承",
+      "白底与密集内容"
     ]
   },
   "tabs": {
@@ -6658,6 +6670,15 @@
             "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
           },
           {
+            "name": "bodyPadding",
+            "templateName": "body-padding",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "随 size：mini 14px / small 17px / default 22px / medium 25px / large 28px",
+            "description": "正文内边距，数字按像素处理，也支持 CSS padding 简写（如 12px 20px）；可传 0 去掉内边距，不传则保留 size 对应的默认间距。"
+          },
+          {
             "name": "top",
             "templateName": "top",
             "kind": "prop",
@@ -6983,7 +7004,7 @@
       },
       {
         "name": "ZtModalProps",
-        "code": "export interface ZtModalProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  width?: number | string\n  top?: number | string\n  fullscreen?: boolean\n  showFullscreenButton?: boolean\n  draggable?: boolean\n  size?: ZtModalSize\n}",
+        "code": "export interface ZtModalProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  width?: number | string\n  /** Body padding in pixels or CSS shorthand. 0 removes padding; omit for size defaults. */\n  bodyPadding?: number | string\n  top?: number | string\n  fullscreen?: boolean\n  showFullscreenButton?: boolean\n  draggable?: boolean\n  size?: ZtModalSize\n}",
         "public": true
       },
       {
@@ -7013,6 +7034,7 @@
       "遮罩与关闭拦截",
       "全屏与拖拽",
       "尺寸",
+      "正文内边距",
       "插槽、销毁与关闭守卫"
     ]
   },
@@ -7109,7 +7131,7 @@
             "type": "number | string",
             "required": false,
             "default": "随 size：mini 14px / small 17px / default 22px / medium 25px / large 28px",
-            "description": "内容区内边距，数字按像素处理，也支持 CSS 长度；显式传入后覆盖 size 对应的默认间距。"
+            "description": "正文内边距，数字按像素处理，也支持 CSS padding 简写（如 12px 20px）；可传 0 去掉内边距，不传则保留 size 对应的默认间距。"
           },
           {
             "name": "loading",
@@ -7416,7 +7438,7 @@
       },
       {
         "name": "ZtDrawerProps",
-        "code": "export interface ZtDrawerProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  subtitle?: string\n  closeLabel?: string\n  placement?: ZtDrawerPlacement\n  /** Component density. */\n  size?: ZtComponentSize\n  /** Panel width for left/right drawers, in pixels or CSS units. */\n  width?: number | string\n  /** Panel height for top/bottom drawers, in pixels or CSS units. */\n  height?: number | string\n  /** Fill the viewport below this breakpoint; 0 disables it. */\n  fullscreenBelow?: number\n  bodyScroll?: boolean\n  bodyPadding?: number | string\n  loading?: boolean\n  loadingText?: string\n}",
+        "code": "export interface ZtDrawerProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  subtitle?: string\n  closeLabel?: string\n  placement?: ZtDrawerPlacement\n  /** Component density. */\n  size?: ZtComponentSize\n  /** Panel width for left/right drawers, in pixels or CSS units. */\n  width?: number | string\n  /** Panel height for top/bottom drawers, in pixels or CSS units. */\n  height?: number | string\n  /** Fill the viewport below this breakpoint; 0 disables it. */\n  fullscreenBelow?: number\n  bodyScroll?: boolean\n  /** Body padding in pixels or CSS shorthand. 0 removes padding; omit for size defaults. */\n  bodyPadding?: number | string\n  loading?: boolean\n  loadingText?: string\n}",
         "public": true
       },
       {
@@ -7444,6 +7466,7 @@
       "基础用法",
       "出现方向",
       "尺寸与底部操作",
+      "正文内边距",
       "插槽、销毁与关闭守卫"
     ]
   },
@@ -10280,7 +10303,8 @@
     ],
     "sections": [
       "方位与键盘触发",
-      "受控显示、延迟与禁用"
+      "受控显示、延迟与禁用",
+      "白底与密集内容"
     ]
   },
   "dropdown": {
@@ -10302,9 +10326,9 @@
             "templateName": "items",
             "kind": "prop",
             "type": "ZtDropdownItem[]",
-            "required": true,
-            "default": "必填",
-            "description": "有序菜单项，key 必须唯一。"
+            "required": false,
+            "default": "[]",
+            "description": "有序菜单项，key 必须唯一；提供 dropdown 插槽时以插槽为准。"
           },
           {
             "name": "trigger",
@@ -10371,13 +10395,79 @@
             "name": "default",
             "type": "无",
             "kind": "slot",
-            "description": "组件的默认正文内容。"
+            "description": "触发按钮的内容；下拉箭头由组件自动显示。"
+          },
+          {
+            "name": "dropdown",
+            "type": "无",
+            "kind": "slot",
+            "description": "使用 ZtDropdownItem 声明菜单项；提供该插槽时优先于 items。"
           },
           {
             "name": "item",
             "type": "{ item: ZtDropdownItem }",
             "kind": "slot",
             "description": "自定义每个可操作菜单项的内容；item 为当前菜单项。"
+          }
+        ],
+        "exposes": []
+      },
+      {
+        "name": "ZtDropdownItem",
+        "props": [
+          {
+            "name": "command",
+            "templateName": "command",
+            "kind": "prop",
+            "type": "string | number",
+            "required": false,
+            "default": "''",
+            "description": "选择时发出的命令值，操作项建议设置唯一值；省略时为空字符串。"
+          },
+          {
+            "name": "label",
+            "templateName": "label",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "默认展示文字，也会作为 command 事件中菜单项的 label。"
+          },
+          {
+            "name": "disabled",
+            "templateName": "disabled",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "禁用该命令。"
+          },
+          {
+            "name": "type",
+            "templateName": "type",
+            "kind": "prop",
+            "type": "'item' | 'divider' | 'group'",
+            "required": false,
+            "default": "'item'",
+            "description": "操作、分隔线或分组标题。"
+          },
+          {
+            "name": "icon",
+            "templateName": "icon",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "文字图标或符号。"
+          }
+        ],
+        "events": [],
+        "slots": [
+          {
+            "name": "default",
+            "type": "无",
+            "kind": "slot",
+            "description": "自定义菜单项或分组标题的展示内容，省略时显示 label。"
           }
         ],
         "exposes": []
@@ -10391,7 +10481,12 @@
       },
       {
         "name": "ZtDropdownProps",
-        "code": "export interface ZtDropdownProps {\n  /** 菜单宽度，默认按内容自适应。 */ width?: number | string;\n  /** 有序菜单项，key 必须唯一。 */ items: ZtDropdownItem[];\n  /** click 点击或 hover 悬停。 */ trigger?: 'click' | 'hover';\n  /** 禁用触发器。 */ disabled?: boolean;\n  /** 首选展开位置。 */ placement?: ZtPopoverPlacement;\n  /** 选择后是否关闭。 */ hideOnClick?: boolean;\n  /** 全局尺寸覆盖。 */ size?: ZtComponentSize;\n}",
+        "code": "export interface ZtDropdownProps {\n  /** 菜单宽度，默认按内容自适应。 */ width?: number | string;\n  /** 有序菜单项，key 必须唯一；提供 dropdown 插槽时以插槽为准。 */ items?: ZtDropdownItem[];\n  /** click 点击或 hover 悬停。 */ trigger?: 'click' | 'hover';\n  /** 禁用触发器。 */ disabled?: boolean;\n  /** 首选展开位置。 */ placement?: ZtPopoverPlacement;\n  /** 选择后是否关闭。 */ hideOnClick?: boolean;\n  /** 全局尺寸覆盖。 */ size?: ZtComponentSize;\n}",
+        "public": true
+      },
+      {
+        "name": "ZtDropdownItemProps",
+        "code": "export interface ZtDropdownItemProps {\n  /** 选择时发出的命令值，操作项建议设置唯一值；省略时为空字符串。 */ command?: string | number;\n  /** 默认展示文字，也会作为 command 事件中菜单项的 label。 */ label?: string;\n  /** 禁用该命令。 */ disabled?: boolean;\n  /** 操作、分隔线或分组标题。 */ type?: 'item' | 'divider' | 'group';\n  /** 文字图标或符号。 */ icon?: string;\n}",
         "public": true
       },
       {
@@ -10406,7 +10501,9 @@
       }
     ],
     "sections": [
-      "分组、分隔、禁用与命令反馈",
+      "items 数据方式：分组、分隔与禁用",
+      "template 方式：直接声明菜单项",
+      "items 数据方式：自定义菜单项插槽",
       "悬停与保持菜单展开"
     ]
   },
@@ -10440,7 +10537,7 @@
             "type": "ZtTreeFields",
             "required": false,
             "default": "无默认值",
-            "description": "自定义 key、label、children、disabled、isLeaf 的源数据字段名。"
+            "description": "自定义 key、label、children、disabled、checkable、isLeaf 的源数据字段名。"
           },
           {
             "name": "checkedKeys",
@@ -10485,7 +10582,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示勾选框，空格触发勾选。"
+            "description": "显示勾选框，空格触发勾选；节点 checkable=false 时不参与勾选。"
           },
           {
             "name": "checkStrictly",
@@ -10551,6 +10648,15 @@
             "description": "虚拟及普通行高，像素，最小 20，默认随 size 为 24/28/32/36/40。"
           },
           {
+            "name": "autoItemHeight",
+            "templateName": "auto-item-height",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "非虚拟模式使用自适应行高，itemHeight 作为最小高度；虚拟模式仍使用固定行高。默认 false。"
+          },
+          {
             "name": "size",
             "templateName": "size",
             "kind": "prop",
@@ -10600,10 +10706,16 @@
         ],
         "slots": [
           {
-            "name": "default",
-            "type": "{ node, checked }",
+            "name": "expand-icon",
+            "type": "{ node: ZtTreeNode; expanded: boolean; loading: boolean; disabled: boolean }",
             "kind": "slot",
-            "description": "组件的默认正文内容。"
+            "description": "自定义分支展开图标，外层按钮保留展开行为与无障碍标签；默认使用可旋转的 SVG 箭头。"
+          },
+          {
+            "name": "default",
+            "type": "{ node: ZtTreeNode; checked: boolean; expanded: boolean; disabled: boolean; checkable: boolean }",
+            "kind": "slot",
+            "description": "自定义节点内容；行内交互控件保留自身键盘和点击行为。"
           }
         ],
         "exposes": []
@@ -10617,12 +10729,12 @@
       },
       {
         "name": "ZtTreeNode",
-        "code": "export interface ZtTreeNode {\n  key?: ZtTreeKey;\n  label?: string;\n  disabled?: boolean;\n  isLeaf?: boolean;\n  children?: ZtTreeNode[];\n  [field: string]: unknown;\n}",
+        "code": "export interface ZtTreeNode {\n  key?: ZtTreeKey;\n  label?: string;\n  disabled?: boolean;\n  /** false 隐藏勾选框且不参与勾选结果；子节点仍可参与父子联动。 */\n  checkable?: boolean;\n  isLeaf?: boolean;\n  children?: ZtTreeNode[];\n  [field: string]: unknown;\n}",
         "public": true
       },
       {
         "name": "ZtTreeFields",
-        "code": "export interface ZtTreeFields {\n  key?: string;\n  label?: string;\n  children?: string;\n  disabled?: string;\n  isLeaf?: string;\n}",
+        "code": "export interface ZtTreeFields {\n  key?: string;\n  label?: string;\n  children?: string;\n  disabled?: string;\n  checkable?: string;\n  isLeaf?: string;\n}",
         "public": true
       },
       {
@@ -10632,7 +10744,7 @@
       },
       {
         "name": "ZtTreeProps",
-        "code": "export interface ZtTreeProps {\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 层级节点数组；节点 key 必须在整棵树中唯一。 */\n  data?: ZtTreeNode[];\n  /** 自定义 key、label、children、disabled、isLeaf 的源数据字段名。 */\n  fields?: ZtTreeFields;\n  /** 受控勾选 key；非严格模式展示时补齐启用的子孙和完整父节点。 */\n  checkedKeys?: ZtTreeKey[];\n  /** 受控选中行 key 数组；鼠标或 Enter 选择时发出单元素数组。 */\n  selectedKeys?: ZtTreeKey[];\n  /** 受控展开 key；省略时使用内部展开状态。 */\n  expandedKeys?: ZtTreeKey[];\n  /** 非受控模式首次展开的 key 数组。 */\n  defaultExpandedKeys?: ZtTreeKey[];\n  /** 显示勾选框，空格触发勾选。 */\n  checkable?: boolean;\n  /** 父子勾选独立，不计算半选或自动联动。 */\n  checkStrictly?: boolean;\n  /** 禁用整棵树的选择、展开、勾选和键盘操作。 */\n  disabled?: boolean;\n  /** 按标签不区分大小写匹配，并保留匹配节点的祖先。 */\n  filter?: string;\n  /** 展开无已知子节点的非叶节点时调用；拒绝时显示重试，数据替换或卸载忽略旧结果。 */\n  load?: ZtTreeLoader;\n  /** 仅挂载展开且匹配过滤条件的可见窗口和缓冲行。 */\n  virtual?: boolean;\n  /** 滚动区域最大高度，像素，默认 280。 */\n  height?: number;\n  /** 虚拟及普通行高，像素，最小 20，默认随 size 为 24/28/32/36/40。 */\n  itemHeight?: number;\n  /** 五档字体尺寸，默认继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtTreeProps {\n  /** 六种语义状态，控制选中、勾选和焦点颜色，默认 primary。 */\n  status?: ZtButtonStatus;\n  /** 层级节点数组；节点 key 必须在整棵树中唯一。 */\n  data?: ZtTreeNode[];\n  /** 自定义 key、label、children、disabled、checkable、isLeaf 的源数据字段名。 */\n  fields?: ZtTreeFields;\n  /** 受控勾选 key；非严格模式展示时补齐启用的子孙和完整父节点。 */\n  checkedKeys?: ZtTreeKey[];\n  /** 受控选中行 key 数组；鼠标或 Enter 选择时发出单元素数组。 */\n  selectedKeys?: ZtTreeKey[];\n  /** 受控展开 key；省略时使用内部展开状态。 */\n  expandedKeys?: ZtTreeKey[];\n  /** 非受控模式首次展开的 key 数组。 */\n  defaultExpandedKeys?: ZtTreeKey[];\n  /** 显示勾选框，空格触发勾选；节点 checkable=false 时不参与勾选。 */\n  checkable?: boolean;\n  /** 父子勾选独立，不计算半选或自动联动。 */\n  checkStrictly?: boolean;\n  /** 禁用整棵树的选择、展开、勾选和键盘操作。 */\n  disabled?: boolean;\n  /** 按标签不区分大小写匹配，并保留匹配节点的祖先。 */\n  filter?: string;\n  /** 展开无已知子节点的非叶节点时调用；拒绝时显示重试，数据替换或卸载忽略旧结果。 */\n  load?: ZtTreeLoader;\n  /** 仅挂载展开且匹配过滤条件的可见窗口和缓冲行。 */\n  virtual?: boolean;\n  /** 滚动区域最大高度，像素，默认 280。 */\n  height?: number;\n  /** 虚拟及普通行高，像素，最小 20，默认随 size 为 24/28/32/36/40。 */\n  itemHeight?: number;\n  /** 非虚拟模式使用自适应行高，itemHeight 作为最小高度；虚拟模式仍使用固定行高。默认 false。 */\n  autoItemHeight?: boolean;\n  /** 五档字体尺寸，默认继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
         "public": true
       },
       {
@@ -10648,6 +10760,9 @@
     ],
     "sections": [
       "勾选、过滤与键盘导航",
+      "自适应行高与多行内容",
+      "节点级勾选与展示分组",
+      "自定义展开图标与行内交互",
       "万级节点虚拟窗口",
       "懒加载与失败重试",
       "六种语义状态"
@@ -10856,12 +10971,12 @@
       },
       {
         "name": "ZtTreeNode",
-        "code": "export interface ZtTreeNode {\n  key?: ZtTreeKey;\n  label?: string;\n  disabled?: boolean;\n  isLeaf?: boolean;\n  children?: ZtTreeNode[];\n  [field: string]: unknown;\n}",
+        "code": "export interface ZtTreeNode {\n  key?: ZtTreeKey;\n  label?: string;\n  disabled?: boolean;\n  /** false 隐藏勾选框且不参与勾选结果；子节点仍可参与父子联动。 */\n  checkable?: boolean;\n  isLeaf?: boolean;\n  children?: ZtTreeNode[];\n  [field: string]: unknown;\n}",
         "public": true
       },
       {
         "name": "ZtTreeFields",
-        "code": "export interface ZtTreeFields {\n  key?: string;\n  label?: string;\n  children?: string;\n  disabled?: string;\n  isLeaf?: string;\n}",
+        "code": "export interface ZtTreeFields {\n  key?: string;\n  label?: string;\n  children?: string;\n  disabled?: string;\n  checkable?: string;\n  isLeaf?: string;\n}",
         "public": true
       },
       {
@@ -11124,12 +11239,12 @@
       },
       {
         "name": "ZtTreeNode",
-        "code": "export interface ZtTreeNode {\n  key?: ZtTreeKey;\n  label?: string;\n  disabled?: boolean;\n  isLeaf?: boolean;\n  children?: ZtTreeNode[];\n  [field: string]: unknown;\n}",
+        "code": "export interface ZtTreeNode {\n  key?: ZtTreeKey;\n  label?: string;\n  disabled?: boolean;\n  /** false 隐藏勾选框且不参与勾选结果；子节点仍可参与父子联动。 */\n  checkable?: boolean;\n  isLeaf?: boolean;\n  children?: ZtTreeNode[];\n  [field: string]: unknown;\n}",
         "public": true
       },
       {
         "name": "ZtTreeFields",
-        "code": "export interface ZtTreeFields {\n  key?: string;\n  label?: string;\n  children?: string;\n  disabled?: string;\n  isLeaf?: string;\n}",
+        "code": "export interface ZtTreeFields {\n  key?: string;\n  label?: string;\n  children?: string;\n  disabled?: string;\n  checkable?: string;\n  isLeaf?: string;\n}",
         "public": true
       },
       {
@@ -13092,8 +13207,8 @@
             "kind": "prop",
             "type": "ZtTableColumn[]",
             "required": false,
-            "default": "[]",
-            "description": "列配置数组，包含字段、标题、宽度、排序、固定位置和插槽。"
+            "default": "无默认值",
+            "description": "列配置数组；显式传入时优先于默认插槽中的 ZtTableColumn。省略时可使用模板列。"
           },
           {
             "name": "rowKey",
@@ -13111,7 +13226,16 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示行选择和全选复选框。"
+            "description": "显示选择列，默认多选复选框。"
+          },
+          {
+            "name": "selectionType",
+            "templateName": "selection-type",
+            "kind": "prop",
+            "type": "'checkbox' | 'radio'",
+            "required": false,
+            "default": "'checkbox'",
+            "description": "行选择类型；checkbox 多选，radio 单选；需启用 selection。"
           },
           {
             "name": "selectedKeys",
@@ -13175,6 +13299,15 @@
             "required": false,
             "default": "false",
             "description": "显示加载遮罩及 aria-busy，禁止选择和排序。"
+          },
+          {
+            "name": "resizable",
+            "templateName": "resizable",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "启用表头拖拽调宽，默认 false；列 minWidth 限制下限，未设置时为 60px。"
           },
           {
             "name": "emptyText",
@@ -13248,6 +13381,12 @@
             "kind": "event"
           },
           {
+            "name": "column-resize",
+            "type": "(value: ZtTableColumnResize) => void",
+            "description": "拖动结束且列宽发生变化，或使用键盘调宽后触发，返回 { prop, width }；取消拖动时不触发。",
+            "kind": "event"
+          },
+          {
             "name": "sort-change",
             "type": "(sort: ZtTableSort) => void",
             "description": "排序字段或方向改变后触发。",
@@ -13269,13 +13408,13 @@
         "slots": [
           {
             "name": "default",
-            "type": "{ name, row, column, value, index }",
+            "type": "无",
             "kind": "slot",
-            "description": "组件的默认正文内容。"
+            "description": "通过 ZtTableColumn 声明模板列；显式传入 columns 时以数组配置为准，此模式下仍支持 slot=default 的单元格插槽。"
           },
           {
             "name": "expand",
-            "type": "{ row, index }",
+            "type": "{ row: ZtTableRow; index: number }",
             "kind": "slot",
             "description": "自定义展开行正文，接收当前 row 与行 index。"
           },
@@ -13284,6 +13423,135 @@
             "type": "无",
             "kind": "slot",
             "description": "没有可展示数据时的自定义空状态。"
+          }
+        ],
+        "exposes": []
+      },
+      {
+        "name": "ZtTableColumn",
+        "props": [
+          {
+            "name": "type",
+            "templateName": "type",
+            "kind": "prop",
+            "type": "'default' | 'selection' | 'radio' | 'expand'",
+            "required": false,
+            "default": "'default'",
+            "description": "default 普通列；selection 复选列；radio 单选列；expand 展开列。"
+          },
+          {
+            "name": "prop",
+            "templateName": "prop",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "数据列对应的唯一字段；工具列可省略。"
+          },
+          {
+            "name": "label",
+            "templateName": "label",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "列标题；工具列可省略，普通列省略时使用 prop。"
+          },
+          {
+            "name": "width",
+            "templateName": "width",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "无默认值",
+            "description": "初始列宽，像素；拖动时不会修改传入对象。"
+          },
+          {
+            "name": "minWidth",
+            "templateName": "min-width",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "无默认值",
+            "description": "列宽下限，像素；启用调宽后未指定时为 60。"
+          },
+          {
+            "name": "align",
+            "templateName": "align",
+            "kind": "prop",
+            "type": "'left' | 'center' | 'right'",
+            "required": false,
+            "default": "无默认值",
+            "description": "单元格与表头的水平对齐方式，默认 left。"
+          },
+          {
+            "name": "fixed",
+            "templateName": "fixed",
+            "kind": "prop",
+            "type": "'left' | 'right'",
+            "required": false,
+            "default": "无默认值",
+            "description": "固定在表格左侧或右侧；需为固定列设置宽度。"
+          },
+          {
+            "name": "sortable",
+            "templateName": "sortable",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "点击表头循环升序、降序和未排序状态。"
+          },
+          {
+            "name": "resizable",
+            "templateName": "resizable",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "Table 启用 resizable 时，此列是否允许调宽；false 禁用，默认允许。"
+          },
+          {
+            "name": "sortMethod",
+            "templateName": "sort-method",
+            "kind": "prop",
+            "type": "(\n    a: ZtTableRow,\n    b: ZtTableRow,\n  ) => number",
+            "required": false,
+            "default": "无默认值",
+            "description": "Optional comparator for local sorting."
+          },
+          {
+            "name": "slot",
+            "templateName": "slot",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "Named cell slot; defaults to the property name."
+          },
+          {
+            "name": "formatter",
+            "templateName": "formatter",
+            "kind": "prop",
+            "type": "(\n    value: unknown,\n    row: ZtTableRow,\n    index: number,\n  ) => string | number",
+            "required": false,
+            "default": "无默认值",
+            "description": "格式化单元格内容；自定义单元格插槽优先。"
+          }
+        ],
+        "events": [],
+        "slots": [
+          {
+            "name": "default",
+            "type": "ZtTableCellScope",
+            "kind": "slot",
+            "description": "自定义该列单元格；type=expand 时作为展开详情，接收 row、column、value 和 index。"
+          },
+          {
+            "name": "header",
+            "type": "ZtTableHeaderScope",
+            "kind": "slot",
+            "description": "自定义该列表头，接收 column；排序图标由 Table 保留。"
           }
         ],
         "exposes": []
@@ -13311,13 +13579,33 @@
         "public": true
       },
       {
+        "name": "ZtTableColumnResize",
+        "code": "export interface ZtTableColumnResize {\n  /** 已调整列的 prop。 */\n  prop: string;\n  /** 调整后的像素宽度。 */\n  width: number;\n}",
+        "public": true
+      },
+      {
         "name": "ZtTableColumn",
-        "code": "export interface ZtTableColumn {\n  prop: string;\n  label: string;\n  width?: number;\n  minWidth?: number;\n  align?: 'left' | 'center' | 'right';\n  fixed?: 'left' | 'right';\n  sortable?: boolean;\n  /** Optional comparator for local sorting. */ sortMethod?: (\n    a: ZtTableRow,\n    b: ZtTableRow,\n  ) => number;\n  /** Named cell slot; defaults to the property name. */ slot?: string;\n  formatter?: (\n    value: unknown,\n    row: ZtTableRow,\n    index: number,\n  ) => string | number;\n}",
+        "code": "export interface ZtTableColumn {\n  /** 列对应的行字段，同时作为列的唯一标识。 */\n  prop: string;\n  label: string;\n  /** 初始列宽，像素；拖动时不会修改传入对象。 */\n  width?: number;\n  /** 列宽下限，像素；启用调宽后未指定时为 60。 */\n  minWidth?: number;\n  /** 单元格与表头的水平对齐方式，默认 left。 */\n  align?: 'left' | 'center' | 'right';\n  /** 固定在表格左侧或右侧；需为固定列设置宽度。 */\n  fixed?: 'left' | 'right';\n  /** 点击表头循环升序、降序和未排序状态。 */\n  sortable?: boolean;\n  /** Table 启用 resizable 时，此列是否允许调宽；false 禁用，默认允许。 */\n  resizable?: boolean;\n  /** Optional comparator for local sorting. */ sortMethod?: (\n    a: ZtTableRow,\n    b: ZtTableRow,\n  ) => number;\n  /** Named cell slot; defaults to the property name. */ slot?: string;\n  /** 格式化单元格内容；自定义单元格插槽优先。 */\n  formatter?: (\n    value: unknown,\n    row: ZtTableRow,\n    index: number,\n  ) => string | number;\n}",
         "public": true
       },
       {
         "name": "ZtTableProps",
-        "code": "export interface ZtTableProps {\n  /** 行对象数组；所有行必须具备稳定唯一 rowKey。 */\n  data?: ZtTableRow[];\n  /** 列配置数组，包含字段、标题、宽度、排序、固定位置和插槽。 */\n  columns?: ZtTableColumn[];\n  /** 唯一 key 字段名或函数，默认 id；必须得到 string 或 number，否则抛错。 */\n  rowKey?: string | ((row: ZtTableRow) => ZtTableKey);\n  /** 显示行选择和全选复选框。 */\n  selection?: boolean;\n  /** 受控选中行 key；全选保留当前数据之外的 key。 */\n  selectedKeys?: ZtTableKey[];\n  /** 返回该行是否可选择；索引对应原始 data。 */\n  selectable?: (row: ZtTableRow, index: number) => boolean;\n  /** 显示展开按钮和 expand 插槽行。 */\n  expandable?: boolean;\n  /** 受控展开行 key 数组。 */\n  expandedKeys?: ZtTableKey[];\n  /** 受控排序状态；省略时内部排序状态循环升序、降序、无排序。 */\n  sort?: ZtTableSort;\n  /** 服务端排序模式，只发出排序事件，不重排 data。 */\n  remote?: boolean;\n  /** 显示加载遮罩及 aria-busy，禁止选择和排序。 */\n  loading?: boolean;\n  /** 数据为空时的默认文本。 */\n  emptyText?: string;\n  /** 滚动区最大高度；数字为像素；设置后固定表头。 */\n  maxHeight?: number | string;\n  /** 显示交替行背景。 */\n  stripe?: boolean;\n  /** 显示列间边框。 */\n  border?: boolean;\n  /** 五档单元格尺寸，继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtTableProps {\n  /** 行对象数组；所有行必须具备稳定唯一 rowKey。 */\n  data?: ZtTableRow[];\n  /** 列配置数组；显式传入时优先于默认插槽中的 ZtTableColumn。省略时可使用模板列。 */\n  columns?: ZtTableColumn[];\n  /** 唯一 key 字段名或函数，默认 id；必须得到 string 或 number，否则抛错。 */\n  rowKey?: string | ((row: ZtTableRow) => ZtTableKey);\n  /** 显示选择列，默认多选复选框。 */\n  selection?: boolean;\n  /** 行选择类型；checkbox 多选，radio 单选；需启用 selection。 */\n  selectionType?: 'checkbox' | 'radio';\n  /** 受控选中行 key；全选保留当前数据之外的 key。 */\n  selectedKeys?: ZtTableKey[];\n  /** 返回该行是否可选择；索引对应原始 data。 */\n  selectable?: (row: ZtTableRow, index: number) => boolean;\n  /** 显示展开按钮和 expand 插槽行。 */\n  expandable?: boolean;\n  /** 受控展开行 key 数组。 */\n  expandedKeys?: ZtTableKey[];\n  /** 受控排序状态；省略时内部排序状态循环升序、降序、无排序。 */\n  sort?: ZtTableSort;\n  /** 服务端排序模式，只发出排序事件，不重排 data。 */\n  remote?: boolean;\n  /** 显示加载遮罩及 aria-busy，禁止选择和排序。 */\n  loading?: boolean;\n  /** 启用表头拖拽调宽，默认 false；列 minWidth 限制下限，未设置时为 60px。 */\n  resizable?: boolean;\n  /** 数据为空时的默认文本。 */\n  emptyText?: string;\n  /** 滚动区最大高度；数字为像素；设置后固定表头。 */\n  maxHeight?: number | string;\n  /** 显示交替行背景。 */\n  stripe?: boolean;\n  /** 显示列间边框。 */\n  border?: boolean;\n  /** 五档单元格尺寸，继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "public": true
+      },
+      {
+        "name": "ZtTableColumnProps",
+        "code": "export interface ZtTableColumnProps extends Omit<ZtTableColumn, 'prop' | 'label'> {\n  /** default 普通列；selection 复选列；radio 单选列；expand 展开列。 */\n  type?: 'default' | 'selection' | 'radio' | 'expand';\n  /** 数据列对应的唯一字段；工具列可省略。 */\n  prop?: string;\n  /** 列标题；工具列可省略，普通列省略时使用 prop。 */\n  label?: string;\n}",
+        "public": true
+      },
+      {
+        "name": "ZtTableHeaderScope",
+        "code": "export interface ZtTableHeaderScope { column: ZtTableColumn }",
+        "public": true
+      },
+      {
+        "name": "ZtTableCellScope",
+        "code": "export interface ZtTableCellScope extends ZtTableHeaderScope {\n  row: ZtTableRow;\n  value: unknown;\n  index: number;\n}",
         "public": true
       },
       {
@@ -13327,8 +13615,21 @@
       }
     ],
     "sections": [
-      "基础用法",
-      "进阶用法"
+      "columns 配置数组与格式化",
+      "ZtTableColumn 模板列与作用域插槽",
+      "模板工具列：复选与全选",
+      "模板工具列：单选",
+      "模板工具列：展开与行详情",
+      "边框、斑马纹与五档尺寸",
+      "本地排序与三态反馈",
+      "行选择、全选与禁用行",
+      "单选与默认门店",
+      "展开行与详情内容",
+      "固定表头与左右固定列",
+      "拖动调整列宽",
+      "服务端排序与加载反馈",
+      "加载、空状态与暗色主题",
+      "自定义表头、单元格与操作列"
     ]
   },
   "timeline": {
@@ -13342,8 +13643,8 @@
             "kind": "prop",
             "type": "ZtTimelineItem[]",
             "required": false,
-            "default": "[]",
-            "description": "时间节点数组，key 唯一，含 time、content、status、placement 和 hollow。"
+            "default": "无默认值",
+            "description": "时间节点数组，key 唯一；显式传入时优先于模板声明，省略时可用 ZtTimelineItem。"
           },
           {
             "name": "reverse",
@@ -13376,16 +13677,82 @@
         "events": [],
         "slots": [
           {
-            "name": "node",
-            "type": "{ item, index }",
+            "name": "default",
+            "type": "ZtTimelineItemScope（items 模式）",
             "kind": "slot",
-            "description": "替换时间线节点图标，接收当前 item 与 index。"
+            "description": "声明 ZtTimelineItem；items 模式下自定义节点内容，接收 item 和当前展示索引 index。"
           },
           {
-            "name": "default",
-            "type": "{ item, index }",
+            "name": "node",
+            "type": "ZtTimelineItemScope",
             "kind": "slot",
-            "description": "组件的默认正文内容。"
+            "description": "替换时间线节点图标，接收 item 和 index；模板节点自身的 node 插槽优先。"
+          }
+        ],
+        "exposes": []
+      },
+      {
+        "name": "ZtTimelineItem",
+        "props": [
+          {
+            "name": "status",
+            "templateName": "status",
+            "kind": "prop",
+            "type": "ZtTimelineStatus",
+            "required": false,
+            "default": "无默认值",
+            "description": "节点状态颜色，默认 default。"
+          },
+          {
+            "name": "time",
+            "templateName": "time",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "展示在内容上方的时间文字。"
+          },
+          {
+            "name": "content",
+            "templateName": "content",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "节点内容；默认插槽优先于此文字。"
+          },
+          {
+            "name": "placement",
+            "templateName": "placement",
+            "kind": "prop",
+            "type": "'left' | 'right'",
+            "required": false,
+            "default": "无默认值",
+            "description": "单个节点的内容方向；省略时跟随 Timeline。"
+          },
+          {
+            "name": "hollow",
+            "templateName": "hollow",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "默认圆点显示为空心节点。"
+          }
+        ],
+        "events": [],
+        "slots": [
+          {
+            "name": "default",
+            "type": "ZtTimelineItemScope",
+            "kind": "slot",
+            "description": "自定义该节点内容，优先于 content，接收 item 和当前展示索引 index。"
+          },
+          {
+            "name": "node",
+            "type": "ZtTimelineItemScope",
+            "kind": "slot",
+            "description": "自定义该节点图标，优先于 Timeline 的 node 插槽，接收 item 和 index。"
           }
         ],
         "exposes": []
@@ -13399,12 +13766,22 @@
       },
       {
         "name": "ZtTimelineItem",
-        "code": "export interface ZtTimelineItem {\n  key: string | number;\n  time?: string;\n  content?: string;\n  status?: ZtTimelineStatus;\n  placement?: 'left' | 'right';\n  hollow?: boolean;\n}",
+        "code": "export interface ZtTimelineItem {\n  /** 节点唯一标识。 */\n  key: string | number;\n  /** 展示在内容上方的时间文字。 */\n  time?: string;\n  /** 节点内容；默认插槽优先于此文字。 */\n  content?: string;\n  /** 节点状态颜色，默认 default。 */\n  status?: ZtTimelineStatus;\n  /** 单个节点的内容方向；省略时跟随 Timeline。 */\n  placement?: 'left' | 'right';\n  /** 默认圆点显示为空心节点。 */\n  hollow?: boolean;\n}",
         "public": true
       },
       {
         "name": "ZtTimelineProps",
-        "code": "export interface ZtTimelineProps {\n  /** 时间节点数组，key 唯一，含 time、content、status、placement 和 hollow。 */\n  items?: ZtTimelineItem[];\n  /** 倒序展示，不改变传入数组。 */\n  reverse?: boolean;\n  /** 内容统一靠左、靠右或左右交替；窄屏收拢为单列。 */\n  placement?: 'left' | 'right' | 'alternate';\n  /** 五档字体尺寸，继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "code": "export interface ZtTimelineProps {\n  /** 时间节点数组，key 唯一；显式传入时优先于模板声明，省略时可用 ZtTimelineItem。 */\n  items?: ZtTimelineItem[];\n  /** 倒序展示，不改变传入数组。 */\n  reverse?: boolean;\n  /** 内容统一靠左、靠右或左右交替；窄屏收拢为单列。 */\n  placement?: 'left' | 'right' | 'alternate';\n  /** 五档字体尺寸，继承 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+        "public": true
+      },
+      {
+        "name": "ZtTimelineItemProps",
+        "code": "export interface ZtTimelineItemProps extends Omit<ZtTimelineItem, 'key'> {}",
+        "public": true
+      },
+      {
+        "name": "ZtTimelineItemScope",
+        "code": "export interface ZtTimelineItemScope {\n  item: ZtTimelineItem;\n  /** 当前展示顺序中的索引，倒序后重新计算。 */\n  index: number;\n}",
         "public": true
       },
       {
@@ -13414,7 +13791,8 @@
       }
     ],
     "sections": [
-      "基础用法",
+      "items 数组与作用域内容",
+      "ZtTimelineItem 模板节点",
       "进阶用法"
     ]
   },

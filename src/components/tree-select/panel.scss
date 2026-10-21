@@ -1,0 +1,94 @@
+@use '../../styles/tokens' as glass;
+
+// Scope the surface to the panel directly owned by these selectors after Teleport.
+.zt-popover:has(> .zt-popover__content > :is(.zt-tree-select__panel, .zt-cascader__panel)) {
+  padding: 5px;
+  border-radius: glass.radius(12px);
+  background: var(--zt-panel-bg, #fff);
+  box-shadow: var(--zt-shadow, 0 8px 28px rgba(20, 30, 50, .1), 0 2px 6px rgba(20, 30, 50, .04));
+}
+
+.zt-tree-select__panel,
+.zt-cascader__panel {
+  --hierarchy-row-height: 32px;
+  --hierarchy-soft: var(--zt-surface-soft, #f3f5f7);
+  --hierarchy-selected: var(--zt-surface-soft, #f3f5f7);
+  min-width: 0;
+  color: var(--zt-text, #303133);
+  font-size: var(--zt-size-default, 13px);
+  line-height: 1.5;
+
+  &--mini { --hierarchy-row-height: 24px; font-size: var(--zt-size-mini, 11px); }
+  &--small { --hierarchy-row-height: 28px; font-size: var(--zt-size-small, 12px); }
+  &--medium { --hierarchy-row-height: 36px; font-size: var(--zt-size-medium, 14px); }
+  &--large { --hierarchy-row-height: 40px; font-size: var(--zt-size-large, 15px); }
+
+  .zt-hierarchy__search-field {
+    position: relative;
+    margin: 3px 3px 8px;
+    > .zt-icon-glyph {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--zt-text-muted, #909399);
+      pointer-events: none;
+    }
+  }
+  .zt-hierarchy__search {
+    display: block;
+    margin: 0;
+    min-height: var(--hierarchy-row-height);
+    padding: 6px 10px 6px 32px;
+    border: 1px solid var(--zt-border, #ddd);
+    border-radius: glass.radius(7px);
+    background: var(--zt-surface, #fff);
+    font: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease;
+    &::placeholder { color: var(--zt-text-muted, #909399); }
+    &:focus-visible {
+      outline: none;
+      border-color: var(--hierarchy-accent);
+      box-shadow: 0 0 0 2px var(--hierarchy-selected, var(--hierarchy-soft));
+    }
+  }
+  :is(.zt-tree, .zt-cascader__column, .zt-cascader__results) {
+    scrollbar-width: thin;
+    scrollbar-color: var(--zt-border, #ddd) transparent;
+    &::-webkit-scrollbar { width: 5px; height: 5px; }
+    &::-webkit-scrollbar-thumb { border-radius: 4px; background: var(--zt-border, #ddd); }
+  }
+}
+
+.zt-tree-select__panel {
+  .zt-tree {
+    padding: 3px;
+    background: transparent;
+    // Tree's inline row height and virtual offsets remain authoritative.
+    .zt-tree__row {
+      padding-right: 10px;
+      border-radius: glass.radius(6px);
+      transition: background-color .14s ease, color .14s ease;
+      &:hover:not([aria-disabled='true']),
+      &.is-active:not([aria-disabled='true']) { background: var(--hierarchy-soft); }
+      &.is-selected:not([aria-disabled='true']) {
+        background: var(--hierarchy-soft);
+        background: var(--hierarchy-selected, var(--hierarchy-soft));
+        color: var(--hierarchy-accent);
+        font-weight: 500;
+      }
+    }
+    .zt-tree__content { overflow: hidden; text-overflow: ellipsis; }
+    .zt-tree__empty { padding: 28px 16px; font-size: inherit; color: var(--zt-text-muted, #909399); }
+  }
+}
+
+@supports (background: color-mix(in srgb, red 10%, transparent)) {
+  .zt-tree-select__panel, .zt-cascader__panel {
+    --hierarchy-selected: color-mix(in srgb, var(--hierarchy-accent) 10%, transparent);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  :is(.zt-tree-select__panel, .zt-cascader__panel) .zt-hierarchy__search,
+  .zt-tree-select__panel .zt-tree .zt-tree__row { transition: none; }
+}

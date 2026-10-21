@@ -5,6 +5,7 @@ import { toRef, computed, inject, ref, nextTick, watch, onBeforeUnmount } from '
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
 import ZtPopover from '../popover/ZtPopover.vue';
+import ZtIcon from '../icon/ZtIcon.vue';
 import ZtTree from '../tree/ZtTree.vue';
 import { flattenTree, normalizeChecked } from '../tree/model';
 import type { ZtTreeKey, ZtTreeNode } from '../tree/types';
@@ -147,6 +148,7 @@ watch(disabled, (v) => {
       :disabled="disabled"
       :teleported="teleported"
       placement="bottom-start"
+      :show-arrow="false"
       :width="300"
       ><button
         :id="form?.inputId"
@@ -163,7 +165,7 @@ watch(disabled, (v) => {
         "
         @keydown="keyboard"
       >
-        <span v-if="!labels.length">{{ placeholder }}</span
+        <span v-if="!labels.length" class="zt-hierarchy__placeholder">{{ placeholder }}</span
         ><template v-else
           ><span
             v-for="(label, i) in labels.slice(
@@ -171,23 +173,33 @@ watch(disabled, (v) => {
               multiple ? Math.max(1, collapseTags) : 1,
             )"
             :key="i"
-            class="zt-hierarchy__tag"
+            :class="multiple ? 'zt-hierarchy__tag' : 'zt-hierarchy__value'"
             >{{ label }}</span
           ><span
             v-if="multiple && labels.length > collapseTags"
             :title="labels.join('、')"
             >+{{ labels.length - collapseTags }}</span
           ></template
-        ><span aria-hidden="true">▾</span></button
+        ><ZtIcon name="chevron-down" class="zt-hierarchy__arrow" aria-hidden="true" /></button
       ><template #content
-        ><div :id="uid" :data-tree-select-panel="uid" @focusout="blur">
-          <input
-            v-if="filterable"
-            v-model="query"
-            class="zt-hierarchy__search"
-            aria-label="搜索树节点"
-            placeholder="搜索"
-          /><ZtTree
+        ><div
+          :id="uid"
+          :data-tree-select-panel="uid"
+          class="zt-tree-select__panel"
+          :class="`zt-tree-select__panel--${size}`"
+          :style="hierarchyStyle(status)"
+          @focusout="blur"
+        >
+          <div v-if="filterable" class="zt-hierarchy__search-field">
+            <ZtIcon name="search" aria-hidden="true" />
+            <input
+              v-model="query"
+              class="zt-hierarchy__search"
+              aria-label="搜索树节点"
+              placeholder="搜索"
+            />
+          </div>
+          <ZtTree
             :status="status"
             :data="data"
             :fields="fields"

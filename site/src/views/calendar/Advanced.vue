@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtCalendar, ZtConfigProvider } from '@ztechjs/zt-ui';
+import { ZtCheckbox, ZtCalendar, ZtConfigProvider } from '@ztechjs/zt-ui';
 const value = ref('2026-09-17'),
   dark = ref(false);
 const events: Record<string, string> = {
@@ -10,8 +10,7 @@ const events: Record<string, string> = {
 };
 </script>
 <template>
-  <label><input v-model="dark" type="checkbox" />暗色</label
-  ><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
+  <ZtCheckbox v-model="dark">暗色</ZtCheckbox><ZtConfigProvider :theme="dark ? 'dark' : 'light'"
     ><ZtCalendar
       v-model="value"
       :range="['2026-09-10', '2026-09-25']"

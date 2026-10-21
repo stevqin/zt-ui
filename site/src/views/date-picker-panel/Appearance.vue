@@ -2,12 +2,10 @@
 import { useDemoStatus } from '../../docs/useDemoStatus';
 import type { ZtDatePickerStatus } from '@ztechjs/zt-ui';
 import { reactive, ref } from 'vue';
-import {
-  ZtDatePickerPanel,
+import { ZtCheckbox, ZtDatePickerPanel,
   ZtConfigProvider,
   type ZtComponentSize,
-  type ZtDatePickerValue,
-} from '@ztechjs/zt-ui';
+  type ZtDatePickerValue, } from '@ztechjs/zt-ui';
 const demoStatus = useDemoStatus<ZtDatePickerStatus>('primary');
 const sizes: ZtComponentSize[] = [
   'mini',
@@ -27,8 +25,7 @@ const dark = ref(false);
 </script>
 <template>
   <div class="picker-demo">
-    <label><input v-model="dark" type="checkbox" />深色主题</label
-    ><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="8"
+    <ZtCheckbox v-model="dark">深色主题</ZtCheckbox><ZtConfigProvider :theme="dark ? 'dark' : 'light'" :border-radius="8"
       ><div class="picker-demo">
         <div v-for="(size, i) in sizes" :key="size">
           <p>{{ size }}</p>

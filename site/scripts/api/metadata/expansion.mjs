@@ -102,11 +102,39 @@ export default {
   'color-picker-panel.ZtColorPickerPanel.exposes.cancel': {
     description: '丢弃面板草稿并恢复当前 modelValue，触发 cancel。',
   },
+  'table.ZtTable.events.column-resize': {
+    description: '拖动结束且列宽发生变化，或使用键盘调宽后触发，返回 { prop, width }；取消拖动时不触发。',
+  },
+  'table.ZtTable.slots.default': {
+    description: '通过 ZtTableColumn 声明模板列；显式传入 columns 时以数组配置为准，此模式下仍支持 slot=default 的单元格插槽。',
+  },
+  'table.ZtTableColumn.slots.default': {
+    description: '自定义该列单元格；type=expand 时作为展开详情，接收 row、column、value 和 index。',
+    type: 'ZtTableCellScope',
+  },
+  'table.ZtTableColumn.slots.header': {
+    description: '自定义该列表头，接收 column；排序图标由 Table 保留。',
+    type: 'ZtTableHeaderScope',
+  },
   'table.ZtTable.slots.expand': {
     description: '自定义展开行正文，接收当前 row 与行 index。',
+    type: '{ row: ZtTableRow; index: number }',
+  },
+  'timeline.ZtTimeline.slots.default': {
+    description: '声明 ZtTimelineItem；items 模式下自定义节点内容，接收 item 和当前展示索引 index。',
+    type: 'ZtTimelineItemScope（items 模式）',
   },
   'timeline.ZtTimeline.slots.node': {
-    description: '替换时间线节点图标，接收当前 item 与 index。',
+    description: '替换时间线节点图标，接收 item 和 index；模板节点自身的 node 插槽优先。',
+    type: 'ZtTimelineItemScope',
+  },
+  'timeline.ZtTimelineItem.slots.default': {
+    description: '自定义该节点内容，优先于 content，接收 item 和当前展示索引 index。',
+    type: 'ZtTimelineItemScope',
+  },
+  'timeline.ZtTimelineItem.slots.node': {
+    description: '自定义该节点图标，优先于 Timeline 的 node 插槽，接收 item 和 index。',
+    type: 'ZtTimelineItemScope',
   },
   'calendar.ZtCalendar.events.panel-change': {
     description: '工具栏切换显示日期或视图后触发；不代表已选择日期发生变化。',
@@ -129,6 +157,14 @@ export default {
   },
   'tree.ZtTree.events.check': {
     description: '用户勾选节点后触发，携带联动计算后的 key 数组与当前节点。',
+  },
+  'tree.ZtTree.slots.default': {
+    description: '自定义节点内容；行内交互控件保留自身键盘和点击行为。',
+    type: '{ node: ZtTreeNode; checked: boolean; expanded: boolean; disabled: boolean; checkable: boolean }',
+  },
+  'tree.ZtTree.slots.expand-icon': {
+    description: '自定义分支展开图标，外层按钮保留展开行为与无障碍标签；默认使用可旋转的 SVG 箭头。',
+    type: '{ node: ZtTreeNode; expanded: boolean; loading: boolean; disabled: boolean }',
   },
   'tree.ZtTree.events.load-error': {
     description:
@@ -168,5 +204,14 @@ export default {
   'dropdown.ZtDropdown.slots.item': {
     description: '自定义每个可操作菜单项的内容；item 为当前菜单项。',
     type: '{ item: ZtDropdownItem }',
+  },
+  'dropdown.ZtDropdown.slots.default': {
+    description: '触发按钮的内容；下拉箭头由组件自动显示。',
+  },
+  'dropdown.ZtDropdown.slots.dropdown': {
+    description: '使用 ZtDropdownItem 声明菜单项；提供该插槽时优先于 items。',
+  },
+  'dropdown.ZtDropdownItem.slots.default': {
+    description: '自定义菜单项或分组标题的展示内容，省略时显示 label。',
   },
 };

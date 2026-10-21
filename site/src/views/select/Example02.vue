@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ZtButton, ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui';
+import { ZtCheckbox, ZtButton, ZtSelect, type ZtSelectOption } from '@ztechjs/zt-ui';
 const storeOptions: ZtSelectOption[] = [
   { label: '杭州大厦店', value: 'hz-tower' },
   { label: '上海港汇店', value: 'sh-grand-gateway' },
@@ -15,8 +15,8 @@ const readonly = ref(false);
 <template>
   <div class="select-demo-stack">
     <div class="example-row">
-      <label><input v-model="disabled" type="checkbox" /> disabled</label>
-      <label><input v-model="readonly" type="checkbox" /> readonly</label>
+      <ZtCheckbox v-model="disabled"> disabled</ZtCheckbox>
+      <ZtCheckbox v-model="readonly"> readonly</ZtCheckbox>
     </div>
     <ZtSelect
       v-model="selectedStores"

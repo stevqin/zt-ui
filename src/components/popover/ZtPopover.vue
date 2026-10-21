@@ -15,9 +15,12 @@ import {
 import { useZtConfig } from '../config-provider/context';
 import { overlayContextKey, type OverlayBranch } from '../overlay/context';
 import { placePopover } from './position';
+import { popoverSurfaceKey } from './surface';
 import type { ZtPopoverPlacement, ZtPopoverProps } from './types';
 import './popover.scss';
 defineOptions({ name: 'ZtPopover' });
+const surface = inject(popoverSurfaceKey, 'default');
+provide(popoverSurfaceKey, 'default');
 const props = withDefaults(defineProps<ZtPopoverProps>(), {
   visible: false,
   trigger: 'click',
@@ -116,6 +119,17 @@ const popupStyle = computed<CSSProperties>(() => ({
   '--zt-popover-arrow-x': `${position.value.arrowX}px`,
   '--zt-popover-arrow-y': `${position.value.arrowY}px`,
 }));
+// Extend the popup's pointer hit area across its visual offset. As a child of
+// the popup it keeps hover active without changing layout or close delays.
+const hoverBridgeStyle = computed<CSSProperties>(() => {
+  const gap = `${Math.max(0, props.offset) + 1}px`;
+  const inset = `-${gap}`;
+  const side = actualPlacement.value.split('-')[0];
+  if (side === 'top' || side === 'bottom') {
+    return { position: 'absolute', left: 0, right: 0, height: gap, [side === 'bottom' ? 'top' : 'bottom']: inset };
+  }
+  return { position: 'absolute', top: 0, bottom: 0, width: gap, [side === 'right' ? 'left' : 'right']: inset };
+});
 function clearTimers() {
   clearTimeout(openTimer);
   clearTimeout(closeTimer);
@@ -140,7 +154,9 @@ function updatePosition() {
     b = popup.value.getBoundingClientRect(),
     next = placePopover(
       a,
-      { width: b.width, height: b.height },
+      // Transforms affect client rects but not layout dimensions. Measuring the
+      // scaled entrance pose would move the anchor and arrow during animation.
+      { width: popup.value.offsetWidth || b.width, height: popup.value.offsetHeight || b.height },
       { width: window.innerWidth, height: window.innerHeight, padding: 8 },
       props.placement,
       props.offset,
@@ -320,7 +336,7 @@ defineExpose({
         v-show="opened"
         ref="popup"
         class="zt-popover"
-        :class="[`zt-popover--${actualPlacement}`, {'zt-popover--sized-width': width !== undefined}]"
+        :class="[`zt-popover--${actualPlacement}`, `zt-popover--${surface}`, surface === 'confirm' && `zt-popover--confirm-${config.size.value}`, {'zt-popover--sized-width': width !== undefined}]"
         :style="popupStyle"
         role="dialog"
         tabindex="-1"
@@ -328,6 +344,12 @@ defineExpose({
         @pointerleave="leave"
         @focusout="focusOut"
       >
+        <span
+          v-if="trigger === 'hover' && offset > 0"
+          class="zt-popover__hover-bridge"
+          :style="hoverBridgeStyle"
+          aria-hidden="true"
+        />
         <span v-if="showArrow" class="zt-popover__arrow" />
         <div ref="content" class="zt-popover__content">
           <PopupScope><slot name="content" /></PopupScope>
