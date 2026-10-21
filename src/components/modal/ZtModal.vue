@@ -5,6 +5,7 @@ import { computed, nextTick, onBeforeUnmount, reactive, ref, useId, watch } from
 import ZtButton from '../button/ZtButton.vue'
 import { animateFullscreenBounds } from './fullscreenMotion'
 import { useOverlay } from '../overlay/useOverlay'
+import { useOverlayBreakpoint } from '../overlay/useOverlayBreakpoint'
 import type { ZtOverlayCloseReason } from '../overlay/types'
 import type { ZtModalProps } from './types'
 import './modal.scss'
@@ -15,6 +16,11 @@ const props = withDefaults(defineProps<ZtModalProps>(), {
   modelValue: false,
   title: '',
   width: 560,
+  placement: 'center',
+  fullscreenBelow: 0,
+  bodyScroll: true,
+  loading: false,
+  loadingText: '正在加载…',
   showHeader: true,
   showClose: true,
   showFooter: false,
@@ -30,7 +36,7 @@ const props = withDefaults(defineProps<ZtModalProps>(), {
   autoFocus: true,
   focusTrap: true,
   fullscreen: false,
-  showFullscreenButton: false,
+  showFullscreenButton: undefined,
   draggable: false,
   zIndex: 1000,
 })
@@ -43,6 +49,8 @@ const emit = defineEmits<{
   'update:fullscreen': [value: boolean]
   open: []
   opened: []
+  show: []
+  hide: []
   close: [reason: ZtOverlayCloseReason]
   closed: [reason: ZtOverlayCloseReason]
   cancel: []
@@ -58,17 +66,26 @@ const model = computed({
 // Keep Escape/mask/API close behind the same confirmLoading gate as Drawer.
 const overlayProps = new Proxy(props, {
   get(target, key) {
+    if (key === 'confirmLoading') return target.loading || target.confirmLoading
     if (key === 'beforeClose') return (reason: ZtOverlayCloseReason) => {
-      if (target.confirmLoading) return false
+      if (target.loading || target.confirmLoading) return false
       return target.beforeClose?.(reason)
     }
     return Reflect.get(target, key)
   },
 })
-const overlay = useOverlay({ modelValue: model, props: overlayProps, emit: emit as any })
+const overlay = useOverlay({ modelValue: model, props: overlayProps, emit: (event, ...args) => {
+  ;(emit as (...args: any[]) => void)(event, ...args)
+  if (event === 'opened') emit('show')
+  if (event === 'closed') emit('hide')
+} })
 const panel = overlay.panel
 const titleId = useId()
 const currentFullscreen = ref(props.fullscreen)
+const narrow = useOverlayBreakpoint(() => props.fullscreenBelow, overlay.visible)
+const expanded = computed(() => currentFullscreen.value || narrow.value)
+const showZoomButton = computed(() => (props.showFullscreenButton ?? props.showZoom ?? false) && !narrow.value)
+const scope = { close: overlay.requestClose, confirm: overlay.confirm, cancel: overlay.cancel, toggleFullscreen }
 const dragging = ref(false)
 const resizing = ref(false)
 let fullscreenAnimation: Animation | null = null
@@ -85,6 +102,15 @@ let maxPositionX = 0
 let minPositionY = 0
 let maxPositionY = 0
 
+function guardLoading(event: Event) {
+  if (!props.loading) return
+  if (event.type === 'keydown') { event.preventDefault(); event.stopPropagation() }
+  if (event.target !== panel.value) panel.value?.focus({ preventScroll: true })
+}
+watch(() => props.loading, loading => {
+  if (loading && overlay.visible.value && overlay.isTop.value) panel.value?.focus({ preventScroll: true })
+}, { flush: 'post' })
+
 function cssLength(value: number | string | undefined) {
   if (typeof value === 'number') return `${value}px`
   if (typeof value === 'string' && /^\d+(?:\.\d+)?$/.test(value.trim())) return `${Number(value)}px`
@@ -93,26 +119,33 @@ function cssLength(value: number | string | undefined) {
 
 const overlayStyle = computed(() => ({
   zIndex: overlay.layer.value,
-  paddingTop: props.top === undefined || currentFullscreen.value ? undefined : cssLength(props.top),
+  paddingTop: props.top === undefined || expanded.value ? undefined : cssLength(props.top),
 }))
 const panelStyle = computed(() => ({
-  width: currentFullscreen.value ? '100%' : cssLength(props.width),
-  transform: !currentFullscreen.value && (position.x !== 0 || position.y !== 0)
+  width: expanded.value ? '100%' : cssLength(props.width),
+  height: expanded.value ? '100%' : cssLength(props.height),
+  maxHeight: expanded.value ? '100%' : cssLength(props.maxHeight),
+  transform: !expanded.value && (position.x !== 0 || position.y !== 0)
     ? `translate3d(${position.x}px, ${position.y}px, 0)`
     : undefined,
 }))
 const classes = computed(() => [
   'zt-modal',
   `zt-modal--${configSize.value}`,
-  props.top !== undefined && !currentFullscreen.value && 'zt-modal--top',
-  currentFullscreen.value && 'zt-modal--fullscreen',
+  props.top !== undefined && !expanded.value && 'zt-modal--top',
+  expanded.value && 'zt-modal--fullscreen',
+  props.placement === 'bottom' && !expanded.value && 'zt-modal--bottom',
   dragging.value && 'zt-modal--dragging',
   resizing.value && 'zt-modal--resizing',
   !overlay.isTop.value && 'zt-modal--underneath',
+  expanded.value && props.classNames?.fullscreen,
+  props.placement === 'bottom' && !expanded.value && props.classNames?.bottom,
+  props.top !== undefined && !expanded.value && props.classNames?.top,
+  !overlay.isTop.value && props.classNames?.underneath,
 ])
 const headerClasses = computed(() => [
   'zt-modal__header',
-  props.draggable && !currentFullscreen.value && 'zt-modal__header--draggable',
+  props.draggable && !expanded.value && 'zt-modal__header--draggable',
 ])
 
 function toggleFullscreen() {
@@ -149,7 +182,7 @@ function startDragging(event: PointerEvent) {
   const target = event.target as Element | null
   if (
     !props.draggable
-    || currentFullscreen.value
+    || expanded.value
     || resizing.value
     || event.button !== 0
     || target?.closest('button, a, input, select, textarea, [contenteditable], [data-no-drag]')
@@ -174,6 +207,7 @@ function startDragging(event: PointerEvent) {
 }
 
 function handleAfterLeave() {
+  if (overlay.visible.value) return
   overlay.afterLeave()
   stopDragging()
   resetPosition()
@@ -210,7 +244,7 @@ function stopFullscreenMotion() {
 
 // Capture the visible bounds before Vue changes fullscreen layout, including
 // an interrupted transition. Lay out the content once at its destination size.
-watch(currentFullscreen, async () => {
+watch(expanded, async () => {
   const epoch = ++fullscreenMotionEpoch
   const element = panel.value
   const before = element?.getBoundingClientRect()
@@ -257,6 +291,7 @@ defineExpose({
   close: overlay.requestClose,
   focus: overlay.focusPanel,
   resetPosition,
+  toggleFullscreen,
 })
 </script>
 
@@ -276,6 +311,7 @@ defineExpose({
         <section
           ref="panel"
           class="zt-modal__panel"
+          :class="classNames?.panel"
           :style="panelStyle"
           role="dialog"
           :aria-modal="overlay.isTop.value ? true : undefined"
@@ -284,15 +320,20 @@ defineExpose({
           :aria-busy="overlay.busy.value"
           :inert="!overlay.isTop.value || !overlay.visible.value ? true : undefined"
           tabindex="-1"
+          @keydown.capture="guardLoading"
+          @focusin.capture="guardLoading"
         >
-          <header v-if="showHeader" :class="headerClasses" @pointerdown="startDragging">
-            <div :id="titleId" class="zt-modal__heading">
+          <header v-if="showHeader" :class="[headerClasses, classNames?.header]" @pointerdown="startDragging">
+            <div :id="titleId" class="zt-modal__heading" :class="classNames?.heading">
               <slot name="title" :close="overlay.requestClose">
                 <h2>{{ title || '弹窗' }}</h2>
               </slot>
+              <p v-if="subtitle" class="zt-modal__subtitle">{{ subtitle }}</p>
             </div>
+            <div class="zt-modal__tools" :class="classNames?.tools">
+            <slot name="header-actions" v-bind="scope" />
             <ZtButton
-              v-if="showFullscreenButton"
+              v-if="showZoomButton"
               class="zt-modal__fullscreen"
               circle
               :size="size"
@@ -320,10 +361,11 @@ defineExpose({
             <ZtButton
               v-if="showClose"
               class="zt-modal__close"
+              :class="classNames?.close"
               circle
               :size="size"
               :disabled="overlay.busy.value"
-              :aria-label="`关闭${title || '弹窗'}`"
+              :aria-label="closeLabel || `关闭${title || '弹窗'}`"
               @click="overlay.requestClose('close')"
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -331,14 +373,17 @@ defineExpose({
                 <path d="m6 6 12 12" />
               </svg>
             </ZtButton>
+            </div>
           </header>
 
-          <div class="zt-modal__body" :style="{ padding: cssLength(bodyPadding) }">
-            <slot :close="overlay.requestClose" />
+          <slot v-if="$slots.content" name="content" v-bind="scope" />
+          <div v-else class="zt-modal__body" :class="[classNames?.body, { 'zt-modal__body--custom-scroll': !bodyScroll }]"
+            :style="{ padding: cssLength(bodyPadding) }" :inert="loading ? true : undefined">
+            <slot v-bind="scope" />
           </div>
 
-          <footer v-if="showFooter || $slots.footer" class="zt-modal__footer">
-            <slot name="footer" :close="overlay.requestClose" :confirm="overlay.confirm" :cancel="overlay.cancel">
+          <footer v-if="showFooter || $slots.footer" class="zt-modal__footer" :class="classNames?.footer">
+            <slot name="footer" v-bind="scope">
               <ZtButton
                 v-if="showCancelButton"
                 class="zt-modal__cancel"
@@ -352,7 +397,7 @@ defineExpose({
                 class="zt-modal__confirm"
                 status="primary"
                 :size="size"
-                :disabled="confirmDisabled"
+                :disabled="overlay.busy.value || confirmDisabled"
                 :loading="confirmLoading"
                 @click="overlay.confirm"
               >
@@ -360,6 +405,9 @@ defineExpose({
               </ZtButton>
             </slot>
           </footer>
+          <div v-if="loading" class="zt-modal__loading" role="status" aria-live="polite">
+            <span class="zt-modal__spinner" aria-hidden="true" />{{ loadingText }}
+          </div>
         </section>
       </div>
     </Transition>

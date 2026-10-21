@@ -1,0 +1,21 @@
+// Modal and Drawer share a neutral, readable glass surface. Keep the effect
+// on the panel so its own text and controls are never blurred.
+@mixin panel($background) {
+  border: 1px solid var(--zt-shine, rgba(255, 255, 255, .9));
+  background: var(--zt-overlay-bg, var(--zt-panel-bg, $background));
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+
+  @supports not ((backdrop-filter: blur(4px)) or (-webkit-backdrop-filter: blur(4px))) {
+    background: var(--zt-panel-bg, #fff);
+  }
+}
+
+@mixin header {
+  background: var(--zt-overlay-header-bg, rgba(255, 255, 255, .34));
+}
+
+@mixin footer {
+  background: var(--zt-overlay-footer-bg, rgba(255, 255, 255, .62));
+  box-shadow: 0 -10px 24px rgba(64, 88, 118, .05);
+}

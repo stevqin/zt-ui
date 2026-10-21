@@ -8,6 +8,10 @@ interface OverlayEntry {
   captureFocusFallback?: CaptureFocusFallback
 }
 
+let zIndexAllocator: ((minimum: number) => number) | undefined
+/** Integrate a host application's shared layer counter. Return at least minimum. */
+export function setOverlayZIndexAllocator(allocator?: (minimum: number) => number) { zIndexAllocator = allocator }
+
 const stack = shallowRef<OverlayEntry[]>([])
 const bodyLocks = new Set<symbol>()
 let previousOverflow = ''
@@ -23,7 +27,9 @@ export function enterOverlay(id: symbol, baseZIndex = 1000, captureFocusFallback
     (highest, entry) => Math.max(highest, entry.layer),
     baseZIndex - 2,
   )
-  const layer = Math.max(baseZIndex, highestLayer + 2)
+  const minimum = Math.max(baseZIndex, highestLayer + 2)
+  const allocated = zIndexAllocator?.(minimum) ?? minimum
+  const layer = Number.isFinite(allocated) ? Math.max(minimum, allocated) : minimum
   stack.value = [...stack.value, { id, layer, captureFocusFallback }]
   return layer
 }

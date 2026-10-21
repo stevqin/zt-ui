@@ -121,7 +121,11 @@ describe('complete and executable documentation examples', () => {
     expect(sourceFor('icon')).toContain('size="1.5em"');
     expect(sourceFor('icon')).toContain('size="50%"');
     expect(sourceFor('icon')).not.toContain('ZtComponentSize');
-    expect(sourceFor('feedback')).not.toMatch(/ZtDrawer|Dialog|Modal/);
+    // Imperative overlays belong to zt-alert, not the Vue component package.
+    expect(sourceFor('feedback')).not.toMatch(
+      /import\s*\{[^}]*\b(?:ZtDrawer|ZtDialog|ZtModal)\b[^}]*\}\s*from\s*['"]@ztechjs\/zt-ui['"]/,
+    );
+    expect(sourceFor('feedback')).toContain("from '@ztechjs/zt-alert'");
     const props = (id: string) => api[id].components[0].props;
     expect(props('drawer').map((prop) => prop.name)).toEqual(
       expect.arrayContaining(['width', 'height', 'size']),

@@ -1,5 +1,8 @@
 import {
   computed,
+  inject,
+  onActivated,
+  onDeactivated,
   nextTick,
   onBeforeUnmount,
   provide,
@@ -17,7 +20,7 @@ import {
   topOverlayId,
   unlockBody,
 } from './overlayManager'
-import { overlayContextKey, type OverlayBranch } from './context'
+import { overlayContextKey, overlayVisibleKey, type OverlayBranch } from './context'
 
 type OverlayEvent =
   | 'update:modelValue'
@@ -42,7 +45,11 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   const active = ref(false)
   const closing = ref(false)
   const layer = ref(props.zIndex ?? 1000)
-  const visible = computed(() => modelValue.value)
+  const deactivated = ref(false)
+  const parentVisible = inject(overlayVisibleKey, undefined)
+  const visible = computed(() => modelValue.value && !deactivated.value && parentVisible?.value !== false)
+  provide(overlayVisibleKey, visible)
+  let closeEpoch = 0
   const isTop = computed(() => topOverlayId.value === id)
   const busy = computed(() => Boolean(props.confirmLoading || closing.value))
   let previousFocus: HTMLElement | null = null
@@ -125,6 +132,7 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     if (!active.value || !isTop.value || event.isComposing || event.defaultPrevented) return
 
     const branch = branchContaining(event.target)
+    if (!props.focusTrap && event.target instanceof Node && !panel.value?.contains(event.target) && !branch) return
     if (event.key === 'Escape' && branch) {
       event.preventDefault()
       event.stopImmediatePropagation()
@@ -204,19 +212,22 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
 
   function release() {
     if (!active.value) return
+    const wasTop = isTop.value
     const restoreTarget = previousFocus
     const restoreFallback = previousFocusFallback
     active.value = false
     activationEpoch++
     closing.value = false
+    closeEpoch++
     document.removeEventListener('keydown', handleKeydown, true)
     document.removeEventListener('focusin', handleFocusIn, true)
     leaveOverlay(id)
     unlockBody(id)
     previousFocus = null
     previousFocusFallback = undefined
-    void nextTick(() => {
-      if (active.value) return
+    const nextTop = topOverlayId.value
+    if (wasTop) void nextTick(() => {
+      if (active.value || topOverlayId.value !== nextTop) return
       if (restoreTarget?.isConnected) restoreTarget.focus({ preventScroll: true })
       else restoreFallback?.()
     })
@@ -225,8 +236,11 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   async function requestClose(reason: ZtOverlayCloseReason = 'api') {
     if (!visible.value || !isTop.value || closing.value) return false
     closing.value = true
+    const epoch = ++closeEpoch
     try {
       const allowed = await props.beforeClose?.(reason)
+      if (epoch !== closeEpoch || !visible.value) return false
+      if (props.confirmLoading) { closing.value = false; return false }
       if (allowed === false) {
         closing.value = false
         return false
@@ -237,6 +251,7 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
       if (reason === 'cancel') emit('cancel')
       return true
     } catch (error) {
+      if (epoch !== closeEpoch) return false
       closing.value = false
       emit('close-error', error)
       return false
@@ -277,7 +292,8 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
   }
 
   watch(visible, value => {
-    if (value) void activate()
+    closeEpoch++
+    if (value) { closing.value = false; void activate() }
     else if (active.value && !closing.value) lastCloseReason = 'api'
   }, { immediate: true, flush: 'sync' })
 
@@ -287,6 +303,16 @@ export function useOverlay({ modelValue, props, emit }: UseOverlayOptions) {
     else lockBody(id)
   })
 
+  if (parentVisible) watch(parentVisible, value => {
+    if (!value) modelValue.value = false
+  }, { flush: 'sync' })
+  onActivated(() => { deactivated.value = false })
+  onDeactivated(() => {
+    deactivated.value = true
+    modelValue.value = false
+    release()
+    if (props.destroyOnClose) alive.value = false
+  })
   onBeforeUnmount(release)
 
   return {

@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import DemoBlock from '@/components/DemoBlock.vue';
+import RetainedPage from './RetainedPage.vue';
+import RetainedPageCode from './RetainedPage.vue?raw';
+import GlassSurface from './GlassSurface.vue';
+import GlassSurfaceCode from './GlassSurface.vue?raw';
 import Example01 from './Example01.vue';
 import Example01Code from './Example01.vue?raw';
 import Example02 from './Example02.vue';
@@ -14,6 +18,8 @@ import CustomContentCode from './CustomContent.vue?raw';
 
 <template>
   <div class="component-examples">
+    <h3>液态玻璃</h3>
+    <DemoBlock :code="GlassSurfaceCode" desc="默认面板采用透光渐变、轻度模糊和边缘高光；支持浅色、深色主题，保留现有动画和圆角配置。"><GlassSurface /></DemoBlock>
     <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 控制右侧抽屉。"><Example01 /></DemoBlock>
     <h3>出现方向</h3>
@@ -25,6 +31,8 @@ import CustomContentCode from './CustomContent.vue?raw';
       ><Example03
     /></DemoBlock>
 
+    <h3>缓存页面生命周期</h3>
+    <DemoBlock :code="RetainedPageCode" desc="KeepAlive 页面停用时自动关闭抽屉并释放滚动锁；父窗口隐藏时也会关闭保留的子浮层。"><RetainedPage /></DemoBlock>
     <h3>正文内边距</h3>
     <DemoBlock :code="BodyPaddingCode" desc="body-padding 支持数字和 CSS padding 简写；传 0 去掉内边距，不传则沿用当前 size 的默认值。">
       <BodyPadding />

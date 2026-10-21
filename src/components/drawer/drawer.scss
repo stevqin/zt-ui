@@ -1,5 +1,6 @@
 @use 'sass:math';
 @use '../../styles/tokens' as glass;
+@use '../../styles/overlay-glass' as overlay;
 
 .zt-drawer-surface {
   @include glass.tokens;
@@ -8,7 +9,7 @@
   display: flex;
   box-sizing: border-box;
   overflow: hidden;
-  background: rgba(17, 24, 39, .28);
+  background: rgba(20, 24, 32, .2);
   color: var(--glass-ink);
   font: 14px/1.6 var(--glass-font);
 
@@ -29,20 +30,17 @@
     max-height: 100vh;
     overflow: hidden;
     outline: 0;
-    border: 1px solid var(--zt-shine, rgba(255, 255, 255, .9));
-    background: var(--zt-panel-bg, linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,255,255,.9) 48%, rgba(248,250,252,.96)));
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    @include overlay.panel(linear-gradient(145deg, rgba(255,255,255,.96), rgba(255,255,255,.84) 48%, rgba(255,255,255,.92)));
   }
 
   &--right &__panel,
   &--left &__panel { height: 100%; }
   &--top &__panel,
   &--bottom &__panel { width: 100%; }
-  &--right &__panel { border-radius: glass.radius(22px) 0 0 glass.radius(22px); box-shadow: -20px 0 64px rgba(15, 23, 42, .18); }
-  &--left &__panel { border-radius: 0 glass.radius(22px) glass.radius(22px) 0; box-shadow: 20px 0 64px rgba(15, 23, 42, .18); }
-  &--top &__panel { border-radius: 0 0 glass.radius(22px) glass.radius(22px); box-shadow: 0 20px 64px rgba(15, 23, 42, .18); }
-  &--bottom &__panel { border-radius: glass.radius(22px) glass.radius(22px) 0 0; box-shadow: 0 -20px 64px rgba(15, 23, 42, .18); }
+  &--right &__panel { border-radius: glass.radius(26px) 0 0 glass.radius(26px); box-shadow: -20px 0 64px rgba(0,0,0,.16), -1px 0 0 rgba(0,0,0,.06), inset 2px 0 1px var(--zt-shine, rgba(255,255,255,.9)); }
+  &--left &__panel { border-radius: 0 glass.radius(26px) glass.radius(26px) 0; box-shadow: 20px 0 64px rgba(0,0,0,.16), 1px 0 0 rgba(0,0,0,.06), inset -2px 0 1px var(--zt-shine, rgba(255,255,255,.9)); }
+  &--top &__panel { border-radius: 0 0 glass.radius(26px) glass.radius(26px); box-shadow: 0 20px 64px rgba(0,0,0,.16), 0 1px 0 rgba(0,0,0,.06), inset 0 -2px 1px var(--zt-shine, rgba(255,255,255,.9)); }
+  &--bottom &__panel { border-radius: glass.radius(26px) glass.radius(26px) 0 0; box-shadow: 0 -20px 64px rgba(0,0,0,.16), 0 -1px 0 rgba(0,0,0,.06), inset 0 2px 1px var(--zt-shine, rgba(255,255,255,.9)); }
 
   &--narrow &__panel { width: 100% !important; border-radius: 0; }
 
@@ -54,8 +52,10 @@
     min-height: 60px;
     padding: 12px 18px 12px 22px;
     border-bottom: 1px solid var(--glass-line);
+    @include overlay.header;
   }
 
+  &__tools { display: flex; align-items: center; flex: none; gap: 8px; }
   &__heading { flex: 1; min-width: 0; }
   &__heading h2 { margin: 0; color: var(--glass-accent-title); font-size: 18px; line-height: 1.4; font-weight: 650; }
   &__subtitle { margin: 5px 0 0; color: var(--glass-muted); font-size: 12px; }
@@ -106,7 +106,7 @@
     min-height: 58px;
     padding: 10px 22px;
     border-top: 1px solid var(--glass-line);
-    background: var(--zt-surface-soft, rgba(248, 250, 252, .7));
+    @include overlay.footer;
   }
 
   &--mini {

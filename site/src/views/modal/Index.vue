@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import DemoBlock from '@/components/DemoBlock.vue';
+import PortalCapabilities from './PortalCapabilities.vue';
+import PortalCapabilitiesCode from './PortalCapabilities.vue?raw';
+import GlassSurface from './GlassSurface.vue';
+import GlassSurfaceCode from './GlassSurface.vue?raw';
 import Example01 from './Example01.vue';
 import Example01Code from './Example01.vue?raw';
 import Example02 from './Example02.vue';
@@ -18,6 +22,8 @@ import CustomContentCode from './CustomContent.vue?raw';
 
 <template>
   <div class="component-examples">
+    <h3>液态玻璃</h3>
+    <DemoBlock :code="GlassSurfaceCode" desc="默认面板采用透光渐变、轻度模糊和边缘高光；支持浅色、深色主题，保留现有动画和圆角配置。"><GlassSurface /></DemoBlock>
     <h3>基础用法</h3>
     <DemoBlock :code="Example01Code" desc="使用 v-model 控制显示状态。"><Example01 /></DemoBlock>
     <h3>底部操作与加载</h3>
@@ -39,6 +45,8 @@ import CustomContentCode from './CustomContent.vue?raw';
       ><Example05
     /></DemoBlock>
 
+    <h3>固定高度、加载与移动端布局</h3>
+    <DemoBlock :code="PortalCapabilitiesCode" desc="height / max-height 控制面板尺寸，body-scroll=false 交由正文内容独立滚动；支持 loading、header-actions、底部弹出和窄屏全屏。"><PortalCapabilities /></DemoBlock>
     <h3>正文内边距</h3>
     <DemoBlock :code="BodyPaddingCode" desc="body-padding 支持数字和 CSS padding 简写；传 0 去掉内边距，不传则沿用当前 size 的默认值。">
       <BodyPadding />

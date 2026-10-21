@@ -763,6 +763,12 @@
     ],
     "examples": [
       {
+        "title": "液态玻璃",
+        "kind": "live",
+        "file": "src/views/drawer/GlassSurface.vue",
+        "description": "默认面板采用透光渐变、轻度模糊和边缘高光；支持浅色、深色主题，保留现有动画和圆角配置。"
+      },
+      {
         "title": "基础用法",
         "kind": "live",
         "file": "src/views/drawer/Example01.vue",
@@ -779,6 +785,12 @@
         "kind": "live",
         "file": "src/views/drawer/Example03.vue",
         "description": "width / height 控制宽高；size 控制密度，并传递给内部控件。"
+      },
+      {
+        "title": "缓存页面生命周期",
+        "kind": "live",
+        "file": "src/views/drawer/RetainedPage.vue",
+        "description": "KeepAlive 页面停用时自动关闭抽屉并释放滚动锁；父窗口隐藏时也会关闭保留的子浮层。"
       },
       {
         "title": "正文内边距",
@@ -1377,6 +1389,12 @@
     ],
     "examples": [
       {
+        "title": "液态玻璃",
+        "kind": "live",
+        "file": "src/views/modal/GlassSurface.vue",
+        "description": "默认面板采用透光渐变、轻度模糊和边缘高光；支持浅色、深色主题，保留现有动画和圆角配置。"
+      },
+      {
         "title": "基础用法",
         "kind": "live",
         "file": "src/views/modal/Example01.vue",
@@ -1405,6 +1423,12 @@
         "kind": "live",
         "file": "src/views/modal/Example05.vue",
         "description": "size 提供五档密度，同时调整标题栏、正文、底部和内部控件；子控件显式 size 优先。"
+      },
+      {
+        "title": "固定高度、加载与移动端布局",
+        "kind": "live",
+        "file": "src/views/modal/PortalCapabilities.vue",
+        "description": "height / max-height 控制面板尺寸，body-scroll=false 交由正文内容独立滚动；支持 loading、header-actions、底部弹出和窄屏全屏。"
       },
       {
         "title": "正文内边距",

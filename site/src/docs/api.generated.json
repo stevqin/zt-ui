@@ -6670,6 +6670,96 @@
             "description": "控件宽度；数字按像素处理，字符串按 CSS 宽度处理。"
           },
           {
+            "name": "height",
+            "templateName": "height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "面板高度，支持数字、数字字符串和 CSS 长度；全屏时占满视口，恢复后保留原高度。"
+          },
+          {
+            "name": "maxHeight",
+            "templateName": "max-height",
+            "kind": "prop",
+            "type": "number | string",
+            "required": false,
+            "default": "无默认值",
+            "description": "面板最大高度；省略时保留视口安全间距。"
+          },
+          {
+            "name": "subtitle",
+            "templateName": "subtitle",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "标题下方的辅助说明。"
+          },
+          {
+            "name": "closeLabel",
+            "templateName": "close-label",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "无默认值",
+            "description": "关闭按钮的无障碍名称。"
+          },
+          {
+            "name": "loading",
+            "templateName": "loading",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "显示加载遮罩，同时阻止正文交互、确认和关闭。"
+          },
+          {
+            "name": "loadingText",
+            "templateName": "loading-text",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'正在加载…'",
+            "description": "加载遮罩的提示文字。"
+          },
+          {
+            "name": "bodyScroll",
+            "templateName": "body-scroll",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "是否由正文区域管理滚动；false 时正文采用 flex 布局，供表格或列表独立滚动。"
+          },
+          {
+            "name": "placement",
+            "templateName": "placement",
+            "kind": "prop",
+            "type": "'center' | 'bottom'",
+            "required": false,
+            "default": "'center'",
+            "description": "center 居中展示；bottom 从视口底部展示并保留顶部圆角。"
+          },
+          {
+            "name": "fullscreenBelow",
+            "templateName": "fullscreen-below",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "0",
+            "description": "视口低于该宽度时自动全屏；0 禁用，不改变 v-model:fullscreen 的显式值。"
+          },
+          {
+            "name": "showZoom",
+            "templateName": "show-zoom",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "无默认值",
+            "description": "show-fullscreen-button 的兼容别名；两者同时提供时 show-fullscreen-button 优先。"
+          },
+          {
             "name": "bodyPadding",
             "templateName": "body-padding",
             "kind": "prop",
@@ -6703,7 +6793,7 @@
             "type": "boolean",
             "required": false,
             "default": "false",
-            "description": "显示 header 全屏按钮"
+            "description": "显示全屏切换按钮；窄屏自动全屏时隐藏。"
           },
           {
             "name": "draggable",
@@ -6722,6 +6812,15 @@
             "required": false,
             "default": "继承 ConfigProvider（最终为 default）",
             "description": "组件尺寸；未显式设置时继承最近的 ConfigProvider 或组合组件。"
+          },
+          {
+            "name": "classNames",
+            "templateName": "class-names",
+            "kind": "prop",
+            "type": "ZtOverlayClassNames",
+            "required": false,
+            "default": "无默认值",
+            "description": "为面板、标题、工具、正文、底部及窗口状态追加 CSS 类名，适用于兼容封装。"
           },
           {
             "name": "title",
@@ -6912,6 +7011,18 @@
             "kind": "event"
           },
           {
+            "name": "show",
+            "type": "() => void",
+            "description": "打开动画完成后触发；opened 的兼容事件。",
+            "kind": "event"
+          },
+          {
+            "name": "hide",
+            "type": "() => void",
+            "description": "关闭动画完成后触发；closed 的兼容事件。",
+            "kind": "event"
+          },
+          {
             "name": "close",
             "type": "(reason: ZtOverlayCloseReason) => void",
             "description": "组件开始关闭或请求关闭时触发。",
@@ -6932,7 +7043,7 @@
           {
             "name": "confirm",
             "type": "() => void",
-            "description": "用户点击确认且 beforeConfirm 允许继续后触发。",
+            "description": "用户点击确认且未处于加载或关闭中时触发；不自动关闭，由使用方完成保存后更新 v-model。",
             "kind": "event"
           },
           {
@@ -6956,14 +7067,26 @@
             "description": "自定义标题内容。"
           },
           {
+            "name": "header-actions",
+            "type": "无",
+            "kind": "slot",
+            "description": "标题栏中的自定义操作区域，提供 close、confirm、cancel 和 toggleFullscreen。"
+          },
+          {
+            "name": "content",
+            "type": "无",
+            "kind": "slot",
+            "description": "组件的主要正文内容。"
+          },
+          {
             "name": "default",
-            "type": "{ close }",
+            "type": "无",
             "kind": "slot",
             "description": "组件的默认正文内容。"
           },
           {
             "name": "footer",
-            "type": "{ close, confirm, cancel }",
+            "type": "无",
             "kind": "slot",
             "description": "组件底部的自定义内容。"
           }
@@ -6992,6 +7115,12 @@
             "type": "() => void",
             "kind": "method",
             "description": "清除拖拽位移并恢复弹层初始位置。"
+          },
+          {
+            "name": "toggleFullscreen",
+            "type": "() => void",
+            "kind": "method",
+            "description": "切换显式全屏状态并触发 update:fullscreen。"
           }
         ]
       }
@@ -7004,7 +7133,7 @@
       },
       {
         "name": "ZtModalProps",
-        "code": "export interface ZtModalProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  width?: number | string\n  /** Body padding in pixels or CSS shorthand. 0 removes padding; omit for size defaults. */\n  bodyPadding?: number | string\n  top?: number | string\n  fullscreen?: boolean\n  showFullscreenButton?: boolean\n  draggable?: boolean\n  size?: ZtModalSize\n}",
+        "code": "export interface ZtModalProps extends ZtOverlayCommonProps {\n  modelValue?: boolean\n  width?: number | string\n  height?: number | string\n  maxHeight?: number | string\n  subtitle?: string\n  closeLabel?: string\n  loading?: boolean\n  loadingText?: string\n  bodyScroll?: boolean\n  placement?: 'center' | 'bottom'\n  fullscreenBelow?: number\n  /** Compatibility alias; showFullscreenButton takes precedence. */\n  showZoom?: boolean\n  /** Body padding in pixels or CSS shorthand. 0 removes padding; omit for size defaults. */\n  bodyPadding?: number | string\n  top?: number | string\n  fullscreen?: boolean\n  showFullscreenButton?: boolean\n  draggable?: boolean\n  size?: ZtModalSize\n}",
         "public": true
       },
       {
@@ -7014,7 +7143,12 @@
       },
       {
         "name": "ZtOverlayCommonProps",
-        "code": "export interface ZtOverlayCommonProps {\n  title?: string\n  ariaLabel?: string\n  showHeader?: boolean\n  showClose?: boolean\n  showFooter?: boolean\n  showCancelButton?: boolean\n  confirmText?: string\n  cancelText?: string\n  confirmLoading?: boolean\n  confirmDisabled?: boolean\n  maskClosable?: boolean\n  escClosable?: boolean\n  lockScroll?: boolean\n  destroyOnClose?: boolean\n  autoFocus?: boolean\n  focusTrap?: boolean\n  zIndex?: number\n  beforeClose?: ZtBeforeClose\n}",
+        "code": "export interface ZtOverlayCommonProps {\n  /** Additional classes for overlay parts, including teleported content. */\n  classNames?: ZtOverlayClassNames\n  title?: string\n  ariaLabel?: string\n  showHeader?: boolean\n  showClose?: boolean\n  showFooter?: boolean\n  showCancelButton?: boolean\n  confirmText?: string\n  cancelText?: string\n  confirmLoading?: boolean\n  confirmDisabled?: boolean\n  maskClosable?: boolean\n  escClosable?: boolean\n  lockScroll?: boolean\n  destroyOnClose?: boolean\n  autoFocus?: boolean\n  focusTrap?: boolean\n  zIndex?: number\n  beforeClose?: ZtBeforeClose\n}",
+        "public": false
+      },
+      {
+        "name": "ZtOverlayClassNames",
+        "code": "export type ZtOverlayClassNames = Partial<Record<'panel' | 'header' | 'heading' | 'tools' | 'body' | 'footer' | 'close' | 'fullscreen' | 'bottom' | 'top' | 'narrow' | 'underneath', string>>",
         "public": false
       },
       {
@@ -7029,11 +7163,13 @@
       }
     ],
     "sections": [
+      "液态玻璃",
       "基础用法",
       "底部操作与加载",
       "遮罩与关闭拦截",
       "全屏与拖拽",
       "尺寸",
+      "固定高度、加载与移动端布局",
       "正文内边距",
       "插槽、销毁与关闭守卫"
     ]
@@ -7150,6 +7286,15 @@
             "required": false,
             "default": "'正在加载…'",
             "description": "加载遮罩显示的提示文字。"
+          },
+          {
+            "name": "classNames",
+            "templateName": "class-names",
+            "kind": "prop",
+            "type": "ZtOverlayClassNames",
+            "required": false,
+            "default": "无默认值",
+            "description": "为面板、标题、工具、正文、底部及窗口状态追加 CSS 类名，适用于兼容封装。"
           },
           {
             "name": "title",
@@ -7443,13 +7588,18 @@
       },
       {
         "name": "ZtOverlayCommonProps",
-        "code": "export interface ZtOverlayCommonProps {\n  title?: string\n  ariaLabel?: string\n  showHeader?: boolean\n  showClose?: boolean\n  showFooter?: boolean\n  showCancelButton?: boolean\n  confirmText?: string\n  cancelText?: string\n  confirmLoading?: boolean\n  confirmDisabled?: boolean\n  maskClosable?: boolean\n  escClosable?: boolean\n  lockScroll?: boolean\n  destroyOnClose?: boolean\n  autoFocus?: boolean\n  focusTrap?: boolean\n  zIndex?: number\n  beforeClose?: ZtBeforeClose\n}",
+        "code": "export interface ZtOverlayCommonProps {\n  /** Additional classes for overlay parts, including teleported content. */\n  classNames?: ZtOverlayClassNames\n  title?: string\n  ariaLabel?: string\n  showHeader?: boolean\n  showClose?: boolean\n  showFooter?: boolean\n  showCancelButton?: boolean\n  confirmText?: string\n  cancelText?: string\n  confirmLoading?: boolean\n  confirmDisabled?: boolean\n  maskClosable?: boolean\n  escClosable?: boolean\n  lockScroll?: boolean\n  destroyOnClose?: boolean\n  autoFocus?: boolean\n  focusTrap?: boolean\n  zIndex?: number\n  beforeClose?: ZtBeforeClose\n}",
         "public": false
       },
       {
         "name": "ZtComponentSize",
         "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
         "public": true
+      },
+      {
+        "name": "ZtOverlayClassNames",
+        "code": "export type ZtOverlayClassNames = Partial<Record<'panel' | 'header' | 'heading' | 'tools' | 'body' | 'footer' | 'close' | 'fullscreen' | 'bottom' | 'top' | 'narrow' | 'underneath', string>>",
+        "public": false
       },
       {
         "name": "ZtBeforeClose",
@@ -7463,9 +7613,11 @@
       }
     ],
     "sections": [
+      "液态玻璃",
       "基础用法",
       "出现方向",
       "尺寸与底部操作",
+      "缓存页面生命周期",
       "正文内边距",
       "插槽、销毁与关闭守卫"
     ]

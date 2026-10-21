@@ -21,3 +21,6 @@ export interface OverlayContext {
 }
 
 export const overlayContextKey: InjectionKey<OverlayContext> = Symbol('zt-overlay-context')
+
+/** Visibility of a retained parent overlay, independent of which layer is top. */
+export const overlayVisibleKey: InjectionKey<Readonly<Ref<boolean>>> = Symbol('zt-overlay-visible')

@@ -16,6 +16,8 @@ const dark: Record<string, string> = {
   'info-ink': '#c1ccdd', 'info-soft': '#434e5f', 'info-line': '#536078',
   surface: '#343c49', 'surface-soft': '#3b4554', 'surface-disabled': '#3a424e',
   'panel-bg': '#343c49', 'popover-bg': 'rgba(35,44,58,.96)', 'text': '#dae2ef', 'text-muted': '#a6b1c2',
+  'overlay-bg': 'linear-gradient(145deg, rgba(52,60,73,.96), rgba(52,60,73,.88) 46%, rgba(52,60,73,.94))',
+  'overlay-header-bg': 'rgba(255,255,255,.025)', 'overlay-footer-bg': 'rgba(255,255,255,.04)',
   'border': '#5c697c', 'shine': 'rgba(255,255,255,.05)', 'highlight-line': '#5c697c',
 }
 // These provider-owned tokens must all be emitted, including `none`, so a

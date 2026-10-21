@@ -1,5 +1,6 @@
 @use 'sass:math';
 @use '../../styles/tokens' as glass;
+@use '../../styles/overlay-glass' as overlay;
 
 .zt-modal {
   @include glass.tokens;
@@ -11,12 +12,16 @@
   box-sizing: border-box;
   padding: 24px;
   overflow: auto;
-  background: rgba(17, 24, 39, .28);
+  background: rgba(20, 24, 32, .2);
   color: var(--glass-ink);
   font: 14px/1.6 var(--glass-font);
 
   *, *::before, *::after { box-sizing: border-box; }
   &--top { align-items: flex-start; }
+  &--bottom {
+    align-items: flex-end; padding: 0;
+    .zt-modal__panel { border-radius: glass.radius(26px) glass.radius(26px) 0 0; border-bottom: 0; padding-bottom: env(safe-area-inset-bottom); }
+  }
   &--underneath { pointer-events: none; }
 
   &__panel {
@@ -27,12 +32,9 @@
     max-height: calc(100vh - 48px);
     overflow: hidden;
     outline: 0;
-    border: 1px solid var(--zt-shine, rgba(255, 255, 255, .9));
-    border-radius: glass.radius(22px);
-    background: var(--zt-panel-bg, linear-gradient(145deg, rgba(255,255,255,.98), rgba(255,255,255,.9) 48%, rgba(248,250,252,.96)));
-    box-shadow: 0 24px 72px rgba(15, 23, 42, .2), 0 0 0 1px rgba(15, 23, 42, .06), inset 0 1px 0 var(--zt-shine, #fff);
-    -webkit-backdrop-filter: blur(12px);
-    backdrop-filter: blur(12px);
+    @include overlay.panel(linear-gradient(145deg, rgba(255,255,255,.94), rgba(255,255,255,.82) 46%, rgba(255,255,255,.9)));
+    border-radius: glass.radius(26px);
+    box-shadow: 0 20px 64px rgba(0,0,0,.16), 0 0 0 1px rgba(0,0,0,.06), inset 0 2px 1px var(--zt-shine, #fff), inset 0 -2px 3px rgba(0,0,0,.07);
   }
 
   &__header {
@@ -42,6 +44,7 @@
     min-height: 60px;
     padding: 12px 18px 12px 22px;
     border-bottom: 1px solid var(--glass-line);
+    @include overlay.header;
 
     &--draggable {
       cursor: grab;
@@ -50,7 +53,9 @@
     }
   }
 
-  &__heading { flex: 1; min-width: 0; }
+  &__heading { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  &__subtitle { margin: 5px 0 0; color: var(--glass-muted); font-size: 12px; }
+  &__tools { display: flex; align-items: center; flex: none; gap: 8px; }
   &__heading h2 { margin: 0; color: var(--glass-accent-title); font-size: 18px; line-height: 1.4; font-weight: 650; }
   &__fullscreen,
   &__close { flex: 0 0 auto; }
@@ -65,6 +70,13 @@
     overscroll-behavior: contain;
   }
 
+  &__body--custom-scroll { display: flex; flex-direction: column; overflow: hidden; }
+  &__loading {
+    position: absolute; inset: 0; z-index: 1; display: flex;
+    align-items: center; justify-content: center; gap: 10px;
+    background: var(--zt-panel-bg, rgba(255,255,255,.85)); color: var(--glass-accent-ink);
+  }
+  &__spinner { width: 20px; height: 20px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: zt-modal-spin .8s linear infinite; }
   &__footer {
     display: flex;
     flex: 0 0 auto;
@@ -74,7 +86,7 @@
     min-height: 58px;
     padding: 10px 22px;
     border-top: 1px solid var(--glass-line);
-    background: var(--zt-surface-soft, rgba(248, 250, 252, .7));
+    @include overlay.footer;
   }
 
   &--fullscreen { padding: 0 !important; }
@@ -84,6 +96,9 @@
     max-height: 100%;
     border: 0;
     border-radius: 0;
+    background: var(--zt-panel-bg, #fff);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
   }
 
   &--dragging,
@@ -221,3 +236,6 @@
   .zt-modal,
   .zt-modal .zt-modal__panel { transition: none !important; animation: none !important; translate: none !important; scale: none !important; }
 }
+
+@keyframes zt-modal-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .zt-modal__spinner { animation: none; } }

@@ -1,4 +1,23 @@
 export default {
+  'modal.ZtModal.events.hide': {description:'关闭动画完成后触发；closed 的兼容事件。'},
+  'modal.ZtModal.events.show': {description:'打开动画完成后触发；opened 的兼容事件。'},
+  'modal.ZtModal.slots.header-actions': {description:'标题栏中的自定义操作区域，提供 close、confirm、cancel 和 toggleFullscreen。'},
+  'modal.ZtModal.exposes.toggleFullscreen': {description:'切换显式全屏状态并触发 update:fullscreen。'},
+
+  'modal.ZtModal.props.height': {description:'面板高度，支持数字、数字字符串和 CSS 长度；全屏时占满视口，恢复后保留原高度。'},
+  'modal.ZtModal.props.maxHeight': {description:'面板最大高度；省略时保留视口安全间距。'},
+  'modal.ZtModal.props.subtitle': {description:'标题下方的辅助说明。'},
+  'modal.ZtModal.props.closeLabel': {description:'关闭按钮的无障碍名称。'},
+  'modal.ZtModal.props.loading': {description:'显示加载遮罩，同时阻止正文交互、确认和关闭。'},
+  'modal.ZtModal.props.loadingText': {description:'加载遮罩的提示文字。'},
+  'modal.ZtModal.props.bodyScroll': {description:'是否由正文区域管理滚动；false 时正文采用 flex 布局，供表格或列表独立滚动。'},
+  'modal.ZtModal.props.placement': {description:'center 居中展示；bottom 从视口底部展示并保留顶部圆角。'},
+  'modal.ZtModal.props.fullscreenBelow': {description:'视口低于该宽度时自动全屏；0 禁用，不改变 v-model:fullscreen 的显式值。'},
+  'modal.ZtModal.props.showZoom': {description:'show-fullscreen-button 的兼容别名；两者同时提供时 show-fullscreen-button 优先。'},
+  'modal.ZtModal.props.showFullscreenButton': {description:'显示全屏切换按钮；窄屏自动全屏时隐藏。',defaultValue:'false'},
+  'modal.ZtModal.props.classNames': {description:'为面板、标题、工具、正文、底部及窗口状态追加 CSS 类名，适用于兼容封装。'},
+  'drawer.ZtDrawer.props.classNames': {description:'为面板、标题、工具、正文、底部及窗口状态追加 CSS 类名，适用于兼容封装。'},
+
   'tooltip.ZtTooltip.props.width': { description: '浮层外框宽度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束；Tooltip 省略时为 max-content，短文本紧凑、长文本换行。' },
   'tooltip.ZtTooltip.props.height': { description: '浮层外框高度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束；省略时按内容高度展示，指定高度后仅内容区滚动。' },
   'popover.ZtPopover.props.width': { description: '浮层外框宽度，数字转换为 px，字符串作为 CSS 长度；受视口边界约束。' },
@@ -18,7 +37,7 @@ export default {
   'drawer.ZtDrawer.props.loadingText': { description:'加载遮罩显示的提示文字。' },
   'drawer.ZtDrawer.events.hide': { description:'关闭过渡结束后触发，与 closed 一致。' },
   'drawer.ZtDrawer.slots.header-actions': { description:'标题栏右侧的额外操作，位于关闭按钮之前。' },
-  'modal.ZtModal.events.confirm': { description:'用户点击确认且 beforeConfirm 允许继续后触发。' },
+  'modal.ZtModal.events.confirm': { description:'用户点击确认且未处于加载或关闭中时触发；不自动关闭，由使用方完成保存后更新 v-model。' },
   'drawer.ZtDrawer.events.close': { description:'抽屉开始关闭时触发；beforeClose 拒绝时不会触发。' },
   'popconfirm.ZtPopconfirm.props.size': {
     description: '整体尺寸，统一控制面板间距、标题、说明、图标和按钮；未设置时继承 ConfigProvider。',

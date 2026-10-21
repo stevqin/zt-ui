@@ -1,5 +1,32 @@
 # 更新日志
 
+## 0.11.1 — 2026-10-21
+
+### 优化
+
+- 升级命令式反馈依赖 `@ztechjs/zt-alert` 至 `^0.1.3`，同步新版果冻弹性入场、图标描边、两段式退场和消息堆叠补位效果。
+- 演示站补齐 Message、Notification、MessageBox、Dialog、Drawer 和全屏 Loading 的独立可复制示例，覆盖常驻、同 ID 更新、异步保存、关闭拦截、内容定制与实例控制。
+- 新增动效对比区：窄屏也可观察普通弹窗回弹，并与全屏淡入、无回弹效果对照；展示抽屉侧向动画、消息与通知堆叠补位。
+
+### 验证
+
+- 补充真实交互回归，覆盖消息清理、全屏加载、表单返回值、抽屉放弃修改、输入取消与窄屏动效模式。
+
+## 0.11.0 — 2026-10-21
+
+### 新增
+
+- Modal 支持 height、max-height、subtitle、close-label、loading、loading-text、body-scroll、底部 placement 和 fullscreen-below。
+- Modal 补齐 header-actions、content 插槽、show / hide 事件、show-zoom 别名及 toggleFullscreen 方法，保留现有默认值和用法。
+- Modal / Drawer 支持 class-names 扩展样式钩子；setOverlayZIndexAllocator 可接入宿主应用的统一层级计数器。
+
+### 优化与修复
+
+- Modal / Drawer 默认使用与 Portal 面板一致的液态玻璃渐变、边缘高光和轻度模糊，兼容深色主题。
+- 统一处理 KeepAlive 停用、父浮层隐藏、关闭中重开与过期异步关闭校验，释放滚动锁并正确恢复焦点。
+- focus-trap=false 时将外部确认窗口的键盘事件交还给所属窗口；异步关闭校验结束后再次检查保存状态。
+- 补充固定高度、自管滚动、加载遮罩、底部弹出与缓存页面生命周期示例。
+
 ## [0.10.0](https://github.com/stevqin/zt-ui/compare/v0.9.0...v0.10.0) — 2026-10-21
 
 ### 新增

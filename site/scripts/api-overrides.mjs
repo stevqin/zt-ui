@@ -9,6 +9,6 @@ export const methods = {
  ZtPassword: {focus:'(options?: FocusOptions) => void',blur:'() => void',select:'() => void',clear:'() => void'},
  ZtInputNumber: {focus:'(options?: FocusOptions) => void',blur:'() => void',select:'() => void'},
  ZtFormItem: {validate:'(trigger?: ZtFormValidateTrigger) => Promise<boolean>',resetField:'() => void',clearValidate:'() => void',validateState:"'' | 'validating' | 'success' | 'error'",validateMessage:'string'},
- ZtModal: {open:'() => void',close:"(reason?: ZtOverlayCloseReason) => Promise<boolean>",focus:'() => void',resetPosition:'() => void'},
+ ZtModal: {open:'() => void',close:"(reason?: ZtOverlayCloseReason) => Promise<boolean>",focus:'() => void',resetPosition:'() => void',toggleFullscreen:'() => void'},
  ZtDrawer: {open:'() => void',close:"(reason?: ZtOverlayCloseReason) => Promise<boolean>",focus:'() => void'},
 }

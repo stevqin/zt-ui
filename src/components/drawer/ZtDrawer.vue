@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { provideZtSizeScope, useZtConfig, useZtSize } from '../config-provider/context'
 const { style: providerStyle } = useZtConfig()
-import { computed, useId, watch, ref, onBeforeUnmount } from 'vue'
+import { computed, useId, watch } from 'vue'
 import ZtButton from '../button/ZtButton.vue'
 import { useOverlay } from '../overlay/useOverlay'
+import { useOverlayBreakpoint } from '../overlay/useOverlayBreakpoint'
 import type { ZtOverlayCloseReason } from '../overlay/types'
 import type { ZtDrawerProps } from './types'
 import './drawer.scss'
@@ -108,24 +109,7 @@ function cssLength(value: number | string | undefined) {
   return typeof value === 'number' || /^\d+(?:\.\d+)?$/.test(value.trim()) ? `${Number(value)}px` : value
 }
 
-const narrow = ref(false)
-let media: MediaQueryList | undefined
-const updateNarrow = () => { narrow.value = media?.matches ?? false }
-function removeMedia() {
-  if (media?.removeEventListener) media.removeEventListener('change', updateNarrow)
-  else media?.removeListener(updateNarrow)
-  media = undefined
-}
-watch(() => props.fullscreenBelow, value => {
-  removeMedia()
-  if (value > 0 && typeof window !== 'undefined' && window.matchMedia) {
-    media = window.matchMedia(`(max-width: ${value - 0.02}px)`)
-    if (media.addEventListener) media.addEventListener('change', updateNarrow)
-    else media.addListener(updateNarrow)
-  }
-  updateNarrow()
-}, { immediate: true })
-onBeforeUnmount(removeMedia)
+const narrow = useOverlayBreakpoint(() => props.fullscreenBelow, overlay.visible)
 
 const isVertical = computed(() => props.placement === 'top' || props.placement === 'bottom')
 const panelStyle = computed(() => isVertical.value
@@ -137,6 +121,8 @@ const classes = computed(() => [
   `zt-drawer-surface--${resolvedSize.value}`,
   narrow.value && !isVertical.value && 'zt-drawer-surface--narrow',
   !overlay.isTop.value && 'zt-drawer-surface--underneath',
+  narrow.value && !isVertical.value && props.classNames?.narrow,
+  !overlay.isTop.value && props.classNames?.underneath,
 ])
 
 defineExpose({
@@ -161,7 +147,7 @@ defineExpose({
       >
         <section
           ref="panel"
-          class="zt-drawer-surface__panel"
+          class="zt-drawer-surface__panel" :class="classNames?.panel"
           :style="panelStyle"
           role="dialog"
           :aria-modal="overlay.isTop.value ? true : undefined"
@@ -173,17 +159,18 @@ defineExpose({
           @keydown.capture="guardLoading"
           @focusin.capture="guardLoading"
         >
-          <header v-if="showHeader" class="zt-drawer-surface__header">
-            <div :id="titleId" class="zt-drawer-surface__heading">
+          <header v-if="showHeader" class="zt-drawer-surface__header" :class="classNames?.header">
+            <div :id="titleId" class="zt-drawer-surface__heading" :class="classNames?.heading">
               <slot name="title" v-bind="scope">
                 <h2>{{ title || '抽屉' }}</h2>
               </slot>
               <p v-if="subtitle" class="zt-drawer-surface__subtitle">{{ subtitle }}</p>
             </div>
+            <div class="zt-drawer-surface__tools" :class="classNames?.tools">
             <slot name="header-actions" v-bind="scope" />
             <ZtButton
               v-if="showClose"
-              class="zt-drawer-surface__close"
+              class="zt-drawer-surface__close" :class="classNames?.close"
               circle
               :disabled="overlay.busy.value"
               :aria-label="closeLabel || `关闭${title || '抽屉'}`"
@@ -194,18 +181,19 @@ defineExpose({
                 <path d="m6 6 12 12" />
               </svg>
             </ZtButton>
+            </div>
           </header>
 
           <slot v-if="$slots.content" name="content" v-bind="scope" />
           <div v-else class="zt-drawer-surface__body"
-            :class="{ 'zt-drawer-surface__body--custom-scroll': !bodyScroll }"
+            :class="[classNames?.body, { 'zt-drawer-surface__body--custom-scroll': !bodyScroll }]"
             :style="{ padding: cssLength(bodyPadding) }"
             :inert="loading ? true : undefined"
           >
             <slot v-bind="scope" />
           </div>
 
-          <footer v-if="showFooter || $slots.footer" class="zt-drawer-surface__footer">
+          <footer v-if="showFooter || $slots.footer" class="zt-drawer-surface__footer" :class="classNames?.footer">
             <slot name="footer" v-bind="scope">
               <ZtButton
                 v-if="showCancelButton"
