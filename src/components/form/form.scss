@@ -244,7 +244,7 @@
   }
 
   &__legend { padding: 0 8px 0 0; color: var(--zt-text, #202938); font-size: 16px; font-weight: 650; }
-  &__description { margin: 5px 0 16px; color: var(--zt-text-muted, #7b8492); font-size: 12px; line-height: 1.6; }
+  &__description { margin: 5px 0 10px; color: var(--zt-text-muted, #7b8492); font-size: 12px; line-height: 1.6; }
   &__content { min-width: 0; }
   &.is-disabled { opacity: .62; }
 }
