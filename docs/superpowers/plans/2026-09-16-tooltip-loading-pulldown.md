@@ -1,7 +1,5 @@
 # Tooltip, Loading, and Pulldown Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add production-ready Tooltip, standalone/overlay Loading, and hybrid items/slot Pulldown components to zt-ui.
 
 **Architecture:** Tooltip and Pulldown consume a dependency-free internal floating layer module for geometry, Teleport positioning, viewport constraints, observation, and cleanup. Tooltip owns delayed noninteractive hints, Pulldown owns interactive menu/focus behavior and overlay branch registration, and Loading remains independent.

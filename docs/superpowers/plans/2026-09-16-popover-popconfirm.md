@@ -1,7 +1,5 @@
 # Popover and Popconfirm Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add reusable anchored floating content and an accessible asynchronous confirmation flow.
 
 **Architecture:** A pure positioning module computes placement and viewport collision handling. `usePopover` owns trigger timers, global listener lifecycle, Teleport positioning, and parent-overlay branch registration; Popover renders that behavior and Popconfirm composes Popover with Button and Icon.

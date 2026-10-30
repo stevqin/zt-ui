@@ -6,7 +6,7 @@ Tree and Cascader use a shared flattened hierarchy model with mapped fields, inh
 
 Tests-first evidence: initial run failed missing Tree implementation; second red run had the three remaining missing components. Focused final command: `npm test -- src/components/tree/tree.spec.ts src/components/tree-select/tree-select.spec.ts src/components/cascader/cascader.spec.ts src/components/transfer/transfer.spec.ts` → 4 files, 18 tests passed. `npm run typecheck` passed.
 
-Source-matched demos: Tree Basic/Virtual/Lazy, TreeSelect Basic/Advanced, Cascader Basic/Advanced, Transfer Basic/Advanced. API reference is centrally rendered by site App. No shared exports/catalog/API files modified by this agent.
+Source-matched demos: Tree Basic/Virtual/Lazy, TreeSelect Basic/Advanced, Cascader Basic/Advanced, Transfer Basic/Advanced. API reference is centrally rendered by site App.
 
 Controlled value semantics: Tree checked keys change only through emit; non-strict display normalizes descendants and ancestors. Single TreeSelect empty value null, multiple empty []; Cascader always full paths, clear []; strict Cascader allows branch paths, non-strict allows terminal paths; multiple paths remain independent. Disabled parent disables all descendants. Load callbacks return node arrays, rejected requests show retry; data replacement/unmount ignores old results. Virtual Tree defaults height=280,itemHeight=32; only expanded/filter-matched rows mount within window plus overscan.
 

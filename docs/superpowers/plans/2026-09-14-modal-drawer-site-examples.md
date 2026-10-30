@@ -1,7 +1,5 @@
 # Modal, Drawer, Checkbox and Site Examples Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** 修正 Checkbox 选中标记，并交付具备完整弹层交互的 ZtModal、ZtDrawer 及全站可查看复制的 Vue + TypeScript 示例。
 
 **Architecture:** Modal 与 Drawer 各自负责结构和视觉表现，共用 `overlayManager.ts` 管理层级与滚动锁、`useOverlay.ts` 管理生命周期、焦点和关闭拦截。演示站统一通过 `DemoBlock` 显示和复制完整 SFC 示例。

@@ -1,7 +1,5 @@
 # Image and Avatar Components Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add resilient image display, a full accessible image viewer, and flexible avatars with deterministic fallbacks.
 
 **Architecture:** `ZtImage` owns loading state and delegates preview UI to a focused internal `ZtImageViewer`. A pure transform module handles index, scale, rotation, and pan normalization. Avatar remains independent and lightweight, sharing only public Icon and size/token conventions.

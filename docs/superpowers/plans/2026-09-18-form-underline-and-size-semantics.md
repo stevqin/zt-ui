@@ -1,7 +1,5 @@
 # Form Underline and Size Semantics Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Separate physical and density sizing for Drawer, detach Icon and Alert from global sizing, add Form-driven underline controls, and narrow the zt-alert boundary to feedback services.
 
 **Architecture:** Drawer uses `width` / `height` for geometry and a scoped ConfigProvider size for density. Form publishes `underline`; supported public controls claim one internal appearance boundary so nested helper controls stay outlined. zt-ui keeps its own Modal/Drawer overlay implementation and removes all zt-alert Drawer-specific portal, focus, and z-index branches.

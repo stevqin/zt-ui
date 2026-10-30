@@ -1,7 +1,5 @@
 # Data Display Components Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add Descriptions, Collapse, and Result for structured metadata, disclosure, and outcome states.
 
 **Architecture:** Descriptions and Collapse use parent/child registration contexts to retain declarative slots and centralized layout/state. Result is a stateless presentational component that consumes Icon and exposes content/action slots.

@@ -1,7 +1,5 @@
 # Standalone SelectBox Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Replace the circular SelectBox experiment with an independent `ZtSelectBox` that supports clearable input behavior, paged remote search, non-blocking remote batch matching, and a strict dependency boundary for imperative feedback.
 
 **Architecture:** `ZtSelect` and `ZtSelectBox` consume shared `selection` request and anchored-dropdown primitives, while neither component imports the other except that the SelectBox panel may render the public `ZtSelect` as a separator picker. SelectBox owns its trigger and confirmed value, `SelectBoxPanel` owns interactive panel rendering, and `useSelectBoxDraft` owns the pending selection transaction. Global imperative feedback comes from `@ztechjs/zt-alert`; zt-ui retains only declarative Vue feedback components.

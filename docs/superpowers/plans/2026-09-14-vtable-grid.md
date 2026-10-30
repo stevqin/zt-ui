@@ -1,7 +1,5 @@
 # ZtVTableGrid Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Build a reusable `ZtVTableGrid` for Vue 3 on top of VisActor VTable without VXE, Element Plus, or BIP-private dependencies.
 
 **Architecture:** Pure TypeScript modules own data normalization, selection, editing, summaries, column settings, and CSV output. `ZtVTableGrid.vue` connects those modules to `@visactor/vue-vtable`, composes existing zt-ui controls for toolbar and pagination, and exposes generic events and methods rather than business APIs.

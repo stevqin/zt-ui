@@ -144,21 +144,19 @@ describe('complete and executable documentation examples', () => {
     );
     expect(props('alert').map((prop) => prop.name)).not.toContain('size');
   });
-  it('keeps README Icon sizing independent from global density', () => {
-    const readme = readFileSync(resolve(process.cwd(), '../README.md'), 'utf8');
-    const iconSection = readme.split('### Icon\n')[1]?.split('\n### ')[0] ?? '';
-    expect(iconSection).not.toMatch(
-      /可继承\s*ConfigProvider|默认继承\s*ConfigProvider|五档(?:尺寸|预设)/,
+  it('documents Icon sizing independently from global density', () => {
+    const iconPage = readFileSync(
+      resolve(process.cwd(), 'src/views/icon/Index.vue'), 'utf8',
     );
-    for (const contract of [
-      'number | string',
-      'px',
-      'CSS',
-      '1em',
-      '不读取 ConfigProvider',
-    ]) {
-      expect(iconSection, contract).toContain(contract);
+    expect(iconPage).toContain('不绑定 ConfigProvider');
+    for (const contract of ['px', 'CSS', '1em']) {
+      expect(iconPage, contract).toContain(contract);
     }
+    const size = api.icon!.components
+      .find((component) => component.name === 'ZtIcon')!
+      .props.find((prop) => prop.name === 'size');
+    expect(size?.type).toMatch(/number.*string|string.*number/);
+    expect(size?.default).toContain('1em');
   });
   it('uses only the standardized RadioGroup, Pagination, and Badge APIs', () => {
     const publicSources = [

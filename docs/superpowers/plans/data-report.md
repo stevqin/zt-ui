@@ -1,6 +1,6 @@
 # Structured data implementation report
 
-Implemented and exported ZtTable, ZtTimeline, ZtCalendar through their feature directories; shared exports remain coordinator-owned.
+Implemented and exported ZtTable, ZtTimeline, ZtCalendar through their feature directories.
 
 Table: native semantic table, stable required row key resolution (default id), column widths/alignment/formatter/named header and cell slots, stable local sorting, controlled or internal sort state, remote sort-only events, controlled selection with half/select-all and nonselectable rows, controlled expansion slots, scroll height/sticky headers/multiple fixed columns with accumulated offsets, empty/loading states, stripe/border, size/theme inheritance. Invalid missing row keys throw a clear error to avoid unstable row identity. Unknown selected keys are retained on select-all. Events: update:selectedKeys(keys), selection-change(currentDataSelectedRows), update:expandedKeys(keys), expand-change(row,expanded), update:sort(sort), sort-change(sort), row-click(row,event). Types ZtTableKey/Row/SortOrder/Sort/Column/Props.
 

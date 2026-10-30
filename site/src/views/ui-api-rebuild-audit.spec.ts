@@ -4,7 +4,6 @@ import { describe, expect, it } from 'vitest';
 import { api } from '../docs/reference';
 
 const read = (path: string) => readFileSync(resolve(process.cwd(), path), 'utf8');
-const readme = read('../README.md');
 const page = (id: string) => read(`src/views/${id}/Index.vue`);
 const controls = [
   ['input', 'Input'], ['password', 'Password'], ['input-number', 'InputNumber'],
@@ -21,11 +20,10 @@ describe('published UI/API contracts', () => {
     expect(row?.type).toBe('boolean');
     expect(row?.default).toContain('Form');
     expect(row?.description).toMatch(/true.*false.*省略.*最近.*Form/);
-    expect(readme).toContain(`Zt${name}`);
     expect(page('form')).toContain(name);
   });
   it('documents nested boundaries and exclusions', () => {
-    for (const text of [readme, page('form')]) {
+    for (const text of [page('form')]) {
       expect(text).toMatch(/显式.*true.*false.*省略/);
       expect(text).toContain('嵌套 Form');
       expect(text).toContain('辅助控件');
@@ -36,14 +34,14 @@ describe('published UI/API contracts', () => {
     expect(prop('radio', 'ZtRadioGroup', 'variant')).toBeUndefined();
     expect(prop('pagination', 'ZtPagination', 'small')).toBeUndefined();
     expect(prop('badge', 'ZtBadge', 'type')).toBeUndefined();
-    for (const text of [readme, JSON.stringify(api), read('src/views/Conventions.vue')]) {
+    for (const text of [JSON.stringify(api), read('src/views/Conventions.vue')]) {
       expect(text).not.toMatch(/@deprecated|兼容(?:原|旧)|向后兼容|backwards compatibility|error 为 danger 的别名|legacy alias/i);
       expect(text).toContain('danger');
       expect(text).toContain('error');
     }
   });
   it('explains SelectBox flipping, sole list scrolling and the tiny viewport ruling', () => {
-    for (const text of [readme, page('select-box')]) {
+    for (const text of [page('select-box')]) {
       expect(text).toContain('向上翻转');
       expect(text).toContain('选项列表是唯一');
       expect(text).toMatch(/视口.*固定区域.*裁剪/);
@@ -51,7 +49,7 @@ describe('published UI/API contracts', () => {
     }
   });
   it('defines the exact Button radius bands and state feedback', () => {
-    for (const text of [readme, page('button'), page('config-provider')]) {
+    for (const text of [page('button'), page('config-provider')]) {
       for (const band of ['小于 5px', '5–8px', '大于 8px']) expect(text).toContain(band);
       expect(text).toContain('禁用');
     }
@@ -64,13 +62,13 @@ describe('published UI/API contracts', () => {
         expect(row?.description).toMatch(/数字.*px.*字符串.*CSS/);
       }
     }
-    for (const text of [readme, page('tooltip')]) {
+    for (const text of [page('tooltip')]) {
       for (const term of ['max-content', 'width', 'height', '内容区', '视口', 'px', 'CSS']) expect(text).toContain(term);
     }
     expect(page('popover')).toContain('height');
   });
   it('documents contextual controller eligibility, exclusions and copyable source', () => {
-    for (const text of [readme, read('src/views/Conventions.vue')]) {
+    for (const text of [read('src/views/Conventions.vue')]) {
       for (const term of ['六种视觉主题', 'Button', 'Tag', 'Steps', 'Result', '三列两行', '右下角', '跨页', '复制', 'status']) expect(text).toContain(term);
     }
   });

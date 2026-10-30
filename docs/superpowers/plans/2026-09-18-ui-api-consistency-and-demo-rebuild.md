@@ -1,7 +1,5 @@
 # Zt UI API Consistency and Demo Rebuild Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Give underline-capable controls independent overrides, remove duplicate compatibility APIs, fix popup and component visuals, enforce library-wide contracts, and rebuild every component documentation page around a shared shell and contextual status controller.
 
 **Architecture:** Public controls resolve local appearance before the nearest Form boundary. Shared overlay, configuration, and documentation infrastructure own geometry, radius depth, sizing, and status behavior. A checked-in contract audit and generated documentation tests keep runtime, types, examples, and public guidance synchronized.

@@ -23,4 +23,4 @@ Six initial behavioral regression tests failed before fixes (/tmp/hierarchy-revi
 
 Existing passing tests cover Table controlled/local/remote sort, disabled row selection, expanded rows, header/cell slots and fixed offsets; Timeline reversed order, semantic status and node slot; Calendar leap month, controlled selection, date ranges/invalid bounds, holidays, view switch and keyboard month-crossing focus. No confirmed logic change was needed in these three components beyond shared size token alignment.
 
-`npm run typecheck` passed; complete output: /tmp/hierarchy-review-typecheck.log. Site-wide and browser visual verification remain with the coordinator. No shared exports, API metadata, dependencies, catalog or router edits made.
+`npm run typecheck` passed; complete output: /tmp/hierarchy-review-typecheck.log. Site-wide and browser visual verification are outside the scope of this report.

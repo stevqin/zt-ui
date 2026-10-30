@@ -1,6 +1,6 @@
 # Independent foundation/navigation review — 2026-09-17
 
-Reviewed Splitter, Space, Carousel, Tour, Affix, Anchor, shared scroll target binding, InfiniteScroll and QRCode after foundation agent released these directories.
+Reviewed Splitter, Space, Carousel, Tour, Affix, Anchor, shared scroll target binding, InfiniteScroll and QRCode.
 
 ## Confirmed defects fixed
 

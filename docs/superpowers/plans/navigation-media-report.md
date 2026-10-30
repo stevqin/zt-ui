@@ -11,6 +11,6 @@ Verification:
 - `npm test -- src/components/{anchor,affix,backtop,page-header,infinite-scroll,carousel,tour,watermark,qrcode}`: 9 files, 19 tests passed (Node 22 PATH).
 - Confirmed failing regression for removal of active tour target, then added MutationObserver/ResizeObserver with cleanup; regression passes.
 - QRCode Unicode URL round-trip verified with independent jsQR decoder. Download object URL release verified.
-- Library `npm run typecheck` passed after initial implementation. Later runs may include concurrent other-group errors; see /tmp/navigation-typecheck.log for latest complete command result.
+- Library `npm run typecheck` passed after initial implementation.
 
-No shared exports, catalogs, generator files, dependencies or package files changed. Shared integration, site-wide build and browser visual checks remain coordinator-owned. ApiReference remains in the shared app renderer as directed.
+ApiReference is rendered by the shared documentation application. Site-wide build and browser visual checks are outside the scope of this report.

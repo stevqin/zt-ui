@@ -1,7 +1,5 @@
 # Form and InputNumber Controls Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add three InputNumber control layouts and a typed, dependency-free Form/FormItem/FormGroup system with validation and complete documentation.
 
 **Architecture:** InputNumber remains self-contained and selects a grid layout from `controlsPosition`. Form uses provide/inject contexts: the root registers fields and coordinates public methods, each item owns path resolution and rule execution, and compatible inputs notify their item of change or blur.

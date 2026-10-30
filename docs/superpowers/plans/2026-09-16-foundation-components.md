@@ -1,7 +1,5 @@
 # Foundation Components Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add production-ready Icon, Link, Text, and Scrollbar components with consistent configuration, accessibility, documentation, and tests.
 
 **Architecture:** Each component owns a focused Vue SFC, public types, and SCSS. Icon provides the shared visual primitive used by later plans; Link optionally consumes an injected Vue Router without adding a dependency; Scrollbar preserves a native scrolling element while rendering platform-independent tracks.

@@ -1,7 +1,5 @@
 # Zt UI API Documentation Rebuild Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Replace the split and ambiguous API reference with one precise, continuous component document for all 38 stable components.
 
 **Architecture:** Keep source extraction for structural truth, then merge it with typed documentation metadata for semantics that TypeScript cannot express. Render the merged document through reusable API components appended to every component page, while `/api` remains only an index and all deep links use component-page anchors.

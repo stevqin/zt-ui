@@ -1,7 +1,5 @@
 # Navigation and Selection Components Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
-
 **Goal:** Add accessible Tabs, Breadcrumb, and Segmented components with controlled state, keyboard navigation, overflow handling, and optional routing.
 
 **Architecture:** Tabs and Breadcrumb use parent/child registration contexts so slots remain declarative while parents own ordering and navigation. Segmented accepts normalized option data and uses a real radiogroup with a visual indicator layered behind controls.

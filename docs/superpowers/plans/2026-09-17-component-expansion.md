@@ -1,11 +1,9 @@
 # Component Expansion Implementation Plan
 
-> **For agentic workers:** Execute each isolated task with tests and review. Independent file ownership permits parallel work; shared exports, catalog, API registration and dependency changes are owned by the coordinator.
-
 **Goal:** Deliver all 45 approved additions/capability extensions, with working source-matched demos and API documentation.
-**Architecture:** Reuse existing ConfigProvider, Form and overlay. Feature-owned component directories contain types, implementation and tests; coordinator integrates package exports and documentation metadata.
+**Architecture:** Reuse existing ConfigProvider, Form and overlay. Component directories contain types, implementation and tests; package exports and documentation metadata register the public APIs.
 **Tech Stack:** Vue 3, TypeScript, SCSS, Vitest, Vite.
-**Spec:** ../specs/2026-09-17-component-expansion-design.md (approved by user).
+**Spec:** ../specs/2026-09-17-component-expansion-design.md.
 
 ## Global Constraints
 
@@ -14,8 +12,6 @@
 - Every interactive public behavior gets meaningful regression tests, including empty/disabled/async/unmount cases as applicable.
 - Demo component and code import the same Vue SFC via ?raw; each example declares all state, events, assets and scoped styles.
 - No service requests/credentials in ConfigProvider. No business network calls in demos.
-- Agent-owned files only: component directories and matching site view directories; coordinator exclusively owns exports, catalog, router, API registration, dependencies and builds.
-- No agent commits or pushes; coordinator verifies and commits complete milestones.
 
 ## Execution and checks
 
@@ -112,27 +108,7 @@ Components/capabilities: SelectVirtual TreeVirtual. Required behavior: all corre
 - [x] Browser verify representative complex behaviors, all new pages, 390px, dark/light, size, overlays and focus restoration.
 - [ ] Commit verified implementation, integrate into main without discarding unrelated work, push and verify Pages workflow plus live website.
 
-## Progress ledger
-
-- Scope approved; isolated branch feat/component-expansion created from 239429b.
-- Ownership review: tasks share only stable ConfigProvider/Form/overlay interfaces; shared registrations are coordinator-only. TreeSelect/Cascader depend on Tree contract; virtual tree is sequenced after Tree. ColorPickerPanel shares ColorPicker implementation; DatePickerPanel reuses existing date implementation.
-
-### Execution checkpoint 10:46
-
-- Workspace: /Users/stev/Desktop/anzheng/code/bip/zt-ui-expansion, branch feat/component-expansion. Main repo remains /Users/stev/Desktop/anzheng/code/bip/zt-ui at 239429b. Do not publish until all 45 items accepted.
-- Foundation agent: 11 implementations + 22 tests + 22 demos reported; now owns navigation/media 9. Report foundation-report.md. Needs cross-review before accept.
-- Hierarchy agent: Tree/Cascader/TreeSelect/Transfer + Tree virtual, 18 tests +9 demos reported; now owns Table/Timeline/Calendar. API comments and status/size compliance fixes requested. Report hierarchy-report.md.
-- Entry agent: Autocomplete/InputTag/Mention/Rate/TimeSelect +16 tests +20 demos reported; now owns TimePicker/ColorPicker/DatePickerPanel/ColorPickerPanel. API comments + status compliance fixes requested. May modify DatePickerBase additively for inline panel. Report entry-report.md.
-- Coordinator implemented Alert/Loading/Message/Notification/MessageBox/Tooltip/Dropdown +14 demos; tests/feedback-expansion.spec.ts 9 pass. No independent review yet.
-- Coordinator added Select virtual/itemHeight/height +Virtual.vue demo; tests/select-virtual.spec.ts 2 pass and original Select tests 29 pass.
-- Added Popover restoreFocus flag for input suggestion integration; entry agent covers blur regression.
-- Root install complete; site install complete. Added qrcode dependency and @types/qrcode,jsqr test deps. Foundation notified.
-- Shared integration underway: expansion.json registers completed dirs (regenerate using /private/tmp/zt-register.py; final target 43 new doc entries +2 virtual extensions =45 scope). Catalog/routes use expansion.json. Generator extended imported emit signatures and service Options APIs; new metadata expansion.mjs. API gate currently fails missing source descriptions while agents add them.
-- Helpers in /private/tmp are execution scripts only, not deliverables. Do not rerun feedback creation scripts: they overwrite subsequent fixes. Registration script safe to rerun as new pages land. integration.py is NOT idempotent.
-- Outstanding coordinator: complete API metadata/exposes, service docs default accuracy, all new form integrated validation, review feedback internals and all agent specs, browser all pages/mobile/theme, root/site full test/build, formatting, commit/integrate/push/deploy.
-
-
-### Acceptance checkpoint
+## Validation summary
 
 - All 45 approved capabilities implemented: 41 new components/services and 4 extensions. Independent reviews and regression fixes are recorded in the adjacent reports.
 - Library exports and public declaration generation cover every addition. API generator now reads typed emits, explicit slots and service options/methods.
