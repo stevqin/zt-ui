@@ -299,8 +299,8 @@ const panelStyle = computed(() => ({
       border-radius: glass.radius(6px);
       padding: 5px 10px;
       cursor: pointer;
-      &:focus-visible {
-        outline: 2px solid var(--glass-accent);
+      &:focus {
+        outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
       }
     }
   }

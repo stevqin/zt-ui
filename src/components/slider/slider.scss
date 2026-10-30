@@ -14,7 +14,7 @@
  &__fill { background:var(--slider-color); }
  &__thumb { position:absolute; top:50%; transform:translate(-50%,-50%); width:var(--slider-thumb); height:var(--slider-thumb); border:2px solid var(--slider-color); border-radius:50%; padding:0; background:var(--zt-surface,#fff); cursor:grab; box-shadow:0 1px 4px #0002; outline:none; touch-action:none; }
  &__thumb::after { content:''; position:absolute; inset:-6px; }
- &__thumb:focus-visible { outline:2px solid var(--slider-color); outline-offset:3px; z-index:2; }
+ &__thumb:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--slider-color); outline-offset:3px; z-index:2; }
  &__tooltip { position:absolute; bottom:calc(100% + 10px); left:50%; transform:translateX(-50%); background:var(--zt-panel-bg,#263445); color:var(--zt-text,#fff); padding:5px 8px; border-radius:glass.radius(6px); white-space:nowrap; font-size:11px; pointer-events:none; opacity:0; }
  &__thumb:hover &__tooltip,&__thumb:focus-visible &__tooltip,&.is-dragging &__tooltip { opacity:1; }
  &.is-dragging &__thumb { cursor:grabbing; }

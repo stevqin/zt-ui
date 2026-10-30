@@ -56,6 +56,29 @@ export interface ZtVTableGridSummaryRule<Row> {
 
 export type ZtVTableGridSummary<Row> = ZtVTableGridSummaryType | ZtVTableGridSummaryRule<Row>
 
+/** 链接点击上下文，rowIndex 为当前显示数据中从零开始的索引。 */
+export interface ZtVTableGridLinkContext<Row> {
+  row: Row
+  field?: string
+  value: unknown
+  rowIndex: number
+  params: unknown
+  event?: unknown
+}
+/** Canvas 业务字段链接配置；不自动跳转 URL。 */
+export interface ZtVTableGridLink<Row> {
+  /** 显示文字，省略时使用单元格值；函数收到当前行上下文。 */
+  text?: string | ((context: ZtVTableGridLinkContext<Row>) => string | number)
+  /** 传给回调与事件的业务参数，可为静态值或按行求值的函数。 */
+  params?: object | string | number | boolean | null | ((row: Row) => unknown)
+  /** 禁用链接，支持按行判断。 */
+  disabled?: boolean | ((row: Row) => boolean)
+  /** 自定义链接文字颜色。 */
+  color?: string
+  /** 点击回调；首参为当前行，次参包含字段、值、索引、参数及 Canvas 事件。 */
+  handler?: (row: Row, context: ZtVTableGridLinkContext<Row>) => void
+}
+
 export interface ZtVTableGridColumn<Row extends object = Record<string, unknown>> {
   field: keyof Row & string
   key?: string
@@ -70,7 +93,9 @@ export interface ZtVTableGridColumn<Row extends object = Record<string, unknown>
   keepAspectRatio?: boolean
   imageAutoSizing?: boolean
   clickToPreview?: boolean
+  /** Canvas 单元格具名插槽，接收 row/value/column/rowIndex、尺寸及忙碌状态；内容使用 Canvas 子入口节点。 */
   slot?: string
+  /** Canvas 表头具名插槽，接收字段、列定义、表头值和几何信息。 */
   headerSlot?: string
   render?: (scope: ZtVTableGridCellSlotScope<Row>) => VNodeChild
   slots?: { default?: (scope: ZtVTableGridCellSlotScope<Row>) => VNodeChild }
@@ -80,6 +105,8 @@ export interface ZtVTableGridColumn<Row extends object = Record<string, unknown>
   formatter?: (args: unknown) => unknown
   style?: unknown
   headerStyle?: unknown
+  /** true 使用字段值作为链接；对象可配置文字、参数、禁用与回调。自定义 render/slot 优先。 */
+  link?: boolean | ZtVTableGridLink<Row>
   cellType?: string
   headerType?: string
   visible?: boolean
@@ -93,7 +120,8 @@ export type ZtVTableGridActionStatus = 'primary' | 'success' | 'info' | 'warning
 export interface ZtVTableGridActionButton<Row> {
   type: string
   text?: string
-  mode?: 'icon' | 'text'
+  /** icon 图标、text 有边框文字按钮、link 无边框链接。 */
+  mode?: 'icon' | 'text' | 'link'
   icon?: string
   tooltip?: string | false
   iconFontFamily?: string
@@ -102,7 +130,9 @@ export interface ZtVTableGridActionButton<Row> {
   status?: ZtVTableGridActionStatus
   visible?: boolean | ((row: Row) => boolean)
   disabled?: boolean | ((row: Row) => boolean)
-  handler?: (row: Row) => void
+  /** 静态业务参数或按行求值的函数，传入 handler 次参及 action 事件。 */
+  params?: object | string | number | boolean | null | ((row: Row) => unknown)
+  handler?: (row: Row, context: ZtVTableGridLinkContext<Row>) => void
 }
 export type ZtVTableGridActionItem<Row> = string | ZtVTableGridActionButton<Row>
 export type ZtVTableGridActionButtons<Row> = ZtVTableGridActionItem<Row>[] | ((row: Row) => ZtVTableGridActionItem<Row>[])
@@ -134,7 +164,23 @@ export interface ZtVTableGridSummaryLabel<Row> { text?: string | ((context: Omit
 export interface ZtVTableGridContextMenuItem<Row> { type: string; text: string; icon?: string; color?: string; status?: ZtVTableGridActionStatus; disabled?: boolean; visible?: boolean; divided?: boolean; handler?: (row: Row) => void }
 export type ZtVTableGridRowContextMenu<Row> = ZtVTableGridContextMenuItem<Row>[] | ((row: Row) => ZtVTableGridContextMenuItem<Row>[])
 export interface ZtVTableGridContextMenuPayload<Row> { type: string; row: Row; item: ZtVTableGridContextMenuItem<Row> }
-export interface ZtVTableGridCellSlotScope<Row> { row: Row; record: Row; rowIndex: number; col: number; width: number; height: number; x: number; y: number; [key: string]: unknown }
+export interface ZtVTableGridSlotState {
+  size: ZtVTableGridSize
+  loading: boolean
+  exportLoading: boolean
+  disabled: boolean
+}
+export interface ZtVTableGridCellSlotScope<Row extends object> extends ZtVTableGridSlotState {
+  row: Row; record: Row; rowIndex: number; col: number
+  field?: string; column?: ZtVTableGridColumn<Row>; value: unknown
+  width: number; height: number; x: number; y: number
+  [key: string]: unknown
+}
+export interface ZtVTableGridHeaderSlotScope<Row extends object> extends ZtVTableGridSlotState {
+  col: number; row: number; field?: string; column?: ZtVTableGridColumn<Row>; value: unknown
+  width: number; height: number; x: number; y: number
+  [key: string]: unknown
+}
 
 export interface ZtVTableGridEditChange<Row> {
   key: ZtVTableGridRowKey
@@ -179,6 +225,9 @@ export interface ZtVTableGridProps<
   actionDisplay?: 'menu' | 'inline'
   toolbarConfig?: ZtVTableGridToolbarItem[] | false
   exportMode?: 'csv' | 'external'
+  /** 自定义导出任务，优先于 exportMode；组件等待 Promise 完成并自动管理 loading、互斥和失败后的解锁，失败触发 error。 */
+  exportMethod?: (context: { records: Row[]; columns: ZtVTableGridColumn<Row>[]; selectedRows: Row[] }) => void | Promise<void>
+  /** 外部导出任务的受控 loading；与组件内部导出状态合并。 */
   exportLoading?: boolean
   summaryConfig?: boolean | ZtVTableGridEnhancedSummaryConfig<Row>
   batchEdit?: boolean
@@ -239,6 +288,12 @@ export interface ZtVTableGridActionPayload<Row> {
   type: string
   row: Row
   item: ZtVTableGridActionButton<Row>
+  /** 本次动作的字段、值、显示行索引、业务参数及原始事件。 */
+  field?: string
+  value?: unknown
+  rowIndex?: number
+  params?: unknown
+  event?: unknown
 }
 
 export interface ZtVTableGridCellChangePayload<Row> {
@@ -277,9 +332,12 @@ export interface ZtVTableGridSlots<
   Row extends object = Record<string, unknown>,
   FormData extends object = Record<string, unknown>,
 > {
-  form?: (scope: { formData: FormData; form: FormData; size: ZtVTableGridSize; query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void> }) => unknown
-  'toolbar-left'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[]; size: ZtVTableGridSize; checkbox: boolean }) => unknown
-  'toolbar-right'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[]; size: ZtVTableGridSize; checkbox: boolean }) => unknown
+  /** 整块自定义搜索表单；formData/form 为同一查询模型，query(true) 从第一页查询。 */
+  form?: (scope: ZtVTableGridSlotState & { formData: FormData; form: FormData; size: ZtVTableGridSize; query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void> }) => unknown
+  /** 自定义左侧工具栏；selectedRows 与 loading/exportLoading/disabled 实时同步。 */
+  'toolbar-left'?: (scope: ZtVTableGridSlotState & { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[]; size: ZtVTableGridSize; checkbox: boolean }) => unknown
+  /** 自定义右侧工具栏，沿用内置工具栏的查询与互斥状态。 */
+  'toolbar-right'?: (scope: ZtVTableGridSlotState & { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[]; size: ZtVTableGridSize; checkbox: boolean }) => unknown
   'pager-right'?: (scope: { total: number; selectedRows: Row[]; selectedCount: number }) => unknown
   actions?: (scope: ZtVTableGridCellSlotScope<Row>) => unknown
   [name: string]: ((scope: any) => unknown) | undefined
@@ -303,6 +361,8 @@ export interface ZtVTableGridEmits<Row extends object = Record<string, unknown>>
   (event: 'page-change', payload: ZtVTableGridPageChangePayload): void
   (event: 'sort-change', payload: ZtVTableGridSort): void
   (event: 'selection-change', rows: Row[]): void
+  /** 点击业务列链接时触发，返回当前行、字段、值和求值后的业务参数。 */
+  (event: 'link-click', payload: ZtVTableGridLinkContext<Row>): void
   (event: 'action', payload: ZtVTableGridActionPayload<Row>): void
   (event: 'create' | 'import'): void
   (event: 'export', csv: string): void
@@ -331,6 +391,7 @@ export interface ZtVTableGridEventProps<Row extends object = Record<string, unkn
   onPageChange?: (payload: ZtVTableGridPageChangePayload) => void
   onSortChange?: (payload: ZtVTableGridSort) => void
   onSelectionChange?: (rows: Row[]) => void
+  onLinkClick?: (payload: ZtVTableGridLinkContext<Row>) => void
   onAction?: (payload: ZtVTableGridActionPayload<Row>) => void
   onCreate?: () => void
   onImport?: () => void

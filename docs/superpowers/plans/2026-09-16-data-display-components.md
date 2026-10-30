@@ -20,14 +20,7 @@
 
 ### Task 1: Descriptions and DescriptionsItem
 
-**Files:**
-- Create: `src/components/descriptions/{types.ts,context.ts,layout.ts,ZtDescriptions.vue,ZtDescriptionsItem.vue,descriptions.scss,index.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/descriptions.spec.ts`
-- Create: `site/src/views/descriptions/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Produces `ZtDescriptionsDirection`, `ZtDescriptionsProps`, `ZtDescriptionsItemProps`, `ZtDescriptions`, and `ZtDescriptionsItem`.
@@ -76,21 +69,11 @@ Document basic, bordered, vertical, custom title/extra, span, alignment, and res
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/descriptions src/components/index.ts tests/descriptions.spec.ts site/src/views/descriptions site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add descriptions components"
-```
+
 
 ### Task 2: Collapse and CollapseItem
 
-**Files:**
-- Create: `src/components/collapse/{types.ts,context.ts,ZtCollapse.vue,ZtCollapseItem.vue,collapse.scss,index.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/collapse.spec.ts`
-- Create: `site/src/views/collapse/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Produces `ZtCollapseName = string | number`, `ZtCollapseProps`, `ZtCollapseItemProps`, `ZtCollapse`, and `ZtCollapseItem`.
@@ -136,21 +119,11 @@ Document multi-open, accordion, disabled, title slots, status/border, and dynami
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/collapse src/components/index.ts tests/collapse.spec.ts site/src/views/collapse site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add collapse components"
-```
+
 
 ### Task 3: Result
 
-**Files:**
-- Create: `src/components/result/{types.ts,ZtResult.vue,result.scss,index.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/result.spec.ts`
-- Create: `site/src/views/result/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Produces `ZtResultStatus`, `ZtResultProps`, and `ZtResult`.
@@ -187,10 +160,7 @@ Document six semantic statuses, three HTTP states, custom icon/content, and acti
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/result src/components/index.ts tests/result.spec.ts site/src/views/result site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add result component"
-```
+
 
 ### Task 4: Data display regression gate
 

@@ -62,7 +62,7 @@
 
 ## 6. 子入口与演示、文档
 
-**文件：** `package.json`、`vite.config.ts`、`src/components/vtable-grid/index.ts`、`site/vite.config.ts`、`site/src/views/vtable-grid/`、API 元数据与组件示例清单。
+
 
 - [x] 为主入口保持延迟加载及新子入口消费建立导入/类型测试。
 - [x] 构建 `@ztechjs/zt-ui/vtable` 的 ESM、UMD 和声明入口；组件库公开导入弹窗与新类型。
@@ -70,9 +70,3 @@
 - [x] 同步 API、示例清单；README 继续保持精简。
 
 ## 7. 完整验证
-
-- [x] 组件库：`npm test -- --maxWorkers=2`、`npm run typecheck`、`npm run build`、`npm run audit:components`。
-- [x] 文档站：`npm test -- --maxWorkers=2`、`npm run build`，检查示例与 API 生成结果。
-- [x] 真实浏览器：明暗 × 五档尺寸、窄屏、Canvas 选择/编辑/粘贴、图片预览、汇总、右键、冻结列及 KeepAlive。
-- [x] 打包并在独立消费者中验证主入口和子入口、CSS、类型及依赖，不使用跨项目链接。
-- [x] 独立代码审阅，修复影响功能及兼容性的发现；最终差异表逐项核验。

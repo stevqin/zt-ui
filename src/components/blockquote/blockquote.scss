@@ -1,0 +1,36 @@
+@use '../../styles/tokens' as glass;
+
+.zt-blockquote {
+  @include glass.tokens;
+  --zt-blockquote-ink: var(--glass-accent-ink);
+  --zt-blockquote-bg: var(--glass-accent-soft);
+  --zt-blockquote-line: var(--glass-accent);
+  box-sizing: border-box;
+  min-width: 0;
+  margin: 0;
+  padding: 14px 18px;
+  border-inline-start: 4px solid var(--zt-blockquote-line);
+  border-radius: glass.radius(8px);
+  color: var(--glass-ink);
+  background: var(--zt-blockquote-bg);
+  font-family: var(--glass-font);
+  font-size: var(--glass-size-default);
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+
+  @each $status in default, success, warning, danger, info {
+    &--status-#{$status} {
+      --zt-blockquote-ink: var(--glass-#{$status}-ink);
+      --zt-blockquote-bg: var(--glass-#{$status}-soft);
+      --zt-blockquote-line: var(--glass-#{$status}-ink);
+    }
+  }
+  &--mini { padding: 6px 10px; font-size: var(--glass-size-mini); }
+  &--small { padding: 10px 14px; font-size: var(--glass-size-small); }
+  &--medium { padding: 18px 22px; font-size: var(--glass-size-medium); }
+  &--large { padding: 22px 26px; font-size: var(--glass-size-large); }
+  &__title { color: var(--zt-blockquote-ink); font-weight: 600; margin-bottom: 6px; }
+  &__body > :first-child { margin-top: 0; }
+  &__body > :last-child { margin-bottom: 0; }
+  &__footer { margin-top: 10px; color: var(--glass-muted); font-size: .92em; }
+}

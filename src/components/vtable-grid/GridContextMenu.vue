@@ -127,7 +127,8 @@ onBeforeUnmount(() => {
     text-align: left;
     overflow-wrap: anywhere;
     cursor: pointer;
-    &:hover:not(:disabled), &:focus-visible { background: var(--glass-accent-soft); outline: 2px solid var(--glass-accent); outline-offset: -2px; }
+    &:hover:not(:disabled) { background: var(--glass-accent-soft); }
+    &:focus { background: var(--glass-accent-soft); outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent); outline-offset: -2px; }
     &:disabled { opacity: .45; cursor: not-allowed; }
     &[data-status='danger'] { color: var(--zt-danger, #ef4444); }
     &[data-status='primary'] { color: var(--glass-accent-ink); }

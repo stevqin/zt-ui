@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import ZtIcon from '../icon/ZtIcon.vue'
+import { useZtConfig } from '../config-provider/context'
 import { useOverlay } from '../overlay/useOverlay'
 import { nextViewerTransform, normalizeViewerIndex, type ViewerTransform } from './transform'
 import type { ZtImageViewerProps } from './types'
 import './image.scss'
 
 defineOptions({ name: 'ZtImageViewer' })
+const { style: providerStyle } = useZtConfig()
 const props = withDefaults(defineProps<ZtImageViewerProps>(), {
   initialIndex: 0, infinite: true, zoomRate: 1.2, minScale: .2, maxScale: 7,
   hideOnClickModal: false, closeOnPressEscape: true, zIndex: 2000,
@@ -61,4 +63,4 @@ function key(event: KeyboardEvent) {
 onMounted(() => document.addEventListener('keydown', key, true))
 onBeforeUnmount(() => document.removeEventListener('keydown', key, true))
 </script>
-<template><Teleport to="body"><div class="zt-image-viewer" :style="{zIndex:layer}" @mousedown.self="hideOnClickModal&&close()"><section ref="panel" role="dialog" aria-modal="true" aria-label="图片预览" tabindex="-1"><button class="zt-image-viewer__close" type="button" aria-label="关闭预览" @click="close"><ZtIcon name="close" /></button><button class="zt-image-viewer__prev" type="button" aria-label="上一张" :disabled="!infinite&&index===0" @click="change(-1)"><ZtIcon name="chevron-left" /></button><img :src="current" :alt="currentAlt" :style="style"><button class="zt-image-viewer__next" type="button" aria-label="下一张" :disabled="!infinite&&index===urls.length-1" @click="change(1)"><ZtIcon name="chevron-right" /></button><div class="zt-image-viewer__toolbar"><button type="button" aria-label="缩小" @click="alter('zoom',-1)">−</button><span>{{index+1}} / {{urls.length}}</span><button type="button" aria-label="放大" @click="alter('zoom',1)">＋</button><button type="button" aria-label="向左旋转" @click="alter('rotate',-1)">↶</button><button type="button" aria-label="重置" @click="transform=nextViewerTransform(transform,{type:'reset'})">1:1</button><button type="button" aria-label="向右旋转" @click="alter('rotate',1)">↷</button></div></section></div></Teleport></template>
+<template><Teleport to="body"><div class="zt-image-viewer" :style="[providerStyle, {zIndex:layer}]" @mousedown.self="hideOnClickModal&&close()"><section ref="panel" role="dialog" aria-modal="true" aria-label="图片预览" tabindex="-1"><button class="zt-image-viewer__close" type="button" aria-label="关闭预览" @click="close"><ZtIcon name="close" /></button><button class="zt-image-viewer__prev" type="button" aria-label="上一张" :disabled="!infinite&&index===0" @click="change(-1)"><ZtIcon name="chevron-left" /></button><img :src="current" :alt="currentAlt" :style="style"><button class="zt-image-viewer__next" type="button" aria-label="下一张" :disabled="!infinite&&index===urls.length-1" @click="change(1)"><ZtIcon name="chevron-right" /></button><div class="zt-image-viewer__toolbar"><button type="button" aria-label="缩小" @click="alter('zoom',-1)">−</button><span>{{index+1}} / {{urls.length}}</span><button type="button" aria-label="放大" @click="alter('zoom',1)">＋</button><button type="button" aria-label="向左旋转" @click="alter('rotate',-1)">↶</button><button type="button" aria-label="重置" @click="transform=nextViewerTransform(transform,{type:'reset'})">1:1</button><button type="button" aria-label="向右旋转" @click="alter('rotate',1)">↷</button></div></section></div></Teleport></template>

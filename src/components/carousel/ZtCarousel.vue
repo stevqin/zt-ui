@@ -246,8 +246,8 @@ defineExpose({ prev, next, goTo });
   color: var(--glass-default-ink);
   background: var(--glass-info-soft);
   touch-action: pan-y;
-  &:focus-visible {
-    outline: 2px solid var(--glass-accent);
+  &:focus {
+    outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
     outline-offset: 3px;
   }
   &__slides,
@@ -302,8 +302,8 @@ defineExpose({ prev, next, goTo });
       }
     }
   }
-  button:focus-visible {
-    outline: 2px solid var(--glass-accent);
+  button:focus {
+    outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
     outline-offset: 3px;
   }
 }

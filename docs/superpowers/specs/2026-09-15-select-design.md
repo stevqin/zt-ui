@@ -99,5 +99,3 @@ export type ZtSelectRemoteMethod = (keyword: string) => Promise<ZtSelectOption[]
 ## 测试与文档
 
 单元测试覆盖：单选、多选与去重、清空、移除标签、本地过滤、远程防抖、加载状态、旧请求竞态、错误事件、键盘操作、点击外部关闭、公开方法、Form 尺寸/禁用/校验集成以及全部插槽。
-
-演示站新增 Select 页面，提供基础单选、多选、本地搜索、远程搜索、自定义插槽、禁用与清空、五档尺寸示例。每个可视示例都通过 `DemoBlock` 提供完整 Vue + TypeScript SFC 代码。README 增加最小使用示例和远程搜索示例。

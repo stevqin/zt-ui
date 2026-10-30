@@ -100,3 +100,32 @@ describe('grid Canvas adapters', () => {
     expect(create).toHaveBeenCalledTimes(1)
   })
 })
+
+it('enriches named cell/header slots and checks live busy state before Canvas events', () => {
+  let disabled = false
+  const row = { id: 1, stock: 25 }
+  const column = { field: 'stock', title: '库存' }
+  const clicked = vi.fn()
+  const slot = vi.fn(() => h('span', { onPointertap: clicked }, '调整'))
+  const canvas = createGridCanvasRenderer({ CustomLayout: { Group: Graphic, Text: Graphic }, size: 'small', getColumn: () => column, getState: () => ({ disabled, loading: disabled, exportLoading: disabled }), color: '#e4eaf3' } as any)
+  const args = { col: 0, row: 1, rect: { width: 120, height: 32 }, table: { getCellOriginRecord: () => row, getCellValue: () => '库存' } }
+  const result = canvas.createSlotLayout('stock', { stock: slot }, args)
+  expect(slot.mock.calls[0]?.[0]).toMatchObject({ row, record: row, rowIndex: 0, field: 'stock', column, value: 25, size: 'small', disabled: false })
+  expect(result.rootContainer.children[0].attribute.fill).toBe('#e4eaf3')
+  result.rootContainer.children[0].handlers.pointertap({})
+  disabled = true
+  result.rootContainer.children[0].handlers.pointertap({})
+  expect(clicked).toHaveBeenCalledTimes(1)
+  canvas.createSlotLayout('stock', { stock: slot }, { ...args, row: 0 }, true)
+  expect(slot.mock.calls[1]?.[0]).toMatchObject({ row: 0, value: '库存', field: 'stock', column, disabled: true })
+})
+
+it('resolves inherited Canvas text color for every cell render, including groups', () => {
+  let color = '#e4eaf3'
+  const canvas = createGridCanvasRenderer({ CustomLayout: { Group: Graphic, Text: Graphic }, getTextColor: () => color } as any)
+  const args = { col: 0, row: 1, rect: { width: 120, height: 32 }, table: { getCellOriginRecord: () => ({}) } }
+  const render = () => h({ name: 'VTableGroup' }, {}, () => [h('span', '文本')])
+  expect(canvas.createRenderLayout(render, args).rootContainer.children[0].children[0].attribute.fill).toBe(color)
+  color = 'purple'
+  expect(canvas.createRenderLayout(render, args).rootContainer.children[0].children[0].attribute.fill).toBe('purple')
+})

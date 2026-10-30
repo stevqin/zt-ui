@@ -51,8 +51,8 @@ function back(event: MouseEvent) {
   box-shadow: var(--glass-shadow);
   font: 20px var(--glass-font);
   cursor: pointer;
-  &:focus-visible {
-    outline: 2px solid var(--glass-accent);
+  &:focus {
+    outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
     outline-offset: 3px;
   }
   &--mini {

@@ -89,3 +89,11 @@ describe('configured search form', () => {
     expect(() => mount(SearchForm, { props: { config: { items: [{ field: 'date', itemRender: { name: 'ZtDatePicker', props: { type: 'quarter' } } }] } } })).toThrow(/quarter/)
   })
 })
+
+it('passes size and busy state into configured named form slots', async () => {
+  const field = vi.fn(() => h('span', '自定义字段'))
+  const wrapper = mount(SearchForm, { props: { size: 'small', disabled: true, loading: true, model: { name: 'A' }, config: { items: [{ field: 'name', slots: { default: 'custom' } }] } }, slots: { custom: field } })
+  try {
+    expect(field.mock.calls[0]?.[0]).toMatchObject({ size: 'small', disabled: true, loading: true, data: { name: 'A' }, field: 'name' })
+  } finally { wrapper.unmount() }
+})

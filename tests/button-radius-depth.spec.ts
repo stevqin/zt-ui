@@ -24,7 +24,7 @@ beforeAll(async () => {
   // selector specificity and tests the actual emitted cascade and token resolution.
   // A test-only child projects the depth pseudo-element for Happy DOM, which
   // cannot compute pseudo-element styles. Real-browser verification uses ::before.
-  style.textContent = String(css.source).replaceAll(':hover', '.test-hover').replaceAll(':active', '.test-active').replaceAll(':focus-visible', '.test-focus-visible').replace(/::?before/g, ' > .test-depth')
+  style.textContent = String(css.source).replaceAll(':hover', '.test-hover').replaceAll(':active', '.test-active').replaceAll(':focus-visible', '.test-focus-visible').replaceAll(':focus', '.test-focus-visible').replace(/::?before/g, ' > .test-depth')
   // Keep the emitted Button/provider rules, including media/keyframes, for the
   // large matrix. Full-library coexistence is separately covered in feedback-css.
   // PostCSS preserves declarations; Happy DOM's CSSOM reserializes shorthand vars incorrectly.
@@ -49,7 +49,7 @@ afterEach(() => {
 })
 function render(radius: number, size: typeof sizes[number], theme: 'light' | 'dark' = 'light', state: Ref<string> = ref('')) {
   const wrapper = mount(ZtConfigProvider, {
-    attachTo: document.body, props: { borderRadius: radius, size, theme },
+    attachTo: document.body, props: { borderRadius: radius, size, theme, focusRing: 'all' },
     slots: { default: () => statuses.flatMap(status => [false, true].map(circle => h(ZtButton, { status, circle, disabled: state.value === 'disabled', loading: state.value === 'loading' }, () => h('svg')))) },
   })
   normalizeInitialResets(wrapper)

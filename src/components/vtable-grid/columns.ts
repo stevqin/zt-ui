@@ -87,7 +87,7 @@ export function buildVTableColumns<Row extends object>(
   ]
 
   const business = arranged.map(column => {
-    const { editable, sort, summary: _summary, visible: _visible, copyFormatter, align, resizable, ellipsis, showOverflowTooltip, ...native } = column
+    const { link: _link, editable, sort, summary: _summary, visible: _visible, copyFormatter, align, resizable, ellipsis, showOverflowTooltip, ...native } = column
     const editorType = typeof editable === 'object' ? editable.type : editable
     const image = native.cellType === 'image' || editorType === 'image'
     const checkbox = editorType === 'checkbox'

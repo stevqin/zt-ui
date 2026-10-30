@@ -10,12 +10,7 @@
 
 ## Global Constraints
 
-- Do not add Element Plus, VXE, Floating UI, or another UI dependency.
-- Support `mini`, `small`, `default`, `medium`, and `large` wherever the component exposes `size`.
-- Preserve Modal/Drawer focus, Escape, Tab, layering, and nested overlay behavior.
-- Every site demo must use `DemoBlock :code` with a complete copyable Vue + TypeScript SFC.
-- Use test-first RED/GREEN cycles and run `git diff --check` before every commit.
-- Do not publish npm or push GitHub during implementation.
+
 
 ---
 
@@ -364,27 +359,20 @@ git commit -m "feat: export floating components"
 
 ---
 
-### Task 7: Documentation site and README
 
-**Files:**
-- Create: `site/src/views/tooltip/Index.vue`
-- Create: `site/src/views/loading/Index.vue`
-- Create: `site/src/views/pulldown/Index.vue`
-- Modify: `site/src/App.vue`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/src/views/examples-audit.spec.ts`
-- Modify: `README.md`
+
+
 
 **Interfaces:**
 - Adds `/tooltip`, `/loading`, and `/pulldown` routes and complete copyable examples.
 
 - [ ] **Step 1: Write failing documentation audits**
 
-Add the three pages to the audited page list. Assert route/navigation order, every required capability token, exactly the intended DemoBlock count for each page, a matching `sfc()` initializer for every `:code` binding, and complete script/template output.
+
 
 - [ ] **Step 2: Verify RED**
 
-Run from `site/`: `npx vitest run src/views/examples-audit.spec.ts`
+
 
 Expected: FAIL because the routes and pages are absent.
 
@@ -406,12 +394,9 @@ Place Tooltip, Loading, and Pulldown after Select in the component navigation an
 
 - [ ] **Step 7: Run site verification and commit**
 
-Run from `site/`: `npm test && npm run build`
 
-```bash
-git add README.md site/src/App.vue site/src/router/index.ts site/src/views/examples-audit.spec.ts site/src/views/tooltip site/src/views/loading site/src/views/pulldown
-git commit -m "docs: add floating component examples"
-```
+
+
 
 ---
 
@@ -434,7 +419,7 @@ git diff --check
 git status --short --branch
 ```
 
-From `site/`:
+
 
 ```bash
 npm test

@@ -38,7 +38,7 @@
 
   &:focus-within:not(.is-disabled) &__wrapper {
     border-color: var(--glass-accent);
-    box-shadow: 0 0 0 3px var(--glass-accent-soft), inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .9));
+    box-shadow: 0 0 0 calc(var(--zt-focus-ring-width, 0px) * 1.5) var(--glass-accent-soft), inset 0 1px 1px var(--zt-shine, rgba(255, 255, 255, .9));
   }
 
   &__inner {
@@ -150,7 +150,7 @@
   &--success &__wrapper { border-color: #22c55e; }
   &--warning &__wrapper { border-color: #f59e0b; }
   &--error &__wrapper { border-color: #ef4444; }
-  &--error:focus-within &__wrapper { box-shadow: 0 0 0 3px rgba(239, 68, 68, .12); }
+  &--error:focus-within &__wrapper { box-shadow: 0 0 0 calc(var(--zt-focus-ring-width, 0px) * 1.5) rgba(239, 68, 68, .12); }
 
   &.is-disabled {
     --zt-input-autofill-background: var(--zt-surface-soft, #f5f7fa);
@@ -182,7 +182,7 @@
 .zt-input__clear-slot { position: relative; display: flex; align-items: center; width: 0; flex: 0 0 0; }
 .zt-input__clear-slot > .zt-input__clear { position: absolute; right: 0; z-index: 4; background: var(--zt-surface, #fff); }
 .zt-input__clear { @include clear.reveal('.zt-input'); }
-.zt-password__toggle:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: 2px; }
+.zt-password__toggle:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent); outline-offset: 2px; }
 
 .zt-input.is-form-underline {
   --zt-input-underline-color: var(--glass-accent);

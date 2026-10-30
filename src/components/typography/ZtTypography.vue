@@ -119,8 +119,8 @@ async function copy() {
     cursor: pointer;
     padding: 3px 6px;
     font: inherit;
-    &:focus-visible {
-      outline: 2px solid var(--glass-accent);
+    &:focus {
+      outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
       outline-offset: 2px;
     }
   }

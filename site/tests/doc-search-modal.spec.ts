@@ -1,0 +1,23 @@
+import { mount, flushPromises } from '@vue/test-utils';
+import { createMemoryHistory, createRouter } from 'vue-router';
+import { afterEach, expect, it } from 'vitest';
+import Search from '../src/components/DocSearch.vue';
+const wrappers: ReturnType<typeof mount>[] = [];
+afterEach(() => { wrappers.splice(0).forEach(w => w.unmount()); document.body.innerHTML = ''; });
+it('uses the library modal for search and closes through its model event', async () => {
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/:pathMatch(.*)*', component: { template: '<div />' } }] });
+  await router.push('/'); await router.isReady();
+  const w = mount(Search, { props: { open: true }, global: { plugins: [router] }, attachTo: document.body });
+  wrappers.push(w); await flushPromises();
+  expect(document.querySelector('.zt-modal')).not.toBeNull();
+  expect(document.querySelector('.docs-dialog')).toBeNull();
+  const mask = document.querySelector('.zt-modal')!;
+  mask.dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+  mask.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+  await flushPromises();
+  expect(w.emitted('close')).toHaveLength(1);
+  await w.setProps({ open: false }); await flushPromises();
+  await w.setProps({ open: true }); await flushPromises();
+  document.querySelector<HTMLButtonElement>('.zt-modal__close')!.click(); await flushPromises();
+  expect(w.emitted('close')).toHaveLength(2);
+});

@@ -50,6 +50,120 @@ beforeEach(() => {
 })
 
 describe('ZtVTableGrid', () => {
+  it.each(['light', 'dark'] as const)('uses one outer frame under the %s theme', async theme => {
+    const wrapper = mount(ZtConfigProvider, {
+      props: { theme, borderRadius: 11 },
+      slots: { default: () => h(ZtVTableGrid, { columns, records: rows, pagination: false }) },
+    })
+    try {
+      await flushPromises()
+      const options = wrapper.getComponent({ name: 'MockListTable' }).props('options')
+      expect(options.theme.frameStyle).toMatchObject({ cornerRadius: 0, borderLineWidth: 0, shadowBlur: 0 })
+    } finally { wrapper.unmount() }
+  })
+  it('spins and locks the toolbar during a refresh and unlocks after failure', async () => {
+    const pending = deferred<{ data: Row[]; total: number }>()
+    const proxyConfig = vi.fn(() => pending.promise)
+    const wrapper = mount(ZtVTableGrid, { props: { columns, proxyConfig, autoLoad: false, toolbarConfig: ['reload', 'export', 'create', 'import', 'columnsetting'] } })
+    try {
+      await wrapper.get('[aria-label="刷新"]').trigger('click')
+      expect(wrapper.get('[aria-label="刷新"] .zt-icon-glyph').classes()).toContain('is-spin')
+      for (const label of ['刷新', '导出', '新建', '导入', '列设置']) expect(wrapper.get(`[aria-label="${label}"]`).attributes('disabled')).toBeDefined()
+      await wrapper.get('[aria-label="刷新"]').trigger('click')
+      expect(proxyConfig).toHaveBeenCalledTimes(1)
+      pending.reject(new Error('refresh failed'))
+      await flushPromises()
+      expect(wrapper.get('[aria-label="刷新"]').attributes('disabled')).toBeUndefined()
+      expect(wrapper.get('[aria-label="刷新"] .zt-icon-glyph').classes()).not.toContain('is-spin')
+    } finally { wrapper.unmount() }
+  })
+
+  it('owns async export loading, rejects duplicate clicks and allows retry after failure', async () => {
+    const pending = deferred<void>()
+    const exportMethod = vi.fn().mockReturnValueOnce(pending.promise).mockResolvedValue(undefined)
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, toolbarConfig: ['export', 'reload', 'create', 'import', 'columnsetting'], exportMethod } as any })
+    try {
+      await flushPromises()
+      await wrapper.get('[aria-label="列设置"]').trigger('click')
+      expect(wrapper.find('[aria-label="列设置"][role="dialog"]').exists()).toBe(true)
+      const button = wrapper.get('[aria-label="导出"]')
+      await button.trigger('click')
+      await flushPromises()
+      expect(wrapper.find('[aria-label="列设置"][role="dialog"]').exists()).toBe(false)
+      expect(exportMethod).toHaveBeenCalledTimes(1)
+      expect(exportMethod.mock.calls[0]?.[0]).toMatchObject({ records: rows, columns, selectedRows: [] })
+      expect(button.attributes('disabled')).toBeDefined()
+      expect(button.find('.zt-button__spinner').exists()).toBe(true)
+      for (const label of ['刷新', '新建', '导入', '列设置']) expect(wrapper.get(`[aria-label="${label}"]`).attributes('disabled')).toBeDefined()
+      await button.trigger('click')
+      expect(exportMethod).toHaveBeenCalledTimes(1)
+      pending.reject(new Error('export failed'))
+      await flushPromises()
+      expect(wrapper.emitted('error')?.at(-1)?.[0]).toMatchObject({ message: 'export failed' })
+      expect(button.attributes('disabled')).toBeUndefined()
+      await button.trigger('click')
+      await flushPromises()
+      expect(exportMethod).toHaveBeenCalledTimes(2)
+      expect(button.attributes('disabled')).toBeUndefined()
+    } finally { wrapper.unmount() }
+  })
+
+  it('bridges legacy export-request to controlled loading without duplicate events', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, toolbarConfig: ['export'], exportMode: 'external', onExportRequest: () => { void wrapper.setProps({ exportLoading: true }) } } })
+    try {
+      await flushPromises()
+      const button = wrapper.get('[aria-label="导出"]')
+      button.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      button.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      await flushPromises()
+      expect(wrapper.emitted('export-request')).toHaveLength(1)
+      expect(wrapper.emitted('toolbar-action')).toHaveLength(1)
+      expect(button.attributes('disabled')).toBeDefined()
+      await wrapper.setProps({ exportLoading: false })
+      expect(button.attributes('disabled')).toBeUndefined()
+      await button.trigger('click')
+      expect(wrapper.emitted('export-request')).toHaveLength(2)
+    } finally { wrapper.unmount() }
+  })
+
+  it('locks native CSV until it has painted and serialized, without duplicate downloads', async () => {
+    const frames: FrameRequestCallback[] = []
+    vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => { frames.push(callback); return frames.length })
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, toolbarConfig: ['export'] } })
+    try {
+      await flushPromises()
+      const button = wrapper.get('[aria-label="导出"]')
+      button.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      button.element.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+      await flushPromises()
+      expect(button.attributes('disabled')).toBeDefined()
+      expect(button.find('.zt-button__spinner').exists()).toBe(true)
+      expect(wrapper.emitted('export')).toBeUndefined()
+      while (frames.length) frames.shift()!(0)
+      await flushPromises()
+      expect(wrapper.emitted('export')).toHaveLength(1)
+      expect(button.attributes('disabled')).toBeUndefined()
+    } finally { wrapper.unmount(); vi.unstubAllGlobals() }
+  })
+
+  it('passes busy state to a complete custom search form slot', async () => {
+    const form = vi.fn(() => h('span', '自定义搜索'))
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, loading: true, toolbar: false }, slots: { form } })
+    try {
+      await flushPromises()
+      expect(form.mock.calls.at(-1)?.[0]).toMatchObject({ loading: true, disabled: true, exportLoading: false, size: 'default' })
+    } finally { wrapper.unmount() }
+  })
+
+  it('renders explicit footer slots even when pagination and checkboxes are off', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, pagination: false, checkbox: false, toolbar: false }, slots: { 'pager-left': ({ total }: { total: number }) => h('span', `统计 ${total} 行`), 'pager-right': () => h('span', '自定义底栏') } })
+    try {
+      await flushPromises()
+      expect(wrapper.get('.zt-vtable-grid__footer').text()).toContain('统计 2 行')
+      expect(wrapper.get('.zt-vtable-grid__footer').text()).toContain('自定义底栏')
+    } finally { wrapper.unmount() }
+  })
+
   it('restores displayed records after global theme or size updates native options', async () => {
     const wrapper = mount(ZtConfigProvider, {
       props: { theme: 'light', size: 'default' },

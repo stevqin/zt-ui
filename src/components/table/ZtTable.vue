@@ -11,6 +11,7 @@ import type {
   ZtTableColumnResize,
   ZtTableCellScope,
   ZtTableHeaderScope,
+  ZtTableFilters,
 } from './types';
 defineOptions({ name: 'ZtTable', inheritAttrs: false });
 const props = withDefaults(defineProps<ZtTableProps>(), {
@@ -31,14 +32,22 @@ const emit = defineEmits<{
   'column-resize': [value: ZtTableColumnResize];
   'sort-change': [sort: ZtTableSort];
   'update:sort': [sort: ZtTableSort];
+  /** 完整筛选值变化；remote 时触发远程请求。 */
+  'filter-change': [filters: ZtTableFilters];
+  /** 更新受控筛选值。 */
+  'update:filters': [filters: ZtTableFilters];
+  /** 更新当前行 key。 */
+  'update:currentRowKey': [key: ZtTableKey | null];
+  /** 当前行及上一行；缺失时为 null。 */
+  'current-change': [row: ZtTableRow | null, previous: ZtTableRow | null];
   'row-click': [row: ZtTableRow, event: MouseEvent];
 }>();
 
 defineSlots<{
   /** 通过 ZtTableColumn 声明列；显式传入 columns 时以数组配置为准。 */
   default?: (scope: ZtTableCellScope) => VNode[];
-  /** 展开行详情。 */
-  expand?: (scope: { row: ZtTableRow; index: number }) => VNode[];
+  /** 展开行详情；index 为显示索引，rowIndex 为原始 data 索引。 */
+  expand?: (scope: { row: ZtTableRow; index: number; rowIndex: number }) => VNode[];
   /** 自定义空状态。 */
   empty?: () => VNode[];
   [name: string]:
@@ -84,6 +93,13 @@ const RenderTable = (input: {
         emit('column-resize', value),
       onSortChange: (sort: ZtTableSort) => emit('sort-change', sort),
       'onUpdate:sort': (sort: ZtTableSort) => emit('update:sort', sort),
+      'onUpdate:filters': (value: ZtTableFilters) =>
+        emit('update:filters', value),
+      onFilterChange: (value: ZtTableFilters) => emit('filter-change', value),
+      'onUpdate:currentRowKey': (value: ZtTableKey | null) =>
+        emit('update:currentRowKey', value),
+      onCurrentChange: (row: ZtTableRow | null, previous: ZtTableRow | null) =>
+        emit('current-change', row, previous),
       onRowClick: (row: ZtTableRow, event: MouseEvent) =>
         emit('row-click', row, event),
     },

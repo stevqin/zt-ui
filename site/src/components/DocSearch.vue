@@ -1,28 +1,81 @@
 <script setup lang="ts">
-import { ZtButton, ZtInput } from '@ztechjs/zt-ui';
-import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { searchDocs } from '../docs/search'
-const router=useRouter()
-const query=ref(''), open=ref(false), selected=ref(0), input=ref<{ focus: () => void; blur: () => void }>()
-const results=computed(()=>searchDocs(query.value))
-watch(selected,async()=>{await nextTick();document.getElementById(`search-result-${selected.value}`)?.scrollIntoView({block:'nearest'})})
-function choose(index: number) { const result=results.value[index]; if(result){router.push(result.path);open.value=false;query.value='';input.value?.blur()} }
-function keydown(e:KeyboardEvent){
- if(e.key==='Escape'){open.value=false;input.value?.blur()}
- if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();selected.value=Math.max(0,Math.min(results.value.length-1,selected.value+(e.key==='ArrowDown'?1:-1)))}
- if(e.key==='Enter'){e.preventDefault();choose(selected.value)}
+import { computed, ref, nextTick, watch } from "vue";
+import { useRouter } from "vue-router";
+import { ZtModal } from "@ztechjs/zt-ui";
+import { pages } from "../content/components";
+import { guides } from "../content/guides";
+import { apiDocuments } from "../app/api";
+import { buildSearchIndex, searchDocuments } from "../app/search";
+const props = defineProps<{ open: boolean }>();
+const emit = defineEmits<{ close: [] }>();
+const router = useRouter(),
+  query = ref(""),
+  index = ref(0);
+const records = buildSearchIndex(pages, guides, apiDocuments);
+const results = computed(() => searchDocuments(records, query.value));
+watch(results, () => { index.value = Math.max(0, Math.min(index.value, results.value.length - 1)); });
+watch(() => props.open, open => { if (open) index.value = 0; });
+function go(i: number) {
+  const result = results.value[i];
+  if (result) {
+    void router.push(result.path);
+    emit("close");
+  }
 }
-function focusout(e:FocusEvent){if(!(e.relatedTarget instanceof Node)||!(e.currentTarget as HTMLElement)?.contains(e.relatedTarget))open.value=false}
-function shortcut(e:KeyboardEvent){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();input.value?.focus();open.value=true}}
-onMounted(()=>window.addEventListener('keydown',shortcut));onBeforeUnmount(()=>window.removeEventListener('keydown',shortcut))
+function keys(e: KeyboardEvent) {
+  if (e.key === "ArrowDown") {
+    e.preventDefault();
+    index.value = Math.max(0, Math.min(index.value + 1, results.value.length - 1));
+  } else if (e.key === "ArrowUp") {
+    e.preventDefault();
+    index.value = Math.max(0, index.value - 1);
+  } else if (e.key === "Enter") {
+    e.preventDefault();
+    go(index.value);
+  }
+  if (e.key === "ArrowDown" || e.key === "ArrowUp")
+    void nextTick(() =>
+      document
+        .getElementById(`search-result-${index.value}`)
+        ?.scrollIntoView({ block: "nearest" }),
+    );
+}
 </script>
 <template>
- <div class="doc-search" @focusout="focusout">
-  <ZtInput ref="input" v-model="query" role="combobox" aria-label="搜索文档" aria-autocomplete="list" aria-controls="doc-search-results" :aria-expanded="open && !!query" :aria-activedescendant="open && results[selected] ? `search-result-${selected}` : undefined" placeholder="搜索组件、场景或 API…" @focus="open=true" @input="selected=0;open=true" @keydown="keydown" ><template #prefix><span aria-hidden="true">⌕</span></template><template #suffix><kbd>⌘ K</kbd></template></ZtInput>
-  <div v-if="open && query" id="doc-search-results" class="doc-search__results" role="listbox">
-   <p v-if="!results.length" class="search-empty">没有找到“{{ query }}”，试试组件名、属性名或场景。</p>
-   <ZtButton v-for="(result,index) in results" :id="`search-result-${index}`" :key="result.path+result.title" role="option" :aria-selected="selected===index" :class="{'is-active':selected===index}" @mousedown.prevent @click="choose(index)"><strong>{{result.title}}</strong><span>{{result.detail}}</span></ZtButton>
-  </div>
- </div>
+  <ZtModal :model-value="props.open" title="搜索文档" mask-closable :width="760" max-height="min(680px, calc(100dvh - 48px))" :show-footer="false" :show-fullscreen-button="false" :class-names="{ panel: 'docs-search-modal' }" @update:model-value="!$event && emit('close')"
+    ><input
+      class="search-input"
+      autofocus
+      placeholder="搜索组件、用法或 API…"
+      aria-label="搜索关键词"
+      role="combobox"
+      aria-controls="search-results"
+      :aria-expanded="true"
+      :aria-activedescendant="
+        results.length ? `search-result-${index}` : undefined
+      "
+      v-model="query"
+      @input="index = 0"
+      @keydown="keys"
+    />
+    <div id="search-results" class="search-results" role="listbox">
+      <button
+        v-for="(result, i) in results"
+        :id="`search-result-${i}`"
+        :key="result.path + result.title"
+        role="option"
+        :aria-selected="i === index"
+        :class="{ active: i === index }"
+        @click="go(i)"
+      >
+        <strong>{{ result.title }}</strong
+        ><span>{{ result.detail }}</span
+        ><b aria-hidden="true">↗</b>
+      </button>
+      <p v-if="!results.length" class="empty-search">
+        没有找到结果，试试组件名称或属性名称。
+      </p>
+    </div>
+    <p class="search-help">↑ ↓ 选择 · Enter 打开 · Escape 关闭</p></ZtModal
+  >
 </template>

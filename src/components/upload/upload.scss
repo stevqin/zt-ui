@@ -23,7 +23,7 @@
  &__file.is-fail{border-color:var(--glass-danger-line)}
  &__actions{display:flex;gap:6px;flex:none}&__actions button{border:0;background:transparent;color:var(--upload-color);font:inherit;cursor:pointer;padding:4px 6px;border-radius:glass.radius(5px)}
  &__actions button:hover:not(:disabled){background:var(--upload-soft)}
- button:focus-visible{outline:2px solid var(--upload-color);outline-offset:2px}
+ button:focus{outline: var(--zt-focus-ring-width, 0px) solid var(--upload-color);outline-offset:2px}
  button:disabled{opacity:.5;cursor:not-allowed}
  &__progress{height:4px;border-radius:3px;overflow:hidden;background:var(--upload-soft);margin-top:8px}&__progress>span{display:block;height:100%;background:var(--upload-color);transition:width .15s}
  &__thumbnail{padding:0;border:0;background:var(--zt-surface-soft);border-radius:glass.radius(7px);width:52px;height:52px;flex:none;overflow:hidden;cursor:zoom-in}&__thumbnail img{width:100%;height:100%;object-fit:cover}
@@ -48,7 +48,7 @@
  &__card-actions{position:absolute;inset:0 0 36px;display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;padding:6px;background:#172435b3;opacity:0;transition:opacity .15s}
  &__card-actions button{border:1px solid #ffffff66;background:#ffffff1f;color:#fff;border-radius:glass.radius(5px);padding:4px 6px;font:inherit;font-size:11px;cursor:pointer}
  &__card-actions button:hover:not(:disabled){background:#ffffff40}
- &__card-actions button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+ &__card-actions button:focus{outline: var(--zt-focus-ring-width, 0px) solid #fff;outline-offset:1px}
  &__file:hover &__card-actions,&__file:focus-within &__card-actions{opacity:1}
  &__card-caption{display:flex;align-items:center;justify-content:space-between;gap:4px;height:36px;padding:0 8px;box-sizing:border-box;font-size:11px;background:var(--zt-surface,#fff)}
  &__card-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}

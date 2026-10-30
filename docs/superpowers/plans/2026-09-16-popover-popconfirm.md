@@ -20,21 +20,7 @@
 
 ### Task 1: Positioning and Popover
 
-**Files:**
-- Create: `src/components/popover/types.ts`
-- Create: `src/components/popover/position.ts`
-- Create: `src/components/popover/usePopover.ts`
-- Create: `src/components/popover/ZtPopover.vue`
-- Create: `src/components/popover/popover.scss`
-- Create: `src/components/popover/index.ts`
-- Modify: `src/components/index.ts`
-- Test: `tests/popover-position.spec.ts`
-- Test: `tests/popover.spec.ts`
-- Create: `site/src/views/popover/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
-- Modify: `site/scripts/api-overrides.mjs`
+
 
 **Interfaces:**
 - Produces `ZtPopoverTrigger`, `ZtPopoverPlacement`, `ZtPopoverProps`, `ZtPopoverInstance`, `ZtPopover`.
@@ -104,24 +90,11 @@ Document all triggers, placements, rich content, width, disabled, manual control
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/popover src/components/index.ts tests/popover-position.spec.ts tests/popover.spec.ts site/src/views/popover site/src/docs/catalog.ts site/src/router/index.ts site/scripts
-git commit -m "feat: add popover component"
-```
+
 
 ### Task 2: Popconfirm
 
-**Files:**
-- Create: `src/components/popconfirm/types.ts`
-- Create: `src/components/popconfirm/ZtPopconfirm.vue`
-- Create: `src/components/popconfirm/popconfirm.scss`
-- Create: `src/components/popconfirm/index.ts`
-- Modify: `src/components/index.ts`
-- Test: `tests/popconfirm.spec.ts`
-- Create: `site/src/views/popconfirm/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Consumes `ZtPopover`, `ZtButton`, and `ZtIcon`.
@@ -168,10 +141,7 @@ Document basic confirmation, descriptions, statuses, custom icon, async confirma
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/popconfirm src/components/index.ts tests/popconfirm.spec.ts site/src/views/popconfirm site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add popconfirm component"
-```
+
 
 ### Task 3: Overlay regression gate
 

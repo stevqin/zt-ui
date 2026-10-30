@@ -117,12 +117,6 @@ Canvas 单元格不接收普通 DOM 插槽；复杂单元格通过 VTable 原生
 - CSV 转义和导出内容。
 - 工具栏事件、空数据、加载态和公开方法。
 
-演示站新增 `/vtable-grid` 页面，至少提供基础表格、远程分页与排序、选择与操作列、编辑与保存、汇总与列设置五组可复制的 Vue + TypeScript 示例，并提供 Props、Events、Slots 和 Expose 文档。
+
 
 ## 完成标准
-
-- zt-ui 不包含 VXE、Element Plus 或 BIP 私有导入。
-- 公共类型从包入口可用。
-- 组件测试、全库测试、类型检查、库构建、文档站测试和文档站构建全部通过。
-- 浏览器检查演示页的主要布局与交互。
-- 工作区保留本地实现，不执行 npm publish、git push 或 GitHub 操作。

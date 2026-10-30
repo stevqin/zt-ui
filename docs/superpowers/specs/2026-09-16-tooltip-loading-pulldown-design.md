@@ -4,7 +4,7 @@
 
 为 zt-ui 增加 `ZtTooltip`、`ZtLoading` 和 `ZtPulldown`。Tooltip 与 Pulldown 共用内部浮层定位能力；Loading 是独立 Vue 组件，不提供指令、服务或全屏 API。三个组件不得依赖 Element Plus、VXE、Floating UI 或其他 UI 组件库。
 
-全部组件支持 zt-ui 的 `mini`、`small`、`default`、`medium`、`large` 五档尺寸，导出完整 TypeScript 类型，并在演示站提供可复制的 Vue + TypeScript SFC 示例。
+
 
 ## 内部浮层核心
 
@@ -150,9 +150,9 @@ interface ZtLoadingProps {
 
 五档尺寸控制字号、内边距、菜单项高度、Tooltip 圆角及 spinner 尺寸。箭头、菜单项和 spinner 动画在 `prefers-reduced-motion: reduce` 下关闭。
 
-## 演示站与文档
 
-增加 `/tooltip`、`/loading`、`/pulldown` 页面和侧边导航，并更新 README 组件列表和基础示例。每个可视示例使用 `DemoBlock :code` 提供完整可复制的 Vue + TypeScript SFC 源码。
+
+
 
 Tooltip 页面覆盖基础内容、内容插槽、四类触发方式、十二方向中的代表方向、延迟、禁用和五档尺寸。Loading 页面覆盖独立模式、遮罩模式、延迟防闪烁、自定义 spinner、lock/background 和五档尺寸。Pulldown 页面覆盖 items 菜单、command、禁用/分割线/危险项、自定义 dropdown、三类触发方式、手动控制、键盘操作和五档尺寸。
 
@@ -160,12 +160,7 @@ Tooltip 页面覆盖基础内容、内容插槽、四类触发方式、十二方
 
 单元和组件测试覆盖：
 
-- 浮层十二方向、自动翻转、视口高度限制、滚动/缩放重定位和清理。
-- Tooltip hover/focus/click/manual、延迟竞态、disabled、ARIA 合并和插槽。
-- Pulldown items 与自定义 dropdown、command、禁用项、close 开关、键盘导航、外部点击、焦点恢复及 Modal/Drawer 嵌套。
-- Loading 独立和遮罩模式、loading 切换、delay 竞态、lock、background、自定义 spinner、ARIA 和计时器清理。
-- 三个组件的五档尺寸、公开导出、类型声明和 reduced-motion 样式。
-- 演示站路由、导航、能力审计和所有示例的完整可复制源码。
+
 
 最终验收执行组件库和站点的完整测试、typecheck、生产构建及 `git diff --check`，并在浏览器检查定位、动画、键盘、焦点、响应式布局和空控制台。
 

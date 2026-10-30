@@ -243,10 +243,7 @@ ESM 仍将 `@ztechjs/zt-alert` 作为运行时外部依赖，以便 SelectBox �
 
 ### 集成
 
-- 组件库全量测试、typecheck、ESM / UMD 构建。
-- 文档站 API 生成、示例审计、挂载测试、typecheck 和 build。
-- 实际浏览器检查支持组件、排除组件、多选标签和 overlay 密度矩阵。
-- `git diff --check` 与无陈旧 API/文档检索。
+
 
 ## 风险与控制
 

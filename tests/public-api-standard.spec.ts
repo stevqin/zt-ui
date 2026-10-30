@@ -1,9 +1,15 @@
-import { readFileSync } from 'node:fs'
+import { readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const root = process.cwd()
 const source = (file: string) => readFileSync(resolve(root, file), 'utf8')
+function publicSiteFiles(directory: string): string[] {
+  return readdirSync(resolve(root, directory), { withFileTypes: true }).flatMap(entry => {
+    const file = `${directory}/${entry.name}`
+    return entry.isDirectory() ? publicSiteFiles(file) : /\.(vue|ts|json|mjs)$/.test(file) ? [file] : []
+  })
+}
 
 describe('public API standardization', () => {
   it('does not expose duplicate RadioGroup, Pagination, or Badge props in public types', () => {
@@ -19,17 +25,14 @@ describe('public API standardization', () => {
   })
 
   it('does not publish compatibility guidance or removed prop rows', () => {
-    const publicSources = [
-      'README.md',
-      'site/scripts/api/metadata/shared.mjs',
-      'site/scripts/api/metadata/form.mjs',
-      'site/src/docs/reference.ts',
-      'site/src/docs/api.generated.json',
-      'site/src/views/radio/Index.vue',
-      'site/src/views/radio/Example04.vue',
-      'site/src/views/pagination/Index.vue',
-      'site/src/views/badge/Index.vue',
-    ].map(source).join('\n')
+    const api = JSON.parse(source('site/src/generated/api.json'))
+    const components = Object.values(api).flatMap((page: any) => page.components)
+    for (const [name, removed] of [['ZtRadioGroup', 'variant'], ['ZtPagination', 'small'], ['ZtBadge', 'type']]) {
+      const component = components.find((item: any) => item.name === name) as any
+      expect(component, `${name} must have generated metadata`).toBeDefined()
+      expect(component.props.map((prop: any) => prop.name)).not.toContain(removed)
+    }
+    const publicSources = ['README.md', 'site/scripts/api-explanations.mjs', ...publicSiteFiles('site/src')].map(source).join('\n')
 
     expect(publicSources).not.toMatch(/@deprecated|兼容旧版|兼容的小尺寸/)
     expect(publicSources).not.toMatch(/ZtRadioGroupProps[\s\S]{0,500}\bvariant\??\s*:/)

@@ -17,11 +17,12 @@ describe('checkbox mark alignment', () => {
 })
 
 describe('checkbox focus rings', () => {
-  it('shows focus rings only for keyboard focus, not pointer clicks', () => {
-    expect(source).toMatch(/&:has\(input:focus-visible\)\s*\{[^}]*outline:/)
+  it('uses the global policy to control focus ring widths', () => {
+    expect(source).toMatch(/&:has\(input:focus\)\s*\{[^}]*outline:/)
     expect(source).toMatch(
-      /&:has\(input:focus-visible\)\s+\.zt-checkbox__inner/,
+      /&:has\(input:focus\)\s+\.zt-checkbox__inner/,
     )
+    expect(source).toContain('var(--zt-focus-ring-width, 0px)')
     expect(source).not.toMatch(/&:focus-within\s*\{[^}]*outline:/)
     expect(source).not.toMatch(/&:focus-within\s+\.zt-checkbox__inner/)
   })

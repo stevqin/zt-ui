@@ -1,0 +1,83 @@
+@use '../../styles/tokens' as glass;
+.zt-sku-input {
+  @include glass.tokens;
+  --sku-cell-height: 56px;
+  --sku-heading-height: 36px;
+  --sku-cell-min-width: 68px;
+  --sku-color-width: clamp(144px, 22cqi, 212px);
+  --sku-summary-width: 64px;
+  --sku-thumb: 34px;
+  --sku-color-padding-y: 8px;
+  --sku-control-inset: 6px;
+  --sku-section-padding: 16px;
+  --sku-heading-padding: 8px;
+  --sku-input-font: var(--glass-size-default);
+  --sku-surface: var(--zt-surface, #fff);
+  --sku-soft: color-mix(in srgb, var(--zt-surface-soft, #f5f7fa) 65%, var(--sku-surface));
+  --sku-grid-line: color-mix(in srgb, var(--glass-line) 62%, var(--sku-surface));
+  --sku-input-bg: color-mix(in srgb, var(--glass-muted) 3%, var(--sku-surface));
+  --sku-value-bg: color-mix(in srgb, var(--glass-accent) 7%, var(--sku-surface));
+  box-sizing: border-box;
+  container-type: inline-size;
+  min-width: 0;
+  width: 100%;
+  color: var(--glass-ink);
+  background: var(--sku-surface);
+  border: 1px solid var(--sku-grid-line);
+  border-radius: glass.radius(12px);
+  box-shadow: 0 3px 14px rgba(15, 23, 42, .035);
+  overflow: hidden;
+  font: var(--sku-input-font)/1.5 var(--glass-font);
+  &, * { box-sizing: border-box; }
+  &__header { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: var(--sku-section-padding) 18px; h3 { margin: 0; font-size: 1.05em; font-weight: 600; overflow-wrap: anywhere; } }
+  &__identity { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; min-width: 0; }
+  &__product-no { display: inline-block; padding: 2px 7px; border-radius: glass.radius(4px); background: var(--sku-soft); font: .8em/1.5 ui-monospace, SFMono-Regular, monospace; color: var(--glass-muted); overflow-wrap: anywhere; }
+  &__hint { color: var(--glass-muted); font-size: .82em; white-space: nowrap; }
+  &__scroll { max-height: 480px; overflow: auto; overscroll-behavior: contain; scrollbar-width: thin; border-top: 1px solid var(--sku-grid-line); scroll-padding-inline: var(--sku-color-width) var(--sku-summary-width); }
+  &--without-product-info &__scroll { border-top: 0; }
+  &__color-column { width: var(--sku-color-width); }
+  &__summary-column { width: var(--sku-summary-width); }
+  &__table {
+    width: 100%;
+    min-width: calc(var(--sku-color-width) + var(--sku-column-count) * var(--sku-cell-min-width) + var(--sku-summary-count) * var(--sku-summary-width));
+    border-spacing: 0;
+    border-collapse: separate;
+    table-layout: fixed;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    th, td { padding: 0; border-bottom: 1px solid var(--sku-grid-line); }
+    thead th { position: sticky; top: 0; z-index: 2; height: var(--sku-heading-height); padding: var(--sku-heading-padding) 10px; color: var(--glass-muted); background: var(--sku-soft); font-weight: 500; overflow-wrap: anywhere; }
+    thead th:first-child { left: 0; z-index: 4; padding-left: 16px; text-align: left; box-shadow: 1px 0 0 var(--sku-grid-line); }
+    thead th.zt-sku-input__sum { right: 0; z-index: 3; }
+    tbody th { position: sticky; left: 0; z-index: 1; background: var(--sku-surface); text-align: left; }
+    tbody td { height: var(--sku-cell-height); transition: background-color .15s; }
+    tbody tr:hover > td:not(.is-disabled):not(.is-unavailable):not(.zt-sku-input__sum), tbody tr:hover > th { background: var(--sku-soft); }
+    tbody tr:last-child > * { border-bottom: 0; }
+    tbody tr.is-disabled .zt-sku-input__color-info { opacity: .5; }
+    tfoot th, tfoot td { height: var(--sku-heading-height); padding: 4px 8px; border-top: 1px solid var(--sku-grid-line); border-bottom: 0; background: var(--sku-soft); font-weight: 500; color: var(--glass-muted); }
+    tfoot th { position: sticky; left: 0; z-index: 1; padding-left: 16px; text-align: left; }
+    .is-unavailable { color: var(--glass-muted); background: var(--sku-soft); }
+    .is-disabled { color: var(--glass-muted); }
+    .has-value:not(.is-disabled) { color: var(--glass-accent-ink); font-weight: 600; }
+    .zt-input { width: calc(100% - var(--sku-control-inset) * 2); height: calc(var(--sku-cell-height) - var(--sku-control-inset) * 2 - 1px); min-width: 0; margin: var(--sku-control-inset) auto; border: 0; border-radius: glass.radius(6px); box-shadow: none; background: transparent; color: inherit; font-size: var(--sku-input-font); &:hover, &:focus-within { border: 0; box-shadow: none; } }
+    .zt-input .zt-input__wrapper, .zt-input:focus-within .zt-input__wrapper { min-height: 0; padding: 0; border: 0; border-radius: inherit; background: var(--sku-input-bg); box-shadow: none; }
+    .zt-input:hover:not(.is-disabled):not(.is-readonly) .zt-input__wrapper { background: var(--sku-value-bg); }
+    .has-value:not(.is-disabled) .zt-input__wrapper { background: var(--sku-value-bg); }
+    .zt-input:focus-within { outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent); outline-offset: -2px; }
+    .zt-input__inner { height: 100%; text-align: center; padding: 0 6px; font-size: var(--sku-input-font); }
+  }
+  &__color { height: var(--sku-cell-height); padding: var(--sku-color-padding-y) 16px !important; box-shadow: 1px 0 0 var(--sku-grid-line); }
+  &__color-content { display: flex; align-items: center; gap: 10px; min-width: 0; }
+  &__image { display: grid; place-items: center; flex: 0 0 var(--sku-thumb); width: var(--sku-thumb); height: var(--sku-thumb); overflow: hidden; border-radius: glass.radius(7px); background: var(--sku-soft); color: var(--glass-muted); .zt-image { width: 100%; height: 100%; } svg { width: 18px; height: 18px; } }
+  &__color-info { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; strong { font-weight: 500; line-height: 1.3; } code { color: var(--glass-muted); font: .78em/1.3 ui-monospace, SFMono-Regular, monospace; } }
+  &__sum { position: sticky; right: 0; z-index: 1; color: var(--glass-ink); background: var(--sku-soft); font-weight: 600; box-shadow: -1px 0 0 var(--sku-grid-line); }
+  &__grand-total { position: sticky; right: 0; z-index: 2; color: var(--glass-accent-ink) !important; box-shadow: -1px 0 0 var(--sku-grid-line); font-weight: 600 !important; }
+  &__footer { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: var(--sku-section-padding) 18px; border-top: 1px solid var(--sku-grid-line); color: var(--glass-muted); font-size: .92em; strong { margin: 0 4px; color: var(--glass-ink); font-weight: 600; } [data-total] { display: inline-flex; align-items: center; gap: 6px; } [data-total] strong { margin: 0; padding: 2px 9px; border-radius: glass.radius(5px); color: var(--glass-accent-ink); background: var(--sku-value-bg); font-size: 1.08em; } }
+  &__empty { padding: 36px; text-align: center; color: var(--glass-muted); }
+  &__sr-only { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  &--mini { --sku-cell-height: 36px; --sku-heading-height: 28px; --sku-cell-min-width: 52px; --sku-summary-width: 52px; --sku-thumb: 24px; --sku-color-padding-y: 4px; --sku-control-inset: 4px; --sku-section-padding: 10px; --sku-heading-padding: 4px; --sku-input-font: var(--glass-size-mini); }
+  &--small { --sku-cell-height: 44px; --sku-heading-height: 32px; --sku-cell-min-width: 60px; --sku-summary-width: 60px; --sku-thumb: 28px; --sku-color-padding-y: 6px; --sku-control-inset: 5px; --sku-section-padding: 12px; --sku-heading-padding: 6px; --sku-input-font: var(--glass-size-small); }
+  &--medium { --sku-cell-height: 64px; --sku-heading-height: 40px; --sku-cell-min-width: 72px; --sku-summary-width: 72px; --sku-thumb: 40px; --sku-color-padding-y: 9px; --sku-control-inset: 7px; --sku-section-padding: 18px; --sku-heading-padding: 8px; --sku-input-font: var(--glass-size-medium); }
+  &--large { --sku-cell-height: 72px; --sku-heading-height: 44px; --sku-cell-min-width: 76px; --sku-summary-width: 80px; --sku-thumb: 44px; --sku-color-padding-y: 12px; --sku-control-inset: 8px; --sku-section-padding: 20px; --sku-heading-padding: 10px; --sku-input-font: var(--glass-size-large); }
+}
+@media (prefers-reduced-motion: reduce) { .zt-sku-input__table tbody td { transition: none; } }

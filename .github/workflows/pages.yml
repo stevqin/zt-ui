@@ -28,14 +28,20 @@ jobs:
             site/package-lock.json
       - name: Install library dependencies
         run: npm ci
-      - name: Verify component library
-        run: npm test && npm run build
       - name: Install documentation dependencies
         working-directory: site
         run: npm ci
+      - name: Verify source-derived documentation contracts
+        working-directory: site
+        run: npm run docs:api && npm run docs:check
+      - name: Verify component library
+        run: npm test -- --maxWorkers=2 && npm run build
       - name: Verify and build documentation
         working-directory: site
-        run: npm test && npm run build
+        run: npm test -- --maxWorkers=2 && npm run build
+      - name: Verify floating layers in Chromium
+        working-directory: site
+        run: npx playwright install --with-deps chromium && npm run test:browser
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

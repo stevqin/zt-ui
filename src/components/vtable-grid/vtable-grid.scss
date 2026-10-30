@@ -25,9 +25,22 @@
     min-height: 50px;
     padding: 8px 12px;
     border-bottom: 1px solid var(--glass-default-line);
-    background: var(--zt-surface-soft, rgba(248, 250, 253, .84));
+    background: var(--zt-surface, rgba(255, 255, 255, .82));
   }
-  &__toolbar-group { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+  &__toolbar-group { display: flex; align-items: center; flex-wrap: wrap; gap: 4px; min-width: 0; }
+  &__toolbar { gap: 8px; }
+  &__toolbar-group > .zt-button--text,
+  &__toolbar-icon.zt-button { border-radius: glass.radius(6px); }
+  &__toolbar-icon.zt-button {
+    width: var(--zt-button-height);
+    min-width: var(--zt-button-height);
+    padding: 0;
+    flex: 0 0 var(--zt-button-height);
+    color: var(--glass-muted);
+  }
+  &__toolbar-icon[aria-expanded=true] { color: var(--glass-accent); background: var(--glass-accent-soft); }
+  &__toolbar-icon .zt-icon-glyph { font-size: 16px; }
+  &__toolbar-group > .zt-button--text .zt-icon-glyph { font-size: 16px; }
   &__toolbar-group--right { margin-left: auto; }
   &__settings-wrap { position: relative; }
   &__settings {

@@ -1,0 +1,20 @@
+// Low specificity lets component-owned focus surfaces replace the native outline.
+:where([class^='zt-'], [class*=' zt-']):focus,
+:where([class^='zt-'], [class*=' zt-']) :where(button, a, input, textarea, select, [tabindex], [contenteditable]):focus {
+  outline: var(--zt-focus-ring-width, 0px) solid var(--zt-accent, #245edb);
+  outline-offset: 2px;
+}
+
+// Independently versioned alert services use the document-level application policy.
+:is(.zt-notice, .zt-box, .zt-overlay) :is(button, input, textarea, select, summary, a, [tabindex]):focus {
+  outline: var(--zt-focus-ring-width, 0px) solid var(--zt-accent, #245edb) !important;
+  outline-offset: 2px;
+}
+// These controls already paint the focus indicator on their outer surface.
+:is(.zt-notice, .zt-box, .zt-overlay) :is(.zt-input__inner, .zt-input-number__inner, .zt-input-otp__native, .zt-select__input, .zt-select__search-input, .zt-date-picker > input, .zt-mention textarea, .zt-hierarchy-panel__search, .zt-pagination__jumper input, .zt-switch):focus {
+  outline: none !important;
+}
+.zt-box .zt-box__input:focus {
+  outline: none !important;
+  box-shadow: 0 0 0 calc(var(--zt-focus-ring-width, 0px) * 1.5) #386fc221;
+}

@@ -10,11 +10,7 @@
 
 ## Global Constraints
 
-- Do not import VXE Form, Element Plus, Element Plus Icons, xe-utils, BIP APIs, BIP stores, or BIP aliases.
-- Keep `vue`, `@visactor/vtable`, `@visactor/vue-vtable`, and `@visactor/vtable-editors` external from the library bundle and declare them as peer dependencies.
-- Reuse `ZtButton`, `ZtCheckbox`, and `ZtPagination` for DOM controls.
-- Do not bump the package version, publish npm, push GitHub, or deploy the documentation site.
-- Every production behavior starts with a failing Vitest test.
+
 
 ---
 
@@ -222,26 +218,20 @@ Create and import emit events. Export calls `toCsv`, downloads the current displ
 
 Run `npm test -- --run tests/vtable-grid.spec.ts`, then `npm test`, then commit `feat: complete vtable grid interactions`.
 
-### Task 6: Documentation site and copyable examples
 
-**Files:**
-- Create: `site/src/views/vtable-grid/Index.vue`
-- Modify: `site/src/App.vue`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/src/views/examples-audit.spec.ts`
-- Modify: `README.md`
-- Test: `site/src/views/examples-audit.spec.ts`
+
+
 
 **Interfaces:**
 - Demonstrates: public package imports and all major component modes.
 
 - [ ] **Step 1: Add failing route/example audit assertions**
 
-Require a `/vtable-grid` nav route and five `DemoBlock` examples whose copyable source includes TypeScript imports.
+
 
 - [ ] **Step 2: Run site audit and verify failure**
 
-Run `npm test -- --run src/views/examples-audit.spec.ts` from `site/`.
+
 
 - [ ] **Step 3: Add examples and API documentation**
 
@@ -251,9 +241,9 @@ Create examples for local data, remote pagination/sort, selection/actions, edit/
 
 Add installation notes for VisActor peers and a minimal `ZtVTableGrid` example.
 
-- [ ] **Step 5: Run site tests and commit**
 
-Run the focused site test and commit `docs: add vtable grid examples`.
+
+
 
 ### Task 7: Final verification and local integration
 

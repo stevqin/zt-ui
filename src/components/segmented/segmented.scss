@@ -35,7 +35,7 @@
       box-shadow: 0 1px 3px rgba(16, 24, 40, .18), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .45));
       font-weight: 650;
     }
-    &:focus-visible { outline: 2px solid var(--zt-segmented-line); outline-offset: 1px; }
+    &:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--zt-segmented-line); outline-offset: 1px; }
     &:disabled { opacity: .45; cursor: not-allowed; }
   }
 

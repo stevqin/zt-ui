@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, nextTick, watch, provide, shallowReactive, useSlots } from 'vue';
 import ZtPopover from '../popover/ZtPopover.vue';
-import ZtIcon from '../icon/ZtIcon.vue';
+import DropdownTrigger from './trigger';
 import { useZtSize } from '../config-provider/context';
 import { dropdownKey } from './context';
 import type { ZtDropdownProps, ZtDropdownItem, ZtDropdownItemProps } from './types';
@@ -20,7 +20,8 @@ const emit = defineEmits<{
 }>();
 const open = ref(false),
   menu = ref<HTMLElement>(),
-  reference = ref<HTMLButtonElement>(),
+  reference = ref<HTMLElement>(),
+  triggerDisabled = ref(false),
   size = useZtSize(props);
 const slots = useSlots();
 const slotItems = shallowReactive(new Map<symbol, ZtDropdownItemProps>());
@@ -38,8 +39,9 @@ provide(dropdownKey, {
     return () => slotItems.delete(id);
   },
 });
-function changed(v: boolean) {
-  if (open.value === v) return;
+function changed(v: boolean, restoreFocus = true) {
+  if ((v && (props.disabled || triggerDisabled.value)) || open.value === v) return;
+  if (!v && restoreFocus && menu.value?.contains(document.activeElement)) reference.value?.focus();
   open.value = v;
   emit('visible-change', v);
 }
@@ -51,7 +53,7 @@ async function focus(first = true) {
   if (items?.length) items[first ? 0 : items.length - 1].focus();
 }
 function referenceKey(e: KeyboardEvent) {
-  if (props.disabled) return;
+  if (props.disabled || triggerDisabled.value) return;
   if (['ArrowDown', 'ArrowUp'].includes(e.key)) {
     e.preventDefault();
     changed(true);
@@ -87,7 +89,7 @@ function key(e: KeyboardEvent) {
     changed(false);
     reference.value?.focus();
   }
-  if (e.key === 'Tab') changed(false);
+  if (e.key === 'Tab') changed(false, false);
 }
 watch(
   () => props.disabled,
@@ -109,25 +111,20 @@ function choose(item: ZtDropdownItem) {
     :visible="open"
     :width="width ?? 'max-content'"
     :trigger="trigger"
-    :disabled="disabled"
+    :disabled="disabled || triggerDisabled"
     :placement="placement"
     :show-arrow="false"
     :restore-focus="false"
     @update:visible="changed"
-    ><button
-      ref="reference"
+    ><DropdownTrigger
       v-bind="$attrs"
-      class="zt-dropdown__trigger"
-      :class="`zt-dropdown__trigger--${size}`"
-      type="button"
       :disabled="disabled"
-      aria-haspopup="menu"
-      :aria-expanded="open"
-      @keydown="referenceKey"
-    >
-      <span class="zt-dropdown__trigger-content"><slot>操作</slot></span>
-      <ZtIcon name="chevron-down" class="zt-dropdown__arrow" />
-    </button
+      :expanded="open"
+      :size="size"
+      :reference="element => reference = element"
+      :on-reference-key="referenceKey"
+      :on-disabled-change="value => triggerDisabled = value"
+    ><slot /></DropdownTrigger
     ><template #content
       ><div
         ref="menu"

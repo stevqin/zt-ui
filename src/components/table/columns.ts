@@ -32,7 +32,12 @@ export function resolveTableColumns(nodes: unknown, legacy: ZtTableProps = {}) {
           value,
         ]),
     ) as unknown as ZtTableColumnProps;
-    for (const prop of ['sortable', 'resizable'] as const) {
+    for (const prop of [
+      'sortable',
+      'resizable',
+      'showOverflowTooltip',
+      'filterMultiple',
+    ] as const) {
       if ((column[prop] as unknown) === '') column[prop] = true;
     }
     const content = node.children as Slots | null;
@@ -52,11 +57,14 @@ export function resolveTableColumns(nodes: unknown, legacy: ZtTableProps = {}) {
       if (content?.header) slots[`header-${item.prop}`] = content.header;
       return;
     }
-    if (!column.prop) return;
+    if (!column.prop && column.type !== 'index') return;
+    if (column.type === 'index' && !column.prop)
+      column.prop = '__zt-table-index';
     const item: ColumnDefinition = {
       ...column,
-      prop: column.prop,
-      label: column.label ?? column.prop,
+      type: column.type === 'index' ? 'index' : 'default',
+      prop: column.prop!,
+      label: column.label ?? (column.type === 'index' ? '序号' : column.prop!),
     };
     if (content?.default) slots[item.slot ?? item.prop] = content.default;
     if (content?.header) slots[`header-${item.prop}`] = content.header;

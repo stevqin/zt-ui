@@ -4,7 +4,7 @@
 
 **Architecture:** Drawer uses `width` / `height` for geometry and a scoped ConfigProvider size for density. Form publishes `underline`; supported public controls claim one internal appearance boundary so nested helper controls stay outlined. zt-ui keeps its own Modal/Drawer overlay implementation and removes all zt-alert Drawer-specific portal, focus, and z-index branches.
 
-**Tech Stack:** Vue 3.5, TypeScript 5.8, SCSS, Vite 6, Vitest 3, Vue Test Utils, Happy DOM, Playwright/browser QA through the documentation site.
+
 
 **Spec:** `docs/superpowers/specs/2026-09-18-form-underline-and-size-semantics-design.md`
 
@@ -24,16 +24,7 @@
 
 ## File Structure
 
-- `src/components/config-provider/context.ts`: add an internal scoped-size provider used by overlays.
-- `src/components/form/context.ts`: publish Form underline state and the internal control-boundary key.
-- `src/components/form/useFormControlAppearance.ts`: centralize “nearest Form + first public control boundary” resolution.
-- `src/styles/_form-underline.scss`: shared underline surface/focus/disabled mixins; component SCSS owns selectors.
-- Each supported component root: opt into the appearance hook and style only its public visible control.
-- `src/components/drawer/*`, `src/components/modal/*`: geometry and density behavior.
-- `src/components/icon/*`, `src/components/alert/*`: independent/default size behavior.
-- `src/components/selection/useAnchoredDropdown.ts`, `src/components/overlay/resolvePopupZIndex.ts`: remove external zt-alert Drawer-specific paths.
-- `tests/form-underline-*.spec.ts`: behavioral and style contracts split by component family.
-- `site/src/views/form/*`, component docs, API metadata, README: public examples and final contracts.
+
 
 ---
 
@@ -530,30 +521,7 @@ Expected `rg`: no matches.
 
 ### Task 7: Documentation, Generated API, and Final Visual QA
 
-**Files:**
-- Modify: `README.md`
-- Modify: `site/scripts/api/metadata/expansion.mjs`
-- Modify: `site/src/docs/api.generated.json` (generated)
-- Modify: `site/src/views/drawer/Index.vue`
-- Modify: `site/src/views/drawer/Example01.vue`
-- Modify: `site/src/views/drawer/Example02.vue`
-- Modify: `site/src/views/drawer/Example03.vue`
-- Modify: `site/src/views/drawer/CustomContent.vue`
-- Modify: `site/src/views/icon/Index.vue`
-- Modify: `site/src/views/icon/Example01.vue`
-- Modify: `site/src/views/icon/Example02.vue`
-- Modify: `site/src/views/icon/Example03.vue`
-- Modify: `site/src/views/icon/Example04.vue`
-- Modify: `site/src/views/icon/Slot.vue`
-- Modify: `site/src/views/alert/Index.vue`
-- Modify: `site/src/views/alert/Basic.vue`
-- Modify: `site/src/views/alert/Custom.vue`
-- Modify: `site/src/views/form/Index.vue`
-- Create: `site/src/views/form/Underline.vue`
-- Modify: `site/src/views/feedback/Index.vue`
-- Modify: `site/src/views/feedback/Basic.vue`
-- Modify: `site/src/views/examples-audit.spec.ts`
-- Modify: `docs/component-examples-audit.md` (generated)
+
 
 **Interfaces:**
 - Consumes: all final public APIs and class behavior from Tasks 1–6.
@@ -601,20 +569,13 @@ Inspect the generated JSON rather than hand-editing it after generation.
 
 From repository root:
 
-```bash
-npm test
-npm run build
-npm --prefix site test
-npm --prefix site run build
-git diff --check
-rg -n "Drawer.*size.*width|五档预设尺寸.*Icon|Alert.*size|zt-alert.*(Drawer|Dialog|Modal)|zt-drawer__panel" README.md src site tests
-```
+
 
 The final search may contain explicit negative test assertions only; inspect every match.
 
 - [ ] **Step 6: Perform browser visual and interaction QA**
 
-Use the real documentation site at desktop and narrow viewport widths. Verify:
+
 
 - all 15 supported controls in underline Form;
 - all excluded controls remain outlined/unchanged;

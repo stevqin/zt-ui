@@ -91,7 +91,7 @@ export { default as ZtLoading } from './ZtLoading.vue'
 export type { ZtLoadingProps } from './types'
 ```
 
-Remove `ZtLoadingHandle` from `loading/types.ts`. Import `@ztechjs/zt-alert/style.css` once from `src/index.ts` so a consumer of SelectBox receives message styles without relying on the documentation site. Do not re-export any zt-alert API.
+
 
 - [ ] **Step 4: Delete duplicate implementation tests and verify package output**
 
@@ -634,24 +634,7 @@ git commit -m "refactor: decouple Select from SelectBox"
 
 ### Task 10: Update SelectBox documentation and complete verification
 
-**Files:**
-- Modify: `site/src/views/select-box/Index.vue`
-- Modify: `site/src/views/select-box/Remote.vue`
-- Create: `site/src/views/select-box/Batch.vue`
-- Create: `site/src/views/select-box/Clearable.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/docs/expansion.json`
-- Modify: `site/src/docs/api.generated.json`
-- Modify: `docs/component-examples-audit.md`
-- Modify: `README.md`
-- Modify: `site/package.json`
-- Modify: `site/package-lock.json`
-- Delete: `site/src/views/message/`
-- Delete: `site/src/views/notification/`
-- Delete: `site/src/views/message-box/`
-- Delete: `site/src/views/loading/Fullscreen.vue`
-- Create: `site/src/views/feedback/Index.vue`
-- Modify: `src/components/index.ts`
+
 
 **Interfaces:**
 - Consumes: final public `ZtSelectBox` API and direct zt-alert imports.
@@ -702,7 +685,7 @@ PATH=/Users/stev/.nvm/versions/node/v24.18.0/bin:$PATH npm test
 PATH=/Users/stev/.nvm/versions/node/v24.18.0/bin:$PATH npm run build
 ```
 
-From `site/`:
+
 
 ```bash
 PATH=/Users/stev/.nvm/versions/node/v24.18.0/bin:$PATH npm test
@@ -711,11 +694,7 @@ PATH=/Users/stev/.nvm/versions/node/v24.18.0/bin:$PATH npm run build
 
 Then run:
 
-```bash
-git diff --check
-rg -n "SelectFilterPanel|selectBoxModeKey|filter-context|filterPanel" src tests
-rg -n "ZtMessage|ZtNotification|ZtMessageBox|ZtLoadingService|useZtLoading" src/components/index.ts src/index.ts site/src/views
-```
+
 
 Expected: all test/build commands PASS; both architecture searches produce no forbidden zt-ui ownership references except direct imports from `@ztechjs/zt-alert` in the Feedback guide or SelectBox.
 

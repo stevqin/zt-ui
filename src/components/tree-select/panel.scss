@@ -46,10 +46,10 @@
     font: inherit;
     transition: border-color .15s ease, box-shadow .15s ease;
     &::placeholder { color: var(--zt-text-muted, #909399); }
-    &:focus-visible {
+    &:focus {
       outline: none;
       border-color: var(--hierarchy-accent);
-      box-shadow: 0 0 0 2px var(--hierarchy-selected, var(--hierarchy-soft));
+      box-shadow: 0 0 0 var(--zt-focus-ring-width, 0px) var(--hierarchy-selected, var(--hierarchy-soft));
     }
   }
   :is(.zt-tree, .zt-cascader__column, .zt-cascader__results) {

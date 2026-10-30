@@ -90,21 +90,12 @@
 
 ### Task 5: Site documentation
 
-**Files:**
-- Create: `site/src/views/form/Index.vue`
-- Modify: `site/src/views/input-number/Index.vue`
-- Modify: `site/src/App.vue`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/src/views/examples-audit.spec.ts`
-- Modify: `README.md`
+
 
 **Interfaces:**
 - Consumes: all public components, rule types, and exposed form methods from Tasks 1–4.
 
-- [ ] Extend the site audit test to require a routed Form page and complete copyable demos.
-- [ ] Run the focused site test and confirm it fails because the page and route are absent.
-- [ ] Add the Form page, InputNumber layout demo, API tables, navigation, route, and README entries.
-- [ ] Run site tests and type checking until they pass.
+
 
 ### Task 6: Complete verification
 
@@ -113,9 +104,3 @@
 
 **Interfaces:**
 - Produces: a clean build and reviewable working tree.
-
-- [ ] Run `npm test` in the package root and require zero failures.
-- [ ] Run `npm run build` in the package root and require successful type declarations and bundles.
-- [ ] Run `npm test` and `npm run build` in `site/` and require zero failures.
-- [ ] Inspect `/input-number` and `/form` in the browser, exercise representative interactions, and require no console errors.
-- [ ] Run `git diff --check` and review `git status` plus the complete diff before reporting completion.

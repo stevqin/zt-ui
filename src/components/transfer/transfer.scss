@@ -2,4 +2,4 @@
 
 .zt-transfer input[type=checkbox],.zt-transfer input[type=radio]{accent-color:var(--hierarchy-accent,var(--zt-accent,#409eff))}
 
-.zt-transfer__actions button:not(:disabled){background:var(--hierarchy-accent);color:white}.zt-transfer input:focus-visible,.zt-transfer button:focus-visible{outline:2px solid var(--hierarchy-accent);outline-offset:2px}
+.zt-transfer__actions button:not(:disabled){background:var(--hierarchy-accent);color:white}.zt-transfer input:focus,.zt-transfer button:focus{outline: var(--zt-focus-ring-width, 0px) solid var(--hierarchy-accent);outline-offset:2px}

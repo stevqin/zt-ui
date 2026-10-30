@@ -1,6 +1,10 @@
 @use '../../styles/tokens' as glass;
 
-.zt-popover__reference { display: inline-flex; }
+.zt-popover__reference {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+}
 
 .zt-popover {
   @include glass.tokens;

@@ -10,11 +10,7 @@
 
 ## Global Constraints
 
-- Complete Icon before this plan.
-- Do not fetch remote demo assets; add deterministic SVG files under `site/public/image-demo/`.
-- Preview must lock body scrolling, remain topmost with existing overlays, restore focus, and release listeners on every close path.
-- Use native image loading and decoding behavior; do not add an image processing dependency.
-- Register dedicated Image and Avatar pages and generated API entries.
+
 
 ---
 
@@ -168,17 +164,7 @@ Expected: PASS.
 
 ### Task 4: Media documentation and integration
 
-**Files:**
-- Create: `site/src/views/image/Index.vue`
-- Create: `site/src/views/avatar/Index.vue`
-- Create: `site/public/image-demo/landscape.svg`
-- Create: `site/public/image-demo/portrait.svg`
-- Create: `site/public/image-demo/avatar.svg`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
-- Modify: `site/scripts/api-overrides.mjs`
-- Modify: `README.md`
+
 
 - [ ] **Step 1: Add deterministic local SVG assets**
 
@@ -205,8 +191,3 @@ Run: `cd site && npm test && npm run build`
 Inspect `/image` viewer and `/avatar` at mini/default/large sizes and light/dark themes, including a narrow viewport.
 
 - [ ] **Step 6: Commit**
-
-```bash
-git add src/components/image src/components/avatar src/components/index.ts tests/image.spec.ts tests/image-viewer.spec.ts tests/avatar.spec.ts site/src/views/image site/src/views/avatar site/public/image-demo site/src/docs/catalog.ts site/src/router/index.ts site/scripts README.md
-git commit -m "feat: add image and avatar components"
-```

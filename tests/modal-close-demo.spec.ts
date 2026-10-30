@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils'
-import { nextTick } from 'vue'
+import { defineComponent, h, nextTick, ref } from 'vue'
 import { afterEach, describe, expect, it, vi } from 'vitest'
-import CloseDemo from '../site/src/views/modal/Example03.vue'
 import ZtModal from '../src/components/modal/ZtModal.vue'
 import { resetOverlayManager } from '../src/components/overlay/overlayManager'
 
@@ -11,10 +10,18 @@ afterEach(() => {
   document.body.innerHTML = ''
 })
 
-describe('Modal mask close demo', () => {
-  it('starts closing the default mask example without waiting for a timer', async () => {
+describe('Modal mask close behavior', () => {
+  it('starts closing a mask-closable modal without waiting for a timer', async () => {
     vi.useFakeTimers()
-    const wrapper = mount(CloseDemo, { attachTo: document.body })
+    const wrapper = mount(defineComponent({
+      setup() {
+        const visible = ref(false)
+        return () => h('div', [
+          h('button', { onClick: () => { visible.value = true } }, '点击遮罩关闭'),
+          h(ZtModal, { modelValue: visible.value, 'onUpdate:modelValue': (value: boolean) => { visible.value = value }, title: '点击遮罩关闭', maskClosable: true }),
+        ])
+      },
+    }), { attachTo: document.body })
     try {
       const button = wrapper.findAll('button').find(b => b.text() === '点击遮罩关闭')!
       expect(button).toBeDefined()

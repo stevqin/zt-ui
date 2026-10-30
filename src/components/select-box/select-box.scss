@@ -283,11 +283,11 @@
 .zt-select-box-panel {
   @include glass.tokens;
 
-  &__option:focus-visible,
-  [role='checkbox']:focus-visible,
-  .zt-button:focus-visible,
-  textarea:focus-visible {
-    outline: 2px solid var(--glass-accent);
+  &__option:focus,
+  [role='checkbox']:focus,
+  .zt-button:focus,
+  textarea:focus {
+    outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
     outline-offset: -2px;
   }
 }
@@ -346,7 +346,7 @@
     text-align: left;
     transition: border-color 160ms, background-color 160ms;
   }
-  &__trigger:focus-visible { outline: 2px solid var(--glass-accent); outline-offset: 2px; }
+  &__trigger:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent); outline-offset: 2px; }
   &:hover:not(.is-disabled) &__trigger { border-color: var(--glass-accent-line); }
   &.is-open &__trigger { border-color: var(--glass-accent); }
   &.is-error &__trigger { border-color: var(--glass-danger-ink); }

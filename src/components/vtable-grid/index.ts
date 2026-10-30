@@ -5,4 +5,4 @@ export type * from './types'
 
 export { default as ZtVTableGridImportDialog } from './ZtVTableGridImportDialog.vue'
 
-export type { ZtVTableGridImportDialogProps } from './import-dialog-types'
+export type { ZtVTableGridImportDialogProps, ZtVTableGridImportDialogSlotScope, ZtVTableGridImportDialogSlots } from './import-dialog-types'

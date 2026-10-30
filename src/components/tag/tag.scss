@@ -200,8 +200,8 @@
       height: 10px;
     }
 
-    &:focus-visible {
-      outline: 2px solid currentColor;
+    &:focus {
+      outline: var(--zt-focus-ring-width, 0px) solid currentColor;
       outline-offset: 2px;
     }
 

@@ -8,7 +8,7 @@
 
 采用公共能力优先的分组实现：先完成 Icon、Link、Text、Scrollbar，并抽出轻量的锚点浮层定位与生命周期逻辑，再实现 Popover 和 Popconfirm；随后完成导航选择组件、数据展示组件，最后完成 Image 预览器与 Avatar。组件之间只通过公开 props、provide/inject 或明确的内部工具协作，不让一个高层组件依赖另一个组件的私有 DOM。
 
-每组按测试驱动流程完成：先用组件测试表达公开行为并确认失败，再实现最少代码，最后补样式、文档站示例和 API 生成配置。每组完成后运行聚焦测试；全部完成后运行组件库与文档站的全量测试、类型检查和构建。
+
 
 ## 公共约定
 
@@ -113,20 +113,11 @@ Text 只控制文字语义、颜色、字号、字重和溢出，不重置父容
 
 每个组件使用 `src/components/<name>/Zt*.vue`、`types.ts`、`*.scss`、`index.ts` 的现有结构，并在 `src/components/index.ts` 公开导出。Popover 的定位与事件管理放在其目录内的独立 composable，Popconfirm 通过公开组件组合复用。
 
-文档站为每个组件增加独立页面、路由、catalog 条目和 API 生成配置。组件索引中的分组为：Icon、Link、Text、Image、Avatar、Scrollbar、Descriptions、Result 进入“基础与反馈”；Segmented 进入“表单与选择”；Tabs、Breadcrumb 进入“导航”；Collapse 进入“数据与流程”；Popover、Popconfirm 进入“弹层与交互”。示例源码保持可复制且不依赖外部网络图片，使用本地 SVG 素材。
+
 
 ## 测试与验收
 
-- Icon：三种渲染来源、尺寸、状态、旋转、减少动画行为和无障碍名称。
-- Link：原生与路由链接、禁用、下划线、图标、外部链接安全属性和键盘焦点。
-- Text：语义标签、状态与尺寸、单行/多行省略、复杂插槽及明暗主题。
-- Scrollbar：横纵溢出、尺寸更新、滚动事件、拖动、轨道翻页、原生模式和实例方法。
-- Popover/Popconfirm：四种触发方式、定位翻转、外部点击、Escape、焦点、异步确认和清理监听器。
-- Tabs/Breadcrumb/Segmented：受控状态、禁用项、增删、路由降级、溢出与完整键盘操作。
-- Descriptions/Collapse/Result：布局、span、accordion、插槽、状态与尺寸继承。
-- Image/Avatar：加载、错误回退、src 重置、预览切换、缩放旋转、关闭、尺寸与主题。
-- 所有组件：公开类型可导入、API 生成成功、亮暗主题样式变量存在、ConfigProvider 继承正确。
-- 完整门禁：组件库 `npm test` 和 `npm run build`；文档站 `npm test` 和 `npm run build`。
+
 
 ## 非目标
 

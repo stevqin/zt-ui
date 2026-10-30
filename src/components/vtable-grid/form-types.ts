@@ -9,6 +9,9 @@ export interface ZtVTableGridFormScope<FormData = Record<string, unknown>> {
   property?: string
   item: ZtVTableGridFormItem<FormData>
   $form: ZtFormInstance
+  size: ZtComponentSize
+  disabled: boolean
+  loading: boolean
 }
 export interface ZtVTableGridFormRenderer<FormData = Record<string, unknown>> {
   name?: string

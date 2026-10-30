@@ -191,8 +191,8 @@ onBeforeUnmount(cleanup);
       inset: 0;
       cursor: col-resize;
       touch-action: none;
-      &:focus-visible {
-        outline: 2px solid var(--glass-accent);
+      &:focus {
+        outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
         outline-offset: -2px;
       }
     }

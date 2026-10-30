@@ -12,7 +12,6 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 - Interaction: **native** retains native keyboard/focus semantics; **keyboard** owns a composite model; **delegated** uses a nested control; **structural** is passive display or context; **decorative-svg** shares strokeWidth/SVG attributes and takes naming/decorative semantics from ZtIcon or its caller. Disabled, readonly, loading and validation apply where supported. Animated families must support reduced motion.
 - Overlay: **modal** uses shared focus/stack/body-lock ownership; **anchored** uses shared dropdown geometry/branches (Popover retains its own placement calculation while sharing overlay branch ownership); **delegated** uses a child overlay; **owned-popup** registers a Menu/VTable popup as a shared overlay branch while retaining its established placement; **status-mask** is Loading’s noninteractive status layer; **local-tooltip** is the noninteractive FormItem validation hint; **none** has no overlay. Shared evidence: tests/use-overlay.spec.ts, tests/overlay-popup-layer.spec.ts, tests/overlay-local-boundary.spec.ts, tests/select-box-viewport.spec.ts, tests/tooltip-sizing.spec.ts and tests/popover-nested-ownership.spec.ts.
 - API: **public-types** checks common spelling and numeric/CSS dimensions without aliases. Metadata **generated** covers public props; **family:ZtIcon** maps every raw SVG glyph to generated strokeWidth documentation and the shared factory. Raw glyphs have no independent behavior.
-- Every row includes source/types/styles review and a checked-in regression suite. The audit checks the evidence files; npm test executes them. Task 2's deferred imported-example/displayed-source audit belongs to Tasks 7/8 and is not claimed complete here.
 
 ## Component matrix
 
@@ -35,6 +34,9 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtBookmarkIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtBreadcrumb | compliant | inherited | intrinsic | none | structural | none | public-types | generated | tests/breadcrumb-segmented.spec.ts |
 | ZtBreadcrumbItem | compliant | structural | intrinsic | none | native | none | public-types | generated | tests/breadcrumb-segmented.spec.ts |
+| ZtBlockquote | compliant | inherited | tokens | visual | structural | none | public-types | generated | tests/blockquote.spec.ts |
+| ZtSkuSelect | compliant | inherited | tokens | none | delegated | delegated | public-types | generated | tests/sku-select.spec.ts |
+| ZtSkuInput | compliant | inherited | tokens | none | keyboard | none | public-types | generated | tests/sku-input.spec.ts |
 | ZtButton | compliant | inherited | tokens | visual | native | none | public-types | generated | tests/button-radius-depth.spec.ts |
 | ZtCalendar | compliant | inherited | tokens | none | keyboard | none | public-types | generated | src/components/calendar/calendar.spec.ts |
 | ZtCalendarIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
@@ -185,34 +187,3 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtVTableGridImportDialog | compliant | delegated | tokens | none | delegated | delegated | public-types | generated | tests/vtable-grid-import.spec.ts |
 | ZtWarningIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtWatermark | compliant | structural | intrinsic | none | structural | none | public-types | generated | src/components/watermark/watermark.spec.ts |
-
-## Baseline findings and remediation
-
-All findings below are **Important**, now fixed; no Critical or Important finding remains and none is waived.
-
-| Component/family | Evidence before remediation | Required contract | Focused change / regression |
-| --- | --- | --- | --- |
-| Checkbox | Native input had unconditional tabindex=-1 and no change handler; indeterminate was only painted, not reflected in native state (checkbox/ZtCheckbox.vue). | Focusable native checkbox, announced mixed state, one change per action. | Restore native change/tab semantics and DOM indeterminate; reconcile checked/indeterminate after accepted or rejected group min/max toggles; preserve explicitly role-owning SelectBox wrappers. component-contract-interaction.spec.ts and existing SelectBox suites. |
-| Checkbox/CheckboxGroup | Disabled large Form yielded enabled default-density checkboxes (checkbox/ZtCheckbox.vue, ZtCheckboxGroup.vue). | FormItem disabled/density inheritance below an explicit control/group override. | Use the existing FormItem context and shared density resolver; block disabled group mutations. Behavioral Form regression. |
-| Switch | Nonfocusable div with role=switch had no keyboard handler or disabled/busy announcement; ignored FormItem density/disabled (switch/ZtSwitch.vue). | Keyboard activation, state announcements, disabled/loading mutation guard and inherited Form contract. | Add Space/Enter and resolved disabled state; preserve status and shape APIs. Behavioral keyboard and Form regressions. |
-| Tag | Closable tag rendered an unnamed click-only span (tag/ZtTag.vue). | Independently focusable named close action. | Native button with Chinese label, neutral style reset, focus-visible ring. Behavioral close regression. |
-| Collapse / Segmented / Image | Transitions had no reduced-motion override (collapse/collapse.scss, segmented/segmented.scss, image/image.scss). | Respect reduced motion without removing state changes. | Add only transition:none in the reduced-motion media query. Compiled production Sass computed-style regression covers CollapseItem, Segmented, Image mask and ImageViewer image. |
-| ImageViewer | All open viewers consumed document navigation/Escape; standalone viewer did not trap or restore focus (image/ZtImageViewer.vue). | Top-overlay ownership, focus trap, opener restoration, scroll lock. | Reuse useOverlay; retain synchronous viewer close API and top-owned navigation. Stacked viewer/modal and focus regressions. |
-| Menu | Double/ horizontal flyout focus was recaptured by a containing Modal and flyout lacked inherited z-index (menu/ZtMenu.vue, ZtMenuHorizontalNode.vue). | Teleported child stays in parent overlay focus/layer scope; Escape closes only child. | Register through useAnchoredDropdown and pass its scope to nested horizontal branches; retain side-placement geometry. Both modes tested in a z-index 9000 Modal. |
-| VTableGrid | Escape in column settings reached parent Modal first; settings focus did not return to its trigger (vtable-grid/ZtVTableGrid.vue). | Inline interactive settings remain an owned child focus range. | Register through useAnchoredDropdown and restore trigger on local Escape. Regression uses the real settings UI with the existing canvas-engine boundary double. |
-| Popover nested ownership | Final review reproduced child pointer actions lost when the parent treated a teleported child as outside; Escape closed both branches. | Descendant containment, leaf Escape/focus, parent cleanup, Modal ownership. | Register popup-slot descendants through the shared OverlayBranch graph; keep trigger-slot context and sizing/position intact. RED→GREEN nested action/Escape/persistent cleanup/Tooltip tests plus native Chromium checks inside and outside Modal. |
-| Popover / Tooltip metadata | Generated API omitted Popover.height and Tooltip.width/height introduced by Task 5. | Public props and generated metadata agree. | Run existing site generator; no generator changes or hand-edited JSON. Gate mutation test verifies missing props fail. |
-
-The first complete command reported 11 violations (including separate component rows sharing animated styles). Continued source review added the Tag close-action and Menu/VTable overlay findings; behavioral tests additionally proved Form inheritance/mixed-state omissions. Each received a failing regression before its source change.
-
-The full suite also exposed an obsolete RadioGroup.variant expectation left by Task 2, corrected to assert the alias remains inert, and a VTable test dispatching a synthetic click on Checkbox’s private decorative span, updated to manipulate the public native input. These changes preserve the approved API and test observable user-facing behavior.
-
-## Verification scope
-
-The mutation-tested gate enforces export coverage, approved dimension values, evidence-file existence, density inheritance/vocabulary, token-based radius, distinct status families, animated-family reduced motion, concrete action/overlay ownership rules, common boolean/name/length contracts, generated prop coverage/type/requiredness agreement for every public prop, and forbidden compatibility guidance. All 32 glyph rows must map to the shared generated ZtIcon strokeWidth contract.
-
-Family regressions verify native and composite keyboard interaction, disabled/readonly/loading behavior where supported, semantic validation priority, provider inheritance, adjoining control geometry and popup scroll ownership. The library-wide browser visual matrix and documentation example/source parity remain the final verification/site tasks in the approved plan. No site restructuring, new status props, public status renaming, or broad visual redesign is included here.
-
-## Final documentation-controller evidence
-
-The site-only DemoStatusController is outside the public component inventory. Final review found its mobile backdrop trapped below the header by the fixed `.doc-layout` stacking context. The open mobile controller now Teleports directly to the `.doc-site` theme root, outside that layout; desktop and closed pill remain in their original location. `site/src/components/DemoStatusController.spec.ts` covers the host boundary, theme ancestry, selection, keyboard ownership, focus restoration, breakpoint transfer and unmount cleanup. Native production-site checks in both themes hit-tested and clicked navigation/search/appearance header coordinates: the backdrop received each click without activating the header, and every control worked after dismissal. See the [final review](qa/2026-09-18-ui-api-consistency-final-review.md) for results and limitations.

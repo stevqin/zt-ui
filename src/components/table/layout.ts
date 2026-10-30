@@ -11,6 +11,7 @@ export function utilityColumn(
   const utility = type === 'expand' ? 'expansion' : 'selection';
   return {
     ...options,
+    type: 'default',
     prop: `__zt-table-${utility}`,
     label: options.label ?? (utility === 'expansion' ? '展开行' : '选择行'),
     utility,

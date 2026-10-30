@@ -28,6 +28,7 @@ import { registerGridEditors, normalizeGridEditorValue } from './editors'
 import type {
   ZtVTableGridActionButton,
   ZtVTableGridActionPayload,
+  ZtVTableGridLinkContext,
   ZtVTableGridCellChangePayload,
   ZtVTableGridColumnSettingsValue,
   ZtVTableGridLoadedPayload,
@@ -86,6 +87,7 @@ const emit = defineEmits<{
   'sort-change': [sort: ZtVTableGridSort]
   'selection-change': [rows: Row[]]
   action: [payload: ZtVTableGridActionPayload<Row>]
+  'link-click': [payload: ZtVTableGridLinkContext<Row>]
   create: []
   import: []
   export: [content: string]
@@ -190,7 +192,15 @@ function columnSettingsOptions() {
 }
 
 const tableInstance = computed(() => tableRef.value?.vTableInstance ?? null)
+const exporting = ref(false)
+const queryLoading = computed(() => props.loading || innerLoading.value)
 const actualLoading = computed(() => props.loading || innerLoading.value || isSaving.value)
+const actualExportLoading = computed(() => props.exportLoading || exporting.value)
+const toolbarBusy = computed(() => props.disabled || actualLoading.value || actualExportLoading.value)
+watch(toolbarBusy, busy => { if (busy) settingsOpen.value = false })
+watch([toolbarBusy, actualLoading, actualExportLoading], () => {
+  if (canvasRenderer) tableInstance.value?.renderWithRecreateCells?.()
+}, { flush: 'post' })
 const paginationConfig = computed(() => typeof props.pagination === 'object' ? props.pagination : {})
 const paginationEnabled = computed(() => props.pagination !== false && (Boolean(props.proxyConfig) || props.localPagination))
 const containerStyle = computed(() => ({ height: typeof props.height === 'number' ? `${props.height}px` : props.height }))
@@ -240,6 +250,24 @@ const nativeColumns = computed(() => {
           ...(rawRecord?.[SUMMARY_FIELD] ? { ...(typeof props.summaryConfig === 'object' ? props.summaryConfig.style : {}), ...(summaryLabel.value.fields.includes(original.field) ? { textAlign: summaryLabel.value.align } : {}) } : {}),
         }
       }
+      if (canvasRenderer && original.link) {
+        column.cellType = 'text'
+        column.customLayout = (args: any) => {
+          const row = rowFromEvent(args)
+          if (!row) return { renderDefault: true }
+          const link = typeof original.link === 'object' ? original.link : {}
+          const context = linkContext(row, original.field, link.params)
+          const text = typeof link.text === 'function' ? link.text(context) : link.text ?? args.table.getCellValue?.(args.col, args.row) ?? context.value ?? ''
+          const disabled = toolbarBusy.value || (typeof link.disabled === 'function' ? link.disabled(row) : Boolean(link.disabled))
+          return canvasRenderer.createLinkLayout(String(text), args, { disabled, color: link.color ?? (provider.theme.value === 'dark' ? '#82abff' : '#245edb') }, (_scope: any, event: unknown) => {
+            if (toolbarBusy.value || (typeof link.disabled === 'function' ? link.disabled(row) : link.disabled)) return
+            const payload = linkContext(row, original.field, link.params, event)
+            if (payload.rowIndex < 0) return
+            link.handler?.(row, payload)
+            emit('link-click', payload)
+          })
+        }
+      }
       if (canvasRenderer && (original.render || original.slots?.default)) column.customLayout = (args: any) => canvasRenderer.createRenderLayout(original.render ?? original.slots!.default, args, original.align)
       if (canvasRenderer && original.slot && slots[original.slot]) column.customLayout = (args: any) => canvasRenderer.createSlotLayout(original.slot, slots, args, false, original.align)
       if (canvasRenderer && original.headerSlot && slots[original.headerSlot]) column.headerCustomLayout = (args: any) => canvasRenderer.createSlotLayout(original.headerSlot, slots, args, true, original.align)
@@ -247,13 +275,16 @@ const nativeColumns = computed(() => {
     if (column.field === ACTION_FIELD) column.fixed = 'right'
     if (column.field === ACTION_FIELD && canvasRenderer && props.actionDisplay === 'inline') {
       column.cellType = 'text'
-      column.width = Math.max(108, ...displayedRecords.value.map(row => resolveActionButtons(props.actionButtons, row).reduce((width, item) => width + (item.width ?? (item.mode === 'text' ? Math.max(42, item.text.length * 14 + 16) : 36)) + 8, 16)))
+      column.width = Math.max(108, ...displayedRecords.value.map(row => resolveActionButtons(props.actionButtons, row).reduce((width, item) => width + (item.width ?? (item.mode === 'text' || item.mode === 'link' ? Math.max(42, item.text.length * 14 + 16) : 36)) + 8, 16)))
       column.customLayout = (args: any) => {
         const row = rowFromEvent(args)
-        return row ? canvasRenderer.createActionLayout(resolveActionButtons(props.actionButtons, row), args, (item: any) => dispatchAction(item, row)) : { renderDefault: false }
+        return row ? canvasRenderer.createActionLayout(resolveActionButtons(props.actionButtons, row), args, (item: any, _record: Row, event: unknown) => dispatchAction(item, row, event)) : { renderDefault: false }
       }
     }
-    if (column.field === ACTION_FIELD && canvasRenderer && slots.actions) column.customLayout = (args: any) => canvasRenderer.createSlotLayout('actions', slots, args)
+    if (column.field === ACTION_FIELD && canvasRenderer && slots.actions) {
+      column.cellType = 'text'
+      column.customLayout = (args: any) => canvasRenderer.createSlotLayout('actions', slots, args)
+    }
     return column
   })
   return fillGridFrozenGap(adapted, tableViewportWidth.value)
@@ -276,6 +307,7 @@ const nativeOptions = computed(() => {
     defaultHeaderRowHeight,
     ...Object.fromEntries(Object.entries(presentation.value).filter(([key]) => ['heightMode', 'defaultRowHeight', 'defaultHeaderRowHeight', 'autoWrapText', 'hover', 'select'].includes(key))),
     theme: (provider.theme.value === 'dark' ? themes.DARK : themes.DEFAULT).extends({
+      frameStyle: { cornerRadius: 0, borderLineWidth: 0, shadowBlur: 0 },
       bodyStyle: presentation.value.bodyStyle, headerStyle: presentation.value.headerStyle, selectionStyle: presentation.value.selectionStyle,
       scrollStyle: props.reserveScrollbar ? { visible: 'always', hoverOn: false, width: props.scrollbarSize ?? 10 } : {},
       ...(safeOptions.theme as any ?? {}),
@@ -487,6 +519,7 @@ async function handlePageSize(size: number) {
 }
 
 function rowFromEvent(event: any) {
+  if (Number.isInteger(event?.col) && Number.isInteger(event?.row) && (event.table?.isAggregation?.(event.col, event.row) || (tableInstance.value as any)?.isAggregation?.(event.col, event.row))) return undefined
   if (event?.originData && typeof event.originData === 'object') {
     if (event.originData[SUMMARY_FIELD]) return undefined
     return event.originData as Row
@@ -578,12 +611,35 @@ function runAction(item: ZtVTableGridActionButton<Row>) {
 }
 
 function toolbarAction(item: string) {
-  if (props.disabled || saving.value) return
+  if (toolbarBusy.value) return
   emit('toolbar-action', item)
   if (item === 'create') emit('create')
   else if (item === 'import') emit('import')
-  else if (item === 'export') { if (!props.exportLoading && !actualLoading.value) { if (props.exportMode === 'external') emit('export-request'); else exportCsv() } }
+  else if (item === 'export') void runExport()
   else if (item === 'reload') { emit('reload'); void reload() }
+}
+
+async function runExport() {
+  exporting.value = true
+  try {
+    if (props.exportMethod) {
+      await nextTick()
+      if (alive) await props.exportMethod({ records: [...displayedRecords.value], columns: arrangedColumns(), selectedRows: [...selectedRows.value] })
+    } else if (props.exportMode === 'external') {
+      emit('export-request')
+      // Bridge the synchronous event to the parent's controlled loading update.
+      await nextTick()
+    } else {
+      await nextTick()
+      // Allow the busy indicator to paint before synchronous CSV serialization.
+      if (typeof requestAnimationFrame === 'function') await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+      if (alive) exportCsv()
+    }
+  } catch (error) {
+    if (alive) emit('error', error)
+  } finally {
+    exporting.value = false
+  }
 }
 
 function updateRecords(records: Row[], nextTotal = records.length) {
@@ -670,10 +726,16 @@ async function cancelChanges() {
   emit('cancel-edit', payload)
 }
 
-function dispatchAction(item: any, row: Row) {
-  if (props.disabled || saving.value || item.disabled) return
-  item.handler?.(row)
-  emit('action', { type: item.type, row, item })
+function linkContext(row: Row, field: string | undefined, params: unknown, event?: unknown): ZtVTableGridLinkContext<Row> {
+  return { row, field, value: field == null ? undefined : row[field], rowIndex: displayedRecords.value.findIndex(item => getRowKey(item) === getRowKey(row)), params: typeof params === 'function' ? params(row) : params, event }
+}
+
+function dispatchAction(item: ZtVTableGridActionButton<Row>, row: Row, event?: unknown) {
+  if (toolbarBusy.value || (typeof item.disabled === 'function' ? item.disabled(row) : item.disabled)) return
+  const context = linkContext(row, undefined, item.params, event)
+  if (context.rowIndex < 0) return
+  item.handler?.(row, context)
+  emit('action', { ...context, type: item.type, item })
 }
 
 function arrangedColumns() {
@@ -817,10 +879,19 @@ function handleReady() {
 }
 async function setupCanvasFeatures(refresh = false) {
   if (!alive || !tableInstance.value) return
-  if ((!canvasRenderer || refresh) && (props.columns.some(column => column.slot || column.headerSlot || column.render || column.slots?.default) || slots.actions || props.actionDisplay === 'inline')) {
+  if ((!canvasRenderer || refresh) && (props.columns.some(column => column.link || column.slot || column.headerSlot || column.render || column.slots?.default) || slots.actions || props.actionDisplay === 'inline')) {
     const module = await import('./canvas-layout')
     if (!alive) return
-    canvasRenderer = module.createGridCanvasRenderer({ CustomLayout, size: configSize.value, toSourceRow: (row: Row) => row, getRowIndex: (_args: any, row: Row) => displayedRecords.value.findIndex(item => getRowKey(item) === getRowKey(row)) })
+    canvasRenderer = module.createGridCanvasRenderer({ CustomLayout, size: configSize.value,
+      getLinkColor: (status: string) => provider.theme.value === 'dark' ? ({ primary: '#82abff', success: '#8fe0af', info: '#c1ccdd', warning: '#f3ce87', danger: '#f7a3ab' } as Record<string, string>)[status] : undefined,
+      getTextColor: (args: any, isHeader: boolean) => {
+        const style = args.table.getCellStyle?.(args.col, args.row)
+        const color = style?.color ?? (isHeader ? presentation.value.headerStyle.color : undefined) ?? presentation.value.bodyStyle.color
+        return typeof color === 'function' ? color(args) : color
+      },
+      getColumn: (col: number) => props.columns.find(column => column.field === nativeColumns.value[col]?.field) ?? nativeColumns.value[col],
+      getState: () => ({ disabled: toolbarBusy.value, loading: actualLoading.value, exportLoading: actualExportLoading.value }),
+      toSourceRow: (row: Row) => row, getRowIndex: (_args: any, row: Row) => displayedRecords.value.findIndex(item => getRowKey(item) === getRowKey(row)) })
     canvasVersion.value++
     refreshColumns()
   }
@@ -891,8 +962,8 @@ defineExpose({
 <template>
   <section class="zt-vtable-grid" :class="[`zt-vtable-grid--${configSize}`, { 'is-disabled': disabled }]" :style="containerStyle" v-bind="$attrs">
     <div v-if="showForm ?? ($slots.form || formConfig?.items?.length)" class="zt-vtable-grid__form">
-      <slot name="form" :form-data="formData" :form="formData" :size="configSize" :query="query" :reload="reload">
-        <SearchForm v-if="formConfig" ref="formRef" :config="formConfig" :model="formData" :size="configSize" :disabled="disabled || saving" :option-loader="optionCache" @submit="query(true)" @reset="query(true)">
+      <slot name="form" :loading="actualLoading" :disabled="toolbarBusy" :export-loading="actualExportLoading" :form-data="formData" :form="formData" :size="configSize" :query="query" :reload="reload">
+        <SearchForm v-if="formConfig" ref="formRef" :config="formConfig" :model="formData" :size="configSize" :disabled="toolbarBusy" :loading="actualLoading" :option-loader="optionCache" @submit="query(true)" @reset="query(true)">
           <template v-for="(_, name) in $slots" #[name]="scope"><slot :name="name" v-bind="scope" /></template>
         </SearchForm>
       </slot>
@@ -900,15 +971,15 @@ defineExpose({
 
     <header v-if="toolbarItems.length || $slots['toolbar-left'] || $slots['toolbar-right']" class="zt-vtable-grid__toolbar" aria-label="表格工具栏">
       <div class="zt-vtable-grid__toolbar-group">
-        <slot name="toolbar-left" :query="query" :reload="reload" :selected-rows="selectedRows" :size="configSize" :checkbox="checkbox" />
-        <ZtButton v-if="toolbarItems.includes('create')" :size="configSize" status="primary" :disabled="disabled || saving" aria-label="新建" @click="toolbarAction('create')"><ZtIcon name="add" />新建</ZtButton>
+        <slot name="toolbar-left" :query="query" :reload="reload" :selected-rows="selectedRows" :size="configSize" :checkbox="checkbox" :loading="actualLoading" :export-loading="actualExportLoading" :disabled="toolbarBusy" />
+        <ZtButton v-if="toolbarItems.includes('create')" :size="configSize" status="primary" :disabled="toolbarBusy" aria-label="新建" @click="toolbarAction('create')"><ZtIcon name="add" />新建</ZtButton>
       </div>
       <div class="zt-vtable-grid__toolbar-group zt-vtable-grid__toolbar-group--right">
-        <slot name="toolbar-right" :query="query" :reload="reload" :selected-rows="selectedRows" :size="configSize" :checkbox="checkbox" />
-        <ZtButton v-if="toolbarItems.includes('import')" :size="configSize" :disabled="disabled || saving" aria-label="导入" status="success" plain @click="toolbarAction('import')"><ZtIcon name="upload" />导入</ZtButton>
-        <ZtButton v-if="toolbarItems.includes('export')" :size="configSize" :loading="exportLoading" :disabled="disabled || actualLoading || exportLoading" aria-label="导出" status="primary" plain @click="toolbarAction('export')"><ZtIcon name="download" />导出</ZtButton>
+        <slot name="toolbar-right" :query="query" :reload="reload" :selected-rows="selectedRows" :size="configSize" :checkbox="checkbox" :loading="actualLoading" :export-loading="actualExportLoading" :disabled="toolbarBusy" />
+        <ZtButton v-if="toolbarItems.includes('import')" :size="configSize" :disabled="toolbarBusy" aria-label="导入" text @click="toolbarAction('import')"><ZtIcon name="upload" />导入</ZtButton>
+        <ZtButton v-if="toolbarItems.includes('export')" :size="configSize" :loading="actualExportLoading" loading-text="导出中…" :aria-busy="actualExportLoading" :disabled="toolbarBusy" aria-label="导出" text @click="toolbarAction('export')"><ZtIcon name="download" />导出</ZtButton>
         <div v-if="toolbarItems.includes('columnsetting') && settingsEnabled" class="zt-vtable-grid__settings-wrap">
-          <ZtButton ref="settingsTrigger" :size="configSize" :disabled="disabled || saving" aria-label="列设置" :aria-expanded="settingsOpen" @click="settingsOpen = !settingsOpen" title="列设置"><ZtIcon name="settings" /></ZtButton>
+          <ZtButton ref="settingsTrigger" text class="zt-vtable-grid__toolbar-icon" :size="configSize" :disabled="toolbarBusy" aria-label="列设置" :aria-expanded="settingsOpen" @click="settingsOpen = !settingsOpen" title="列设置"><ZtIcon name="settings" /></ZtButton>
           <div v-if="settingsOpen" ref="settingsPanel" class="zt-vtable-grid__settings" role="dialog" aria-label="列设置" @keydown.esc.stop.prevent="closeSettings">
             <div v-for="(column, index) in orderedSettingsColumns" :key="columnKey(column)" class="zt-vtable-grid__settings-row" :draggable="!(typeof columnSettings === 'object' && columnSettings.allowReorder === false)" @dragstart="columnDrag = columnKey(column)" @dragover.prevent @drop.prevent="columnDrag && moveColumnTo(columnDrag, index)">
               <ZtCheckbox
@@ -928,7 +999,7 @@ defineExpose({
             <ZtButton :size="configSize" class="zt-vtable-grid__settings-reset" @click="resetColumnSettings">重置列设置</ZtButton>
           </div>
         </div>
-        <ZtButton v-if="toolbarItems.includes('reload')" :size="configSize" :disabled="disabled || actualLoading" aria-label="刷新" @click="toolbarAction('reload')"><ZtIcon name="refresh" /></ZtButton>
+        <ZtButton v-if="toolbarItems.includes('reload')" text class="zt-vtable-grid__toolbar-icon" title="刷新" :size="configSize" :disabled="toolbarBusy" :aria-busy="queryLoading" aria-label="刷新" @click="toolbarAction('reload')"><ZtIcon name="refresh" :spin="queryLoading" /></ZtButton>
       </div>
     </header>
 
@@ -972,7 +1043,7 @@ defineExpose({
       </div>
     </main>
 
-    <footer v-if="paginationEnabled || checkbox || changes.changedRowCount" class="zt-vtable-grid__footer">
+    <footer v-if="paginationEnabled || checkbox || changes.changedRowCount || $slots['pager-left'] || $slots['pager-right']" class="zt-vtable-grid__footer">
       <div class="zt-vtable-grid__footer-left">
         <slot name="pager-left" :total="total" :selected-rows="selectedRows" :selected-count="selectedRows.length">
           <span v-if="checkbox">已选 {{ selectedRows.length }} 行</span>

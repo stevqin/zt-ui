@@ -113,8 +113,8 @@ watch(
       border-inline-start-color: var(--glass-accent);
       background: var(--glass-accent-soft);
     }
-    &:focus-visible {
-      outline: 2px solid var(--glass-accent);
+    &:focus {
+      outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
       outline-offset: -2px;
     }
   }

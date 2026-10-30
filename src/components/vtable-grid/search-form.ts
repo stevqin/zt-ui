@@ -31,6 +31,7 @@ export default defineComponent({
     model: Object as PropType<Record<string, unknown>>,
     size: { type: String as PropType<ZtComponentSize>, default: 'default' },
     disabled: Boolean,
+    loading: Boolean,
     optionLoader: [Function, Object] as PropType<ZtVTableGridOptionLoader | ZtVTableGridOptionCache>,
   },
   emits: ['submit', 'reset', 'option-error'],
@@ -48,7 +49,7 @@ export default defineComponent({
       scrollToField: field => form.value?.scrollToField(field),
     }
     expose(api)
-    const scope = (item: ZtVTableGridFormItem): ZtVTableGridFormScope => ({ data: model.value, field: item.field, property: item.field, item, $form: api })
+    const scope = (item: ZtVTableGridFormItem): ZtVTableGridFormScope => ({ data: model.value, field: item.field, property: item.field, item, $form: api, size: props.size, disabled: props.disabled, loading: props.loading })
     const options = ref<Record<string, ZtVTableGridOption[]>>({})
     const loading = ref<Record<string, boolean>>({})
     let owned: ZtVTableGridOptionCache | undefined

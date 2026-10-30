@@ -20,14 +20,7 @@
 
 ### Task 1: Tabs and TabPane
 
-**Files:**
-- Create: `src/components/tabs/{types.ts,context.ts,ZtTabs.vue,ZtTabPane.vue,tabs.scss,index.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/tabs.spec.ts`
-- Create: `site/src/views/tabs/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Produces `ZtTabsProps`, `ZtTabPaneProps`, `ZtTabName`, `ZtTabsType`, `ZtTabsPosition`, `ZtTabs`, `ZtTabPane`.
@@ -77,21 +70,11 @@ Document line/card/border-card, positions, disabled/lazy, closable/editable, ove
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/tabs src/components/index.ts tests/tabs.spec.ts site/src/views/tabs site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add tabs components"
-```
+
 
 ### Task 2: Breadcrumb and BreadcrumbItem
 
-**Files:**
-- Create: `src/components/breadcrumb/{types.ts,context.ts,ZtBreadcrumb.vue,ZtBreadcrumbItem.vue,breadcrumb.scss,index.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/breadcrumb.spec.ts`
-- Create: `site/src/views/breadcrumb/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Produces `ZtBreadcrumbItemData`, `ZtBreadcrumbProps`, `ZtBreadcrumbItemProps`, `ZtBreadcrumb`, `ZtBreadcrumbItem`.
@@ -136,21 +119,11 @@ Document standard paths, custom separator, icon labels, collapsed paths, href an
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/breadcrumb src/components/index.ts tests/breadcrumb.spec.ts site/src/views/breadcrumb site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add breadcrumb components"
-```
+
 
 ### Task 3: Segmented
 
-**Files:**
-- Create: `src/components/segmented/{types.ts,options.ts,ZtSegmented.vue,segmented.scss,index.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/segmented.spec.ts`
-- Create: `site/src/views/segmented/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
+
 
 **Interfaces:**
 - Produces `ZtSegmentedValue = string | number`, `ZtSegmentedOption`, `ZtSegmentedProps`, and `ZtSegmented`.
@@ -193,10 +166,7 @@ Document primitive/object options, icons, block, statuses, sizes, disabled state
 
 Run: `cd site && npm test && npm run build`
 
-```bash
-git add src/components/segmented src/components/index.ts tests/segmented.spec.ts site/src/views/segmented site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs
-git commit -m "feat: add segmented component"
-```
+
 
 ### Task 4: Navigation regression gate
 

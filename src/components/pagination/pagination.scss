@@ -69,7 +69,7 @@
     svg { width: 16px; height: 16px; }
     &:not(:disabled):not(.is-active):hover { color: var(--zt-pagination-ink); background: var(--zt-pagination-soft); }
     &:not(:disabled):active { transform: scale(.95); }
-    &:focus-visible { outline: 2px solid var(--zt-pagination-line); outline-offset: 2px; }
+    &:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--zt-pagination-line); outline-offset: 2px; }
     &:disabled { color: var(--zt-text-muted, #c6cad0); cursor: not-allowed; }
     &.is-active {
       color: var(--zt-pagination-active-ink);
@@ -93,7 +93,7 @@
     outline: none;
     transition: border-color 160ms ease, box-shadow 160ms ease;
 
-    &:focus { border-color: var(--zt-pagination-line); box-shadow: 0 0 0 3px var(--zt-pagination-soft); }
+    &:focus { border-color: var(--zt-pagination-line); box-shadow: 0 0 0 calc(var(--zt-focus-ring-width, 0px) * 1.5) var(--zt-pagination-soft); }
     &:disabled { background: var(--zt-surface-soft, #f5f6f8); color: var(--zt-text-muted, #aeb3bb); cursor: not-allowed; }
   }
 

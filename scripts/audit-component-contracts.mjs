@@ -142,7 +142,7 @@ export function audit(root) {
     if (rows.has(name)) fail(name, 'duplicate matrix row', matrixFile)
     rows.set(name, { result, ...Object.fromEntries(dimensions.map((dimension, index) => [dimension, cells[index]])) })
   }
-  const docs = JSON.parse(read(resolve(root, 'site/src/docs/api.generated.json')))
+  const docs = JSON.parse(read(resolve(root, 'site/src/generated/api.json')))
   const metadata = new Map(Object.values(docs).flatMap(document => document.components.map(component => [component.name, component])))
   if (JSON.stringify(sharedSizes) !== JSON.stringify(sizes)) fail('library', 'density vocabulary must be mini/small/default/medium/large', 'src/components/types.ts')
   const names = new Set(components.map(component => component.name))
@@ -177,14 +177,14 @@ export function audit(root) {
       if (row.metadata !== 'family:ZtIcon' || !metadata.get('ZtIcon')?.props.some(prop => prop.name === 'strokeWidth') || !/createIconComponent\(name\)/.test(source) || !/props:\{strokeWidth:/.test(source)) fail(name, 'raw SVG icon missing shared metadata mapping', file)
     } else {
       const owner = metadata.get(name)
-      if (!owner) fail(name, 'missing generated API metadata', 'site/src/docs/api.generated.json')
+      if (!owner) fail(name, 'missing generated API metadata', 'site/src/generated/api.json')
       else {
         for (const prop of props) {
           const documented = owner.props.find(row => row.name === prop.name)
-          if (!documented) fail(name, `metadata missing prop ${prop.name}`, 'site/src/docs/api.generated.json')
-          else if (normalize(documented.type) !== normalize(prop.declaredType ?? prop.type) || documented.required !== prop.required) fail(name, `metadata type mismatch for ${prop.name}`, 'site/src/docs/api.generated.json')
+          if (!documented) fail(name, `metadata missing prop ${prop.name}`, 'site/src/generated/api.json')
+          else if (normalize(documented.type) !== normalize(prop.declaredType ?? prop.type) || documented.required !== prop.required) fail(name, `metadata type mismatch for ${prop.name}`, 'site/src/generated/api.json')
         }
-        for (const prop of owner.props) if (!props.some(row => row.name === prop.name)) fail(name, `metadata contains unknown prop ${prop.name}`, 'site/src/docs/api.generated.json')
+        for (const prop of owner.props) if (!props.some(row => row.name === prop.name)) fail(name, `metadata contains unknown prop ${prop.name}`, 'site/src/generated/api.json')
       }
     }
     for (const dimension of ['width', 'height']) {

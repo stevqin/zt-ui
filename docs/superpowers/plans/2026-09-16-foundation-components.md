@@ -20,19 +20,7 @@
 
 ### Task 1: Icon
 
-**Files:**
-- Create: `src/components/icon/types.ts`
-- Create: `src/components/icon/icons.ts`
-- Create: `src/components/icon/ZtIcon.vue`
-- Create: `src/components/icon/icon.scss`
-- Create: `src/components/icon/index.ts`
-- Modify: `src/components/index.ts`
-- Test: `tests/icon.spec.ts`
-- Create: `site/src/views/icon/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
-- Modify: `README.md`
+
 
 **Interfaces:**
 - Produces `ZtIconName`, `ZtIconStatus`, `ZtIconProps`, `ZtIcon`, and named icon components such as `ZtSearchIcon` and `ZtCloseIcon`.
@@ -93,24 +81,11 @@ Run: `cd site && npm test && npm run build`
 
 Commit:
 
-```bash
-git add src/components/icon src/components/index.ts tests/icon.spec.ts site/src/views/icon site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs README.md
-git commit -m "feat: add icon component"
-```
+
 
 ### Task 2: Link and Text
 
-**Files:**
-- Create: `src/components/link/{ZtLink.vue,index.ts,link.scss,types.ts}`
-- Create: `src/components/text/{ZtText.vue,index.ts,text.scss,types.ts}`
-- Modify: `src/components/index.ts`
-- Test: `tests/link-text.spec.ts`
-- Create: `site/src/views/link/Index.vue`
-- Create: `site/src/views/text/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
-- Modify: `README.md`
+
 
 **Interfaces:**
 - Produces `ZtLinkProps`, `ZtLinkStatus`, `ZtTextProps`, `ZtTextTag`, `ZtTextStatus`, `ZtLink`, and `ZtText`.
@@ -171,27 +146,11 @@ Run: `cd site && npm test && npm run build`
 
 Commit:
 
-```bash
-git add src/components/link src/components/text src/components/index.ts tests/link-text.spec.ts site/src/views/link site/src/views/text site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs README.md
-git commit -m "feat: add link and text components"
-```
+
 
 ### Task 3: Scrollbar
 
-**Files:**
-- Create: `src/components/scrollbar/types.ts`
-- Create: `src/components/scrollbar/scrollbar.ts`
-- Create: `src/components/scrollbar/ZtScrollbar.vue`
-- Create: `src/components/scrollbar/scrollbar.scss`
-- Create: `src/components/scrollbar/index.ts`
-- Modify: `src/components/index.ts`
-- Test: `tests/scrollbar.spec.ts`
-- Create: `site/src/views/scrollbar/Index.vue`
-- Modify: `site/src/docs/catalog.ts`
-- Modify: `site/src/router/index.ts`
-- Modify: `site/scripts/generate-api.mjs`
-- Modify: `site/scripts/api-overrides.mjs`
-- Modify: `README.md`
+
 
 **Interfaces:**
 - Produces `ZtScrollbarProps`, `ZtScrollbarScroll`, `ZtScrollbarInstance`, `ZtScrollbar`, and pure `calculateThumb(viewport, content, offset, minSize)` geometry.
@@ -252,10 +211,7 @@ Run: `cd site && npm test && npm run build`
 
 Commit:
 
-```bash
-git add src/components/scrollbar src/components/index.ts tests/scrollbar.spec.ts site/src/views/scrollbar site/src/docs/catalog.ts site/src/router/index.ts site/scripts/generate-api.mjs site/scripts/api-overrides.mjs README.md
-git commit -m "feat: add scrollbar component"
-```
+
 
 ### Task 4: Foundation regression gate
 
@@ -272,7 +228,7 @@ Expected: all tests and type generation pass.
 
 Run: `cd site && npm test && npm run build`
 
-Expected: API generation includes Icon, Link, Text, and Scrollbar; all site tests and build pass.
+
 
 - [ ] **Step 3: Inspect the four pages in light/dark and mini/large settings**
 

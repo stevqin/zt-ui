@@ -5,6 +5,7 @@
   display: inline-flex;
   align-items: center;
   gap: 8px;
+  outline: none;
   cursor: pointer;
   user-select: none;
   font: var(--glass-size-default) / 1.6 var(--glass-font);
@@ -155,8 +156,8 @@
   }
 
   // ── Focus-visible ──
-  &:focus-visible &__track {
-    box-shadow: 0 0 0 2px var(--glass-accent-soft);
+  &:focus &__track {
+    box-shadow: 0 0 0 var(--zt-focus-ring-width, 0px) var(--glass-accent-soft);
   }
 }
 

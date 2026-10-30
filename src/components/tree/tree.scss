@@ -17,8 +17,8 @@
 .zt-tree__row.is-active {
   background: var(--zt-surface-soft, #f3f5f7);
 }
-.zt-tree:focus-visible {
-  outline: 2px solid var(--hierarchy-accent, var(--zt-accent, #409eff));
+.zt-tree:focus {
+  outline: var(--zt-focus-ring-width, 0px) solid var(--hierarchy-accent, var(--zt-accent, #409eff));
 }
 .zt-tree__row.is-selected {
   color: var(--hierarchy-accent, var(--zt-accent, #409eff));
@@ -82,8 +82,8 @@
   background: var(--zt-accent-soft, #f0f5ff);
   color: var(--hierarchy-accent, var(--zt-accent, #409eff));
 }
-.zt-tree__expand:focus-visible {
-  outline: 2px solid currentColor;
+.zt-tree__expand:focus {
+  outline: var(--zt-focus-ring-width, 0px) solid currentColor;
   outline-offset: -2px;
 }
 .zt-tree__expand-icon {

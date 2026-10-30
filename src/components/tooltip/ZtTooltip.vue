@@ -132,8 +132,8 @@ watch(
   display: inline-flex;
   align-items: center;
 }
-.zt-tooltip__trigger:focus-visible {
-  outline: 2px solid var(--zt-accent, #245edb);
+.zt-tooltip__trigger:focus {
+  outline: var(--zt-focus-ring-width, 0px) solid var(--zt-accent, #245edb);
   outline-offset: 3px;
   border-radius: var(--zt-radius, 11px);
 }

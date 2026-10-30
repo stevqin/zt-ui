@@ -9,7 +9,7 @@
     pointer-events: auto;
     transform: scale(1);
   }
-  &:focus-visible { outline: 2px solid var(--zt-accent, #409eff); outline-offset: 2px; }
+  &:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--zt-accent, #409eff); outline-offset: 2px; }
   @media (hover: none), (pointer: coarse) {
     opacity: 1;
     pointer-events: auto;

@@ -1,0 +1,1143 @@
+{
+  "zt-alert-message": {
+    "components": [
+      {
+        "name": "ZtMessage",
+        "kind": "service",
+        "props": [
+          {
+            "name": "id",
+            "type": "NoticeId",
+            "required": false,
+            "description": "消息标识；传入已有 id 可原位更新。"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "description": "标题文本。"
+          },
+          {
+            "name": "content",
+            "type": "NoticeContent",
+            "required": true,
+            "description": "消息正文，支持字符串或数字。"
+          },
+          {
+            "name": "status",
+            "type": "NoticeStatus",
+            "required": false,
+            "description": "状态颜色与图标。"
+          },
+          {
+            "name": "duration",
+            "type": "number",
+            "required": false,
+            "description": "自动关闭时间（毫秒），0 表示常驻。"
+          },
+          {
+            "name": "closable",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示消息关闭按钮。"
+          }
+        ],
+        "events": [],
+        "slots": [],
+        "exposes": [
+          {
+            "name": "open",
+            "type": "(input: NoticeInput): NoticeId",
+            "required": true,
+            "description": "打开服务并返回可管理的标识或实例。"
+          },
+          {
+            "name": "success",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示成功状态消息。"
+          },
+          {
+            "name": "error",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示错误状态消息。"
+          },
+          {
+            "name": "warning",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示警告状态消息。"
+          },
+          {
+            "name": "info",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示说明状态消息。"
+          },
+          {
+            "name": "close",
+            "type": "(id: NoticeId): void",
+            "required": true,
+            "description": "关闭指定消息或当前服务，参数和返回值见类型列。"
+          },
+          {
+            "name": "clear",
+            "type": "(): void",
+            "required": true,
+            "description": "清空此服务所有消息；共享环境优先按 id 关闭。"
+          }
+        ],
+        "types": [
+          {
+            "name": "NoticeOptions",
+            "type": "export interface NoticeOptions {\n  id?: NoticeId\n  title?: string\n  content: NoticeContent\n  status?: NoticeStatus\n  duration?: number\n  closable?: boolean\n}",
+            "description": "消息与通知的配置，控制标识、标题、内容、状态、自动关闭及关闭按钮。"
+          },
+          {
+            "name": "ZtNoticeApi",
+            "type": "export interface ZtNoticeApi {\n  open(input: NoticeInput): NoticeId\n  success(input: NoticeShortcutInput): NoticeId\n  error(input: NoticeShortcutInput): NoticeId\n  warning(input: NoticeShortcutInput): NoticeId\n  info(input: NoticeShortcutInput): NoticeId\n  close(id: NoticeId): void\n  clear(): void\n}",
+            "description": "消息与通知服务的调用接口，可创建、按标识更新或关闭消息及清空队列。"
+          },
+          {
+            "name": "NoticeId",
+            "type": "export type NoticeId = string | number",
+            "description": "消息的唯一标识，用于后续更新与关闭同一条消息。"
+          },
+          {
+            "name": "NoticeContent",
+            "type": "export type NoticeContent = string | number",
+            "description": "消息内容，支持字符串或数字。"
+          },
+          {
+            "name": "NoticeStatus",
+            "type": "export type NoticeStatus = 'success' | 'error' | 'warning' | 'info'",
+            "description": "消息状态：success、error、warning、info；决定状态颜色与图标。"
+          },
+          {
+            "name": "NoticeInput",
+            "type": "export type NoticeInput = NoticeContent | NoticeOptions",
+            "description": "调用消息服务时的输入，可直接传内容，也可传完整配置。"
+          },
+          {
+            "name": "NoticeShortcutInput",
+            "type": "export type NoticeShortcutInput = NoticeContent | Omit<NoticeOptions, 'status'>",
+            "description": "调用 success、error 等状态快捷方法时的内容或配置。"
+          }
+        ]
+      }
+    ]
+  },
+  "zt-alert-notification": {
+    "components": [
+      {
+        "name": "ZtNotification",
+        "kind": "service",
+        "props": [
+          {
+            "name": "id",
+            "type": "NoticeId",
+            "required": false,
+            "description": "消息标识；传入已有 id 可原位更新。"
+          },
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "description": "标题文本。"
+          },
+          {
+            "name": "content",
+            "type": "NoticeContent",
+            "required": true,
+            "description": "通知正文，支持字符串或数字。"
+          },
+          {
+            "name": "status",
+            "type": "NoticeStatus",
+            "required": false,
+            "description": "状态颜色与图标。"
+          },
+          {
+            "name": "duration",
+            "type": "number",
+            "required": false,
+            "description": "自动关闭时间（毫秒），0 表示常驻。"
+          },
+          {
+            "name": "closable",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示消息关闭按钮。"
+          }
+        ],
+        "events": [],
+        "slots": [],
+        "exposes": [
+          {
+            "name": "open",
+            "type": "(input: NoticeInput): NoticeId",
+            "required": true,
+            "description": "打开服务并返回可管理的标识或实例。"
+          },
+          {
+            "name": "success",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示成功状态消息。"
+          },
+          {
+            "name": "error",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示错误状态消息。"
+          },
+          {
+            "name": "warning",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示警告状态消息。"
+          },
+          {
+            "name": "info",
+            "type": "(input: NoticeShortcutInput): NoticeId",
+            "required": true,
+            "description": "显示说明状态消息。"
+          },
+          {
+            "name": "close",
+            "type": "(id: NoticeId): void",
+            "required": true,
+            "description": "关闭指定消息或当前服务，参数和返回值见类型列。"
+          },
+          {
+            "name": "clear",
+            "type": "(): void",
+            "required": true,
+            "description": "清空此服务所有消息；共享环境优先按 id 关闭。"
+          }
+        ],
+        "types": [
+          {
+            "name": "NoticeOptions",
+            "type": "export interface NoticeOptions {\n  id?: NoticeId\n  title?: string\n  content: NoticeContent\n  status?: NoticeStatus\n  duration?: number\n  closable?: boolean\n}",
+            "description": "消息与通知的配置，控制标识、标题、内容、状态、自动关闭及关闭按钮。"
+          },
+          {
+            "name": "ZtNoticeApi",
+            "type": "export interface ZtNoticeApi {\n  open(input: NoticeInput): NoticeId\n  success(input: NoticeShortcutInput): NoticeId\n  error(input: NoticeShortcutInput): NoticeId\n  warning(input: NoticeShortcutInput): NoticeId\n  info(input: NoticeShortcutInput): NoticeId\n  close(id: NoticeId): void\n  clear(): void\n}",
+            "description": "消息与通知服务的调用接口，可创建、按标识更新或关闭消息及清空队列。"
+          },
+          {
+            "name": "NoticeId",
+            "type": "export type NoticeId = string | number",
+            "description": "消息的唯一标识，用于后续更新与关闭同一条消息。"
+          },
+          {
+            "name": "NoticeContent",
+            "type": "export type NoticeContent = string | number",
+            "description": "消息内容，支持字符串或数字。"
+          },
+          {
+            "name": "NoticeStatus",
+            "type": "export type NoticeStatus = 'success' | 'error' | 'warning' | 'info'",
+            "description": "消息状态：success、error、warning、info；决定状态颜色与图标。"
+          },
+          {
+            "name": "NoticeInput",
+            "type": "export type NoticeInput = NoticeContent | NoticeOptions",
+            "description": "调用消息服务时的输入，可直接传内容，也可传完整配置。"
+          },
+          {
+            "name": "NoticeShortcutInput",
+            "type": "export type NoticeShortcutInput = NoticeContent | Omit<NoticeOptions, 'status'>",
+            "description": "调用 success、error 等状态快捷方法时的内容或配置。"
+          }
+        ]
+      }
+    ]
+  },
+  "zt-alert-message-box": {
+    "components": [
+      {
+        "name": "ZtMessageBox",
+        "kind": "service",
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "description": "标题文本。"
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "required": false,
+            "description": "显示文本。"
+          },
+          {
+            "name": "icon",
+            "type": "NoticeStatus | string",
+            "required": false,
+            "description": "消息框图标，可使用状态名称或自定义图标字符串。"
+          },
+          {
+            "name": "buttons",
+            "type": "MessageBoxButtons",
+            "required": false,
+            "description": "具名按钮配置与返回值。"
+          },
+          {
+            "name": "button",
+            "type": "string | boolean | MessageBoxButtonOptions",
+            "required": false,
+            "description": "单个确认按钮配置。"
+          },
+          {
+            "name": "content",
+            "type": "string | Node | MessageBoxContentOptions",
+            "required": false,
+            "description": "消息框主体，支持字符串、DOM 节点或指定元素及属性的配置对象。"
+          },
+          {
+            "name": "className",
+            "type": "string",
+            "required": false,
+            "description": "附加样式类。"
+          },
+          {
+            "name": "closeOnClickOutside",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许点击外部关闭。"
+          },
+          {
+            "name": "closeOnEsc",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许 Escape 关闭。"
+          },
+          {
+            "name": "dangerMode",
+            "type": "boolean",
+            "required": false,
+            "description": "使用危险操作强调样式。"
+          },
+          {
+            "name": "shake",
+            "type": "boolean",
+            "required": false,
+            "description": "是否启用震动反馈。"
+          },
+          {
+            "name": "timer",
+            "type": "number",
+            "required": false,
+            "description": "自动关闭计时（毫秒）。"
+          }
+        ],
+        "events": [],
+        "slots": [],
+        "exposes": [
+          {
+            "name": "call",
+            "type": "(title?: string): Promise<unknown>",
+            "required": true,
+            "description": "直接调用服务；Promise 返回按钮的操作值。"
+          },
+          {
+            "name": "call",
+            "type": "(title: string, text: string, icon?: NoticeStatus): Promise<unknown>",
+            "required": true,
+            "description": "直接调用服务；Promise 返回按钮的操作值。"
+          },
+          {
+            "name": "call",
+            "type": "(options: MessageBoxOptions): Promise<unknown>",
+            "required": true,
+            "description": "直接调用服务；Promise 返回按钮的操作值。"
+          },
+          {
+            "name": "alert",
+            "type": "(options?: string | MessageBoxOptions): Promise<unknown>",
+            "required": true,
+            "description": "显示提醒框。"
+          },
+          {
+            "name": "confirm",
+            "type": "(options?: string | MessageBoxOptions): Promise<boolean>",
+            "required": true,
+            "description": "显示确认框，返回是否确认。"
+          },
+          {
+            "name": "prompt",
+            "type": "(options?: string | MessageBoxOptions): Promise<string | null>",
+            "required": true,
+            "description": "显示输入框，返回字符串或 null。"
+          },
+          {
+            "name": "close",
+            "type": "(): void",
+            "required": true,
+            "description": "关闭指定消息或当前服务，参数和返回值见类型列。"
+          },
+          {
+            "name": "getState",
+            "type": "(): MessageBoxPublicState",
+            "required": true,
+            "description": "读取当前消息框状态。"
+          },
+          {
+            "name": "setDefaults",
+            "type": "(options: Partial<MessageBoxOptions>): void",
+            "required": true,
+            "description": "设置全局默认配置。"
+          },
+          {
+            "name": "setActionValue",
+            "type": "(options: string | Record<string, unknown>): void",
+            "required": true,
+            "description": "设置消息框按钮的返回值。"
+          },
+          {
+            "name": "stopLoading",
+            "type": "(): void",
+            "required": true,
+            "description": "结束消息框按钮加载状态。"
+          }
+        ],
+        "types": [
+          {
+            "name": "MessageBoxOptions",
+            "type": "export interface MessageBoxOptions {\n  title?: string\n  text?: string\n  icon?: NoticeStatus | string\n  buttons?: MessageBoxButtons\n  button?: string | boolean | MessageBoxButtonOptions\n  content?: string | Node | MessageBoxContentOptions\n  className?: string\n  closeOnClickOutside?: boolean\n  closeOnEsc?: boolean\n  dangerMode?: boolean\n  shake?: boolean\n  timer?: number\n}",
+            "description": "消息框配置，控制标题、正文、按钮、输入框及关闭交互。"
+          },
+          {
+            "name": "MessageBoxApi",
+            "type": "export interface MessageBoxApi {\n  (title?: string): Promise<unknown>\n  (title: string, text: string, icon?: NoticeStatus): Promise<unknown>\n  (options: MessageBoxOptions): Promise<unknown>\n  alert(options?: string | MessageBoxOptions): Promise<unknown>\n  confirm(options?: string | MessageBoxOptions): Promise<boolean>\n  prompt(options?: string | MessageBoxOptions): Promise<string | null>\n  close(): void\n  getState(): MessageBoxPublicState\n  setDefaults(options: Partial<MessageBoxOptions>): void\n  setActionValue(options: string | Record<string, unknown>): void\n  stopLoading(): void\n}",
+            "description": "消息框服务接口，提供 alert、confirm、prompt 及消息框状态管理方法。"
+          },
+          {
+            "name": "NoticeStatus",
+            "type": "export type NoticeStatus = 'success' | 'error' | 'warning' | 'info'",
+            "description": "消息状态：success、error、warning、info；决定状态颜色与图标。"
+          },
+          {
+            "name": "MessageBoxButtons",
+            "type": "export type MessageBoxButtons = boolean | string | Array<string | boolean> | MessageBoxButtonList",
+            "description": "消息框按钮配置，支持单个确认按钮或按操作值命名的按钮集合。"
+          },
+          {
+            "name": "MessageBoxButtonOptions",
+            "type": "export interface MessageBoxButtonOptions {\n  visible?: boolean\n  text?: string\n  value?: unknown\n  className?: string | string[]\n  closeModal?: boolean\n}",
+            "description": "单个消息框按钮的文字、返回值、样式类、可见性及点击后是否关闭的配置。"
+          },
+          {
+            "name": "MessageBoxContentOptions",
+            "type": "export interface MessageBoxContentOptions {\n  element: string | Node\n  attributes?: Record<string, unknown>\n}",
+            "description": "消息框主体的元素配置，指定元素名称或 DOM 节点，并通过 attributes 设置元素属性。"
+          },
+          {
+            "name": "MessageBoxPublicState",
+            "type": "export interface MessageBoxPublicState {\n  isOpen: boolean\n  actions: Record<string, { value: unknown; closeModal: boolean; loading: boolean }>\n  timer: number\n}",
+            "description": "当前消息框的公开状态，包含是否打开、各按钮的动作值与加载状态，以及计时器。"
+          },
+          {
+            "name": "MessageBoxButtonList",
+            "type": "export type MessageBoxButtonList = Record<string, MessageBoxButtonOptions | boolean | string>",
+            "description": "内部解析后的具名按钮配置列表，按按钮操作值索引。"
+          }
+        ]
+      }
+    ]
+  },
+  "zt-alert-dialog": {
+    "components": [
+      {
+        "name": "ZtDialog",
+        "kind": "service",
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "description": "标题文本。"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "description": "头部副标题。"
+          },
+          {
+            "name": "content",
+            "type": "string | number | Node",
+            "required": false,
+            "description": "主体内容，支持字符串、数字或 DOM 节点；复杂内容可用 render 自定义渲染。"
+          },
+          {
+            "name": "html",
+            "type": "string",
+            "required": false,
+            "description": "HTML 内容；仅使用可信来源的内容。"
+          },
+          {
+            "name": "render",
+            "type": "(container: HTMLElement, controls: OverlayControls<T>) => void | (() => void)",
+            "required": false,
+            "description": "自定义 DOM 渲染；可返回清理函数。"
+          },
+          {
+            "name": "ariaLabel",
+            "type": "string",
+            "required": false,
+            "description": "辅助技术读取的浮层名称。"
+          },
+          {
+            "name": "closeLabel",
+            "type": "string",
+            "required": false,
+            "description": "关闭按钮的无障碍名称。"
+          },
+          {
+            "name": "width",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "面板宽度，支持数字或 CSS 长度。"
+          },
+          {
+            "name": "fullscreenBelow",
+            "type": "number",
+            "required": false,
+            "description": "低于指定视口宽度时切换全屏。"
+          },
+          {
+            "name": "showHeader",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示头部。"
+          },
+          {
+            "name": "showClose",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示关闭按钮。"
+          },
+          {
+            "name": "showFooter",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示底部操作区。"
+          },
+          {
+            "name": "showCancelButton",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示取消按钮。"
+          },
+          {
+            "name": "confirmText",
+            "type": "string",
+            "required": false,
+            "description": "确认按钮文字。"
+          },
+          {
+            "name": "cancelText",
+            "type": "string",
+            "required": false,
+            "description": "取消按钮文字。"
+          },
+          {
+            "name": "confirmDisabled",
+            "type": "boolean",
+            "required": false,
+            "description": "是否禁用确认按钮。"
+          },
+          {
+            "name": "loading",
+            "type": "boolean",
+            "required": false,
+            "description": "面板主体的加载状态。"
+          },
+          {
+            "name": "loadingText",
+            "type": "string",
+            "required": false,
+            "description": "主体加载提示文字。"
+          },
+          {
+            "name": "confirmLoading",
+            "type": "boolean",
+            "required": false,
+            "description": "确认按钮的加载状态。"
+          },
+          {
+            "name": "maskClosable",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许点击遮罩关闭。"
+          },
+          {
+            "name": "escClosable",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许 Escape 关闭。"
+          },
+          {
+            "name": "lockScroll",
+            "type": "boolean",
+            "required": false,
+            "description": "打开时锁定页面滚动。"
+          },
+          {
+            "name": "focusTrap",
+            "type": "boolean",
+            "required": false,
+            "description": "将键盘焦点限制在面板内部。"
+          },
+          {
+            "name": "autoFocus",
+            "type": "boolean",
+            "required": false,
+            "description": "打开后自动聚焦面板。"
+          },
+          {
+            "name": "bodyScroll",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许主体区域滚动。"
+          },
+          {
+            "name": "bodyPadding",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "主体内边距。"
+          },
+          {
+            "name": "zIndex",
+            "type": "number",
+            "required": false,
+            "description": "浮层初始层级。"
+          },
+          {
+            "name": "beforeClose",
+            "type": "(reason: OverlayCloseReason) => boolean | void | Promise<boolean | void>",
+            "required": false,
+            "description": "关闭前守卫；返回 false 可阻止关闭，支持异步。"
+          },
+          {
+            "name": "onOpen",
+            "type": "(controls: OverlayControls<T>) => void",
+            "required": false,
+            "description": "面板打开时回调。"
+          },
+          {
+            "name": "onShow",
+            "type": "(controls: OverlayControls<T>) => void",
+            "required": false,
+            "description": "进入动画完成时回调。"
+          },
+          {
+            "name": "onConfirm",
+            "type": "(controls: OverlayControls<T>) => void | Promise<void>",
+            "required": false,
+            "description": "确认操作回调，支持异步与 controls。"
+          },
+          {
+            "name": "onCancel",
+            "type": "() => void",
+            "required": false,
+            "description": "取消操作回调。"
+          },
+          {
+            "name": "onClose",
+            "type": "(reason: OverlayCloseReason) => void",
+            "required": false,
+            "description": "关闭操作回调，接收关闭原因。"
+          },
+          {
+            "name": "onHide",
+            "type": "(reason: OverlayCloseReason) => void",
+            "required": false,
+            "description": "退出动画完成时回调。"
+          },
+          {
+            "name": "onCloseError",
+            "type": "(error: unknown) => void",
+            "required": false,
+            "description": "关闭守卫异常回调。"
+          },
+          {
+            "name": "onError",
+            "type": "(error: unknown) => void",
+            "required": false,
+            "description": "操作异常回调。"
+          },
+          {
+            "name": "height",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "面板高度。"
+          },
+          {
+            "name": "maxHeight",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "面板最大高度。"
+          },
+          {
+            "name": "top",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "顶部偏移。"
+          },
+          {
+            "name": "showZoom",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示全屏切换按钮。"
+          },
+          {
+            "name": "fullscreen",
+            "type": "boolean",
+            "required": false,
+            "description": "初始是否全屏。"
+          }
+        ],
+        "events": [],
+        "slots": [],
+        "exposes": [
+          {
+            "name": "open",
+            "type": "<T = unknown>(options?: DialogOptions<T>): DialogInstance<T>",
+            "required": true,
+            "description": "打开服务并返回可管理的标识或实例。"
+          },
+          {
+            "name": "instance.closed",
+            "type": "Promise<OverlayClosedResult<T>>",
+            "required": true,
+            "description": "对话框关闭完成时兑现的 Promise，包含关闭原因 reason 和结果 value。"
+          },
+          {
+            "name": "instance.close",
+            "type": "(reason?: OverlayCloseReason, value?: T): Promise<boolean>",
+            "required": true,
+            "description": "请求关闭当前对话框，可传关闭原因及返回值；返回是否通过关闭守卫。"
+          },
+          {
+            "name": "instance.setLoading",
+            "type": "(loading: boolean, text?: string): this",
+            "required": true,
+            "description": "设置主体加载状态与提示文字。"
+          },
+          {
+            "name": "instance.setConfirmLoading",
+            "type": "(loading: boolean): this",
+            "required": true,
+            "description": "设置确认按钮加载状态。"
+          },
+          {
+            "name": "instance.focus",
+            "type": "(): this",
+            "required": true,
+            "description": "将焦点移入当前面板。"
+          },
+          {
+            "name": "instance.update",
+            "type": "(options: Partial<DialogOptions<T>>): this",
+            "required": true,
+            "description": "合并更新当前对话框配置，并返回当前实例。"
+          },
+          {
+            "name": "instance.toggleFullscreen",
+            "type": "(force?: boolean): this",
+            "required": true,
+            "description": "切换全屏，force 可指定目标状态。"
+          }
+        ],
+        "types": [
+          {
+            "name": "DialogOptions",
+            "type": "export interface DialogOptions<T = unknown> extends BaseOverlayOptions<T> {\n  height?: OverlayLength\n  maxHeight?: OverlayLength\n  top?: OverlayLength\n  showZoom?: boolean\n  fullscreen?: boolean\n}",
+            "description": "对话框配置，控制内容、尺寸、头尾区域、异步操作及关闭守卫。"
+          },
+          {
+            "name": "DialogInstance",
+            "type": "export interface DialogInstance<T = unknown> extends OverlayInstance<T> {\n  update(options: Partial<DialogOptions<T>>): this\n  toggleFullscreen(force?: boolean): this\n}",
+            "description": "对话框实例，可更新内容、控制加载、关闭面板、管理焦点并等待关闭结果。"
+          },
+          {
+            "name": "OverlayLength",
+            "type": "export type OverlayLength = number | string",
+            "description": "浮层长度值；数字按像素处理，字符串可使用 CSS 长度单位。"
+          }
+        ]
+      }
+    ]
+  },
+  "zt-alert-drawer": {
+    "components": [
+      {
+        "name": "ZtDrawer",
+        "kind": "service",
+        "props": [
+          {
+            "name": "title",
+            "type": "string",
+            "required": false,
+            "description": "标题文本。"
+          },
+          {
+            "name": "subtitle",
+            "type": "string",
+            "required": false,
+            "description": "头部副标题。"
+          },
+          {
+            "name": "content",
+            "type": "string | number | Node",
+            "required": false,
+            "description": "主体内容，支持字符串、数字或 DOM 节点；复杂内容可用 render 自定义渲染。"
+          },
+          {
+            "name": "html",
+            "type": "string",
+            "required": false,
+            "description": "HTML 内容；仅使用可信来源的内容。"
+          },
+          {
+            "name": "render",
+            "type": "(container: HTMLElement, controls: OverlayControls<T>) => void | (() => void)",
+            "required": false,
+            "description": "自定义 DOM 渲染；可返回清理函数。"
+          },
+          {
+            "name": "ariaLabel",
+            "type": "string",
+            "required": false,
+            "description": "辅助技术读取的浮层名称。"
+          },
+          {
+            "name": "closeLabel",
+            "type": "string",
+            "required": false,
+            "description": "关闭按钮的无障碍名称。"
+          },
+          {
+            "name": "width",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "面板宽度，支持数字或 CSS 长度。"
+          },
+          {
+            "name": "fullscreenBelow",
+            "type": "number",
+            "required": false,
+            "description": "低于指定视口宽度时切换全屏。"
+          },
+          {
+            "name": "showHeader",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示头部。"
+          },
+          {
+            "name": "showClose",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示关闭按钮。"
+          },
+          {
+            "name": "showFooter",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示底部操作区。"
+          },
+          {
+            "name": "showCancelButton",
+            "type": "boolean",
+            "required": false,
+            "description": "是否显示取消按钮。"
+          },
+          {
+            "name": "confirmText",
+            "type": "string",
+            "required": false,
+            "description": "确认按钮文字。"
+          },
+          {
+            "name": "cancelText",
+            "type": "string",
+            "required": false,
+            "description": "取消按钮文字。"
+          },
+          {
+            "name": "confirmDisabled",
+            "type": "boolean",
+            "required": false,
+            "description": "是否禁用确认按钮。"
+          },
+          {
+            "name": "loading",
+            "type": "boolean",
+            "required": false,
+            "description": "面板主体的加载状态。"
+          },
+          {
+            "name": "loadingText",
+            "type": "string",
+            "required": false,
+            "description": "主体加载提示文字。"
+          },
+          {
+            "name": "confirmLoading",
+            "type": "boolean",
+            "required": false,
+            "description": "确认按钮的加载状态。"
+          },
+          {
+            "name": "maskClosable",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许点击遮罩关闭。"
+          },
+          {
+            "name": "escClosable",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许 Escape 关闭。"
+          },
+          {
+            "name": "lockScroll",
+            "type": "boolean",
+            "required": false,
+            "description": "打开时锁定页面滚动。"
+          },
+          {
+            "name": "focusTrap",
+            "type": "boolean",
+            "required": false,
+            "description": "将键盘焦点限制在面板内部。"
+          },
+          {
+            "name": "autoFocus",
+            "type": "boolean",
+            "required": false,
+            "description": "打开后自动聚焦面板。"
+          },
+          {
+            "name": "bodyScroll",
+            "type": "boolean",
+            "required": false,
+            "description": "是否允许主体区域滚动。"
+          },
+          {
+            "name": "bodyPadding",
+            "type": "OverlayLength",
+            "required": false,
+            "description": "主体内边距。"
+          },
+          {
+            "name": "zIndex",
+            "type": "number",
+            "required": false,
+            "description": "浮层初始层级。"
+          },
+          {
+            "name": "beforeClose",
+            "type": "(reason: OverlayCloseReason) => boolean | void | Promise<boolean | void>",
+            "required": false,
+            "description": "关闭前守卫；返回 false 可阻止关闭，支持异步。"
+          },
+          {
+            "name": "onOpen",
+            "type": "(controls: OverlayControls<T>) => void",
+            "required": false,
+            "description": "面板打开时回调。"
+          },
+          {
+            "name": "onShow",
+            "type": "(controls: OverlayControls<T>) => void",
+            "required": false,
+            "description": "进入动画完成时回调。"
+          },
+          {
+            "name": "onConfirm",
+            "type": "(controls: OverlayControls<T>) => void | Promise<void>",
+            "required": false,
+            "description": "确认操作回调，支持异步与 controls。"
+          },
+          {
+            "name": "onCancel",
+            "type": "() => void",
+            "required": false,
+            "description": "取消操作回调。"
+          },
+          {
+            "name": "onClose",
+            "type": "(reason: OverlayCloseReason) => void",
+            "required": false,
+            "description": "关闭操作回调，接收关闭原因。"
+          },
+          {
+            "name": "onHide",
+            "type": "(reason: OverlayCloseReason) => void",
+            "required": false,
+            "description": "退出动画完成时回调。"
+          },
+          {
+            "name": "onCloseError",
+            "type": "(error: unknown) => void",
+            "required": false,
+            "description": "关闭守卫异常回调。"
+          },
+          {
+            "name": "onError",
+            "type": "(error: unknown) => void",
+            "required": false,
+            "description": "操作异常回调。"
+          }
+        ],
+        "events": [],
+        "slots": [],
+        "exposes": [
+          {
+            "name": "open",
+            "type": "<T = unknown>(options?: DrawerOptions<T>): DrawerInstance<T>",
+            "required": true,
+            "description": "打开服务并返回可管理的标识或实例。"
+          },
+          {
+            "name": "instance.closed",
+            "type": "Promise<OverlayClosedResult<T>>",
+            "required": true,
+            "description": "抽屉关闭完成时兑现的 Promise，包含关闭原因 reason 和结果 value。"
+          },
+          {
+            "name": "instance.close",
+            "type": "(reason?: OverlayCloseReason, value?: T): Promise<boolean>",
+            "required": true,
+            "description": "请求关闭当前抽屉，可传关闭原因及返回值；返回是否通过关闭守卫。"
+          },
+          {
+            "name": "instance.setLoading",
+            "type": "(loading: boolean, text?: string): this",
+            "required": true,
+            "description": "设置主体加载状态与提示文字。"
+          },
+          {
+            "name": "instance.setConfirmLoading",
+            "type": "(loading: boolean): this",
+            "required": true,
+            "description": "设置确认按钮加载状态。"
+          },
+          {
+            "name": "instance.focus",
+            "type": "(): this",
+            "required": true,
+            "description": "将焦点移入当前面板。"
+          },
+          {
+            "name": "instance.update",
+            "type": "(options: Partial<DrawerOptions<T>>): this",
+            "required": true,
+            "description": "合并更新当前抽屉配置，并返回当前实例。"
+          }
+        ],
+        "types": [
+          {
+            "name": "DrawerOptions",
+            "type": "export interface DrawerOptions<T = unknown> extends BaseOverlayOptions<T> {}",
+            "description": "抽屉配置，控制标题、内容、宽度、头尾区域、异步确认及关闭交互。"
+          },
+          {
+            "name": "DrawerInstance",
+            "type": "export interface DrawerInstance<T = unknown> extends OverlayInstance<T> {\n  update(options: Partial<DrawerOptions<T>>): this\n}",
+            "description": "抽屉实例，包含更新配置、控制加载、关闭、焦点管理及等待关闭结果的方法。"
+          }
+        ]
+      }
+    ]
+  },
+  "zt-alert-loading": {
+    "components": [
+      {
+        "name": "ZtLoading",
+        "kind": "service",
+        "props": [
+          {
+            "name": "text",
+            "type": "string",
+            "required": false,
+            "description": "显示文本。"
+          },
+          {
+            "name": "icon",
+            "type": "string | Element | null",
+            "required": false,
+            "description": "自定义加载图标，可传图标字符串、DOM 元素或 null。"
+          },
+          {
+            "name": "maskColor",
+            "type": "string | null",
+            "required": false,
+            "description": "全屏遮罩背景颜色。"
+          },
+          {
+            "name": "zIndex",
+            "type": "number",
+            "required": false,
+            "description": "浮层初始层级。"
+          }
+        ],
+        "events": [],
+        "slots": [],
+        "exposes": [
+          {
+            "name": "open",
+            "type": "(options?: LoadingOptions | string): LoadingInstance",
+            "required": true,
+            "description": "打开服务并返回可管理的标识或实例。"
+          },
+          {
+            "name": "close",
+            "type": "(): Promise<void>",
+            "required": true,
+            "description": "关闭指定消息或当前服务，参数和返回值见类型列。"
+          },
+          {
+            "name": "instance.closed",
+            "type": "Promise<void>",
+            "required": true,
+            "description": "加载遮罩关闭完成时兑现的 Promise，无返回值。"
+          },
+          {
+            "name": "instance.update",
+            "type": "(options: Pick<LoadingOptions, 'text' | 'icon' | 'maskColor'> | string): this",
+            "required": true,
+            "description": "更新加载文字、图标或遮罩颜色；字符串参数仅更新文字，返回当前实例。"
+          },
+          {
+            "name": "instance.close",
+            "type": "(): Promise<void>",
+            "required": true,
+            "description": "关闭此加载遮罩，Promise 在退出完成后兑现。"
+          }
+        ],
+        "types": [
+          {
+            "name": "LoadingOptions",
+            "type": "export interface LoadingOptions {\n  text?: string\n  icon?: string | Element | null\n  maskColor?: string | null\n  zIndex?: number\n}",
+            "description": "全屏加载配置，可设置加载文字、图标、遮罩颜色和层级。"
+          },
+          {
+            "name": "LoadingInstance",
+            "type": "export interface LoadingInstance {\n  readonly closed: Promise<void>\n  update(options: Pick<LoadingOptions, 'text' | 'icon' | 'maskColor'> | string): this\n  close(): Promise<void>\n}",
+            "description": "全屏加载实例，可更新显示配置并关闭加载遮罩。"
+          }
+        ]
+      }
+    ]
+  }
+}

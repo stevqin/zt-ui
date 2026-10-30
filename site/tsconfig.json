@@ -5,11 +5,10 @@
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
       "@ztechjs/zt-ui": ["../src/index.ts"],
       "@ztechjs/zt-ui/vtable": ["../src/components/vtable-grid/canvas.ts"]
     },
     "types": ["vite/client"]
   },
-  "include": ["src/**/*.ts", "src/**/*.vue", "vite.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.vue", "tests/**/*.ts", "vite.config.ts", "playwright.config.ts"]
 }

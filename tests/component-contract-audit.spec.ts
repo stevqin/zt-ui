@@ -14,7 +14,7 @@ function audit(directory = root) {
 function fixture() {
   const directory = mkdtempSync(join(tmpdir(), 'zt-contract-audit-'))
   temporary.push(directory)
-  for (const item of ['src', 'docs/ui-api-consistency-audit.md', 'site/src/docs/api.generated.json', 'tests']) {
+  for (const item of ['src', 'docs/ui-api-consistency-audit.md', 'site/src/generated/api.json', 'tests']) {
     cpSync(resolve(root, item), join(directory, item), { recursive: true })
   }
   return directory
@@ -75,7 +75,7 @@ describe('whole-library component contract gate', { timeout: 30_000 }, () => {
   })
   it('rejects generated metadata that loses an existing public prop', () => {
     const directory = fixture()
-    const file = join(directory, 'site/src/docs/api.generated.json')
+    const file = join(directory, 'site/src/generated/api.json')
     const metadata = JSON.parse(readFileSync(file, 'utf8'))
     metadata.button.components[0].props = metadata.button.components[0].props.filter((prop: { name: string }) => prop.name !== 'disabled')
     writeFileSync(file, JSON.stringify(metadata))
@@ -85,7 +85,7 @@ describe('whole-library component contract gate', { timeout: 30_000 }, () => {
   })
   it('rejects incorrect generated common-prop types and component-only status aliases', () => {
     const directory = fixture()
-    const file = join(directory, 'site/src/docs/api.generated.json')
+    const file = join(directory, 'site/src/generated/api.json')
     const metadata = JSON.parse(readFileSync(file, 'utf8'))
     metadata.button.components[0].props.find((prop: { name: string }) => prop.name === 'disabled').type = 'number'
     writeFileSync(file, JSON.stringify(metadata))
