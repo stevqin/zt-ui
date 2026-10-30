@@ -5,6 +5,7 @@ for (const [width, height] of [[2560, 900], [1440, 900], [1199, 900], [1024, 900
     await page.setViewportSize({ width, height });
     await page.goto('/#/components/form');
     const layout = page.locator('.documentation-layout');
+    await expect(layout.locator('main .doc-article')).toBeVisible();
     const metrics = await layout.evaluate(el => {
       const main = el.querySelector('main')!;
       const article = main.querySelector('.doc-article')!;
