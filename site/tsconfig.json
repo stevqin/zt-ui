@@ -6,7 +6,8 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@ztechjs/zt-ui": ["../src/index.ts"]
+      "@ztechjs/zt-ui": ["../src/index.ts"],
+      "@ztechjs/zt-ui/vtable": ["../src/components/vtable-grid/canvas.ts"]
     },
     "types": ["vite/client"]
   },

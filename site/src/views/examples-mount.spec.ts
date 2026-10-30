@@ -1,6 +1,6 @@
 import { mount, flushPromises } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { expect, it } from 'vitest'
+import { expect, it, vi } from 'vitest'
 import type { Component } from 'vue'
 import { components } from '../docs/catalog'
 // @ts-expect-error Node-only audit module.
@@ -62,3 +62,9 @@ it('mount inventory includes all catalog-declared example files', () => {
     .sort()
   expect(catalogFiles).toEqual(actualFiles)
 })
+
+// Canvas behavior is exercised in a browser; these suites check documentation shells.
+vi.mock('@ztechjs/zt-ui/vtable', () => ({
+  VTableTag: { render: () => null },
+  VTableText: { render: () => null },
+}))

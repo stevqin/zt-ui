@@ -3,6 +3,7 @@ import foundation from './foundation.mjs';
 import layout from './layout.mjs';
 import form from './form.mjs';
 import data from './data.mjs';
+import vtableGrid from './vtable-grid.mjs';
 import navigation from './navigation.mjs';
 import feedback from './feedback.mjs';
 import overlay from './overlay.mjs';
@@ -21,6 +22,7 @@ const curatedMetadata = Object.assign(
   layout,
   form,
   data,
+  vtableGrid,
   navigation,
   feedback,
   overlay,

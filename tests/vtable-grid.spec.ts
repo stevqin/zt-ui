@@ -1,6 +1,7 @@
 import { defineComponent, h, nextTick, onMounted } from 'vue'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { flushPromises, mount } from '@vue/test-utils'
+import { register } from '@visactor/vtable'
 
 const tableMock = vi.hoisted(() => ({
   setRecords: vi.fn(),
@@ -14,7 +15,7 @@ vi.mock('@visactor/vue-vtable', () => ({
   ListTable: defineComponent({
     name: 'MockListTable',
     props: ['options', 'records', 'onReady'],
-    emits: ['on-checkbox-state-change', 'on-change-cell-value', 'on-sort-click', 'on-click-cell', 'on-dbl-click-cell', 'on-button-click'],
+    emits: ['on-checkbox-state-change', 'on-change-cell-value', 'on-sort-click', 'on-click-cell', 'on-dbl-click-cell', 'on-button-click', 'on-context-menu-cell', 'on-icon-click', 'on-pasted-data', 'on-change-header-position'],
     setup(props, { expose }) {
       expose({ vTableInstance: tableMock })
       onMounted(() => props.onReady?.())
@@ -417,5 +418,245 @@ describe('ZtVTableGrid', () => {
     ])
     const content = (wrapper.vm as any).exportCsv()
     expect(content).not.toContain('总计')
+  })
+})
+
+describe('VTableGrid enhanced state', () => {
+  it('retains local pagination by default and supports full local filtered data', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: {
+      columns, records: rows, pageSize: 1, localPagination: false,
+      formData: { keyword: 'Beta' }, filterMethod: (row: Row, form: any) => row.name.includes(form.keyword),
+    } as any })
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([rows[1]])
+    expect(wrapper.findComponent({ name: 'ZtPagination' }).exists()).toBe(false)
+    await wrapper.setProps({ formData: { keyword: '' } } as any)
+    await (wrapper.vm as any).query()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith(rows)
+    wrapper.unmount()
+  })
+
+  it('skips ineligible checkbox rows including exposed key selection', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, checkbox: true,
+      checkboxCheckMethod: (row: Row) => row.id !== 2,
+    } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-checkbox-state-change', { row: 0, checked: true })
+    expect((wrapper.vm as any).getSelectedKeys()).toEqual([1])
+    ;(wrapper.vm as any).setSelectedKeys([2])
+    expect((wrapper.vm as any).getSelectedKeys()).toEqual([])
+    wrapper.unmount()
+  })
+
+  it('tracks local inserted/deleted records and restores a separate snapshot', async () => {
+    const source = rows.map(row => ({ ...row }))
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: [source[1], { id: 3, name: 'Gamma', amount: 30 }],
+      originalRecords: source, editable: true,
+    } as any })
+    await flushPromises()
+    const vm = wrapper.vm as any
+    expect(vm.hasChanges).toBe(true)
+    expect(vm.getEditChanges()).toMatchObject({ changedRowCount: 2, insertedRows: [{ id: 3 }], deletedRows: [{ id: 1 }] })
+    await vm.cancelChanges()
+    expect(wrapper.emitted('update:records')?.[0]?.[0]).toEqual(rows)
+    expect(wrapper.emitted('update:records')?.[0]?.[0]).not.toBe(source)
+    wrapper.unmount()
+  })
+
+  it('does not track drafts when batchEdit is false while keeping editors enabled', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, editable: true, batchEdit: false } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-change-cell-value', { row: 1, field: 'amount', rawValue: 10, changedValue: 11 })
+    expect((wrapper.vm as any).getChanges().changedRowCount).toBe(0)
+    expect(wrapper.emitted('cell-change')).toHaveLength(1)
+    wrapper.unmount()
+  })
+
+  it('keeps drafts when confirmation declines and serializes concurrent saves', async () => {
+    const decision = deferred<boolean>()
+    const confirm = vi.fn(() => decision.promise)
+    const save = vi.fn(async () => {})
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, editable: true, batchSave: save, saveConfirm: confirm } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-change-cell-value', { row: 1, field: 'amount', rawValue: 10, changedValue: 11 })
+    const first = (wrapper.vm as any).saveChanges()
+    const second = (wrapper.vm as any).saveChanges()
+    expect((wrapper.vm as any).isSaving).toBe(true)
+    decision.resolve(false)
+    await Promise.all([first, second])
+    expect(confirm).toHaveBeenCalledTimes(1)
+    expect(save).not.toHaveBeenCalled()
+    expect((wrapper.vm as any).hasChanges).toBe(true)
+    wrapper.unmount()
+  })
+
+  it('preserves save success events and rejects failed programmatic saves', async () => {
+    const order: string[] = []
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, editable: true,
+      batchSave: async () => { order.push('request') },
+      onSaveStart: () => order.push('start'), onSave: () => order.push('save'), onSaved: () => order.push('saved'),
+    } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-change-cell-value', { row: 1, field: 'amount', rawValue: 10, changedValue: 11 })
+    await (wrapper.vm as any).saveChanges()
+    expect(order).toEqual(['start', 'request', 'save', 'saved'])
+    wrapper.unmount()
+  })
+})
+
+describe('VTableGrid integrated interactions', () => {
+  it('keeps editable boolean cells separate from row checkbox selection', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns: [{ field: 'active', editable: 'checkbox' }], records: [{ id: 1, active: false }], editable: true, checkbox: true } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-checkbox-state-change', { row: 1, col: 1, field: 'active', checked: true })
+    expect((wrapper.vm as any).getChanges()).toMatchObject({ changedCellCount: 1, rows: [{ active: true }] })
+    expect((wrapper.vm as any).getSelectedKeys()).toEqual([])
+    wrapper.unmount()
+  })
+
+  it('freezes enhanced summaries without mixing missing backend fields with page calculations', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns: [{ field: 'name' }, { field: 'amount', summary: 'sum' }], proxyConfig: async () => ({ data: rows, total: 200, summary_data: {} }), summaryConfig: { label: { fields: ['name'] } } } as any })
+    await flushPromises()
+    const records = tableMock.setRecords.mock.calls.at(-1)![0]
+    expect(records.at(-1)).toMatchObject({ name: '全量合计', amount: '' })
+    expect(wrapper.findComponent({ name: 'MockListTable' }).props('options').bottomFrozenRowCount).toBe(1)
+    wrapper.unmount()
+  })
+
+  it('only exposes header filters for declared columns and filters loaded data', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns: [{ field: 'name', title: '名称', filter: true }, { field: 'amount' }], records: rows, filterConfig: true, localPagination: false } as any })
+    await flushPromises()
+    const table = wrapper.findComponent({ name: 'MockListTable' })
+    const options = table.props('options')
+    expect(options.columns[0].headerIcon).toBeTruthy()
+    expect(options.columns[1].headerIcon).toBeUndefined()
+    table.vm.$emit('on-icon-click', { col: 0, row: 0, funcType: 'zt-grid-filter', icon: { attribute: { funcType: 'zt-grid-filter' } }, event: { clientX: 80, clientY: 80 } })
+    await nextTick()
+    expect(wrapper.text()).toContain('筛选名称')
+    const choice = wrapper.findAll('input[type="checkbox"]').find(item => item.attributes('aria-label') === '筛选 Beta')!
+    await choice.setValue(false)
+    await wrapper.get('[aria-label="应用筛选"]').trigger('click')
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([rows[0]])
+    expect(wrapper.emitted('filter-change')?.at(-1)?.[0]).toEqual([rows[0]])
+    wrapper.unmount()
+  })
+
+  it('dispatches external export without generating CSV and includes scoped slot state', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, toolbarConfig: ['export'], exportMode: 'external' } as any, slots: { 'toolbar-left': (scope: any) => h('span', `size:${scope.size};checkbox:${scope.checkbox}`) } })
+    await flushPromises()
+    await wrapper.get('[aria-label="导出"]').trigger('click')
+    expect(wrapper.emitted('export-request')).toHaveLength(1)
+    expect(wrapper.emitted('export')).toBeUndefined()
+    expect(wrapper.text()).toContain('size:default;checkbox:false')
+    wrapper.unmount()
+  })
+})
+
+describe('VTableGrid option lifecycle', () => {
+  it('reuses the loader after changing editor sources without leaking prior options', async () => {
+    const loader = vi.fn(async (source: string) => [{ label: source, value: source }])
+    const wrapper = mount(ZtVTableGrid, { props: { columns: [{ field: 'name', editable: { type: 'select', optionSource: 'first' } }], records: rows, editable: true, optionLoader: loader } as any })
+    await flushPromises()
+    await wrapper.setProps({ columns: [{ field: 'name', editable: { type: 'select', optionSource: 'second' } }] } as any)
+    await flushPromises()
+    expect(loader.mock.calls.map(call => call[0])).toContain('second')
+    expect(wrapper.emitted('error')).toBeUndefined()
+    wrapper.unmount()
+  })
+})
+
+describe('VTableGrid native event adapter', () => {
+  it('receives vue-vtable context-menu-cell and pasted-data events', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, rowContextMenu: [{ type: 'inspect', text: '检查记录' }] } as any })
+    await flushPromises()
+    const table = wrapper.findComponent({ name: 'MockListTable' })
+    table.vm.$emit('on-context-menu-cell', { row: 1, col: 0, event: { clientX: 40, clientY: 40, preventDefault() {} } })
+    await flushPromises()
+    expect(wrapper.find('[role="menuitem"]').text()).toContain('检查记录')
+    table.vm.$emit('on-pasted-data', { values: [['updated']] })
+    expect(wrapper.emitted('paste')?.[0]?.[0]).toEqual({ values: [['updated']] })
+    wrapper.unmount()
+  })
+})
+
+it('keeps a menu opened by the same bubbling Canvas pointer event', async () => {
+  const wrapper = mount(ZtVTableGrid, { attachTo: document.body, props: { columns, records: rows, rowContextMenu: [{ type: 'inspect', text: '同事件菜单' }] } as any })
+  await flushPromises()
+  const table = wrapper.findComponent({ name: 'MockListTable' })
+  table.element.addEventListener('pointerdown', event => table.vm.$emit('on-context-menu-cell', { row: 1, col: 0, event }))
+  table.element.dispatchEvent(new MouseEvent('pointerdown', { bubbles: true, button: 2, clientX: 40, clientY: 40 }))
+  await flushPromises()
+  expect(document.querySelector('[role="menuitem"]')?.textContent).toContain('同事件菜单')
+  wrapper.unmount()
+})
+
+it('updates default Canvas content typography with the Grid size', async () => {
+  const wrapper = mount(ZtVTableGrid, { props: { records: rows, columns: [{ field: 'name', render: ({ row }: any) => h('span', row.name) }], size: 'default' } as any })
+  await flushPromises()
+  await vi.waitFor(() => expect(wrapper.findComponent({ name: 'MockListTable' }).props('options').columns[0].customLayout).toBeTypeOf('function'))
+  const args = { col: 0, row: 1, table: { getCellRect: () => ({ width: 200, height: 44 }), getCellOriginRecord: () => rows[0], frozenRowCount: 1 } }
+  const font = () => wrapper.findComponent({ name: 'MockListTable' }).props('options').columns[0].customLayout(args).rootContainer.getChildren()[0].attribute.fontSize
+  expect(font()).toBe(13)
+  await wrapper.setProps({ size: 'large' })
+  await flushPromises()
+  expect(font()).toBe(15)
+  wrapper.unmount()
+})
+
+it('registers header filtering icons with the VTable positionType contract', () => {
+  expect(register.icon('zt-grid-filter')).toMatchObject({ positionType: 'right', funcType: 'zt-grid-filter' })
+})
+
+describe('VTableGrid review regressions', () => {
+  it('restores local originals after reload and cancellation on another page', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: rows, pageSize: 1, editable: true } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-change-cell-value', { row: 1, field: 'amount', rawValue: 10, changedValue: 15 })
+    await (wrapper.vm as any).reload()
+    wrapper.findComponent({ name: 'ZtPagination' }).vm.$emit('update:currentPage', 2)
+    await flushPromises()
+    await (wrapper.vm as any).cancelChanges()
+    wrapper.findComponent({ name: 'ZtPagination' }).vm.$emit('update:currentPage', 1)
+    await flushPromises()
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([rows[0]])
+    expect((wrapper.vm as any).hasChanges).toBe(false)
+    wrapper.unmount()
+  })
+
+  it('preserves snapshot drafts when records refresh during a failed save', async () => {
+    const pending = deferred<void>()
+    const original = rows.map(row => ({ ...row }))
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: original.map(row => ({ ...row })), originalRecords: original, editable: true, batchSave: () => pending.promise } as any })
+    await flushPromises()
+    wrapper.findComponent({ name: 'MockListTable' }).vm.$emit('on-change-cell-value', { row: 1, field: 'amount', rawValue: 10, changedValue: 15 })
+    const save = (wrapper.vm as any).saveChanges()
+    await nextTick(); await nextTick()
+    await wrapper.setProps({ records: [{ ...rows[0], name: 'Refreshed' }, rows[1]] })
+    const assertion = expect(save).rejects.toThrow('failed')
+    pending.reject(new Error('failed'))
+    await assertion; await flushPromises()
+    expect((wrapper.vm as any).getChanges()).toMatchObject({ changedRowCount: 1, rows: [{ amount: 15, name: 'Refreshed' }] })
+    expect(tableMock.setRecords).toHaveBeenLastCalledWith([{ ...rows[0], name: 'Refreshed', amount: 15 }, rows[1]])
+    wrapper.unmount()
+  })
+
+  it('disables snapshot tracking when batchEdit is explicitly false', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns, records: [{ ...rows[0], amount: 11 }], originalRecords: rows, editable: true, batchEdit: false } as any })
+    await flushPromises()
+    expect((wrapper.vm as any).hasChanges).toBe(false)
+    expect((wrapper.vm as any).getChanges().changedRowCount).toBe(0)
+    expect(wrapper.text()).not.toContain('保存修改')
+    wrapper.unmount()
+  })
+
+  it('connects per-column overflow tooltip flags to the native callback', async () => {
+    const wrapper = mount(ZtVTableGrid, { props: { columns: [{ field: 'name', ellipsis: true, showOverflowTooltip: true }, { field: 'amount', ellipsis: true, showOverflowTooltip: false }], records: rows } as any })
+    await flushPromises()
+    const options = wrapper.findComponent({ name: 'MockListTable' }).props('options')
+    expect(options.tooltip?.isShowOverflowTextTooltip).toBeTypeOf('function')
+    expect(options.tooltip.isShowOverflowTextTooltip(0, 1, tableMock)).toBe(true)
+    expect(options.tooltip.isShowOverflowTextTooltip(1, 1, tableMock)).toBe(false)
+    wrapper.unmount()
   })
 })

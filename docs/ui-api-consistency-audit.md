@@ -182,6 +182,7 @@ Run `npm run audit:components`. There are no waived findings. New exports, absen
 | ZtUsersIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtVisibilityIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtVTableGrid | fixed | inherited | tokens | none | keyboard | owned-popup | public-types | generated | tests/vtable-grid.spec.ts |
+| ZtVTableGridImportDialog | compliant | delegated | tokens | none | delegated | delegated | public-types | generated | tests/vtable-grid-import.spec.ts |
 | ZtWarningIcon | compliant | intrinsic | intrinsic | none | decorative-svg | none | public-types | family:ZtIcon | tests/icon.spec.ts |
 | ZtWatermark | compliant | structural | intrinsic | none | structural | none | public-types | generated | src/components/watermark/watermark.spec.ts |
 

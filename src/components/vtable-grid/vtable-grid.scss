@@ -48,7 +48,7 @@
   &__settings-actions { display: flex; gap: 4px; }
   &__settings-actions .zt-button { width: 28px; height: 28px; min-width: 28px; }
   &__settings-reset { width: 100%; margin-top: 8px; }
-  &__body { position: relative; flex: 1 1 auto; min-height: 160px; overflow: hidden; }
+  &__body { position: relative; flex: 1 1 auto; min-height: 0; overflow: hidden; }
   &__body > .vue-vtable { width: 100%; height: 100%; }
   &__state {
     position: absolute;
@@ -113,4 +113,41 @@
 
 @media (prefers-reduced-motion: reduce) {
   .zt-vtable-grid__spinner { animation-duration: 1.5s; }
+}
+
+.zt-vtable-grid {
+  &__toolbar .zt-button { gap: 6px; }
+  &__toolbar .zt-icon { flex-shrink: 0; }
+  &__settings { max-width: calc(100vw - 24px); }
+  &__settings-row[draggable='true'] { cursor: grab; }
+  &__settings-row[draggable='true']:active { cursor: grabbing; }
+  &__settings-row:focus-within { background: var(--zt-accent-soft, #f0f5ff); border-radius: var(--zt-radius, 8px); }
+  &__filter {
+    position: fixed;
+    z-index: 3000;
+    display: grid;
+    gap: 10px;
+    width: min(244px, calc(100vw - 16px));
+    max-height: calc(100vh - 16px);
+    padding: 12px;
+    overflow: auto;
+    color: var(--zt-ink, #202020);
+    background: var(--zt-panel-bg, #fff);
+    border: 1px solid var(--zt-border, #dbe5f8);
+    border-radius: var(--zt-radius, 11px);
+    box-shadow: var(--zt-shadow, 0 12px 32px rgb(20 30 50 / 16%));
+    font-size: 13px;
+    small { color: var(--zt-muted, #626262); }
+  }
+  &__filter-options { display: grid; gap: 9px; max-height: 200px; overflow: auto; }
+  &__filter-options label { display: flex; align-items: center; gap: 8px; overflow-wrap: anywhere; }
+  &__filter-options input { accent-color: var(--zt-accent, #245edb); }
+  &__filter-actions { display: flex; justify-content: flex-end; gap: 8px; }
+  &__footer-left { flex-wrap: wrap; min-width: 0; }
+  &__form .zt-grid-search-form { min-width: 0; }
+}
+@media (max-width: 720px) {
+  .zt-vtable-grid__toolbar-group { max-width: 100%; }
+  .zt-vtable-grid__settings { width: min(300px, calc(100vw - 24px)); }
+  .zt-vtable-grid__footer-left { flex: 1 1 100%; }
 }

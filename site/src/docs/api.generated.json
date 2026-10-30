@@ -8230,6 +8230,276 @@
             "description": "列配置，支持固定、排序、编辑、格式化和汇总"
           },
           {
+            "name": "originalRecords",
+            "templateName": "original-records",
+            "kind": "prop",
+            "type": "Row[]",
+            "required": false,
+            "default": "无默认值",
+            "description": "独立的整表原始快照，用于新增、删除、修改和撤销；应用在保存成功后更新。"
+          },
+          {
+            "name": "localPagination",
+            "templateName": "local-pagination",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "本地记录是否分页；false 展示全部筛选结果并隐藏本地分页，远程分页规则不变。"
+          },
+          {
+            "name": "filterMethod",
+            "templateName": "filter-method",
+            "kind": "prop",
+            "type": "(row: Row, form: FormData) => boolean",
+            "required": false,
+            "default": "无默认值",
+            "description": "本地过滤函数 (row, form) => boolean，先过滤再排序、分页和汇总。"
+          },
+          {
+            "name": "formConfig",
+            "templateName": "form-config",
+            "kind": "prop",
+            "type": "ZtVTableGridFormConfig<FormData>",
+            "required": false,
+            "default": "无默认值",
+            "description": "配置式搜索表单，支持校验、布局、折叠、字段插槽和自定义控件；显式 formData 优先于配置 data。"
+          },
+          {
+            "name": "showForm",
+            "templateName": "show-form",
+            "kind": "prop",
+            "type": "boolean | null",
+            "required": false,
+            "default": "null",
+            "description": "搜索区域开关；null 时按 form 插槽或 formConfig.items 自动判断。"
+          },
+          {
+            "name": "optionLoader",
+            "templateName": "option-loader",
+            "kind": "prop",
+            "type": "ZtVTableGridOptionLoader",
+            "required": false,
+            "default": "无默认值",
+            "description": "注入选项加载器 (source, { signal })；搜索字段与编辑器在当前 Grid 内共享请求缓存，不绑定字典服务。"
+          },
+          {
+            "name": "actionDisplay",
+            "templateName": "action-display",
+            "kind": "prop",
+            "type": "'menu' | 'inline'",
+            "required": false,
+            "default": "'menu'",
+            "description": "行操作显示方式；menu 保留菜单交互，inline 直接显示 Canvas 按钮。"
+          },
+          {
+            "name": "toolbarConfig",
+            "templateName": "toolbar-config",
+            "kind": "prop",
+            "type": "ZtVTableGridToolbarItem[] | false",
+            "required": false,
+            "default": "undefined（沿用 toolbar）",
+            "description": "增强工具栏入口；明确传入时优先于 toolbar，false 隐藏内置按钮。"
+          },
+          {
+            "name": "exportMode",
+            "templateName": "export-mode",
+            "kind": "prop",
+            "type": "'csv' | 'external'",
+            "required": false,
+            "default": "'csv'",
+            "description": "csv 导出当前记录 CSV；external 仅触发 export-request，由应用决定格式和范围。"
+          },
+          {
+            "name": "exportLoading",
+            "templateName": "export-loading",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "外部导出的忙碌状态，阻止重复点击导出。"
+          },
+          {
+            "name": "summaryConfig",
+            "templateName": "summary-config",
+            "kind": "prop",
+            "type": "boolean | ZtVTableGridEnhancedSummaryConfig<Row>",
+            "required": false,
+            "default": "undefined（沿用 summary）",
+            "description": "增强汇总入口，支持后端字段映射、all/page 范围、标题合并及样式；明确传入时优先于 summary，后端缺失字段留空。"
+          },
+          {
+            "name": "batchEdit",
+            "templateName": "batch-edit",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "undefined（草稿跟踪按 true 处理）",
+            "description": "是否跟踪草稿并显示保存区域；省略时保留原草稿行为，false 不关闭已启用的单元格编辑，editable 仍控制编辑权限。"
+          },
+          {
+            "name": "saveConfirm",
+            "templateName": "save-confirm",
+            "kind": "prop",
+            "type": "boolean | ((payload: ZtVTableGridSavePayload<Row>) => boolean | Promise<boolean>)",
+            "required": false,
+            "default": "false",
+            "description": "保存前确认；true 使用确认弹窗，回调返回 false 则取消保存并保留草稿。"
+          },
+          {
+            "name": "beforeSave",
+            "templateName": "before-save",
+            "kind": "prop",
+            "type": "(payload: ZtVTableGridSavePayload<Row>) => boolean | void | Promise<boolean | void>",
+            "required": false,
+            "default": "无默认值",
+            "description": "保存前同步或异步校验；返回 false 阻止提交，失败或取消时保留草稿。"
+          },
+          {
+            "name": "rowContextMenu",
+            "templateName": "row-context-menu",
+            "kind": "prop",
+            "type": "ZtVTableGridRowContextMenu<Row>",
+            "required": false,
+            "default": "无默认值",
+            "description": "按行配置右键菜单，支持禁用、隐藏、分隔线和应用回调。"
+          },
+          {
+            "name": "checkboxCheckMethod",
+            "templateName": "checkbox-check-method",
+            "kind": "prop",
+            "type": "(row: Row) => boolean",
+            "required": false,
+            "default": "无默认值",
+            "description": "逐行判断是否允许勾选；返回 false 的行不可通过复选框或全选选中。"
+          },
+          {
+            "name": "rowHeight",
+            "templateName": "row-height",
+            "kind": "prop",
+            "type": "number | 'auto'",
+            "required": false,
+            "default": "按 size 计算",
+            "description": "数据行高度；数字使用固定高度，auto 启用自动行高。"
+          },
+          {
+            "name": "headerRowHeight",
+            "templateName": "header-row-height",
+            "kind": "prop",
+            "type": "number | 'auto'",
+            "required": false,
+            "default": "按 size 计算",
+            "description": "独立表头行高，支持数字或 auto。"
+          },
+          {
+            "name": "cellStyle",
+            "templateName": "cell-style",
+            "kind": "prop",
+            "type": "ZtVTableGridCellStyle",
+            "required": false,
+            "default": "无默认值",
+            "description": "全局数据单元格样式，显式列样式优先。"
+          },
+          {
+            "name": "headerStyle",
+            "templateName": "header-style",
+            "kind": "prop",
+            "type": "ZtVTableGridCellStyle",
+            "required": false,
+            "default": "无默认值",
+            "description": "全局表头样式，与显式列表头样式合并。"
+          },
+          {
+            "name": "highlightEditableCell",
+            "templateName": "highlight-editable-cell",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "突出显示可编辑单元格，不改变 editable 或列级权限。"
+          },
+          {
+            "name": "editableCellStyle",
+            "templateName": "editable-cell-style",
+            "kind": "prop",
+            "type": "ZtVTableGridCellStyle",
+            "required": false,
+            "default": "无默认值",
+            "description": "可编辑单元格默认样式，显式列样式与修改状态样式优先。"
+          },
+          {
+            "name": "readonlyCellStyle",
+            "templateName": "readonly-cell-style",
+            "kind": "prop",
+            "type": "ZtVTableGridCellStyle",
+            "required": false,
+            "default": "无默认值",
+            "description": "只读单元格默认样式，显式列样式优先。"
+          },
+          {
+            "name": "stripe",
+            "templateName": "stripe",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "显示隔行背景。"
+          },
+          {
+            "name": "cellSelection",
+            "templateName": "cell-selection",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "true",
+            "description": "允许 Canvas 单元格选择。"
+          },
+          {
+            "name": "borderMode",
+            "templateName": "border-mode",
+            "kind": "prop",
+            "type": "ZtVTableGridBorderMode",
+            "required": false,
+            "default": "'cell'",
+            "description": "边框模式：none 无分隔、row 行分隔、cell 单元格分隔。"
+          },
+          {
+            "name": "hoverMode",
+            "templateName": "hover-mode",
+            "kind": "prop",
+            "type": "'cell' | 'row'",
+            "required": false,
+            "default": "'row'",
+            "description": "悬停高亮模式：cell 单元格或 row 整行。"
+          },
+          {
+            "name": "reserveScrollbar",
+            "templateName": "reserve-scrollbar",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "始终预留并显示滚动条区域。"
+          },
+          {
+            "name": "scrollbarSize",
+            "templateName": "scrollbar-size",
+            "kind": "prop",
+            "type": "number",
+            "required": false,
+            "default": "10（reserveScrollbar=true 时）",
+            "description": "预留滚动条宽度，单位 px。"
+          },
+          {
+            "name": "filterConfig",
+            "templateName": "filter-config",
+            "kind": "prop",
+            "type": "boolean | Record<string, unknown>",
+            "required": false,
+            "default": "无默认值（不启用）",
+            "description": "显式启用已加载记录的表头枚举筛选，仅对 filter=true 列生效，不作为远程全量条件。"
+          },
+          {
             "name": "records",
             "templateName": "records",
             "kind": "prop",
@@ -8253,7 +8523,7 @@
             "kind": "prop",
             "type": "FormData",
             "required": false,
-            "default": "{} as FormData",
+            "default": "无默认值",
             "description": "传给远程查询的表单对象"
           },
           {
@@ -8504,7 +8774,7 @@
           {
             "name": "save",
             "type": "(payload: ZtVTableGridSavePayload<Row>) => void",
-            "description": "编辑变更保存成功后触发。",
+            "description": "兼容既有的保存成功事件；不表示请求开始。",
             "kind": "event"
           },
           {
@@ -8530,26 +8800,104 @@
             "type": "(value: ZtVTableGridColumnSettingsValue) => void",
             "description": "表格列显示或顺序配置改变后触发。",
             "kind": "event"
+          },
+          {
+            "name": "update:records",
+            "type": "(rows: Row[]) => void",
+            "description": "整表记录改变后触发，支持 v-model:records 同步新增、删除、导入和撤销。",
+            "kind": "event"
+          },
+          {
+            "name": "saved",
+            "type": "(payload: ZtVTableGridSavePayload<Row>) => void",
+            "description": "保存成功后触发；应用可在此更新独立 originalRecords 快照。",
+            "kind": "event"
+          },
+          {
+            "name": "save-start",
+            "type": "(payload: ZtVTableGridSavePayload<Row>) => void",
+            "description": "实际开始保存请求时触发，包含当前记录和整表草稿差异。",
+            "kind": "event"
+          },
+          {
+            "name": "cancel-edit",
+            "type": "(payload: ZtVTableGridSavePayload<Row>) => void",
+            "description": "撤销草稿后触发，恢复原始快照并通知应用同步记录。",
+            "kind": "event"
+          },
+          {
+            "name": "toolbar-action",
+            "type": "(type: string) => void",
+            "description": "点击内置工具栏动作时触发，参数为动作名称。",
+            "kind": "event"
+          },
+          {
+            "name": "reload",
+            "type": "() => void",
+            "description": "刷新动作通知，同时保留重新查询行为。",
+            "kind": "event"
+          },
+          {
+            "name": "export-request",
+            "type": "() => void",
+            "description": "exportMode=external 时请求应用导出，不同时生成 CSV。",
+            "kind": "event"
+          },
+          {
+            "name": "context-menu-click",
+            "type": "(payload: { type: string; row: Row; item: any }) => void",
+            "description": "执行右键菜单项时触发，包含动作类型、原始行与菜单项。",
+            "kind": "event"
+          },
+          {
+            "name": "filter-change",
+            "type": "(rows: Row[]) => void",
+            "description": "已加载记录的表头枚举筛选改变后触发，返回筛选记录。",
+            "kind": "event"
+          },
+          {
+            "name": "paste",
+            "type": "(payload: unknown) => void",
+            "description": "Canvas 粘贴事件通知，底层编辑流程处理有效单元格。",
+            "kind": "event"
+          },
+          {
+            "name": "row-reorder",
+            "type": "(payload: { sourceIndex: number; targetIndex: number }) => void",
+            "description": "行拖动完成时触发，包含原始记录的源索引和目标索引。",
+            "kind": "event"
           }
         ],
         "slots": [
           {
             "name": "form",
-            "type": "{ form-data, query, reload }",
+            "type": "{ form-data, form, size, query, reload }",
             "kind": "slot",
-            "description": "自定义编辑表单内容。"
+            "description": "自定义搜索区域，存在时优先于配置式搜索表单。"
           },
           {
             "name": "toolbar-left",
-            "type": "{ query, reload, selected-rows }",
+            "type": "{ query, reload, selected-rows, size, checkbox }",
             "kind": "slot",
-            "description": "表格工具栏左侧内容。"
+            "description": "工具栏左侧附加内容，继承表格尺寸和复选状态。"
           },
           {
             "name": "toolbar-right",
-            "type": "{ query, reload, selected-rows }",
+            "type": "{ query, reload, selected-rows, size, checkbox }",
             "kind": "slot",
-            "description": "表格工具栏右侧内容。"
+            "description": "工具栏右侧附加内容，继承表格尺寸和复选状态。"
+          },
+          {
+            "name": "pager-right",
+            "type": "{ total, selected-rows, selected-count }",
+            "kind": "slot",
+            "description": "分页右侧内容，包含记录总数、选中记录与选中数量。"
+          },
+          {
+            "name": "actions",
+            "type": "(scope: ZtVTableGridCellSlotScope<Row>) => unknown",
+            "kind": "slot",
+            "description": "自定义行操作 Canvas 内容，作用域包含原始业务行和单元格几何信息。"
           },
           {
             "name": "empty",
@@ -8565,12 +8913,66 @@
           },
           {
             "name": "edit-actions",
-            "type": "{ changes, save, cancel }",
+            "type": "{ changes, saving, save, cancel }",
             "kind": "slot",
-            "description": "自定义表格编辑操作区域。"
+            "description": "自定义草稿保存区域；save 失败时拒绝 Promise，调用方应处理异常。"
+          },
+          {
+            "name": "default",
+            "type": "ZtVTableGridFormScope<FormData> | ZtVTableGridCellSlotScope<Row>",
+            "kind": "slot",
+            "description": "动态字段插槽透传，通过 formConfig.items[].slots.default、列 slot 或 headerSlot 指定实际名称。"
           }
         ],
         "exposes": [
+          {
+            "name": "isSaving",
+            "type": "boolean",
+            "kind": "property",
+            "description": "是否正在执行保存流程，只读状态。"
+          },
+          {
+            "name": "hasChanges",
+            "type": "boolean",
+            "kind": "property",
+            "description": "是否存在待保存的整表草稿，只读状态。"
+          },
+          {
+            "name": "tableInstance",
+            "type": "ListTable | null",
+            "kind": "property",
+            "description": "底层 ListTable 实例，延迟加载前或卸载后为 null。"
+          },
+          {
+            "name": "formRef",
+            "type": "ZtFormInstance | null",
+            "kind": "property",
+            "description": "配置式搜索表单的 ZtForm 方法实例；未渲染配置表单时为 null。"
+          },
+          {
+            "name": "getEditChanges",
+            "type": "() => ZtVTableGridSavePayload<Row>",
+            "kind": "method",
+            "description": "读取整表草稿，与 getChanges 访问同一内部状态。"
+          },
+          {
+            "name": "getColumnSettings",
+            "type": "() => ZtVTableGridColumnSettingsValue",
+            "kind": "method",
+            "description": "读取当前列顺序和显示、隐藏字段。"
+          },
+          {
+            "name": "resetColumnSettings",
+            "type": "() => void",
+            "kind": "method",
+            "description": "恢复默认列顺序和可见性，并同步持久化设置。"
+          },
+          {
+            "name": "refreshRecords",
+            "type": "() => void",
+            "kind": "method",
+            "description": "按当前页重新刷新记录。"
+          },
           {
             "name": "query",
             "type": "(resetPage?: boolean) => Promise<void>",
@@ -8650,6 +9052,175 @@
             "description": "导出 CSV 文件并返回生成的 CSV 文本。"
           }
         ]
+      },
+      {
+        "name": "ZtVTableGridImportDialog",
+        "props": [
+          {
+            "name": "modelValue",
+            "templateName": "model-value",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "可见状态，支持 v-model；loading 时阻止用户关闭。"
+          },
+          {
+            "name": "file",
+            "templateName": "file",
+            "kind": "prop",
+            "type": "File | null",
+            "required": false,
+            "default": "null",
+            "description": "选择的文件，支持 v-model:file；组件不上传或解析文件。"
+          },
+          {
+            "name": "loading",
+            "templateName": "loading",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "导入忙碌状态，支持 v-model:loading；阻止关闭、更换、删除和重复确认。"
+          },
+          {
+            "name": "title",
+            "templateName": "title",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'导入数据'",
+            "description": "弹窗标题。"
+          },
+          {
+            "name": "description",
+            "templateName": "description",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "''",
+            "description": "导入说明。"
+          },
+          {
+            "name": "templateUrl",
+            "templateName": "template-url",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "''",
+            "description": "标准模板链接；优先于 templateDownload 显示。"
+          },
+          {
+            "name": "templateDownload",
+            "templateName": "template-download",
+            "kind": "prop",
+            "type": "boolean",
+            "required": false,
+            "default": "false",
+            "description": "未设置 templateUrl 时显示模板按钮，点击触发 template。"
+          },
+          {
+            "name": "formatHint",
+            "templateName": "format-hint",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'仅支持 .xlsx 文件'",
+            "description": "文件区域上方的格式提示。"
+          },
+          {
+            "name": "instructions",
+            "templateName": "instructions",
+            "kind": "prop",
+            "type": "string[]",
+            "required": false,
+            "default": "[]",
+            "description": "导入规则说明列表。"
+          },
+          {
+            "name": "accept",
+            "templateName": "accept",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'.xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'",
+            "description": "原生文件选择器的 accept 提示，实际扩展名校验由 allowedExtensions 执行。"
+          },
+          {
+            "name": "allowedExtensions",
+            "templateName": "allowed-extensions",
+            "kind": "prop",
+            "type": "string[]",
+            "required": false,
+            "default": "['.xlsx']",
+            "description": "允许的扩展名，忽略大小写并接受带或不带点号；空数组不限制扩展名。"
+          },
+          {
+            "name": "fileSpec",
+            "templateName": "file-spec",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'仅支持 .xlsx'",
+            "description": "空文件区域的规格文字。"
+          },
+          {
+            "name": "fileTypeLabel",
+            "templateName": "file-type-label",
+            "kind": "prop",
+            "type": "string",
+            "required": false,
+            "default": "'XLSX'",
+            "description": "文件类型提示文字。"
+          }
+        ],
+        "events": [
+          {
+            "name": "update:modelValue",
+            "type": "(value: boolean) => void",
+            "description": "双向绑定更新事件，对应 v-model。",
+            "kind": "event"
+          },
+          {
+            "name": "update:file",
+            "type": "(value: File | null) => void",
+            "description": "双向绑定更新事件，对应 v-model:file。",
+            "kind": "event"
+          },
+          {
+            "name": "update:loading",
+            "type": "(value: boolean) => void",
+            "description": "双向绑定更新事件，对应 v-model:loading。",
+            "kind": "event"
+          },
+          {
+            "name": "confirm",
+            "type": "(file: File) => void",
+            "description": "已选择有效文件且未处于 loading 时确认，参数为 File；由应用执行导入。",
+            "kind": "event"
+          },
+          {
+            "name": "template",
+            "type": "() => void",
+            "description": "点击模板下载按钮时触发，由应用提供模板。",
+            "kind": "event"
+          },
+          {
+            "name": "invalid-file",
+            "type": "(file: File) => void",
+            "description": "选择或拖入扩展名不符合要求的文件时触发，参数为被拒绝的 File。",
+            "kind": "event"
+          }
+        ],
+        "slots": [
+          {
+            "name": "options",
+            "type": "无",
+            "kind": "slot",
+            "description": "文件选择区域之前的业务导入选项，组件不解释其值。"
+          }
+        ],
+        "exposes": []
       }
     ],
     "types": [
@@ -8700,12 +9271,12 @@
       },
       {
         "name": "ZtVTableGridEditor",
-        "code": "export type ZtVTableGridEditor = boolean | 'text' | 'textarea' | 'date' | 'number' | 'email' | 'url' | {\n  type: 'select'\n  options: Array<{ label: string; value: string | number } | string | number>\n} | {\n  type: 'number'\n  min?: number\n  max?: number\n  step?: number\n}",
+        "code": "export type ZtVTableGridEditor = { type: 'image'; placeholder?: string } | boolean | 'text' | 'textarea' | 'date' | 'number' | 'email' | 'url' | 'image' | 'checkbox' | {\n  type: 'select'\n  options?: Array<{ label: string; value: string | number } | string | number>\n  optionSource?: string\n} | {\n  type: 'number'\n  min?: number\n  max?: number\n  step?: number\n}",
         "public": true
       },
       {
         "name": "ZtVTableGridSummaryRule",
-        "code": "export interface ZtVTableGridSummaryRule<Row> {\n  type?: ZtVTableGridSummaryType\n  calculate?: (values: unknown[], rows: Row[]) => unknown\n  formatter?: (value: unknown, rows: Row[]) => string | number\n}",
+        "code": "export interface ZtVTableGridSummaryRule<Row> {\n  type?: ZtVTableGridSummaryType\n  calculate?: (values: unknown[], rows: Row[]) => unknown\n  summaryField?: string\n  formatter?: (value: unknown, rows: Row[] & Partial<ZtVTableGridSummaryContext<Row>>) => string | number\n}",
         "public": true
       },
       {
@@ -8715,7 +9286,7 @@
       },
       {
         "name": "ZtVTableGridColumn",
-        "code": "export interface ZtVTableGridColumn<Row extends object = Record<string, unknown>> {\n  field: keyof Row & string\n  key?: string\n  title?: string\n  width?: string | number\n  minWidth?: string | number\n  maxWidth?: string | number\n  fixed?: 'left' | 'right'\n  sort?: boolean | ((first: unknown, second: unknown) => number)\n  formatter?: (args: unknown) => unknown\n  style?: unknown\n  headerStyle?: unknown\n  cellType?: string\n  headerType?: string\n  visible?: boolean\n  editable?: ZtVTableGridEditor\n  summary?: ZtVTableGridSummary<Row>\n  copyFormatter?: (row: Row) => unknown\n  [nativeOption: string]: unknown\n}",
+        "code": "export interface ZtVTableGridColumn<Row extends object = Record<string, unknown>> {\n  field: keyof Row & string\n  key?: string\n  title?: string\n  width?: string | number\n  minWidth?: string | number\n  maxWidth?: string | number\n  align?: 'left' | 'center' | 'right'\n  resizable?: boolean\n  ellipsis?: boolean | string\n  showOverflowTooltip?: boolean\n  keepAspectRatio?: boolean\n  imageAutoSizing?: boolean\n  clickToPreview?: boolean\n  slot?: string\n  headerSlot?: string\n  render?: (scope: ZtVTableGridCellSlotScope<Row>) => VNodeChild\n  slots?: { default?: (scope: ZtVTableGridCellSlotScope<Row>) => VNodeChild }\n  filter?: boolean\n  fixed?: 'left' | 'right'\n  sort?: boolean | ((first: unknown, second: unknown) => number)\n  formatter?: (args: unknown) => unknown\n  style?: unknown\n  headerStyle?: unknown\n  cellType?: string\n  headerType?: string\n  visible?: boolean\n  editable?: ZtVTableGridEditor\n  summary?: ZtVTableGridSummary<Row>\n  copyFormatter?: (row: Row) => unknown\n  [nativeOption: string]: unknown\n}",
         "public": true
       },
       {
@@ -8725,7 +9296,7 @@
       },
       {
         "name": "ZtVTableGridActionButton",
-        "code": "export interface ZtVTableGridActionButton<Row> {\n  type: string\n  text?: string\n  status?: ZtVTableGridActionStatus\n  visible?: boolean | ((row: Row) => boolean)\n  disabled?: boolean | ((row: Row) => boolean)\n  handler?: (row: Row) => void\n}",
+        "code": "export interface ZtVTableGridActionButton<Row> {\n  type: string\n  text?: string\n  mode?: 'icon' | 'text'\n  icon?: string\n  tooltip?: string | false\n  iconFontFamily?: string\n  color?: string\n  width?: number\n  status?: ZtVTableGridActionStatus\n  visible?: boolean | ((row: Row) => boolean)\n  disabled?: boolean | ((row: Row) => boolean)\n  handler?: (row: Row) => void\n}",
         "public": true
       },
       {
@@ -8754,13 +9325,53 @@
         "public": true
       },
       {
+        "name": "ZtVTableGridBorderMode",
+        "code": "export type ZtVTableGridBorderMode = 'none' | 'row' | 'cell'",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridCellStyle",
+        "code": "export type ZtVTableGridCellStyle = Record<string, any>",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridSummaryContext",
+        "code": "export interface ZtVTableGridSummaryContext<Row> { field: string; rows: Row[]; source: 'backend' | 'frontend'; scope: 'all' | 'page' }",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridSummaryLabel",
+        "code": "export interface ZtVTableGridSummaryLabel<Row> { text?: string | ((context: Omit<ZtVTableGridSummaryContext<Row>, 'field'>) => string); fields?: string[]; align?: 'left' | 'center' | 'right' }",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridContextMenuItem",
+        "code": "export interface ZtVTableGridContextMenuItem<Row> { type: string; text: string; icon?: string; color?: string; status?: ZtVTableGridActionStatus; disabled?: boolean; visible?: boolean; divided?: boolean; handler?: (row: Row) => void }",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridRowContextMenu",
+        "code": "export type ZtVTableGridRowContextMenu<Row> = ZtVTableGridContextMenuItem<Row>[] | ((row: Row) => ZtVTableGridContextMenuItem<Row>[])",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridContextMenuPayload",
+        "code": "export interface ZtVTableGridContextMenuPayload<Row> { type: string; row: Row; item: ZtVTableGridContextMenuItem<Row> }",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridCellSlotScope",
+        "code": "export interface ZtVTableGridCellSlotScope<Row> { row: Row; record: Row; rowIndex: number; col: number; width: number; height: number; x: number; y: number; [key: string]: unknown }",
+        "public": true
+      },
+      {
         "name": "ZtVTableGridEditChange",
         "code": "export interface ZtVTableGridEditChange<Row> {\n  key: ZtVTableGridRowKey\n  row: Row\n  original: Row\n  fields: string[]\n}",
         "public": true
       },
       {
         "name": "ZtVTableGridSavePayload",
-        "code": "export interface ZtVTableGridSavePayload<Row> {\n  rows: Row[]\n  changes: ZtVTableGridEditChange<Row>[]\n  changedRowCount: number\n  changedCellCount: number\n}",
+        "code": "export interface ZtVTableGridSavePayload<Row> {\n  records?: Row[]\n  insertedRows?: Row[]\n  deletedRows?: Row[]\n  rows: Row[]\n  changes: ZtVTableGridEditChange<Row>[]\n  changedRowCount: number\n  changedCellCount: number\n}",
         "public": true
       },
       {
@@ -8774,13 +9385,18 @@
         "public": true
       },
       {
+        "name": "ZtVTableGridEnhancedSummaryConfig",
+        "code": "export interface ZtVTableGridEnhancedSummaryConfig<Row = Record<string, unknown>> { label?: string | ZtVTableGridSummaryLabel<Row>; showWhenEmpty?: boolean; style?: ZtVTableGridCellStyle; scope?: 'all' | 'page'; summaryData?: Record<string, unknown> | null }",
+        "public": true
+      },
+      {
         "name": "ZtVTableGridTableOptions",
         "code": "export type ZtVTableGridTableOptions = Record<string, unknown>",
         "public": true
       },
       {
         "name": "ZtVTableGridProps",
-        "code": "export interface ZtVTableGridProps<\n  Row extends object = Record<string, unknown>,\n  FormData extends object = Record<string, unknown>,\n> {\n  columns: ZtVTableGridColumn<Row>[]\n  records?: Row[]\n  proxyConfig?: ZtVTableGridProxyConfig<Row, FormData>\n  formData?: FormData\n  pagination?: boolean | ZtVTableGridPagination\n  currentPage?: number\n  pageSize?: number\n  rowKey?: (keyof Row & string) | ((row: Row) => ZtVTableGridRowKey)\n  height?: string | number\n  size?: ZtVTableGridSize\n  loading?: boolean\n  autoLoad?: boolean\n  disabled?: boolean\n  checkbox?: boolean\n  reserveCheckbox?: boolean\n  actionButtons?: ZtVTableGridActionButtons<Row>\n  showActionsColumn?: boolean\n  editable?: boolean\n  batchSave?: ZtVTableGridBatchSave<Row>\n  summary?: boolean | ZtVTableGridSummaryConfig\n  columnSettings?: boolean | ZtVTableGridColumnSettings\n  toolbar?: ZtVTableGridToolbarItem[] | false\n  tableOptions?: ZtVTableGridTableOptions\n}",
+        "code": "export interface ZtVTableGridProps<\n  Row extends object = Record<string, unknown>,\n  FormData extends object = Record<string, unknown>,\n> {\n  columns: ZtVTableGridColumn<Row>[]\n  originalRecords?: Row[]\n  localPagination?: boolean\n  filterMethod?: (row: Row, form: FormData) => boolean\n  formConfig?: ZtVTableGridFormConfig<FormData>\n  showForm?: boolean | null\n  optionLoader?: ZtVTableGridOptionLoader\n  actionDisplay?: 'menu' | 'inline'\n  toolbarConfig?: ZtVTableGridToolbarItem[] | false\n  exportMode?: 'csv' | 'external'\n  exportLoading?: boolean\n  summaryConfig?: boolean | ZtVTableGridEnhancedSummaryConfig<Row>\n  batchEdit?: boolean\n  saveConfirm?: boolean | ((payload: ZtVTableGridSavePayload<Row>) => boolean | Promise<boolean>)\n  beforeSave?: (payload: ZtVTableGridSavePayload<Row>) => boolean | void | Promise<boolean | void>\n  rowContextMenu?: ZtVTableGridRowContextMenu<Row>\n  checkboxCheckMethod?: (row: Row) => boolean\n  rowHeight?: number | 'auto'\n  headerRowHeight?: number | 'auto'\n  cellStyle?: ZtVTableGridCellStyle\n  headerStyle?: ZtVTableGridCellStyle\n  highlightEditableCell?: boolean\n  editableCellStyle?: ZtVTableGridCellStyle\n  readonlyCellStyle?: ZtVTableGridCellStyle\n  stripe?: boolean\n  cellSelection?: boolean\n  borderMode?: ZtVTableGridBorderMode\n  hoverMode?: 'cell' | 'row'\n  reserveScrollbar?: boolean\n  scrollbarSize?: number\n  filterConfig?: boolean | Record<string, unknown>\n  records?: Row[]\n  proxyConfig?: ZtVTableGridProxyConfig<Row, FormData>\n  formData?: FormData\n  pagination?: boolean | ZtVTableGridPagination\n  currentPage?: number\n  pageSize?: number\n  rowKey?: (keyof Row & string) | ((row: Row) => ZtVTableGridRowKey)\n  height?: string | number\n  size?: ZtVTableGridSize\n  loading?: boolean\n  autoLoad?: boolean\n  disabled?: boolean\n  checkbox?: boolean\n  reserveCheckbox?: boolean\n  actionButtons?: ZtVTableGridActionButtons<Row>\n  showActionsColumn?: boolean\n  editable?: boolean\n  batchSave?: ZtVTableGridBatchSave<Row>\n  summary?: boolean | ZtVTableGridSummaryConfig\n  columnSettings?: boolean | ZtVTableGridColumnSettings\n  toolbar?: ZtVTableGridToolbarItem[] | false\n  tableOptions?: ZtVTableGridTableOptions\n}",
         "public": true
       },
       {
@@ -8805,22 +9421,22 @@
       },
       {
         "name": "ZtVTableGridExpose",
-        "code": "export interface ZtVTableGridExpose<Row> {\n  query: (resetPage?: boolean) => Promise<void>\n  reload: () => Promise<void>\n  resize: () => void\n  setRecords: (records: Row[], total?: number) => void\n  getTableInstance: () => ListTable | null\n  getSelectedRows: () => Row[]\n  getSelectedKeys: () => ZtVTableGridRowKey[]\n  setSelectedKeys: (keys: ZtVTableGridRowKey[]) => void\n  clearSelection: () => void\n  getChanges: () => ZtVTableGridSavePayload<Row>\n  saveChanges: () => Promise<void>\n  cancelChanges: () => void\n  exportCsv: (filename?: string) => string\n}",
+        "code": "export interface ZtVTableGridExpose<Row> {\n  readonly isSaving: boolean\n  readonly hasChanges: boolean\n  readonly tableInstance: ListTable | null\n  readonly formRef: ZtFormInstance | null\n  refreshRecords: () => void\n  getEditChanges: () => ZtVTableGridSavePayload<Row>\n  getColumnSettings: () => ZtVTableGridColumnSettingsValue\n  resetColumnSettings: () => void\n  query: (resetPage?: boolean) => Promise<void>\n  reload: () => Promise<void>\n  resize: () => void\n  setRecords: (records: Row[], total?: number) => void\n  getTableInstance: () => ListTable | null\n  getSelectedRows: () => Row[]\n  getSelectedKeys: () => ZtVTableGridRowKey[]\n  setSelectedKeys: (keys: ZtVTableGridRowKey[]) => void\n  clearSelection: () => void\n  getChanges: () => ZtVTableGridSavePayload<Row>\n  saveChanges: () => Promise<void>\n  cancelChanges: () => void\n  exportCsv: (filename?: string) => string\n}",
         "public": true
       },
       {
         "name": "ZtVTableGridSlots",
-        "code": "export interface ZtVTableGridSlots<\n  Row extends object = Record<string, unknown>,\n  FormData extends object = Record<string, unknown>,\n> {\n  form?: (scope: { formData: FormData; query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void> }) => unknown\n  'toolbar-left'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[] }) => unknown\n  'toolbar-right'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[] }) => unknown\n  empty?: () => unknown\n  'pager-left'?: (scope: { total: number; selectedRows: Row[]; selectedCount: number }) => unknown\n  'edit-actions'?: (scope: { changes: ZtVTableGridSavePayload<Row>; save: () => Promise<void>; cancel: () => void }) => unknown\n}",
+        "code": "export interface ZtVTableGridSlots<\n  Row extends object = Record<string, unknown>,\n  FormData extends object = Record<string, unknown>,\n> {\n  form?: (scope: { formData: FormData; form: FormData; size: ZtVTableGridSize; query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void> }) => unknown\n  'toolbar-left'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[]; size: ZtVTableGridSize; checkbox: boolean }) => unknown\n  'toolbar-right'?: (scope: { query: (resetPage?: boolean) => Promise<void>; reload: () => Promise<void>; selectedRows: Row[]; size: ZtVTableGridSize; checkbox: boolean }) => unknown\n  'pager-right'?: (scope: { total: number; selectedRows: Row[]; selectedCount: number }) => unknown\n  actions?: (scope: ZtVTableGridCellSlotScope<Row>) => unknown\n  [name: string]: ((scope: any) => unknown) | undefined\n  empty?: () => unknown\n  'pager-left'?: (scope: { total: number; selectedRows: Row[]; selectedCount: number }) => unknown\n  'edit-actions'?: (scope: { changes: ZtVTableGridSavePayload<Row>; saving: boolean; save: () => Promise<void>; cancel: () => void }) => unknown\n}",
         "public": true
       },
       {
         "name": "ZtVTableGridEmits",
-        "code": "export interface ZtVTableGridEmits<Row extends object = Record<string, unknown>> {\n  (event: 'update:currentPage' | 'update:pageSize', value: number): void\n  (event: 'loaded', payload: ZtVTableGridLoadedPayload<Row>): void\n  (event: 'error' | 'save-error', error: unknown): void\n  (event: 'page-change', payload: ZtVTableGridPageChangePayload): void\n  (event: 'sort-change', payload: ZtVTableGridSort): void\n  (event: 'selection-change', rows: Row[]): void\n  (event: 'action', payload: ZtVTableGridActionPayload<Row>): void\n  (event: 'create' | 'import'): void\n  (event: 'export', csv: string): void\n  (event: 'cell-change', payload: ZtVTableGridCellChangePayload<Row>): void\n  (event: 'save', payload: ZtVTableGridSavePayload<Row>): void\n  (event: 'row-click' | 'row-dblclick', row: Row, nativeEvent: unknown): void\n  (event: 'column-settings-change', value: ZtVTableGridColumnSettingsValue): void\n}",
+        "code": "export interface ZtVTableGridEmits<Row extends object = Record<string, unknown>> {\n  (event: 'update:currentPage' | 'update:pageSize', value: number): void\n  (event: 'update:records', rows: Row[]): void\n  (event: 'saved' | 'save-start' | 'cancel-edit', payload: ZtVTableGridSavePayload<Row>): void\n  (event: 'row-reorder', payload: { sourceIndex: number; targetIndex: number }): void\n  (event: 'filter-change', rows: Row[]): void\n  (event: 'paste', payload: unknown): void\n  (event: 'toolbar-action', type: ZtVTableGridToolbarItem): void\n  (event: 'reload' | 'export-request'): void\n  (event: 'context-menu-click', payload: ZtVTableGridContextMenuPayload<Row>): void\n  (event: 'loaded', payload: ZtVTableGridLoadedPayload<Row>): void\n  (event: 'error' | 'save-error', error: unknown): void\n  (event: 'page-change', payload: ZtVTableGridPageChangePayload): void\n  (event: 'sort-change', payload: ZtVTableGridSort): void\n  (event: 'selection-change', rows: Row[]): void\n  (event: 'action', payload: ZtVTableGridActionPayload<Row>): void\n  (event: 'create' | 'import'): void\n  (event: 'export', csv: string): void\n  (event: 'cell-change', payload: ZtVTableGridCellChangePayload<Row>): void\n  (event: 'save', payload: ZtVTableGridSavePayload<Row>): void\n  (event: 'row-click' | 'row-dblclick', row: Row, nativeEvent: unknown): void\n  (event: 'column-settings-change', value: ZtVTableGridColumnSettingsValue): void\n}",
         "public": true
       },
       {
         "name": "ZtVTableGridEventProps",
-        "code": "export interface ZtVTableGridEventProps<Row extends object = Record<string, unknown>> {\n  'onUpdate:currentPage'?: (value: number) => void\n  'onUpdate:pageSize'?: (value: number) => void\n  onLoaded?: (payload: ZtVTableGridLoadedPayload<Row>) => void\n  onError?: (error: unknown) => void\n  onPageChange?: (payload: ZtVTableGridPageChangePayload) => void\n  onSortChange?: (payload: ZtVTableGridSort) => void\n  onSelectionChange?: (rows: Row[]) => void\n  onAction?: (payload: ZtVTableGridActionPayload<Row>) => void\n  onCreate?: () => void\n  onImport?: () => void\n  onExport?: (csv: string) => void\n  onCellChange?: (payload: ZtVTableGridCellChangePayload<Row>) => void\n  onSave?: (payload: ZtVTableGridSavePayload<Row>) => void\n  onSaveError?: (error: unknown) => void\n  onRowClick?: (row: Row, nativeEvent: unknown) => void\n  onRowDblclick?: (row: Row, nativeEvent: unknown) => void\n  onColumnSettingsChange?: (value: ZtVTableGridColumnSettingsValue) => void\n}",
+        "code": "export interface ZtVTableGridEventProps<Row extends object = Record<string, unknown>> {\n  'onUpdate:records'?: (rows: Row[]) => void\n  onSaved?: (payload: ZtVTableGridSavePayload<Row>) => void\n  onSaveStart?: (payload: ZtVTableGridSavePayload<Row>) => void\n  onCancelEdit?: (payload: ZtVTableGridSavePayload<Row>) => void\n  onRowReorder?: (payload: { sourceIndex: number; targetIndex: number }) => void\n  onFilterChange?: (rows: Row[]) => void\n  onPaste?: (payload: unknown) => void\n  onToolbarAction?: (type: ZtVTableGridToolbarItem) => void\n  onReload?: () => void\n  onExportRequest?: () => void\n  onContextMenuClick?: (payload: ZtVTableGridContextMenuPayload<Row>) => void\n  'onUpdate:currentPage'?: (value: number) => void\n  'onUpdate:pageSize'?: (value: number) => void\n  onLoaded?: (payload: ZtVTableGridLoadedPayload<Row>) => void\n  onError?: (error: unknown) => void\n  onPageChange?: (payload: ZtVTableGridPageChangePayload) => void\n  onSortChange?: (payload: ZtVTableGridSort) => void\n  onSelectionChange?: (rows: Row[]) => void\n  onAction?: (payload: ZtVTableGridActionPayload<Row>) => void\n  onCreate?: () => void\n  onImport?: () => void\n  onExport?: (csv: string) => void\n  onCellChange?: (payload: ZtVTableGridCellChangePayload<Row>) => void\n  onSave?: (payload: ZtVTableGridSavePayload<Row>) => void\n  onSaveError?: (error: unknown) => void\n  onRowClick?: (row: Row, nativeEvent: unknown) => void\n  onRowDblclick?: (row: Row, nativeEvent: unknown) => void\n  onColumnSettingsChange?: (value: ZtVTableGridColumnSettingsValue) => void\n}",
         "public": true
       },
       {
@@ -8829,8 +9445,88 @@
         "public": true
       },
       {
+        "name": "ZtVTableGridImportDialogProps",
+        "code": "export interface ZtVTableGridImportDialogProps {\n  modelValue?: boolean\n  file?: File | null\n  loading?: boolean\n  title?: string\n  description?: string\n  templateUrl?: string\n  templateDownload?: boolean\n  formatHint?: string\n  instructions?: string[]\n  accept?: string\n  allowedExtensions?: string[]\n  fileSpec?: string\n  fileTypeLabel?: string\n}",
+        "public": true
+      },
+      {
         "name": "ZtComponentSize",
         "code": "export type ZtComponentSize = 'mini' | 'small' | 'default' | 'medium' | 'large'",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridFormConfig",
+        "code": "export interface ZtVTableGridFormConfig<FormData = Record<string, unknown>> {\n  data?: FormData\n  items?: ZtVTableGridFormItem<FormData>[]\n  rules?: ZtFormRules\n  inline?: boolean\n  layout?: 'inline' | 'vertical'\n  labelPosition?: ZtFormLabelPosition\n  labelWidth?: string | number\n  span?: number\n  titleWidth?: string | number\n  titleAlign?: 'left' | 'right'\n  titleColon?: boolean\n  vertical?: boolean\n  align?: 'left' | 'center' | 'right'\n  collapseStatus?: boolean\n  underline?: boolean\n  size?: ZtComponentSize\n}",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridOptionLoader",
+        "code": "export type ZtVTableGridOptionLoader = (source: string, context: ZtVTableGridOptionContext) => Promise<ZtVTableGridOption[]>",
+        "public": true
+      },
+      {
+        "name": "ZtFormInstance",
+        "code": "export interface ZtFormInstance {\n  validate: () => Promise<true>\n  validateField: (props: string | string[]) => Promise<true>\n  resetFields: (props?: string | string[]) => void\n  clearValidate: (props?: string | string[]) => void\n  scrollToField: (prop: string) => void\n}",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridFormItem",
+        "code": "export interface ZtVTableGridFormItem<FormData = Record<string, unknown>> {\n  field?: string\n  title?: string\n  span?: number\n  titleWidth?: string | number\n  titleAlign?: 'left' | 'right'\n  titleColon?: boolean\n  vertical?: boolean\n  align?: 'left' | 'center' | 'right'\n  showTitle?: boolean\n  showContent?: boolean\n  visible?: boolean\n  visibleMethod?: (scope: ZtVTableGridFormScope<FormData>) => boolean\n  folding?: boolean\n  collapseNode?: boolean\n  className?: string | ((scope: ZtVTableGridFormScope<FormData>) => string)\n  rules?: ZtFormRule | ZtFormRule[]\n  optionSource?: string\n  itemRender?: ZtVTableGridFormRenderer<FormData>\n  slots?: { default?: string | ((scope: ZtVTableGridFormScope<FormData>) => VNodeChild) }\n}",
+        "public": true
+      },
+      {
+        "name": "ZtFormRules",
+        "code": "export type ZtFormRules = Record<string, ZtFormRule | ZtFormRule[]>",
+        "public": true
+      },
+      {
+        "name": "ZtFormLabelPosition",
+        "code": "export type ZtFormLabelPosition = 'left' | 'right' | 'top'",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridOptionContext",
+        "code": "export interface ZtVTableGridOptionContext { signal: AbortSignal }",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridOption",
+        "code": "export type ZtVTableGridOption = ZtSelectOption",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridFormScope",
+        "code": "export interface ZtVTableGridFormScope<FormData = Record<string, unknown>> {\n  data: FormData\n  field?: string\n  property?: string\n  item: ZtVTableGridFormItem<FormData>\n  $form: ZtFormInstance\n}",
+        "public": true
+      },
+      {
+        "name": "ZtFormRule",
+        "code": "export interface ZtFormRule {\n  required?: boolean\n  min?: number\n  max?: number\n  len?: number\n  pattern?: RegExp\n  type?: ZtFormRuleType\n  whitespace?: boolean\n  trigger?: ZtFormValidateTrigger | ZtFormValidateTrigger[]\n  message?: string\n  validator?: (\n    rule: ZtFormRule,\n    value: unknown,\n    model: Record<string, unknown>,\n  ) => boolean | string | Error | void | Promise<boolean | string | Error | void>\n}",
+        "public": true
+      },
+      {
+        "name": "ZtVTableGridFormRenderer",
+        "code": "export interface ZtVTableGridFormRenderer<FormData = Record<string, unknown>> {\n  name?: string\n  component?: Component\n  props?: Record<string, unknown>\n  attrs?: Record<string, unknown>\n  options?: ZtVTableGridOption[] | Record<string, unknown>[]\n  optionSource?: string\n  optionProps?: { label?: string; value?: string }\n  content?: string\n  events?: Record<string, (scope: ZtVTableGridFormScope<FormData>, ...args: unknown[]) => void>\n  /** Convert business storage values to/from the chosen control's model. */\n  valueAdapter?: { toControl: (value: unknown) => unknown; fromControl: (value: unknown) => unknown }\n  render?: (scope: ZtVTableGridFormScope<FormData>) => VNodeChild\n}",
+        "public": true
+      },
+      {
+        "name": "ZtSelectOption",
+        "code": "export interface ZtSelectOption {\n  label: string\n  value: ZtSelectValue\n  disabled?: boolean\n}",
+        "public": true
+      },
+      {
+        "name": "ZtFormRuleType",
+        "code": "export type ZtFormRuleType = 'string' | 'number' | 'email' | 'url'",
+        "public": true
+      },
+      {
+        "name": "ZtFormValidateTrigger",
+        "code": "export type ZtFormValidateTrigger = 'change' | 'blur'",
+        "public": true
+      },
+      {
+        "name": "ZtSelectValue",
+        "code": "export type ZtSelectValue = string | number | boolean",
         "public": true
       }
     ],
@@ -8841,7 +9537,11 @@
       "单元格编辑与批量保存",
       "汇总与列设置",
       "加载、空状态与禁用",
-      "实例方法与延迟加载"
+      "实例方法与延迟加载",
+      "配置式表单与本地全量筛选",
+      "整表草稿与通用导入弹窗",
+      "汇总口径与表格呈现",
+      "Canvas 渲染与字段插槽"
     ]
   },
   "layout": {

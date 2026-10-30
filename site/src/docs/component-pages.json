@@ -2791,7 +2791,9 @@
   "vtable-grid": {
     "purpose": "基于 VisActor VTable 的高性能业务表格，提供本地与远程数据、分页、排序、选择、操作、编辑、汇总和列设置。",
     "guidance": [
-      "为数据行和列提供稳定标识，将查询、分页、编辑保存与业务接口明确连接。"
+      "为数据行和列提供稳定标识，将查询、分页、编辑保存与业务接口明确连接。",
+      "原有 API 与默认值保持兼容；本地全量展示需显式设置 localPagination=false。",
+      "save-start 表示开始保存，saved 与原有 save 均在保存成功后触发；应用在成功后更新 originalRecords 快照。"
     ],
     "examples": [
       {
@@ -2835,6 +2837,30 @@
         "kind": "live",
         "file": "src/views/vtable-grid/Example07.vue",
         "description": "autoLoad=false 时由调用方启动查询；下方按钮覆盖 query、reload、resize、setRecords、getTableInstance 和 exportCsv。"
+      },
+      {
+        "title": "配置式表单与本地全量筛选",
+        "kind": "live",
+        "file": "src/views/vtable-grid/EnhancedForm.vue",
+        "description": "配置库内控件、折叠字段和可注入选项加载器，先筛选再展示全部本地记录。"
+      },
+      {
+        "title": "整表草稿与通用导入弹窗",
+        "kind": "live",
+        "file": "src/views/vtable-grid/EnhancedState.vue",
+        "description": "独立原始快照、增删改、保存失败重试、撤销、直接行操作、右键菜单与外部导出入口。"
+      },
+      {
+        "title": "汇总口径与表格呈现",
+        "kind": "live",
+        "file": "src/views/vtable-grid/EnhancedPresentation.vue",
+        "description": "切换五档尺寸、边框和汇总来源，查看后端字段映射、缺失字段留空与冻结区域内标题合并。"
+      },
+      {
+        "title": "Canvas 渲染与字段插槽",
+        "kind": "live",
+        "file": "src/views/vtable-grid/EnhancedCanvas.vue",
+        "description": "使用独立 vtable 子入口的标签与文本图元，定制单元格和表头。"
       }
     ]
   },

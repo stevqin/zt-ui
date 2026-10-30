@@ -5,7 +5,10 @@ import { resolve } from 'node:path'
 export default defineConfig({
   plugins: [vue()],
   resolve: {
-    alias: { '@': resolve(__dirname, 'src') },
+    alias: [
+      { find: /^@ztechjs\/zt-ui\/vtable$/, replacement: resolve(__dirname, '../src/components/vtable-grid/canvas.ts') },
+      { find: '@', replacement: resolve(__dirname, 'src') },
+    ],
   },
   test: {
     environment: 'happy-dom',

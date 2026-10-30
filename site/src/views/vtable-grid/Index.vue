@@ -14,10 +14,19 @@ import Example06 from './Example06.vue';
 import Example06Code from './Example06.vue?raw';
 import Example07 from './Example07.vue';
 import Example07Code from './Example07.vue?raw';
+import EnhancedForm from './EnhancedForm.vue';
+import EnhancedFormCode from './EnhancedForm.vue?raw';
+import EnhancedState from './EnhancedState.vue';
+import EnhancedStateCode from './EnhancedState.vue?raw';
+import EnhancedPresentation from './EnhancedPresentation.vue';
+import EnhancedPresentationCode from './EnhancedPresentation.vue?raw';
+import EnhancedCanvas from './EnhancedCanvas.vue';
+import EnhancedCanvasCode from './EnhancedCanvas.vue?raw';
 </script>
 
 <template>
   <div class="component-examples vtable-docs">
+    <p class="compat-note">原有 formData、toolbar、summary、editable 和实例方法继续可用。本地数据默认分页，默认高度 480px，操作列默认隐藏，工具栏默认包含刷新。需要全量本地展示时显式设置 localPagination=false。保存事件保持原语义：save-start 表示开始请求，saved 和原有 save 表示保存成功。</p>
     <h3>基础表格</h3>
     <DemoBlock
       :code="Example01Code"
@@ -66,10 +75,22 @@ import Example07Code from './Example07.vue?raw';
       desc="autoLoad=false 时由调用方启动查询；下方按钮覆盖 query、reload、resize、setRecords、getTableInstance 和 exportCsv。"
       ><Example07
     /></DemoBlock>
+    <h3>配置式表单与本地全量筛选</h3>
+    <DemoBlock :code="EnhancedFormCode" desc="配置库内控件、折叠字段和可注入选项加载器，先筛选再展示全部本地记录。"><EnhancedForm /></DemoBlock>
+
+    <h3>整表草稿与通用导入弹窗</h3>
+    <DemoBlock :code="EnhancedStateCode" desc="独立原始快照、增删改、保存失败重试、撤销、直接行操作、右键菜单与外部导出入口。"><EnhancedState /></DemoBlock>
+
+    <h3>汇总口径与表格呈现</h3>
+    <DemoBlock :code="EnhancedPresentationCode" desc="切换五档尺寸、边框和汇总来源，查看后端字段映射、缺失字段留空与冻结区域内标题合并。"><EnhancedPresentation /></DemoBlock>
+
+    <h3>Canvas 渲染与字段插槽</h3>
+    <DemoBlock :code="EnhancedCanvasCode" desc="使用独立 vtable 子入口的标签与文本图元，定制单元格和表头。"><EnhancedCanvas /></DemoBlock>
   </div>
 </template>
 
 <style scoped>
+.compat-note { margin: 0 0 20px; line-height: 1.8; color: inherit; opacity: .8; }
 .example-stack {
   display: grid;
   width: 100%;

@@ -1,5 +1,6 @@
 import type { ColumnDefine } from '@visactor/vtable'
 import { editorName } from './editors'
+import { mergeGridCellStyle } from './presentation'
 import type {
   ZtVTableGridActionButton,
   ZtVTableGridActionButtons,
@@ -65,11 +66,16 @@ export function buildVTableColumns<Row extends object>(
     editable?: boolean
     disabled?: boolean
     isRowSelected?: (row: Row) => boolean
+    checkboxCheckMethod?: (row: Row) => boolean
+    imageLoader?: (value: unknown) => unknown
+    resolveCellStyle?: (args: any, style: any, editable: boolean) => any
     actionsWidth?: number
     actionLayout?: ColumnDefine['customLayout']
   },
 ) {
-  const byKey = new Map(columns.map(column => [column.key ?? column.field, column]))
+  const byKey = new Map(columns
+    .filter(column => ![CHECKBOX_FIELD, ACTION_FIELD, SUMMARY_FIELD].includes(column.field))
+    .map(column => [column.key ?? column.field, column]))
   const ordered = options.settings.order
     .map(key => byKey.get(key))
     .filter((column): column is ZtVTableGridColumn<Row> => Boolean(column))
@@ -81,11 +87,40 @@ export function buildVTableColumns<Row extends object>(
   ]
 
   const business = arranged.map(column => {
-    const { editable, sort, summary: _summary, visible: _visible, copyFormatter: _copy, ...native } = column
+    const { editable, sort, summary: _summary, visible: _visible, copyFormatter, align, resizable, ellipsis, showOverflowTooltip, ...native } = column
+    const editorType = typeof editable === 'object' ? editable.type : editable
+    const image = native.cellType === 'image' || editorType === 'image'
+    const checkbox = editorType === 'checkbox'
+    const styleOverrides = {
+      ...(align ? { textAlign: align } : {}),
+      ...(ellipsis ? { autoWrapText: false, textOverflow: typeof ellipsis === 'string' ? ellipsis : 'ellipsis' } : {}),
+    }
+    const wrappingStyle = typeof native.style === 'function'
+      ? (args: any) => ({ autoWrapText: true, ...(native.style as Function)(args) })
+      : { autoWrapText: true, ...(native.style as Record<string, unknown> ?? {}) }
+    const style = mergeGridCellStyle(wrappingStyle, styleOverrides)
+    const canEdit = !options.disabled && options.editable !== false && Boolean(editable)
     return {
       ...native,
+      style: options.resolveCellStyle ? (args: any) => options.resolveCellStyle!(args, style, canEdit) : style,
+      headerStyle: align ? mergeGridCellStyle(native.headerStyle, { textAlign: align }) : native.headerStyle,
+      disableColumnResize: resizable !== undefined ? !resizable : native.width !== undefined && native.width !== 'auto' ? true : native.disableColumnResize,
+      __showOverflowTooltip: showOverflowTooltip ?? Boolean(ellipsis),
+      __copyFormatter: copyFormatter,
+      ...(image ? {
+        cellType: native.cellType ?? 'image', clickToPreview: false,
+        keepAspectRatio: native.keepAspectRatio ?? true,
+        imageAutoSizing: native.imageAutoSizing ?? false,
+        ...(options.imageLoader ? { fieldFormat: (record: Row, ...args: any[]) => options.imageLoader!(
+          typeof native.fieldFormat === 'function' ? native.fieldFormat(record, ...args) : String(native.field).split('.').reduce((value: any, key) => value?.[key], record),
+        ) } : {}),
+      } : {}),
+      ...(checkbox ? {
+        cellType: native.cellType ?? 'checkbox', headerType: native.headerType ?? 'text',
+        disable: (args: any) => !canEdit || Boolean(recordFromCell(args)?.[SUMMARY_FIELD]),
+      } : {}),
       sort: options.disabled ? false : sort,
-      editor: !options.disabled && options.editable !== false && editable
+      editor: canEdit && !checkbox && editable
         ? (args: any) => recordFromCell(args)?.[SUMMARY_FIELD] ? undefined : editorName(editable)
         : undefined,
     } as ColumnDefine
@@ -102,7 +137,10 @@ export function buildVTableColumns<Row extends object>(
         ? Boolean(options.isRowSelected?.(record))
         : false
     },
-    disable: (args: any) => options.disabled || Boolean(recordFromCell(args)?.[SUMMARY_FIELD]),
+    disable: (args: any) => {
+      const record = recordFromCell(args)
+      return options.disabled || Boolean(record?.[SUMMARY_FIELD]) || Boolean(record && options.checkboxCheckMethod && !options.checkboxCheckMethod(record))
+    },
   }] as unknown as ColumnDefine[] : []
   const actions: ColumnDefine[] = options.showActionsColumn ? [{
     field: ACTION_FIELD,

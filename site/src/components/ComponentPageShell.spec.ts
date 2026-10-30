@@ -2,7 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { mount, flushPromises } from '@vue/test-utils'
 import { createMemoryHistory, createRouter } from 'vue-router'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import App from '../App.vue'
 import { components, scenarios } from '../docs/catalog'
 import { router as siteRouter } from '../router'
@@ -223,3 +223,9 @@ describe('shared component documentation reading flow', () => {
     }
   })
 })
+
+// Canvas behavior is exercised in a browser; these suites check documentation shells.
+vi.mock('@ztechjs/zt-ui/vtable', () => ({
+  VTableTag: { render: () => null },
+  VTableText: { render: () => null },
+}))

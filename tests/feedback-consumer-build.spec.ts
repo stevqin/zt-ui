@@ -33,9 +33,11 @@ beforeAll(async () => {
       resolveId(id) {
         if (id.endsWith('virtual:consumer')) return '\0virtual:consumer'
         if (id === 'virtual:dist-zt-ui') return '\0virtual:dist-zt-ui'
+        if (id.startsWith('./') && outputs.some(output => output.fileName === id.slice(2))) return `\0virtual:dist-chunk:${id.slice(2)}`
       },
       load(id) {
         if (id === '\0virtual:dist-zt-ui') return esm.code
+        if (id.startsWith('\0virtual:dist-chunk:')) return outputs.find(output => output.fileName === id.slice('\0virtual:dist-chunk:'.length))?.code
         if (id === '\0virtual:consumer') return "export { ZtSelectBox, ZtDrawer, ZtModal } from 'virtual:dist-zt-ui'; export { ZtMessage } from '@ztechjs/zt-alert';"
       },
     }],

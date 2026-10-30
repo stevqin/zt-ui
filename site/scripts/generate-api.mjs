@@ -23,6 +23,8 @@ const walk = (path) =>
 const files = walk(resolve(root, 'src/components')).filter((f) =>
   f.endsWith('/types.ts'),
 );
+for (const file of ['form-types.ts', 'option-loader.ts', 'import-dialog-types.ts'])
+  files.push(resolve(root, 'src/components/vtable-grid', file));
 files.push(resolve(root, 'src/components/types.ts'));
 files.push(resolve(root, 'src/components/index.ts'));
 const program = ts.createProgram(files, {
@@ -95,7 +97,7 @@ const config = {
   drawer: ['drawer', 'ZtDrawer'],
   'date-picker': ['date-picker', 'ZtDatePicker'],
   'date-time-picker': ['date-picker', 'ZtDateTimePicker'],
-  'vtable-grid': ['vtable-grid', 'ZtVTableGrid'],
+  'vtable-grid': ['vtable-grid', 'ZtVTableGrid', 'ZtVTableGridImportDialog'],
 };
 const expansion = JSON.parse(
   readFileSync(resolve(root, 'site/src/docs/expansion.json'), 'utf8'),
@@ -292,6 +294,12 @@ for (const [id, [dir, ...names]] of Object.entries(config)) {
       };
     });
     const slotMap = new Map(declaredSlots.map((slot) => [slot.name, slot]));
+    const slotDeclaration = declarations.get(name + 'Slots');
+    if (slotDeclaration)
+      for (const symbol of checker.getPropertiesOfType(checker.getTypeAtLocation(slotDeclaration))) {
+        const member = symbol.valueDeclaration ?? symbol.declarations[0];
+        slotMap.set(symbol.name, { name: symbol.name, type: member.type?.getText() ?? '无' });
+      }
     const template = parseSfc(content).descriptor.template?.ast;
     if (!template) throw new Error('Missing template AST: ' + name);
     function visitTemplate(node) {
@@ -381,6 +389,11 @@ for (const [id, [dir, ...names]] of Object.entries(config)) {
         resolve(root, `src/components/${dir}/types.ts`),
     )
     .map(([name, n]) => ({ name, code: n.getText() }));
+  for (const name of names) {
+    const propsName = name + 'Props';
+    if (!types.some(type => type.name === propsName) && declarations.has(propsName))
+      types.push({ name: propsName, code: declarations.get(propsName).getText() });
+  }
   // Include referenced shared types (theme, size, overlay contracts).
   const seen = new Set(types.map((t) => t.name));
   for (let i = 0; i < types.length; i++)

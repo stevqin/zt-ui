@@ -37,7 +37,12 @@
       "require": "./dist/zt-ui.umd.cjs"
     },
     "./style.css": "./dist/zt-ui.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./vtable": {
+      "types": "./dist/components/vtable-grid/canvas.d.ts",
+      "import": "./dist/vtable.js",
+      "require": "./dist/vtable.umd.cjs"
+    }
   },
   "files": [
     "dist",
@@ -57,7 +62,7 @@
     "dev": "vite",
     "test": "vitest run",
     "typecheck": "vue-tsc --noEmit -p tsconfig.json",
-    "build": "npm run typecheck && vite build && vite build --mode umd",
+    "build": "npm run typecheck && vite build && vite build --mode umd && vite build --mode canvas && vite build --mode canvas-umd",
     "prepublishOnly": "npm test && npm run build",
     "preview": "vite preview",
     "audit:components": "node scripts/audit-component-contracts.mjs"

@@ -17,6 +17,7 @@ export default defineConfig({
   ],
   resolve: {
     alias: [
+      { find: /^@ztechjs\/zt-ui\/vtable$/, replacement: resolve(__dirname, '../src/components/vtable-grid/canvas.ts') },
       { find: /^@ztechjs\/zt-ui$/, replacement: resolve(__dirname, '../src/index.ts') },
       { find: '@', replacement: resolve(__dirname, 'src') },
     ],
