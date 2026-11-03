@@ -25,10 +25,10 @@ function start() {
 </script>
 <template>
   <ZtSpace wrap>
-    <span ref="filterTarget">
+    <span ref="filterTarget" class="tour-demo__target">
       <ZtButton @click="action = '筛选面板已打开'">筛选</ZtButton>
     </span>
-    <span ref="exportTarget">
+    <span ref="exportTarget" class="tour-demo__target">
       <ZtButton @click="action = '导出任务已创建'">导出</ZtButton>
     </span>
     <ZtButton status="primary" @click="start">开始导览</ZtButton>
@@ -42,3 +42,7 @@ function start() {
     @close="action = '导览已关闭，可重新开始'"
   />
 </template>
+
+<style scoped>
+.tour-demo__target { display: inline-flex; vertical-align: middle; }
+</style>

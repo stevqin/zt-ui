@@ -61,7 +61,7 @@
     transition: padding-right 160ms;
   }
 
-  &.is-error &__content:not(:has(> .zt-input-otp)) { padding-right: 28px; }
+  &.is-error:not(.is-message-label):not(.is-message-inline):not(.is-message-popover):not(.is-message-summary) &__content:not(:has(> .zt-input-otp)) { padding-right: 28px; }
 
   // OTP fields have an intrinsic width; keep feedback beside the last cell.
   &__content:has(> .zt-input-otp) {
@@ -211,7 +211,7 @@
   &.is-error .zt-select__control { border-color: #ef4444; }
   &.is-error .zt-input:focus-within .zt-input__wrapper,
   &.is-error .zt-input-number:focus-within,
-  &.is-error .zt-select:focus-within .zt-select__control { box-shadow: 0 0 0 calc(var(--zt-focus-ring-width, 0px) * 1.5) rgba(239, 68, 68, .12); }
+  &.is-error .zt-select:focus-within .zt-select__control { border-color: #ef4444; box-shadow: 0 0 0 calc(var(--zt-focus-ring-width, 0px) * 1.5) rgba(239, 68, 68, .12); }
   &.is-success .zt-input__wrapper,
   &.is-success .zt-input-number,
   &.is-success .zt-select__control { border-color: #22c55e; }
@@ -253,4 +253,87 @@
   .zt-form-item__content,
   .zt-form-item__error-indicator,
   .zt-form-item__error { transition: none !important; }
+}
+
+
+// Alternative validation feedback avoids a separate right-side icon rail.
+.zt-form-item__feedback-inline {
+  flex: 0 0 100%; min-width: 0; padding-top: 6px;
+  color: var(--zt-danger-ink, #b91c1c); font-size: .86em; line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.zt-form-item__error.is-popover {
+  @include glass.tokens;
+  max-width: min(340px, calc(100vw - 24px)); padding: 8px 11px;
+  border-color: var(--zt-danger-line, #fecaca);
+  border-radius: glass.radius(8px);
+  background: var(--zt-surface, #fff);
+  color: var(--zt-danger-ink, #b91c1c);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, .08);
+  font-size: 12px; line-height: 1.5;
+  transform: translateY(-3px); transform-origin: center top;
+  &::after { display: none; }
+  &.is-top { transform: translateY(3px); transform-origin: center bottom; }
+  &.is-visible { transform: translateY(0); }
+}
+.zt-form__summary {
+  flex: 0 0 100%; min-width: 0; margin-bottom: 22px; padding: 14px 16px;
+  border: 1px solid var(--zt-danger-line, #fecaca);
+  border-radius: glass.radius(10px); background: color-mix(in srgb, var(--zt-danger-ink, #b91c1c) 5%, var(--zt-surface, #fff));
+  color: var(--zt-danger-ink, #b91c1c);
+}
+.zt-form__summary-title { display: flex; align-items: center; gap: 8px; font-size: .93em; font-weight: 600; }
+.zt-form__summary-title svg { flex: none; width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; }
+.zt-form__summary-list { display: grid; gap: 3px; margin-top: 9px; }
+.zt-form__summary-field {
+  display: flex; align-items: baseline; gap: 10px; min-width: 0; width: 100%;
+  padding: 5px 4px; border: 0; border-radius: 4px; background: transparent;
+  color: var(--zt-text, #3f4753); font: inherit; font-size: .86em; text-align: left; cursor: pointer;
+  strong { flex: none; min-width: 4em; font-weight: 500; }
+  > span:first-of-type { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+  > span:last-child { flex: none; opacity: .6; }
+  &:hover { background: color-mix(in srgb, currentColor 6%, transparent); }
+  &:focus-visible { outline: 2px solid currentColor; outline-offset: 1px; }
+}
+
+
+
+// Label feedback stays in flow, outside the accessible label, with no floating card.
+.zt-form-item__heading {
+  display: flex; align-items: baseline; flex-wrap: wrap; justify-content: space-between;
+  gap: 5px 14px; margin-bottom: 8px; min-width: 0;
+  > .zt-form-item__label { margin: 0; min-height: 0; }
+}
+.zt-form-item__feedback-label {
+  display: inline-flex; align-items: flex-start; gap: 5px; min-width: 0; max-width: 100%;
+  color: var(--zt-danger-ink, #b91c1c); font: inherit; font-size: max(11px, .9em); line-height: 1.5;
+  > svg { flex: 0 0 13px; width: 13px; height: 13px; margin-top: calc(.75em - 6.5px); fill: none; stroke: currentColor; stroke-width: 1.2; stroke-linecap: round; }
+  > span { min-width: 0; overflow-wrap: anywhere; }
+  &.is-below { flex: 0 0 100%; margin-top: 7px; }
+}
+.zt-form-item.is-message-label {
+  &.is-error .zt-input__wrapper, &.is-error .zt-input-number, &.is-error .zt-select__control {
+    border-color: color-mix(in srgb, var(--zt-danger-ink, #b91c1c) 42%, var(--zt-border, #e2e2e2));
+  }
+  &.is-error .zt-input:focus-within .zt-input__wrapper, &.is-error .zt-input-number:focus-within, &.is-error .zt-select:focus-within .zt-select__control {
+    border-color: var(--zt-danger-ink, #b91c1c);
+  }
+  &.is-success .zt-input__wrapper, &.is-success .zt-input-number, &.is-success .zt-select__control { border-color: var(--glass-default-line); }
+  &.is-success .zt-input:focus-within .zt-input__wrapper, &.is-success .zt-input-number:focus-within, &.is-success .zt-select:focus-within .zt-select__control { border-color: var(--glass-accent); }
+}
+
+
+// Horizontal label feedback has its own trailing column, reserved even before validation.
+.zt-form-item.has-side-label-feedback {
+  align-items: center;
+  > .zt-form-item__content { flex-wrap: nowrap; gap: 12px; }
+  > .zt-form-item__content > :not(.zt-form-item__feedback-label) { min-width: 0; }
+  .zt-form-item__feedback-label.is-side { flex: 0 0 min(38%, 14em); max-width: 38%; align-self: center; }
+  &.is-feedback-stacked {
+    align-items: flex-end;
+    > .zt-form-item__content { flex-direction: column; align-items: stretch; gap: 6px; }
+    > .zt-form-item__content > :not(.zt-form-item__feedback-label) { flex: 0 0 auto; width: 100%; }
+    .zt-form-item__feedback-label.is-side { order: -1; flex: 0 0 auto; max-width: 100%; align-self: flex-start; }
+    .zt-form-item__feedback-label.is-side:empty { display: none; }
+  }
 }

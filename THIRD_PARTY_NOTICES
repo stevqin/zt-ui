@@ -41,3 +41,16 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+---
+
+Lucide geometry adaptations in ZtIcon (ISC License above):
+
+- usb -> usb: endpoint radius adjusted.
+- battery-charging -> battery-charging: frame width and lightning alignment adjusted.
+- phone-missed -> phone-missed: missed-call mark inset and reduced.
+- badge-plus -> loyalty-points: central plus reduced for spacing.
+- goal -> sales-target: flag inset and reduced.
+
+Upstream: https://github.com/lucide-icons/lucide/tree/main/icons
+The component API, category names and motion controls are supplied by zt-ui.

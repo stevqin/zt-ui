@@ -152,6 +152,36 @@ describe("zt-alert standalone examples use the actual service DOM", () => {
     await flushPromises();
     expect(document.body.textContent).toContain("已重新读取 3 段示例内容。");
   });
+  it("renders a complete SVG and replaces it when the download is ready", async () => {
+    vi.useFakeTimers();
+    const w = render(CustomLoading);
+    await click(w, "准备下载");
+    const icon = document.querySelector(".zt-loading__icon svg")!;
+    expect(icon.getAttribute("viewBox")).toBe("0 0 24 24");
+    expect(icon.querySelector("path")!.getAttribute("d")).toContain("M12 4v11");
+    await vi.advanceTimersByTimeAsync(700);
+    expect(
+      document.querySelector(".zt-loading__icon svg path")!.getAttribute("d"),
+    ).toBe("M5 12.5 9.5 17 19 7");
+    expect(document.querySelector(".zt-loading__text")!.textContent).toBe(
+      "下载文件已准备完成",
+    );
+    expect(document.querySelector(".zt-loading__icon")!.textContent).toBe("");
+  });
+  it("can omit the center icon while keeping the ring, and cancels on unmount", async () => {
+    vi.useFakeTimers();
+    const w = render(CustomLoading);
+    await click(w, "仅显示加载环");
+    expect(document.querySelector(".zt-loading__icon")!.children).toHaveLength(
+      0,
+    );
+    expect(document.querySelector(".zt-loading__spinner")).not.toBeNull();
+    w.unmount();
+    wrappers.splice(wrappers.indexOf(w), 1);
+    await vi.advanceTimersByTimeAsync(1700);
+    expect(document.querySelector(".zt-loading-layer")).toBeNull();
+    expect(document.body.textContent).not.toContain("下载文件已准备完成");
+  });
   for (const [name, component, button, result] of [
     ["basic", Loading, "开始全屏任务", "预览已生成"],
     ["custom", CustomLoading, "准备下载", "可以下载示例文件"],

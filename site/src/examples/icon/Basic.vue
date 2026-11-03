@@ -6,6 +6,9 @@ import { ZtIcon, ZtSpace } from '@ztechjs/zt-ui';
     <ZtIcon name="search" label="搜索" />
     <ZtIcon name="check" status="success" label="通过" />
     <ZtIcon name="refresh" spin label="正在同步" />
+    <ZtIcon name="bell" :rotate="15" animation="shake" animation-trigger="hover" label="悬停提醒" />
+    <ZtIcon name="heart" animation="pulse" animation-trigger="click" label="点击心跳" />
+    <ZtIcon name="chart-bar" animation="draw" label="数据图表" />
     <ZtIcon name="arrow-up" :rotate="45" label="向右上" />
     <ZtIcon color="#7c3aed" label="自定义星标">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">

@@ -88,7 +88,15 @@ describe('Form underline ownership', () => {
     expect(wrapper.get('.zt-password').classes().includes('is-form-underline')).toBe(outer)
   })
 
-  it.each([ZtButton, ZtRate, ZtSwitch, ZtSlider, ZtUpload, ZtSegmented, ZtRadio, ZtCheckbox, ZtTransfer, ZtColorPicker].map(component => [component.name, component] as const))(
+  it('ColorPicker follows the Form underline setting', async () => {
+    const wrapper = inForm(ZtColorPicker)
+    expect(wrapper.get('.zt-color-picker').classes()).toContain('is-form-underline')
+    expect(wrapper.findAll('.is-form-underline')).toHaveLength(1)
+    await wrapper.setProps({ underline: false })
+    expect(wrapper.find('.is-form-underline').exists()).toBe(false)
+  })
+
+  it.each([ZtButton, ZtRate, ZtSwitch, ZtSlider, ZtUpload, ZtSegmented, ZtRadio, ZtCheckbox, ZtTransfer].map(component => [component.name, component] as const))(
     'does not mark excluded %s controls', (_, component) => {
       expect(inForm(component, component === ZtSegmented ? { options: [] } : {}).find('.is-form-underline').exists()).toBe(false)
     },

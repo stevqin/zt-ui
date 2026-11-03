@@ -9,8 +9,10 @@ import {
 } from "vue";
 import { useRoute, RouterLink, RouterView } from "vue-router";
 import { ZtConfigProvider } from "@ztechjs/zt-ui";
-import { groups, pages, findPage } from "../content/components";
+import { findPage } from "../content/components";
 import { guides } from "../content/guides";
+import { releases } from "../content/releases";
+import ComponentNavigation from "../components/ComponentNavigation.vue";
 import AppearanceControls from "../components/AppearanceControls.vue";
 import DocSearch from "../components/DocSearch.vue";
 import DocDialog from "../components/DocDialog.vue";
@@ -35,7 +37,9 @@ const outline = computed(() =>
         })),
         { id: "api", title: "API" },
       ]
-    : (guide.value?.sections.map((s) => ({ id: s.id, title: s.title })) ?? []),
+    : route.path === "/guide/changelog"
+      ? releases.map(release => ({ id: release.id, title: `v${release.version}` }))
+      : (guide.value?.sections.map((s) => ({ id: s.id, title: s.title })) ?? []),
 );
 function showPanel(kind: "search" | "navigation") {
   searchOpen.value = kind === "search";
@@ -70,7 +74,7 @@ watch(
   async () => {
     menuOpen.value = false;
     searchOpen.value = false;
-    document.title = `${current.value ? current.value.name + " " + current.value.title : (guide.value?.title ?? (route.path === "/" ? "Vue 3 组件库" : "组件文档"))} · Zt UI`;
+    document.title = `${current.value ? current.value.name + " " + current.value.title : (guide.value?.title ?? (route.path === "/guide/changelog" ? "更新日志" : route.path === "/" ? "Vue 3 组件库" : "组件文档"))} · Zt UI`;
     await nextTick();
     nav.value
       ?.querySelector(".router-link-exact-active")
@@ -152,7 +156,7 @@ onBeforeUnmount(() => {
         aria-label="文档导航"
       >
         <template v-if="isGuide"
-          ><p class="nav-group">开发指南</p>
+          ><h2 class="nav-group">开发指南</h2>
           <RouterLink v-for="g in guides" :key="g.id" :to="`/guide/${g.id}`">{{
             g.title
           }}</RouterLink
@@ -161,27 +165,12 @@ onBeforeUnmount(() => {
           ><RouterLink class="overview-link" to="/components"
             >组件总览</RouterLink
           >
-          <section
-            v-for="group in groups"
-            :key="group.id"
-            class="sidebar-group"
-          >
-            <p class="nav-group">{{ group.title }}</p>
-            <RouterLink
-              v-for="page in pages.filter((p) => p.group === group.id)"
-              :key="page.id"
-              :to="`/components/${page.id}`"
-              :title="`${page.name} ${page.title}`"
-              class="component-nav-item"
-              ><span>{{ page.name }}</span
-              ><small>{{ page.title }}</small></RouterLink
-            >
-          </section></template
-        >
+          <ComponentNavigation
+        /></template>
       </aside>
       <main id="main-content" tabindex="-1"><RouterView /></main>
       <aside v-if="outline.length" class="page-outline" aria-label="本页目录">
-        <strong>本页内容</strong
+        <strong>{{ route.path === "/guide/changelog" ? "版本记录" : "本页内容" }}</strong
         ><a
           v-for="item in outline"
           :key="item.id"
@@ -201,19 +190,7 @@ onBeforeUnmount(() => {
           >开发指南</RouterLink
         ><RouterLink to="/components" @click="menuOpen = false"
           >组件总览</RouterLink
-        ><template v-for="group in groups" :key="group.id"
-          ><strong>{{ group.title }}</strong
-          ><RouterLink
-            v-for="page in pages.filter((p) => p.group === group.id)"
-            :key="page.id"
-            :to="`/components/${page.id}`"
-            @click="menuOpen = false"
-            :title="`${page.name} ${page.title}`"
-            ><span>{{ page.name }}</span
-            ><small>{{ page.title }}</small></RouterLink
-          ></template
-        >
-      </nav></DocDialog
-    >
+        ><ComponentNavigation mobile @navigate="menuOpen = false" /></nav
+    ></DocDialog>
   </ZtConfigProvider>
 </template>

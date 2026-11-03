@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { ZtSplitter } from '@ztechjs/zt-ui';
 const ratio = ref(35);
 </script>

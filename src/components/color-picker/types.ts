@@ -1,6 +1,8 @@
 import type { ZtEntryStatus } from '../autocomplete/types';
 import type { ZtComponentSize } from '../types';
 export interface ZtColorPickerProps {
+  /** 显式 true 使用下划线，false 保持完整边框；省略时继承最近 Form 的 underline。 */
+  underline?: boolean;
   /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */
   status?: ZtEntryStatus;
   /** 支持 HEX/RGB/HSL 文本；确定后输出规范 #rrggbb[aa]，空值为空字符串。 */

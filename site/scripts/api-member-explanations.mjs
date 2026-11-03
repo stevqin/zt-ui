@@ -8,6 +8,7 @@ const slots = {
   ZtLayout: { default: '按布局方向排列的 Header、Aside、Main、Footer 或嵌套 Layout。' },
   ZtMain: { default: '布局中的主要业务内容区域。' },
   ZtAutocomplete: { option: '下拉建议项的显示内容；option 为当前建议项，包含 value、可选 label 和 disabled。' },
+  ZtAvatarGroup: { default: '组内的 ZtAvatar，支持 v-for；size 和 shape 默认由头像组统一提供，单项可覆盖，alt 用作收起成员的姓名。' },
   ZtAvatar: { default: '未设置图片或图片加载失败时显示的头像内容，优先于 icon 和姓名首字显示。' },
   ZtBacktop: { default: '返回顶部按钮中的图标或文字，替换默认向上箭头。' },
   ZtBadge: { default: '被徽标标注的目标元素，如按钮或头像；徽标叠加在该元素旁。' },

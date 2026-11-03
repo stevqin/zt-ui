@@ -158,7 +158,7 @@ export const alertPages: DocPage[] = [
       {
         id: "custom",
         title: "自定义图标与遮罩",
-        description: "传入装饰 DOM 图标、遮罩颜色，自动完成后释放实例。",
+        description: "完整 SVG 下载图标切换为完成状态，支持纯加载环；结束或卸载时清理实例与定时器。",
         file: "src/examples/zt-alert-loading/Custom.vue",
       },
     ],

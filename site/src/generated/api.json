@@ -558,6 +558,12 @@
         "name": "ZtAvatar",
         "props": [
           {
+            "name": "item",
+            "type": "ZtAvatarItem",
+            "required": false,
+            "description": "关联的业务成员对象；头像组 member-click 优先返回此对象，不传则返回头像 props。"
+          },
+          {
             "name": "src",
             "type": "string",
             "required": false,
@@ -579,14 +585,13 @@
             "name": "size",
             "type": "ZtAvatarSize",
             "required": false,
-            "description": "头像尺寸。"
+            "description": "头像尺寸；省略时优先继承 AvatarGroup，否则继承 ConfigProvider。"
           },
           {
             "name": "shape",
             "type": "ZtAvatarShape",
             "required": false,
-            "description": "形状。",
-            "defaultValue": "'circle'"
+            "description": "头像形状；省略时继承 AvatarGroup，否则使用 circle。"
           },
           {
             "name": "fit",
@@ -612,12 +617,12 @@
         "events": [
           {
             "name": "load",
-            "type": "[event:Event]",
+            "type": "[event: Event]",
             "description": "头像加载成功时触发，返回原生图片 load 事件。"
           },
           {
             "name": "error",
-            "type": "[event:Event]",
+            "type": "[event: Event]",
             "description": "头像加载失败并切换到回退内容时触发，返回原生图片 error 事件。"
           }
         ],
@@ -646,11 +651,69 @@
             "description": "头像尺寸，可使用预设档位、像素数值或 CSS 长度字符串。"
           },
           {
+            "name": "ZtAvatarItem",
+            "type": "export type ZtAvatarItem = Record<string, unknown>",
+            "description": "绑定到头像的业务成员对象；点击头像组成员时原样返回。"
+          },
+          {
             "name": "ZtAvatarProps",
-            "type": "export interface ZtAvatarProps{\n /** 图片地址。 */src?:string\n /** 响应式图片集合。 */srcSet?:string\n /** 图片替代文字及文字后备。 */alt?:string\n /** 头像尺寸。 */size?:ZtAvatarSize\n /** 形状。 */shape?:ZtAvatarShape\n /** 图片适应方式。 */fit?:'fill'|'contain'|'cover'|'none'|'scale-down'\n /** 状态主题。 */status?:ZtAvatarStatus\n /** 后备图标名。 */icon?:ZtIconName|Component\n}",
-            "description": "头像的输入参数结构，包含资源地址（src）、srcSet、alt、尺寸（size）、shape。"
+            "type": "export interface ZtAvatarProps{\n /** 关联的业务成员对象；头像组 member-click 优先返回此对象，不传则返回头像 props。 */item?:ZtAvatarItem\n /** 图片地址。 */src?:string\n /** 响应式图片集合。 */srcSet?:string\n /** 图片替代文字及文字后备。 */alt?:string\n /** 头像尺寸；省略时优先继承 AvatarGroup，否则继承 ConfigProvider。 */size?:ZtAvatarSize\n /** 头像形状；省略时继承 AvatarGroup，否则使用 circle。 */shape?:ZtAvatarShape\n /** 图片适应方式。 */fit?:'fill'|'contain'|'cover'|'none'|'scale-down'\n /** 状态主题。 */status?:ZtAvatarStatus\n /** 后备图标名。 */icon?:ZtIconName|Component\n}",
+            "description": "头像的输入参数结构，包含item、资源地址（src）、srcSet、alt、尺寸（size）。"
+          },
+          {
+            "name": "ZtAvatarGroupProps",
+            "type": "export interface ZtAvatarGroupProps {\n  /** 组内头像尺寸，支持五档预设、像素数值或 CSS 长度；单个头像可覆盖。 */\n  size?: ZtAvatarSize\n  /** 组内头像形状；单个头像可覆盖。默认 circle。 */\n  shape?: ZtAvatarShape\n  /** 组内最多展示的头像数（不含 +N 按钮）；省略展示全部，0 将全部收起；展开面板始终显示全部成员。 */\n  max?: number\n  /** 头像组的无障碍名称。默认“头像组”。 */\n  label?: string\n}",
+            "description": "重叠排列的头像组；默认插槽接受 ZtAvatar，可使用 v-for。"
           }
         ]
+      },
+      {
+        "name": "ZtAvatarGroup",
+        "props": [
+          {
+            "name": "size",
+            "type": "ZtAvatarSize",
+            "required": false,
+            "description": "组内头像尺寸，支持五档预设、像素数值或 CSS 长度；单个头像可覆盖。"
+          },
+          {
+            "name": "shape",
+            "type": "ZtAvatarShape",
+            "required": false,
+            "description": "组内头像形状；单个头像可覆盖。默认 circle。",
+            "defaultValue": "'circle'"
+          },
+          {
+            "name": "max",
+            "type": "number",
+            "required": false,
+            "description": "组内最多展示的头像数（不含 +N 按钮）；省略展示全部，0 将全部收起；展开面板始终显示全部成员。"
+          },
+          {
+            "name": "label",
+            "type": "string",
+            "required": false,
+            "description": "头像组的无障碍名称。默认“头像组”。",
+            "defaultValue": "'头像组'"
+          }
+        ],
+        "events": [
+          {
+            "name": "member-click",
+            "type": "[item: ZtAvatarItem, index: number, event: MouseEvent]",
+            "description": "点击成员面板中的成员；item 为头像绑定的原始业务对象，未绑定时为头像 props；index 为完整列表中从 0 开始的索引。"
+          }
+        ],
+        "slots": [
+          {
+            "name": "default",
+            "type": "() => VNode[]",
+            "required": false,
+            "description": "重叠展示的 ZtAvatar，支持 v-for；alt 用作成员面板中的姓名。"
+          }
+        ],
+        "exposes": [],
+        "types": []
       }
     ]
   },
@@ -673,17 +736,24 @@
             "defaultValue": "200"
           },
           {
+            "name": "position",
+            "type": "'fixed' | 'absolute'",
+            "required": false,
+            "description": "按钮定位方式；默认 fixed 固定在视口，absolute 可配合相对定位的外层容器显示在局部区域。",
+            "defaultValue": "'fixed'"
+          },
+          {
             "name": "right",
             "type": "number",
             "required": false,
-            "description": "距窗口右边 px，默认 24。",
+            "description": "距定位区域右边 px，默认 24。",
             "defaultValue": "24"
           },
           {
             "name": "bottom",
             "type": "number",
             "required": false,
-            "description": "距窗口底部 px，默认 24。",
+            "description": "距定位区域底部 px，默认 24。",
             "defaultValue": "24"
           },
           {
@@ -718,8 +788,8 @@
         "types": [
           {
             "name": "ZtBacktopProps",
-            "type": "export interface ZtBacktopProps {\n  /** 滚动容器；默认 window。 */ container?: ZtScrollTarget;\n  /** 滚动超过该 px 后显示，默认 200。 */ visibilityHeight?: number;\n  /** 距窗口右边 px，默认 24。 */ right?: number;\n  /** 距窗口底部 px，默认 24。 */ bottom?: number;\n  /** 按钮辅助技术名称，默认 返回顶部。 */ label?: string;\n  /** 按钮尺寸，默认继承 ConfigProvider。 */ size?: ZtComponentSize;\n}",
-            "description": "回到顶部按钮的输入参数结构，包含container、visibilityHeight、right、bottom、显示文字（label）。"
+            "type": "export interface ZtBacktopProps {\n  /** 滚动容器；默认 window。 */ container?: ZtScrollTarget;\n  /** 滚动超过该 px 后显示，默认 200。 */ visibilityHeight?: number;\n  /** 按钮定位方式；默认 fixed 固定在视口，absolute 可配合相对定位的外层容器显示在局部区域。 */ position?: 'fixed' | 'absolute';\n  /** 距定位区域右边 px，默认 24。 */ right?: number;\n  /** 距定位区域底部 px，默认 24。 */ bottom?: number;\n  /** 按钮辅助技术名称，默认 返回顶部。 */ label?: string;\n  /** 按钮尺寸，默认继承 ConfigProvider。 */ size?: ZtComponentSize;\n}",
+            "description": "回到顶部按钮的输入参数结构，包含container、visibilityHeight、position、right、bottom。"
           },
           {
             "name": "ZtBacktopEmits",
@@ -1949,6 +2019,13 @@
         "name": "ZtColorPicker",
         "props": [
           {
+            "name": "underline",
+            "type": "boolean",
+            "required": false,
+            "description": "显式 true 使用下划线，false 保持完整边框；省略时继承最近 Form 的 underline。",
+            "defaultValue": "undefined"
+          },
+          {
             "name": "status",
             "type": "ZtEntryStatus",
             "required": false,
@@ -2057,8 +2134,8 @@
         "types": [
           {
             "name": "ZtColorPickerProps",
-            "type": "export interface ZtColorPickerProps {\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 支持 HEX/RGB/HSL 文本；确定后输出规范 #rrggbb[aa]，空值为空字符串。 */\n  modelValue?: string;\n  /** 显示透明度滑杆，并在输出 HEX 中包含 alpha 字节。 */\n  showAlpha?: boolean;\n  /** 预设颜色数组；支持 HEX/RGB/HSL，非法预设不可选择。 */\n  presets?: string[];\n  /** 禁止打开面板与编辑；也继承 Form 禁用。 */\n  disabled?: boolean;\n  /** 保留值展示，禁止打开与修改。 */\n  readonly?: boolean;\n  /** 在面板显示清空操作，清空值为空字符串。 */\n  clearable?: boolean;\n  /** 五档尺寸，继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
-            "description": "颜色选择器的输入参数结构，包含语义配色（status）、绑定值（modelValue）、showAlpha、presets、禁用状态（disabled）。"
+            "type": "export interface ZtColorPickerProps {\n  /** 显式 true 使用下划线，false 保持完整边框；省略时继承最近 Form 的 underline。 */\n  underline?: boolean;\n  /** 六种语义状态，影响边框、焦点或选中颜色；默认 primary，表单校验错误优先。 */\n  status?: ZtEntryStatus;\n  /** 支持 HEX/RGB/HSL 文本；确定后输出规范 #rrggbb[aa]，空值为空字符串。 */\n  modelValue?: string;\n  /** 显示透明度滑杆，并在输出 HEX 中包含 alpha 字节。 */\n  showAlpha?: boolean;\n  /** 预设颜色数组；支持 HEX/RGB/HSL，非法预设不可选择。 */\n  presets?: string[];\n  /** 禁止打开面板与编辑；也继承 Form 禁用。 */\n  disabled?: boolean;\n  /** 保留值展示，禁止打开与修改。 */\n  readonly?: boolean;\n  /** 在面板显示清空操作，清空值为空字符串。 */\n  clearable?: boolean;\n  /** 五档尺寸，继承 Form 或 ConfigProvider。 */\n  size?: ZtComponentSize;\n}",
+            "description": "颜色选择器的输入参数结构，包含underline、语义配色（status）、绑定值（modelValue）、showAlpha、presets。"
           },
           {
             "name": "ZtColorPickerInstance",
@@ -2075,6 +2152,13 @@
         "name": "ZtColorPickerPanel",
         "props": [
           {
+            "name": "disabled",
+            "type": "boolean",
+            "required": false,
+            "description": "禁止打开面板与编辑；也继承 Form 禁用。",
+            "defaultValue": "false"
+          },
+          {
             "name": "status",
             "type": "ZtEntryStatus",
             "required": false,
@@ -2087,27 +2171,6 @@
             "required": false,
             "description": "支持 HEX/RGB/HSL 文本；确定后输出规范 #rrggbb[aa]，空值为空字符串。",
             "defaultValue": "''"
-          },
-          {
-            "name": "showAlpha",
-            "type": "boolean",
-            "required": false,
-            "description": "显示透明度滑杆，并在输出 HEX 中包含 alpha 字节。",
-            "defaultValue": "false"
-          },
-          {
-            "name": "presets",
-            "type": "string[]",
-            "required": false,
-            "description": "预设颜色数组；支持 HEX/RGB/HSL，非法预设不可选择。",
-            "defaultValue": "() => []"
-          },
-          {
-            "name": "disabled",
-            "type": "boolean",
-            "required": false,
-            "description": "禁止打开面板与编辑；也继承 Form 禁用。",
-            "defaultValue": "false"
           },
           {
             "name": "readonly",
@@ -2128,6 +2191,20 @@
             "type": "ZtComponentSize",
             "required": false,
             "description": "五档尺寸，继承 Form 或 ConfigProvider。"
+          },
+          {
+            "name": "showAlpha",
+            "type": "boolean",
+            "required": false,
+            "description": "显示透明度滑杆，并在输出 HEX 中包含 alpha 字节。",
+            "defaultValue": "false"
+          },
+          {
+            "name": "presets",
+            "type": "string[]",
+            "required": false,
+            "description": "预设颜色数组；支持 HEX/RGB/HSL，非法预设不可选择。",
+            "defaultValue": "() => []"
           }
         ],
         "events": [
@@ -2173,7 +2250,7 @@
         "types": [
           {
             "name": "ZtColorPickerPanelProps",
-            "type": "export type ZtColorPickerPanelProps = ZtColorPickerProps;",
+            "type": "export type ZtColorPickerPanelProps = Omit<ZtColorPickerProps, 'underline'>;",
             "description": "与 ColorPicker 值格式一致；控件编辑草稿，确定时触发 update/change，取消恢复绑定值。"
           },
           {
@@ -3649,6 +3726,13 @@
             "description": "是否展示字段校验错误文字；单个 FormItem 可覆盖。"
           },
           {
+            "name": "messageDisplay",
+            "type": "ZtFormMessageDisplay",
+            "required": false,
+            "description": "错误提示形式；FormItem 省略时继承 Form，默认 tooltip。",
+            "defaultValue": "'tooltip'"
+          },
+          {
             "name": "scrollToError",
             "type": "boolean",
             "required": false,
@@ -3719,6 +3803,11 @@
             "description": "校验值的基本类型，可检查字符串、数字、邮箱或网址。"
           },
           {
+            "name": "ZtFormMessageDisplay",
+            "type": "export type ZtFormMessageDisplay = 'tooltip' | 'inline' | 'popover' | 'summary' | 'label'",
+            "description": "校验提示形式：原有图标浮层、行内说明、聚焦浮层、顶部汇总、标签旁说明。"
+          },
+          {
             "name": "ZtFormItemValidateStatus",
             "type": "export type ZtFormItemValidateStatus = '' | 'validating' | 'success' | 'error'",
             "description": "字段校验状态，区分未校验、校验中、成功和错误。"
@@ -3740,12 +3829,12 @@
           },
           {
             "name": "ZtFormProps",
-            "type": "export interface ZtFormProps {\n  underline?: boolean\n  model?: Record<string, unknown>\n  rules?: ZtFormRules\n  size?: ZtComponentSize\n  disabled?: boolean\n  inline?: boolean\n  labelPosition?: ZtFormLabelPosition\n  labelWidth?: number | string | 'auto'\n  hideRequiredAsterisk?: boolean\n  showMessage?: boolean\n  scrollToError?: boolean\n}",
+            "type": "export interface ZtFormProps {\n  underline?: boolean\n  model?: Record<string, unknown>\n  rules?: ZtFormRules\n  size?: ZtComponentSize\n  disabled?: boolean\n  inline?: boolean\n  labelPosition?: ZtFormLabelPosition\n  labelWidth?: number | string | 'auto'\n  hideRequiredAsterisk?: boolean\n  showMessage?: boolean\n  /** 错误提示形式；FormItem 省略时继承 Form，默认 tooltip。 */\n  messageDisplay?: ZtFormMessageDisplay\n  scrollToError?: boolean\n}",
             "description": "表单的输入参数结构，包含underline、model、rules、尺寸（size）、禁用状态（disabled）。"
           },
           {
             "name": "ZtFormItemProps",
-            "type": "export interface ZtFormItemProps {\n  /** 字段标签位置，默认继承 Form。 */ labelPosition?: ZtFormLabelPosition\n  label?: string\n  prop?: ZtFormProp\n  required?: boolean\n  rules?: ZtFormRule | ZtFormRule[]\n  error?: string\n  showMessage?: boolean\n  labelWidth?: number | string | 'auto'\n  size?: ZtComponentSize\n}",
+            "type": "export interface ZtFormItemProps {\n  /** 字段标签位置，默认继承 Form。 */ labelPosition?: ZtFormLabelPosition\n  label?: string\n  prop?: ZtFormProp\n  required?: boolean\n  rules?: ZtFormRule | ZtFormRule[]\n  error?: string\n  showMessage?: boolean\n  /** 错误提示形式；FormItem 省略时继承 Form，默认 tooltip。 */\n  messageDisplay?: Exclude<ZtFormMessageDisplay, 'summary'>\n  labelWidth?: number | string | 'auto'\n  size?: ZtComponentSize\n}",
             "description": "表单字段的输入参数结构，包含labelPosition、显示文字（label）、prop、required、rules。"
           },
           {
@@ -3866,6 +3955,12 @@
             "description": "是否显示此字段的错误文字；省略时继承 Form。"
           },
           {
+            "name": "messageDisplay",
+            "type": "Exclude<ZtFormMessageDisplay, 'summary'>",
+            "required": false,
+            "description": "错误提示形式；FormItem 省略时继承 Form，默认 tooltip。"
+          },
+          {
             "name": "labelWidth",
             "type": "number | string | 'auto'",
             "required": false,
@@ -3972,6 +4067,19 @@
             "defaultValue": "false"
           },
           {
+            "name": "animation",
+            "type": "ZtIconAnimation",
+            "required": false,
+            "description": "可选动效；不设置时静止，spin 属性优先。"
+          },
+          {
+            "name": "animationTrigger",
+            "type": "ZtIconAnimationTrigger",
+            "required": false,
+            "description": "动效触发方式：持续、悬停（含外层控件聚焦）、点击（含外层按钮键盘激活）。",
+            "defaultValue": "'always'"
+          },
+          {
             "name": "strokeWidth",
             "type": "number",
             "required": false,
@@ -4008,8 +4116,18 @@
           },
           {
             "name": "ZtIconProps",
-            "type": "export interface ZtIconProps {\n  /** 内置图标名称。默认插槽和 component 的优先级更高。 */\n  name?: ZtIconName\n  /** 自定义 Vue 图标组件。 */\n  component?: Component\n  /** 图标 CSS 尺寸；正数按像素处理，默认 1em。 */\n  size?: number | string\n  /** 自定义图标颜色，覆盖 status。 */\n  color?: string\n  /** 图标主题颜色。 */\n  status?: ZtIconStatus\n  /** 顺时针旋转角度。 */\n  rotate?: number\n  /** 是否持续旋转；系统减少动画时停止。 */\n  spin?: boolean\n  /** 内置线性图标的描边宽度。 */\n  strokeWidth?: number\n  /** 图标的无障碍名称；未设置时视为装饰内容。 */\n  label?: string\n}",
+            "type": "export interface ZtIconProps {\n  /** 内置图标名称。默认插槽和 component 的优先级更高。 */\n  name?: ZtIconName\n  /** 自定义 Vue 图标组件。 */\n  component?: Component\n  /** 图标 CSS 尺寸；正数按像素处理，默认 1em。 */\n  size?: number | string\n  /** 自定义图标颜色，覆盖 status。 */\n  color?: string\n  /** 图标主题颜色。 */\n  status?: ZtIconStatus\n  /** 顺时针旋转角度。 */\n  rotate?: number\n  /** 是否持续旋转；系统减少动画时停止。 */\n  spin?: boolean\n  /** 可选动效；不设置时静止，spin 属性优先。 */\n  animation?: ZtIconAnimation\n  /** 动效触发方式：持续、悬停（含外层控件聚焦）、点击（含外层按钮键盘激活）。 */\n  animationTrigger?: ZtIconAnimationTrigger\n  /** 内置线性图标的描边宽度。 */\n  strokeWidth?: number\n  /** 图标的无障碍名称；未设置时视为装饰内容。 */\n  label?: string\n}",
             "description": "图标的输入参数结构，包含标识（name）、component、尺寸（size）、颜色（color）、语义配色（status）。"
+          },
+          {
+            "name": "ZtIconAnimation",
+            "type": "export type ZtIconAnimation = 'spin' | 'pulse' | 'bounce' | 'shake' | 'draw'",
+            "description": "图标动效类型：旋转、呼吸、弹跳、摇摆或描边绘制；未设置时静止。"
+          },
+          {
+            "name": "ZtIconAnimationTrigger",
+            "type": "export type ZtIconAnimationTrigger = 'always' | 'hover' | 'click'",
+            "description": "图标动效触发方式：持续播放、悬停或控件聚焦、点击（含按钮键盘激活）。"
           }
         ]
       }
@@ -4145,12 +4263,12 @@
         "types": [
           {
             "name": "ViewerTransform",
-            "type": "export interface ViewerTransform{scale:number;rotate:number;x:number;y:number}",
+            "type": "export interface ViewerTransform {\n  scale: number;\n  rotate: number;\n  x: number;\n  y: number;\n}",
             "description": "图片预览变换状态，记录缩放倍数、旋转角度及平移坐标。"
           },
           {
             "name": "ViewerAction",
-            "type": "export type ViewerAction={type:'zoom';direction:1|-1}|{type:'rotate';direction:1|-1}|{type:'pan';x:number;y:number}|{type:'reset'}",
+            "type": "export type ViewerAction =\n  | { type: \"zoom\"; direction: 1 | -1 }\n  | { type: \"rotate\"; direction: 1 | -1 }\n  | { type: \"pan\"; x: number; y: number }\n  | { type: \"reset\" };",
             "description": "图片预览操作，区分缩放方向、旋转方向、平移坐标和复位。"
           },
           {
@@ -4211,7 +4329,7 @@
             "type": "number",
             "required": false,
             "description": "最小缩放。",
-            "defaultValue": ".2"
+            "defaultValue": "0.2"
           },
           {
             "name": "maxScale",
@@ -4245,7 +4363,7 @@
         "events": [
           {
             "name": "switch",
-            "type": "[index:number]",
+            "type": "[index: number]",
             "description": "通过预览器上一张／下一张操作切换到不同图片时触发，返回从 0 开始的新索引。"
           },
           {
@@ -4265,6 +4383,12 @@
       {
         "name": "ZtInfiniteScroll",
         "props": [
+          {
+            "name": "size",
+            "type": "ZtComponentSize",
+            "required": false,
+            "description": "加载状态、重试按钮及内容继承字号的尺寸档位；省略时继承 ConfigProvider。"
+          },
           {
             "name": "load",
             "type": "(\n    signal: AbortSignal,\n  ) => void | Promise<void>",
@@ -4362,8 +4486,8 @@
         "types": [
           {
             "name": "ZtInfiniteScrollProps",
-            "type": "export interface ZtInfiniteScrollProps {\n  /** 加载回调。Promise 期间防止重复，拒绝后显示可重试错误。卸载时传入的 signal 中止。 */ load?: (\n    signal: AbortSignal,\n  ) => void | Promise<void>;\n  /** 容器或页面窗口；默认 window。 */ container?: ZtScrollTarget;\n  /** 到底部不足该 px 时加载，默认 100。 */ distance?: number;\n  /** 挂载后立即检测，默认 true。 */ immediate?: boolean;\n  /** 外部加载状态，也会阻止并发加载，默认 false。 */ loading?: boolean;\n  /** 暂停自动加载，默认 false。 */ disabled?: boolean;\n  /** 全部加载完成，默认 false。 */ finished?: boolean;\n}",
-            "description": "无限滚动容器的输入参数结构，包含load、container、distance、immediate、加载状态（loading）。"
+            "type": "export interface ZtInfiniteScrollProps {\n  /** 加载状态、重试按钮及内容继承字号的尺寸档位；省略时继承 ConfigProvider。 */ size?: ZtComponentSize;\n  /** 加载回调。Promise 期间防止重复，拒绝后显示可重试错误。卸载时传入的 signal 中止。 */ load?: (\n    signal: AbortSignal,\n  ) => void | Promise<void>;\n  /** 容器或页面窗口；默认 window。 */ container?: ZtScrollTarget;\n  /** 到底部不足该 px 时加载，默认 100。 */ distance?: number;\n  /** 挂载后立即检测，默认 true。 */ immediate?: boolean;\n  /** 外部加载状态，也会阻止并发加载，默认 false。 */ loading?: boolean;\n  /** 暂停自动加载，默认 false。 */ disabled?: boolean;\n  /** 全部加载完成，默认 false。 */ finished?: boolean;\n}",
+            "description": "无限滚动容器的输入参数结构，包含尺寸（size）、load、container、distance、immediate。"
           },
           {
             "name": "ZtInfiniteScrollEmits",

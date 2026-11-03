@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive, watch } from "vue";
 import {
   ZtForm,
   ZtFormItem,
@@ -9,19 +9,19 @@ import {
   ZtSwitch,
   type ZtFormInstance,
   type ZtFormRules,
-} from '@ztechjs/zt-ui';
+} from "@ztechjs/zt-ui";
 const form = ref<ZtFormInstance>();
-const model = reactive({ password: '', confirmation: '' });
+const model = reactive({ password: "", confirmation: "" });
 const disabled = ref(false);
-const result = ref('');
+const result = ref("");
 const rules: ZtFormRules = {
-  password: [{ required: true, min: 6, message: '密码至少六位' }],
+  password: [{ required: true, min: 6, message: "密码至少六位" }],
   confirmation: [
-    { required: true, message: '请确认密码' },
+    { required: true, message: "请确认密码" },
     {
       validator: async (_rule, value, data) => {
         await new Promise((resolve) => setTimeout(resolve, 200));
-        return value === data.password || '两次密码不一致';
+        return value === data.password || "两次密码不一致";
       },
     },
   ],
@@ -30,15 +30,15 @@ watch(
   () => model.password,
   () => {
     if (model.confirmation)
-      void form.value?.validateField('confirmation').catch(() => {});
+      void form.value?.validateField("confirmation").catch(() => {});
   },
 );
 async function submit() {
   try {
     await form.value?.validate();
-    result.value = '验证通过';
+    result.value = "验证通过";
   } catch {
-    result.value = '请修正错误';
+    result.value = "请修正错误";
   }
 }
 </script>
@@ -53,6 +53,7 @@ async function submit() {
       :disabled="disabled"
       underline
       label-position="top"
+      message-display="label"
     >
       <ZtFormGroup title="账户安全" description="密码至少六位">
         <ZtFormItem label="密码" prop="password">

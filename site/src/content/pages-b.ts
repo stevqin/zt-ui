@@ -509,6 +509,7 @@ export const pagesB: DocPage[] = [
     usage: [
       "输入支持 HEX、RGB 和 HSL 文本。",
       "编辑过程使用面板草稿，确定提交，取消恢复绑定值。",
+      "underline 可单独开启或继承 Form，显式 false 保留完整边框。",
     ],
     examples: [
       {
@@ -522,6 +523,12 @@ export const pagesB: DocPage[] = [
         title: "透明度",
         description: "showAlpha 显示透明度滑杆，输出包含 alpha 字节。",
         file: "src/examples/color-picker/Alpha.vue",
+      },
+      {
+        id: "underline",
+        title: "下划线模式",
+        description: "支持独立开启、继承表单设置，以及显式 false 保留边框。",
+        file: "src/examples/color-picker/Underline.vue",
       },
     ],
   },
@@ -561,6 +568,7 @@ export const pagesB: DocPage[] = [
       "validate 返回 Promise，失败时拒绝；重置恢复挂载时的字段值。",
     ],
     examples: [
+      { id: "feedback", title: "校验提示的四种呈现", description: "默认将错误说明排在标签旁，支持切换字段下方、聚焦浮层和顶部汇总；错误汇总支持点击定位。", file: "src/examples/form/Feedback.vue" },
       { id: "layout", title: "布局与标签宽度", description: "比较标签位置、auto 标签宽度与行内布局。", file: "src/examples/form/Layout.vue" },
       { id: "dynamic", title: "嵌套与动态字段", description: "使用路径定位动态字段；新增和删除行时保持稳定标识。", file: "src/examples/form/Dynamic.vue" },
       { id: "groups", title: "分组与禁用继承", description: "使用 FormGroup 组织字段并控制组内禁用状态。", file: "src/examples/form/Groups.vue" },

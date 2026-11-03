@@ -1,4 +1,5 @@
 const descriptions = {
+  ZtAvatarGroup: { size: '组内头像共用的预设、像素或 CSS 尺寸；单个 Avatar 可覆盖。', shape: '组内共用的头像形状，默认 circle；单项可覆盖。', max: '最多展示的头像数；其余成员收起到 +N 按钮中，省略展示全部，0 将全部收起。', label: '头像组的无障碍名称。' },
   ZtBadge: {
     max: '数字徽标的显示上限，超过此值时显示 max+，不影响文字徽标。',
     value: '徽标显示的数字或文字；数字超过 max 时显示为 max+。',
@@ -20,6 +21,7 @@ const descriptions = {
   },
   ZtCheckboxGroup: { modelValue: '已勾选复选框的 value 数组。', min: '最少保留的勾选数量。', max: '最多允许的勾选数量。' },
   ZtForm: {
+    messageDisplay: '错误提示形式：label 将说明直接排在顶部标签旁，空间不足自动换行，横向标签使用控件右侧的独立提示列，窄行时移到控件上方；无标签字段放到控件下方；tooltip 保留原有图标提示，inline 持续显示行内文字，popover 聚焦或悬停时在标签旁提示，长消息以脱离文档流的浮层显示，不改变字段间距，summary 在表单顶部汇总并支持定位。label、popover 和 summary 在整表校验失败时聚焦首个错误字段。',
     underline: '让表单内支持此模式的输入控件默认使用下边框样式，控件可单独覆盖。',
     model: '表单字段数据对象，校验、字段重置与 FormItem 的 prop 均以此对象为基础。',
     rules: '按字段路径配置校验规则，可被 FormItem 的局部规则补充。',
@@ -31,6 +33,7 @@ const descriptions = {
   },
   ZtFormGroup: { bordered: '为表单分组显示边框。' },
   ZtFormItem: {
+    messageDisplay: '覆盖此字段的错误提示形式，可选 label、tooltip、inline 或 popover；顶部汇总 summary 请在 Form 设置。',
     prop: '此表单项在 Form.model 中的字段路径，支持点分字符串或路径数组，用于校验与重置。',
     label: '字段标签文字，也是自动生成必填错误提示时使用的字段名称。',
     required: '标记为必填项；已有规则未声明 required 时自动加入必填校验。',

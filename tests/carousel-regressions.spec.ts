@@ -1,0 +1,78 @@
+import { mount } from '@vue/test-utils';
+import { h, nextTick, ref } from 'vue';
+import { afterEach, expect, it, vi } from 'vitest';
+import { ZtCarousel } from '../src/components/carousel';
+
+afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
+const items = () => [h('button', 'A'), h('button', 'B'), h('button', 'C')];
+it('normalizes uncontrolled selection when slides shrink so removed indices do not return', async () => {
+  const count = ref(3);
+  const w = mount(ZtCarousel, { slots: { default: () => items().slice(0, count.value) } });
+  await w.get('[aria-label="切换到第 3 张"]').trigger('click');
+  count.value = 1;
+  await nextTick(); await nextTick();
+  count.value = 3;
+  await nextTick(); await nextTick();
+  expect(w.get('.zt-carousel__slide[aria-hidden="false"]').text()).toBe('A');
+  w.unmount();
+});
+it('ignores predominantly vertical touch gestures', async () => {
+  const w = mount(ZtCarousel, { slots: { default: items } });
+  await w.trigger('touchstart', { touches: [{ clientX: 150, clientY: 20 }] });
+  await w.trigger('touchend', { changedTouches: [{ clientX: 90, clientY: 200 }] });
+  expect(w.emitted('change')).toBeUndefined();
+  w.unmount();
+});
+it('returns focus to the region before hiding a focused outgoing slide', async () => {
+  const w = mount(ZtCarousel, { attachTo: document.body, slots: { default: items } });
+  w.get('.zt-carousel__slide button').element.focus();
+  (w.vm as unknown as { next(): void }).next();
+  await nextTick();
+  expect(document.activeElement).toBe(w.element);
+  expect(w.findAll('.zt-carousel__slide')[0]!.attributes('inert')).toBeDefined();
+  w.unmount();
+});
+it('restarts autoplay interval after each uncontrolled slide change', async () => {
+  vi.useFakeTimers();
+  const w = mount(ZtCarousel, { props: { autoplay: true, interval: 1000 }, slots: { default: items } });
+  vi.advanceTimersByTime(900);
+  (w.vm as unknown as { next(): void }).next();
+  await nextTick();
+  vi.advanceTimersByTime(200);
+  expect(w.emitted('change')).toEqual([[1]]);
+  vi.advanceTimersByTime(800);
+  expect(w.emitted('change')).toEqual([[1], [2]]);
+  w.unmount();
+});
+it('pauses autoplay for focus, hidden documents and motion preferences, then resumes', async () => {
+  vi.useFakeTimers();
+  const listeners = new Set<() => void>();
+  const media = { matches: false, addEventListener: (_: string, listener: () => void) => listeners.add(listener), removeEventListener: (_: string, listener: () => void) => listeners.delete(listener) };
+  vi.stubGlobal('matchMedia', () => media);
+  const w = mount(ZtCarousel, { attachTo: document.body, props: { autoplay: true, interval: 100 }, slots: { default: items } });
+  await w.trigger('focusin');
+  vi.advanceTimersByTime(200);
+  expect(w.emitted('change')).toBeUndefined();
+  await w.trigger('focusout', { relatedTarget: document.body });
+  Object.defineProperty(document, 'hidden', { configurable: true, value: true });
+  document.dispatchEvent(new Event('visibilitychange'));
+  await nextTick();
+  vi.advanceTimersByTime(200);
+  expect(w.emitted('change')).toBeUndefined();
+  Object.defineProperty(document, 'hidden', { configurable: true, value: false });
+  document.dispatchEvent(new Event('visibilitychange'));
+  media.matches = true;
+  listeners.forEach(listener => listener());
+  await nextTick();
+  vi.advanceTimersByTime(200);
+  expect(w.emitted('change')).toBeUndefined();
+  media.matches = false;
+  listeners.forEach(listener => listener());
+  await nextTick();
+  vi.advanceTimersByTime(100);
+  expect(w.emitted('change')).toEqual([[1]]);
+  w.unmount();
+  expect(vi.getTimerCount()).toBe(0);
+  expect(listeners.size).toBe(0);
+  delete (document as unknown as { hidden?: boolean }).hidden;
+});

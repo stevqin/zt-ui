@@ -1,5 +1,7 @@
+import type { ZtComponentSize } from '../types';
 import type { ZtScrollTarget } from '../anchor/scroll';
 export interface ZtInfiniteScrollProps {
+  /** 加载状态、重试按钮及内容继承字号的尺寸档位；省略时继承 ConfigProvider。 */ size?: ZtComponentSize;
   /** 加载回调。Promise 期间防止重复，拒绝后显示可重试错误。卸载时传入的 signal 中止。 */ load?: (
     signal: AbortSignal,
   ) => void | Promise<void>;

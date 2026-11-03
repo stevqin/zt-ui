@@ -188,6 +188,8 @@ defineExpose({ confirm, cancel });
       >色相
       <input
         v-model.number="hue"
+        class="zt-color-panel__slider zt-color-panel__hue"
+        :style="{ '--zt-color-thumb': hueColor }"
         type="range"
         min="0"
         max="359"
@@ -198,6 +200,8 @@ defineExpose({ confirm, cancel });
       >透明度
       <input
         v-model.number="alpha"
+        class="zt-color-panel__slider zt-color-panel__alpha"
+        :style="{ '--zt-color-thumb': hex, '--zt-color-opaque': toHex(color), '--zt-color-transparent': toHex(color) + '00' }"
         type="range"
         min="0"
         max="1"

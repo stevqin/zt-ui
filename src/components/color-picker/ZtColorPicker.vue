@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { entryStatusStyle } from '../autocomplete/status';
-import { computed, inject, ref, watch } from 'vue';
+import { computed, inject, ref, toRef, watch } from 'vue';
 import { ZtPopover } from '../popover';
 import { ZtColorPickerPanel } from '../color-picker-panel';
 import { useZtSize } from '../config-provider/context';
 import { ztFormItemKey } from '../form/context';
+import { useFormControlAppearance } from '../form/useFormControlAppearance';
 import { parseColor, toHex } from './color';
 import type { ZtColorPickerProps } from './types';
 import './color-picker.scss';
 defineOptions({ name: 'ZtColorPicker' });
 const props = withDefaults(defineProps<ZtColorPickerProps>(), {
+  underline: undefined,
   status: 'primary',
   modelValue: '',
   showAlpha: false,
@@ -18,6 +20,7 @@ const props = withDefaults(defineProps<ZtColorPickerProps>(), {
   readonly: false,
   clearable: false,
 });
+const { underline } = useFormControlAppearance(toRef(props, 'underline'));
 const emit = defineEmits<{
   'update:modelValue': [value: string];
   change: [value: string];
@@ -69,7 +72,7 @@ defineExpose({
         form?.validateState.value === 'error' ? 'danger' : status,
       )
     "
-    :class="`zt-color-picker--${size}`"
+    :class="[`zt-color-picker--${size}`, { 'is-form-underline': underline, 'is-open': visible, 'is-disabled': disabled, 'is-readonly': readonly }]"
     ><ZtPopover
       :visible="visible"
       trigger="click"
@@ -80,6 +83,7 @@ defineExpose({
       ><button
         :id="form?.inputId"
         ref="button"
+        class="zt-color-picker__trigger"
         type="button"
         aria-label="选择颜色"
         :disabled="disabled"

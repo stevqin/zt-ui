@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { ZtInfiniteScroll, ZtButton } from '@ztechjs/zt-ui';
 import type { ZtInfiniteScrollInstance } from '@ztechjs/zt-ui';
 const list = ref<ZtInfiniteScrollInstance>(),
@@ -17,6 +17,7 @@ async function load(signal: AbortSignal) {
   <ZtButton @click="list?.retry()">请求下一页</ZtButton>
   <ZtInfiniteScroll
     ref="list"
+    class="retry-list"
     :load="load"
     :immediate="false"
     :finished="items.length >= 6"
@@ -29,3 +30,8 @@ async function load(signal: AbortSignal) {
     <template #finished>全部通知已加载</template>
   </ZtInfiniteScroll>
 </template>
+
+<style scoped>
+.retry-list { border: 1px solid var(--doc-border, #e5e7eb); border-radius: var(--zt-radius, 11px); overflow: hidden; }
+p { margin: 0; padding: var(--zt-infinite-scroll-padding-y, 12px) var(--zt-infinite-scroll-padding-x, 16px); border-bottom: 1px solid var(--doc-border, #e5e7eb); }
+</style>

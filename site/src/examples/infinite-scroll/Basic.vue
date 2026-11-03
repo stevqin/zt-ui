@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { ZtInfiniteScroll } from '@ztechjs/zt-ui';
 const container = ref<HTMLElement>(),
   items = ref([1, 2, 3, 4, 5]);
@@ -13,7 +13,7 @@ async function load(signal: AbortSignal) {
 }
 </script>
 <template>
-  <div ref="container" style="height: 260px; overflow: auto; border: 1px solid #8884">
+  <div ref="container" class="infinite-basic">
     <ZtInfiniteScroll
       :container="() => container"
       :load="load"
@@ -23,7 +23,6 @@ async function load(signal: AbortSignal) {
       <p
         v-for="item in items"
         :key="item"
-        style="padding: 12px; border-bottom: 1px solid #8883"
       >
         库存变更记录 {{ item }}
       </p>
@@ -31,3 +30,8 @@ async function load(signal: AbortSignal) {
     </ZtInfiniteScroll>
   </div>
 </template>
+
+<style scoped>
+.infinite-basic { height: 260px; overflow: auto; border: 1px solid var(--doc-border, #e5e7eb); border-radius: var(--zt-radius, 11px); }
+p { margin: 0; padding: var(--zt-infinite-scroll-padding-y, 12px) var(--zt-infinite-scroll-padding-x, 16px); border-bottom: 1px solid var(--doc-border, #e5e7eb); }
+</style>

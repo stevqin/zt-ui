@@ -1,2 +1,24 @@
 @use '../../styles/tokens' as glass;
+@use '../../styles/form-underline' as underline;
 .zt-color-picker{@include glass.tokens;--zt-color-height:34px;display:inline-flex;font:14px/1.5 var(--glass-font);color:var(--glass-default-ink);button{display:inline-flex;align-items:center;gap:8px;height:var(--zt-color-height);min-height:var(--zt-color-height);box-sizing:border-box;max-width:100%;background:var(--zt-surface,#fff);color:inherit;border:1px solid var(--glass-default-line);border-radius:glass.radius(8px);font:inherit;padding:0 10px;cursor:pointer;>span:first-child{display:inline-block;box-sizing:border-box;width:min(20px,calc(var(--zt-color-height) - 10px));height:min(20px,calc(var(--zt-color-height) - 10px));border:1px solid var(--glass-default-line);border-radius:3px} &:disabled{opacity:.5;cursor:not-allowed}}&--mini{--zt-color-height:26px;font-size:11px}&--small{--zt-color-height:30px;font-size:12px}&--medium{--zt-color-height:36px;font-size:15px}&--large{--zt-color-height:40px;font-size:16px}}
+
+
+.zt-color-picker.is-form-underline {
+  > .zt-popover__reference { width: 100%; }
+  > .zt-popover__reference > .zt-color-picker__trigger { width: 100%; @include underline.surface; }
+  &:focus-within:not(.is-disabled) > .zt-popover__reference > .zt-color-picker__trigger,
+  &.is-open:not(.is-disabled) > .zt-popover__reference > .zt-color-picker__trigger {
+    @include underline.focus(var(--zt-entry-ink, var(--glass-accent)));
+  }
+  > .zt-popover__reference > .zt-color-picker__trigger:focus-visible { outline: none; }
+  &.is-disabled > .zt-popover__reference > .zt-color-picker__trigger { @include underline.disabled; }
+}
+
+// The Popover owns the floating surface. Standalone panels keep their border.
+.zt-popover:has(> .zt-popover__content > .zt-color-panel) {
+  padding: 0;
+  > .zt-popover__content {
+    border-radius: inherit;
+    > .zt-color-panel { border: 0; border-radius: inherit; }
+  }
+}

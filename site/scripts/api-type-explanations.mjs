@@ -2,7 +2,7 @@ import ts from 'typescript';
 
 const labels = {
   Affix: '固钉', Alert: '提示条', Anchor: '锚点导航', Layout: '页面布局', Header: '布局头部', Footer: '布局底部', Aside: '布局侧栏', Main: '布局主区域',
-  Autocomplete: '自动补全输入框', Avatar: '头像', Backtop: '回到顶部按钮', Badge: '徽标', Breadcrumb: '面包屑导航', BreadcrumbItem: '面包屑条目', Button: '按钮',
+  Autocomplete: '自动补全输入框', Avatar: '头像', AvatarGroup: '头像组', Backtop: '回到顶部按钮', Badge: '徽标', Breadcrumb: '面包屑导航', BreadcrumbItem: '面包屑条目', Button: '按钮',
   Calendar: '日历', Card: '卡片', Carousel: '轮播图', CarouselItem: '轮播项', Cascader: '级联选择器', Checkbox: '复选框', CheckboxGroup: '复选框组', Col: '栅格列', Row: '栅格行',
   Collapse: '折叠面板', CollapseItem: '折叠面板项', ColorPicker: '颜色选择器', ColorPickerPanel: '颜色面板', ConfigProvider: '全局配置容器',
   DatePicker: '日期选择器', DatePickerPanel: '日期面板', DateTimePicker: '日期时间选择器', Descriptions: '描述列表', DescriptionsItem: '描述项', Divider: '分隔线', Drawer: '抽屉',
@@ -50,6 +50,7 @@ const explanations = {
   ZtDropdownItem: '菜单条目数据，包含命令 key、显示文字、图标、分组/分隔和禁用状态。',
   ZtFormProp: '表单模型中的字段路径，可用点路径字符串或路径片段数组。',
   ZtFormValidateTrigger: '字段校验时机：change 值改变或 blur 离开输入焦点。',
+  ZtFormMessageDisplay: '表单校验提示形式：标签旁说明、行内说明、聚焦浮层、顶部汇总，或原有图标浮层。',
   ZtFormLabelPosition: '表单标签位置：左对齐、右对齐或置于控件上方。',
   ZtFormRuleType: '校验值的基本类型，可检查字符串、数字、邮箱或网址。',
   ZtFormItemValidateStatus: '字段校验状态，区分未校验、校验中、成功和错误。',
@@ -58,6 +59,8 @@ const explanations = {
   ZtFormValidationErrors: '以字段路径为键的错误消息数组，用于读取整表校验失败结果。',
   ZtFormValidateOptions: '自定义校验收到的上下文，包含触发时机、完整模型和当前字段。',
   ZtFormInstance: '通过表单 ref 调用整表/字段校验、重置、清除错误以及滚动到字段。',
+  ZtIconAnimation: '图标动效类型：旋转、呼吸、弹跳、摇摆或描边绘制；未设置时静止。',
+  ZtIconAnimationTrigger: '图标动效触发方式：持续播放、悬停或控件聚焦、点击（含按钮键盘激活）。',
   ZtIconName: '组件库内置图标名称的联合类型，用于按名称选择 SVG 图标。',
   ViewerTransform: '图片预览变换状态，记录缩放倍数、旋转角度及平移坐标。',
   ViewerAction: '图片预览操作，区分缩放方向、旋转方向、平移坐标和复位。',

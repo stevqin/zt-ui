@@ -5,6 +5,7 @@ import { useScrollTarget, scrollTop, motion } from '../anchor/scroll';
 import type { ZtBacktopProps, ZtBacktopEmits } from './types';
 const props = withDefaults(defineProps<ZtBacktopProps>(), {
   visibilityHeight: 200,
+  position: 'fixed',
   right: 24,
   bottom: 24,
   label: '返回顶部',
@@ -27,7 +28,7 @@ function back(event: MouseEvent) {
     v-if="visible"
     type="button"
     :class="['zt-backtop', `zt-backtop--${size}`]"
-    :style="{ right: right + 'px', bottom: bottom + 'px' }"
+    :style="{ position, right: right + 'px', bottom: bottom + 'px' }"
     :aria-label="label"
     @click="back"
   >

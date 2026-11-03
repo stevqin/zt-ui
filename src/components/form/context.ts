@@ -2,6 +2,7 @@ import type { ComputedRef, InjectionKey, Ref } from 'vue'
 import type { ZtComponentSize } from '../types'
 import type {
   ZtFormItemValidateStatus,
+  ZtFormMessageDisplay,
   ZtFormLabelPosition,
   ZtFormRules,
   ZtFormValidateTrigger,
@@ -9,6 +10,7 @@ import type {
 
 export interface ZtFormFieldContext {
   prop: string
+  label?: ComputedRef<string>
   inputId: string
   errorId: string
   element: Ref<HTMLElement | undefined>
@@ -35,6 +37,7 @@ export interface ZtFormContext {
   removeLabelWidth: (id: number) => void
   hideRequiredAsterisk: ComputedRef<boolean>
   showMessage: ComputedRef<boolean>
+  messageDisplay: ComputedRef<ZtFormMessageDisplay>
   addField: (field: ZtFormFieldContext) => void
   removeField: (field: ZtFormFieldContext) => void
   notifyValidate: (prop: string, valid: boolean, message: string) => void

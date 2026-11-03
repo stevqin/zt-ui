@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   ref,
+  Transition,
   computed,
   Comment,
   Fragment,
@@ -22,6 +23,8 @@ const props = withDefaults(defineProps<ZtCarouselProps>(), {
 });
 const emit = defineEmits<ZtCarouselEmits>(),
   slots = defineSlots<{ default?: () => VNode[] }>(),
+  root = ref<HTMLElement>(),
+  direction = ref(1),
   hovered = ref(false),
   focused = ref(false),
   hidden = ref(false),
@@ -54,13 +57,16 @@ const current = computed(() =>
     ),
   ),
 );
+let requested: { index: number; direction: number } | undefined;
 function goTo(index: number) {
   if (count.value < 2 || !Number.isFinite(index)) return;
   index = Math.floor(index);
+  const movement = index > current.value ? 1 : -1;
   const next = props.loop
     ? ((index % count.value) + count.value) % count.value
     : Math.max(0, Math.min(count.value - 1, index));
   if (next !== current.value) {
+    requested = { index: next, direction: movement };
     if (props.modelValue === undefined) internal.value = next;
     emit('update:modelValue', next);
     emit('change', next);
@@ -71,7 +77,7 @@ const next = () => goTo(current.value + 1),
 function keydown(event: KeyboardEvent) {
   if (
     event.target instanceof HTMLElement &&
-    event.target.closest('input,textarea,select,[contenteditable="true"]')
+    event.target.closest('input,textarea,select,[contenteditable]:not([contenteditable="false"]),[role="slider"],[role="spinbutton"],[role="combobox"]')
   )
     return;
   const action =
@@ -90,14 +96,18 @@ function keydown(event: KeyboardEvent) {
   }
 }
 let touchX: number | undefined,
+  touchY: number | undefined,
   timer: ReturnType<typeof setInterval> | undefined,
   media: MediaQueryList | undefined;
 function touchStart(event: TouchEvent) {
+  if (event.touches.length !== 1) { touchX = undefined; return; }
   touchX = event.touches[0]?.clientX;
+  touchY = event.touches[0]?.clientY;
 }
 function touchEnd(event: TouchEvent) {
   const end = event.changedTouches[0]?.clientX;
-  if (touchX !== undefined && end !== undefined && Math.abs(end - touchX) >= 40)
+  const vertical = Math.abs((event.changedTouches[0]?.clientY ?? touchY ?? 0) - (touchY ?? 0));
+  if (touchX !== undefined && end !== undefined && Math.abs(end - touchX) >= 40 && Math.abs(end - touchX) > vertical)
     (end < touchX ? next : prev)();
   touchX = undefined;
 }
@@ -132,6 +142,16 @@ function focusOut(event: FocusEvent) {
   )
     focused.value = false;
 }
+watch(count, () => {
+  if (props.modelValue === undefined) internal.value = current.value;
+});
+watch(current, (value, old) => {
+  direction.value = requested?.index === value ? requested.direction : value > old ? 1 : -1;
+  requested = undefined;
+  const active = typeof document !== 'undefined' ? document.activeElement : null;
+  const outgoing = root.value?.querySelectorAll('.zt-carousel__slide')[old];
+  if (active && outgoing?.contains(active)) root.value?.focus({ preventScroll: true });
+});
 watch(
   () => props.modelValue,
   (value) => {
@@ -144,7 +164,7 @@ watch(
   () => [
     props.autoplay,
     props.interval,
-    props.modelValue,
+    current.value,
     props.loop,
     count.value,
     hovered.value,
@@ -171,12 +191,13 @@ defineExpose({ prev, next, goTo });
 </script>
 <template>
   <section
+    ref="root"
     class="zt-carousel"
     role="region"
     aria-roledescription="轮播"
     :aria-label="label"
     tabindex="0"
-    :style="{ height: typeof height === 'number' ? height + 'px' : height }"
+    :style="{ height: typeof height === 'number' ? height + 'px' : height, '--zt-carousel-direction': direction }"
     @keydown="keydown"
     @mouseenter="hovered = true"
     @mouseleave="hovered = false"
@@ -188,12 +209,11 @@ defineExpose({ prev, next, goTo });
   >
     <div
       class="zt-carousel__slides"
-      :aria-live="autoplay && !hovered && !focused ? 'off' : 'polite'"
+      :aria-live="autoplay && !hovered && !focused && !hidden && !reduced ? 'off' : 'polite'"
     >
+      <Transition v-for="(slide, index) in slides()" :key="slide.key ?? index" name="zt-carousel-slide">
       <div
-        v-for="(slide, index) in slides()"
         v-show="index === current"
-        :key="slide.key ?? index"
         class="zt-carousel__slide"
         role="group"
         aria-roledescription="幻灯片"
@@ -203,6 +223,7 @@ defineExpose({ prev, next, goTo });
       >
         <component :is="slide" />
       </div>
+      </Transition>
     </div>
     <template v-if="arrows && count > 1"
       ><button
@@ -212,7 +233,7 @@ defineExpose({ prev, next, goTo });
         :disabled="!loop && current === 0"
         @click="prev"
       >
-        ‹</button
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg></button
       ><button
         type="button"
         class="zt-carousel__arrow zt-carousel__arrow--next"
@@ -220,7 +241,7 @@ defineExpose({ prev, next, goTo });
         :disabled="!loop && current === count - 1"
         @click="next"
       >
-        ›
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 6 6 6-6 6" /></svg>
       </button></template
     >
     <div v-if="indicators && count > 1" class="zt-carousel__indicators">
@@ -250,9 +271,21 @@ defineExpose({ prev, next, goTo });
     outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
     outline-offset: 3px;
   }
-  &__slides,
-  &__slide {
-    height: 100%;
+  &__slides { position: relative; height: 100%; isolation: isolate; }
+  &__slide { position: absolute; inset: 0; height: 100%; width: 100%; transform: translateX(0); }
+  // The incoming slide establishes intrinsic height, while outgoing slides overlap it.
+  &__slide[aria-hidden='false'] { position: relative; }
+  .zt-carousel-slide-enter-active,
+  .zt-carousel-slide-leave-active {
+    transition: transform 380ms cubic-bezier(.22, .68, 0, 1);
+    will-change: transform;
+    pointer-events: none;
+  }
+  .zt-carousel-slide-enter-from { transform: translateX(calc(var(--zt-carousel-direction) * 100%)); }
+  .zt-carousel-slide-leave-to { transform: translateX(calc(var(--zt-carousel-direction) * -100%)); }
+  @media (prefers-reduced-motion: reduce) {
+    .zt-carousel-slide-enter-active,
+    .zt-carousel-slide-leave-active { transition: none; }
   }
   &__slide :deep(img) {
     width: 100%;
@@ -263,13 +296,21 @@ defineExpose({ prev, next, goTo });
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
+    display: grid;
+    place-items: center;
+    z-index: 2;
     width: 36px;
     height: 36px;
-    border: 0;
+    padding: 0;
+    border: 1px solid var(--glass-line);
     border-radius: 50%;
     background: var(--glass-default-soft);
     color: var(--glass-default-ink);
-    font-size: 26px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 2px 8px #0000000d;
+    transition: background 160ms, box-shadow 160ms;
+    svg { width: 20px; height: 20px; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    &:hover:not(:disabled) { background: var(--glass-info-soft); box-shadow: 0 3px 12px #00000014; }
     cursor: pointer;
     &--prev {
       left: 12px;
@@ -288,18 +329,21 @@ defineExpose({ prev, next, goTo });
     left: 50%;
     transform: translateX(-50%);
     display: flex;
-    gap: 8px;
+    gap: 2px;
+    z-index: 2;
     button {
-      width: 24px;
-      height: 8px;
+      position: relative;
+      width: 32px;
+      height: 24px;
       padding: 0;
-      border: 1px solid var(--glass-line);
-      border-radius: glass.radius(6px);
-      background: var(--glass-default-soft);
+      border: 0;
+      background: transparent;
+      &::after { content: ''; position: absolute; inset: 9px 4px; border-radius: glass.radius(6px); background: var(--glass-default-ink); opacity: .28; transition: opacity 160ms, background 160ms; }
       cursor: pointer;
-      &.is-active {
-        background: var(--glass-accent);
+      &.is-active::after {
+        background: var(--glass-accent); opacity: 1;
       }
+      &:hover::after { opacity: .7; }
     }
   }
   button:focus {

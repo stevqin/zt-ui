@@ -4,6 +4,8 @@ export type ZtFormProp = string | string[]
 export type ZtFormValidateTrigger = 'change' | 'blur'
 export type ZtFormLabelPosition = 'left' | 'right' | 'top'
 export type ZtFormRuleType = 'string' | 'number' | 'email' | 'url'
+/** 校验提示形式：原有图标浮层、行内说明、聚焦浮层、顶部汇总、标签旁说明。 */
+export type ZtFormMessageDisplay = 'tooltip' | 'inline' | 'popover' | 'summary' | 'label'
 export type ZtFormItemValidateStatus = '' | 'validating' | 'success' | 'error'
 
 export interface ZtFormRule {
@@ -37,6 +39,8 @@ export interface ZtFormProps {
   labelWidth?: number | string | 'auto'
   hideRequiredAsterisk?: boolean
   showMessage?: boolean
+  /** 错误提示形式；FormItem 省略时继承 Form，默认 tooltip。 */
+  messageDisplay?: ZtFormMessageDisplay
   scrollToError?: boolean
 }
 
@@ -48,6 +52,8 @@ export interface ZtFormItemProps {
   rules?: ZtFormRule | ZtFormRule[]
   error?: string
   showMessage?: boolean
+  /** 错误提示形式；FormItem 省略时继承 Form，默认 tooltip。 */
+  messageDisplay?: Exclude<ZtFormMessageDisplay, 'summary'>
   labelWidth?: number | string | 'auto'
   size?: ZtComponentSize
 }

@@ -1,9 +1,60 @@
 @use '../../styles/tokens' as glass;
-.zt-icon-glyph{
- @include glass.tokens;display:inline-flex;align-items:center;justify-content:center;flex:none;width:var(--zt-icon-size,1em);height:var(--zt-icon-size,1em);color:var(--zt-icon-color,currentColor);font-style:normal;line-height:1;transform:rotate(var(--zt-icon-rotate,0deg));transform-origin:center;
- svg{display:block;width:100%;height:100%}
- &--status-primary{color:var(--glass-accent)}&--status-success{color:var(--glass-success-ink)}&--status-warning{color:var(--glass-warning-ink)}&--status-danger{color:var(--glass-danger-ink)}&--status-info{color:var(--glass-info-ink)}
- &.is-spin{animation:zt-icon-glyph-spin 1s linear infinite}
+.zt-icon-glyph {
+  @include glass.tokens;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: var(--zt-icon-size, 1em);
+  height: var(--zt-icon-size, 1em);
+  color: var(--zt-icon-color, currentColor);
+  font-style: normal;
+  line-height: 1;
+  transform: rotate(var(--zt-icon-rotate, 0deg));
+  transform-origin: center;
+  svg { display: block; width: 100%; height: 100%; transform-origin: center; }
+  &--status-primary { color: var(--glass-accent); }
+  &--status-success { color: var(--glass-success-ink); }
+  &--status-warning { color: var(--glass-warning-ink); }
+  &--status-danger { color: var(--glass-danger-ink); }
+  &--status-info { color: var(--glass-info-ink); }
+  &.is-spin { animation: zt-icon-glyph-spin 1s linear infinite; }
+
+  &--animation-spin { --zt-icon-motion: zt-icon-motion-spin; --zt-icon-easing: linear; }
+  &--animation-pulse { --zt-icon-motion: zt-icon-motion-pulse; }
+  &--animation-bounce { --zt-icon-motion: zt-icon-motion-bounce; }
+  &--animation-shake { --zt-icon-motion: zt-icon-motion-shake; }
+  &--animation-draw { --zt-icon-motion: zt-icon-motion-draw; }
+
+  &[class*='--animation-'] {
+    --zt-icon-repeat: 1;
+    &.zt-icon-glyph--trigger-always { --zt-icon-repeat: infinite; }
+  }
 }
-@keyframes zt-icon-glyph-spin{to{transform:rotate(calc(var(--zt-icon-rotate,0deg) + 360deg))}}
-@media(prefers-reduced-motion:reduce){.zt-icon-glyph.is-spin{animation:none}}
+// Hover/focus on the owning control also activates a small icon within it.
+@mixin icon-motion-active {
+  > svg {
+    animation: var(--zt-icon-motion) var(--zt-icon-animation-duration, 800ms) var(--zt-icon-easing, ease-in-out) var(--zt-icon-repeat, 1);
+  }
+  &.zt-icon-glyph--animation-draw > svg {
+    animation: none;
+    > * {
+      stroke-dasharray: 100;
+      animation: zt-icon-motion-draw var(--zt-icon-animation-duration, 800ms) ease-in-out var(--zt-icon-repeat, 1);
+    }
+  }
+}
+.zt-icon-glyph--trigger-always,
+.zt-icon-glyph--trigger-hover:is(:hover, :focus-within),
+:is(button, a[href], [role='button'], [role='link']):is(:hover, :focus-visible) .zt-icon-glyph--trigger-hover,
+.zt-icon-glyph--trigger-click.is-animating { @include icon-motion-active; }
+
+@keyframes zt-icon-glyph-spin { to { transform: rotate(calc(var(--zt-icon-rotate, 0deg) + 360deg)); } }
+@keyframes zt-icon-motion-spin { to { transform: rotate(360deg); } }
+@keyframes zt-icon-motion-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(.8); } }
+@keyframes zt-icon-motion-bounce { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-16%); } 70% { transform: translateY(4%); } }
+@keyframes zt-icon-motion-shake { 0%, 100% { transform: rotate(0); } 20%, 60% { transform: rotate(-14deg); } 40%, 80% { transform: rotate(14deg); } }
+@keyframes zt-icon-motion-draw { from { stroke-dashoffset: 100; opacity: .25; } to { stroke-dashoffset: 0; opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .zt-icon-glyph.is-spin, .zt-icon-glyph > svg, .zt-icon-glyph > svg > * { animation: none !important; }
+}

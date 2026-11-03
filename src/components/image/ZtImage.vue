@@ -72,12 +72,12 @@ function close() {
       @error="loading = false; failed = true; emit('error', $event)"
     >
     <div v-if="loading" class="zt-image__state">
-      <slot name="placeholder"><ZtIcon name="image" /></slot>
+      <slot name="placeholder"><ZtIcon :size="20" name="image" /></slot>
     </div>
     <div v-else-if="failed" class="zt-image__state">
-      <slot name="error"><ZtIcon name="warning" /></slot>
+      <slot name="error"><ZtIcon :size="20" name="warning" /></slot>
     </div>
-    <div v-if="canPreview" class="zt-image__preview-mask"><ZtIcon name="visibility" /></div>
+    <div v-if="canPreview" class="zt-image__preview-mask"><ZtIcon :size="20" name="visibility" /></div>
     <ZtImageViewer
       v-if="open"
       :urls="previewUrls"

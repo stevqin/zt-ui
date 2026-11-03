@@ -5,6 +5,8 @@
   --zt-segmented-ink: var(--zt-accent-ink, #244c9e);
   --zt-segmented-soft: var(--zt-accent-soft, #f0f5ff);
   --zt-segmented-line: var(--zt-accent-line, #bfd2ff);
+  position: relative;
+  isolation: isolate;
   display: inline-flex;
   gap: 3px;
   padding: 3px;
@@ -12,6 +14,20 @@
   border-radius: glass.radius(10px);
   background: var(--zt-surface-soft, var(--glass-default-soft));
   font: var(--glass-size-default) / 1.2 var(--glass-font);
+
+  &__indicator {
+    position: absolute;
+    left: 0;
+    z-index: -1;
+    pointer-events: none;
+    box-sizing: border-box;
+    border: 1px solid var(--zt-segmented-line);
+    border-radius: glass.radius(7px);
+    background: var(--zt-segmented-soft);
+    box-shadow: 0 1px 3px rgba(16, 24, 40, .18), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .45));
+    &.is-animated { transition: transform 220ms ease, width 220ms ease, height 220ms ease, top 220ms ease; }
+    &.is-disabled { opacity: .45; }
+  }
 
   button {
     display: inline-flex;
@@ -27,12 +43,10 @@
     font: inherit;
     cursor: pointer;
     transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
-    &:hover:not(:disabled) { color: var(--zt-segmented-ink); background: color-mix(in srgb, var(--zt-segmented-soft) 72%, transparent); }
+    &:hover:not(:disabled):not(.is-active) { color: var(--zt-segmented-ink); background: color-mix(in srgb, var(--zt-segmented-soft) 72%, transparent); }
     &.is-active {
       color: var(--zt-segmented-ink);
-      background: var(--zt-segmented-soft);
-      border-color: var(--zt-segmented-line);
-      box-shadow: 0 1px 3px rgba(16, 24, 40, .18), inset 0 1px 0 var(--zt-shine, rgba(255, 255, 255, .45));
+      background: transparent;
       font-weight: 650;
     }
     &:focus { outline: var(--zt-focus-ring-width, 0px) solid var(--zt-segmented-line); outline-offset: 1px; }
@@ -51,4 +65,4 @@
   &--status-default { --zt-segmented-ink: var(--zt-default-ink, #414141); --zt-segmented-soft: var(--zt-default-soft, rgba(255, 255, 255, .85)); --zt-segmented-line: var(--zt-default-line, #e2e2e2); }
 }
 
-@media (prefers-reduced-motion: reduce) { .zt-segmented button { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .zt-segmented button, .zt-segmented__indicator.is-animated { transition: none; } }

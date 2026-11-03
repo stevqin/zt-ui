@@ -137,6 +137,8 @@ describe('ImageViewer overlay ownership', () => {
     opener.focus()
     const viewer = render(ZtImageViewer, { props: { urls: ['/a.svg'] } })
     await nextTick()
+    document.querySelector('.zt-image-viewer__frame img')!.dispatchEvent(new Event('load'))
+    await nextTick()
     const buttons = [...document.querySelectorAll<HTMLButtonElement>('.zt-image-viewer button')]
     expect(document.activeElement).toBe(buttons[0])
     buttons.at(-1)!.focus()

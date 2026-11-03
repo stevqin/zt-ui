@@ -6,6 +6,14 @@
 
 [在线文档](https://stevqin.github.io/zt-ui/) · [快速开始](https://stevqin.github.io/zt-ui/#/guide/quick-start) · [组件演示](https://stevqin.github.io/zt-ui/#/components) · [更新日志](./CHANGELOG.md)
 
+## v0.13.0 · 2026-11-03
+
+本次更新完善图标体系、表单校验与常用组件交互：新增 240 个图标及 AvatarGroup，优化图片预览、走马灯、分栏器和分段选择器动画，补齐颜色选择器下划线与色谱，并改进导航和业务示例。
+
+This release adds 240 icons and AvatarGroup, refines form validation and component motion, introduces ColorPicker underline and visible color spectra, and improves navigation and business examples.
+
+[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.0)
+
 ## 特性
 
 - **统一设计**：柔和高光、半透明表面与弹性动效，保持一致的视觉和操作体验。

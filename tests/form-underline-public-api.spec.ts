@@ -21,6 +21,7 @@ const controls = [
   ['DatePicker', library.ZtDatePicker, '.zt-date-picker'],
   ['DateTimePicker', library.ZtDateTimePicker, '.zt-date-picker'],
   ['TimePicker', library.ZtTimePicker, '.zt-time-picker'],
+  ['ColorPicker', library.ZtColorPicker, '.zt-color-picker'],
   ['TimeSelect', library.ZtTimeSelect, '.zt-select'],
   ['Mention', library.ZtMention, '.zt-mention'],
 ] as const
@@ -36,7 +37,7 @@ function marked(wrapper: VueWrapper, root: string) {
 }
 
 describe('public tri-state underline API', () => {
-  it('exposes Form appearance only on Form and the 15 supported public controls', () => {
+  it('exposes Form appearance only on Form and the 16 supported public controls', () => {
     const actual = Object.entries(library).filter(([name, component]) =>
       // Existing text-decoration APIs are unrelated to control appearance.
       !['ZtLink', 'ZtTypography'].includes(name) &&
@@ -74,6 +75,8 @@ describe('public tri-state underline API', () => {
     }
     const panel = exports.find(symbol => symbol.name === 'ZtDatePickerPanelProps')!
     expect(checker.getDeclaredTypeOfSymbol(panel).getProperty('underline')).toBeUndefined()
+    const colorPanel = exports.find(symbol => symbol.name === 'ZtColorPickerPanelProps')!
+    expect(checker.getDeclaredTypeOfSymbol(colorPanel).getProperty('underline')).toBeUndefined()
   })
 
   it.each(controls)('%s supports explicit true outside Form and reactive local changes', async (_, component, root) => {

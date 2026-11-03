@@ -1,1 +1,108 @@
-@use '../../styles/tokens' as glass;.zt-descriptions{@include glass.tokens;color:var(--glass-ink);font:var(--glass-size-default)/1.55 var(--glass-font);&__header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}&__title{font-size:1.08em;font-weight:700}&__extra{color:var(--glass-muted)}dl{display:grid;grid-template-columns:repeat(var(--zt-descriptions-columns),minmax(0,1fr));margin:0;overflow:hidden;border-radius:glass.radius(10px)}&__item{display:flex;min-width:0;dt,dd{box-sizing:border-box;margin:0;padding:10px 12px}dt{flex:0 0 auto;color:var(--glass-muted);font-weight:600;background:var(--glass-surface-muted)}dd{flex:1;min-width:0}.is-vertical{display:block} &.is-vertical{display:block} }&.is-bordered dl{border:1px solid var(--glass-line);gap:1px;background:var(--glass-line)}&.is-bordered &__item{background:var(--glass-surface)}&--mini{font-size:var(--glass-size-mini)}&--small{font-size:var(--glass-size-small)}&--medium{font-size:var(--glass-size-medium)}&--large{font-size:var(--glass-size-large)}@media(max-width:640px){dl{grid-template-columns:1fr!important}&__item{grid-column:span 1!important;display:block}dt{width:auto!important}}}
+@use '../../styles/tokens' as glass;
+
+.zt-descriptions {
+  @include glass.tokens;
+  --zt-descriptions-pad-y: 14px;
+  --zt-descriptions-pad-x: 18px;
+  color: var(--glass-ink);
+  font: var(--glass-size-default)/1.65 var(--glass-font);
+
+  &__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 20px;
+    margin-bottom: 16px;
+    min-width: 0;
+  }
+  &__title {
+    min-width: 0;
+    font-size: 1.14em;
+    line-height: 1.5;
+    font-weight: 650;
+    overflow-wrap: anywhere;
+  }
+  &__extra { margin-left: auto; color: var(--glass-muted); }
+
+  > dl {
+    display: grid;
+    grid-template-columns: repeat(var(--zt-descriptions-columns), minmax(0, 1fr));
+    margin: 0;
+    min-width: 0;
+    column-gap: 28px;
+  }
+  &__item {
+    display: flex;
+    min-width: 0;
+    align-items: stretch;
+
+    > dt, > dd {
+      box-sizing: border-box;
+      margin: 0;
+      padding-block: var(--zt-descriptions-pad-y);
+      overflow-wrap: anywhere;
+    }
+    > dt {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      flex: 0 0 auto;
+      width: 96px;
+      max-width: 45%;
+      padding-right: 16px;
+      color: var(--glass-muted);
+      font-weight: 400;
+      .zt-icon { flex-shrink: 0; align-self: center; }
+    }
+    > dd { flex: 1; min-width: 0; }
+    &.is-vertical {
+      flex-direction: column;
+      padding-block: var(--zt-descriptions-pad-y);
+      > dt { width: auto !important; max-width: none; padding: 0 0 5px; font-size: .93em; }
+      > dd { padding: 0; }
+    }
+  }
+
+  &.is-bordered {
+    > dl {
+      overflow: hidden;
+      gap: 0;
+      border: 1px solid var(--glass-line);
+      border-radius: glass.radius(10px);
+      background: var(--zt-surface, #fff);
+    }
+    .zt-descriptions__item {
+      // Shared top/left rules stay visible under opaque labels without doubling the perimeter.
+      border-top: 1px solid var(--glass-line);
+      border-left: 1px solid var(--glass-line);
+      margin-top: -1px;
+      margin-left: -1px;
+      > dt, > dd { padding: var(--zt-descriptions-pad-y) var(--zt-descriptions-pad-x); }
+      > dt {
+        width: 112px;
+        background: var(--zt-surface-soft, #f7f8fa);
+        border-right: 1px solid var(--glass-line);
+      }
+      &.is-vertical {
+        padding: 0;
+        > dt { padding-bottom: 8px; background: none; border-right: 0; }
+        > dd { padding-top: 0; }
+      }
+    }
+  }
+
+  &--mini { --zt-descriptions-pad-y: 8px; --zt-descriptions-pad-x: 12px; font-size: var(--glass-size-mini); }
+  &--small { --zt-descriptions-pad-y: 10px; --zt-descriptions-pad-x: 14px; font-size: var(--glass-size-small); }
+  &--medium { --zt-descriptions-pad-y: 16px; font-size: var(--glass-size-medium); }
+  &--large { --zt-descriptions-pad-y: 18px; --zt-descriptions-pad-x: 20px; font-size: var(--glass-size-large); }
+
+  @media (max-width: 640px) {
+    --zt-descriptions-pad-x: 14px;
+    > dl { grid-template-columns: minmax(0, 1fr); column-gap: 0; }
+    &__item {
+      grid-column: span 1 !important;
+      > dt { width: 96px; max-width: 40%; }
+    }
+  }
+}

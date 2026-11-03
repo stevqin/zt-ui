@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, reactive } from 'vue';
+import { ref, reactive } from "vue";
 import {
   ZtForm,
   ZtFormItem,
@@ -7,30 +7,36 @@ import {
   ZtButton,
   type ZtFormInstance,
   type ZtFormRules,
-} from '@ztechjs/zt-ui';
+} from "@ztechjs/zt-ui";
 const form = ref<ZtFormInstance>();
-const model = reactive({ name: '', email: '' });
+const model = reactive({ name: "", email: "" });
 const rules: ZtFormRules = {
-  name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+  name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
   email: [
-    { required: true, message: '请输入邮箱' },
-    { type: 'email', message: '请输入有效邮箱' },
+    { required: true, message: "请输入邮箱" },
+    { type: "email", message: "请输入有效邮箱" },
   ],
 };
-const result = ref('');
+const result = ref("");
 async function submit() {
   try {
     await form.value?.validate();
-    result.value = '已提交';
+    result.value = "已提交";
   } catch {
-    result.value = '请检查表单';
+    result.value = "请检查表单";
   }
 }
 </script>
 
 <template>
   <div class="demo">
-    <ZtForm ref="form" :model="model" :rules="rules" label-position="top">
+    <ZtForm
+      ref="form"
+      :model="model"
+      :rules="rules"
+      label-position="top"
+      message-display="label"
+    >
       <ZtFormItem label="姓名" prop="name">
         <ZtInput v-model="model.name" placeholder="请输入姓名" />
       </ZtFormItem>

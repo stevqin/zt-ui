@@ -31,7 +31,7 @@ export const pagesA: DocPage[] = [
     "name": "Icon",
     "title": "图标",
     "group": "foundation",
-    "description": "提供统一线性图标、语义色、旋转和自定义 SVG 的展示容器。",
+    "description": "提供 309 个线性图标、语义色、自定义 SVG 与旋转、呼吸、弹跳、摇摆、描边动效。",
     "usage": [
       "工具栏图标可与按钮文字搭配。",
       "独立表达信息的图标应设置 label，装饰图标无需重复朗读。"
@@ -40,13 +40,13 @@ export const pagesA: DocPage[] = [
       {
         "id": "basic",
         "title": "语义与旋转",
-        "description": "内置名称、状态色和持续旋转适用于查找、成功反馈与加载指示。",
+        "description": "内置名称、状态色、持续旋转及按需触发的微动效，兼容系统减少动态效果设置。",
         "file": "src/examples/icon/Basic.vue"
       },
       {
         "id": "gallery",
         "title": "完整图标检索",
-        "description": "根据当前公开图标名称生成图标库，输入关键词筛选并点击查看导入使用方式。",
+        "description": "按 12 个分类浏览 309 个图标；浮动工具栏支持搜索、分类和动效预览，点击图标可复制名称或带当前动效设置的组件代码。",
         "file": "src/examples/icon/Gallery.vue",
         "wide": true
       }
@@ -357,22 +357,22 @@ export const pagesA: DocPage[] = [
     "name": "Avatar",
     "title": "头像",
     "group": "media",
-    "description": "展示用户图片、名称缩写和图标，并为图片加载失败提供后备内容。",
+    "description": "展示用户图片、姓名缩写和图标，支持重叠头像组、人数收起和成员查看。",
     "usage": [
       "用户导航和操作记录使用头像帮助识别人员。",
-      "无图片或图片失败时提供 alt、插槽文字或 icon。"
+      "无图片或图片失败时提供 alt、插槽文字或 icon；AvatarGroup 使用 max 控制可见人数。"
     ],
     "examples": [
       {
         "id": "basic",
-        "title": "人员与后备头像",
-        "description": "文字、图标和方形头像用于不同业务对象。",
+        "title": "单头像与成员组",
+        "description": "展示单头像、重叠头像组、方形组合及 +N 成员浮层，组内尺寸和形状可统一设置。",
         "file": "src/examples/avatar/Basic.vue"
       },
       {
         "id": "image",
         "title": "图片与加载失败",
-        "description": "自包含 SVG 展示图片头像；无效图片地址触发后备文字并显示错误反馈。",
+        "description": "本地插画展示图片头像组和单个头像；支持 srcSet，图片失败时显示姓名后备。",
         "file": "src/examples/avatar/Image.vue"
       }
     ]
@@ -397,7 +397,7 @@ export const pagesA: DocPage[] = [
       {
         "id": "preview",
         "title": "相册预览与错误后备",
-        "description": "点击任意缩略图打开对应位置的相册，可缩放、切换和 Escape 关闭；无效图片使用 error 插槽。",
+        "description": "点击缩略图打开相册；控件提供悬停与按下反馈，切图有方向过渡，可缩放、旋转和 Escape 关闭；无效图片使用 error 插槽。",
         "file": "src/examples/image/Preview.vue"
       }
     ]
@@ -620,14 +620,14 @@ export const pagesA: DocPage[] = [
       {
         "id": "basic",
         "title": "可拖动和收起的左右分栏",
-        "description": "拖动分隔条或聚焦后用方向键调整，收起按钮可恢复先前宽度。",
+        "description": "细分割线支持拖动和方向键调整；居中手柄独立加宽，点击可平滑收起并恢复先前宽度。",
         "file": "src/examples/splitter/Basic.vue",
         "wide": true
       },
       {
         "id": "vertical",
         "title": "上下分栏",
-        "description": "上下分配编辑区和结果区，Shift 配合方向键可放大调整步长。",
+        "description": "上下分栏使用细分割线与横向手柄，支持平滑收起和展开；Shift 配合方向键可放大调整步长。",
         "file": "src/examples/splitter/Vertical.vue",
         "wide": true
       }
@@ -886,19 +886,19 @@ export const pagesA: DocPage[] = [
     "description": "当页面或指定区域滚动超过阈值时，提供快速返回顶部的按钮。",
     "usage": [
       "长数据列表提供返回顶部入口。",
-      "示例使用局部滚动容器，按钮仍按组件契约固定在窗口右下角。"
+      "局部列表使用 absolute 定位到列表右下角，页面滚动使用默认 fixed 定位。"
     ],
     "examples": [
       {
         "id": "basic",
         "title": "滚动后出现",
-        "description": "滚动列表超过 100px 后，窗口右下角显示返回顶部按钮，点击会滚动此列表。",
+        "description": "滚动列表超过 100px 后，列表右下角显示返回顶部按钮，点击仅返回此列表顶部。",
         "file": "src/examples/backtop/Basic.vue"
       },
       {
         "id": "custom",
         "title": "自定义按钮内容",
-        "description": "使用默认插槽展示 TOP；滚动区域超过阈值后出现在另一位置。",
+        "description": "使用默认插槽展示 TOP，按钮固定在该列表内，与其他示例互不干扰。",
         "file": "src/examples/backtop/Custom.vue"
       }
     ]
@@ -937,13 +937,13 @@ export const pagesA: DocPage[] = [
     "description": "在有限区域轮流展示图片或内容，支持受控索引、自动播放和实例切换。",
     "usage": [
       "展示活动公告和商品主题图。",
-      "自动播放在悬停、聚焦或页面不可见时暂停，保留手动控制。"
+      "自动播放在悬停、聚焦、页面不可见或减少动态效果时暂停，保留手动控制。"
     ],
     "examples": [
       {
         "id": "basic",
         "title": "手动切换活动",
-        "description": "箭头与指示器控制活动页，当前索引通过 v-model 同步显示。",
+        "description": "箭头、指示器和手势可平滑切换，支持首尾循环和快速连续操作，当前索引通过 v-model 同步。",
         "file": "src/examples/carousel/Basic.vue",
         "wide": true
       },
@@ -992,6 +992,13 @@ export const pagesA: DocPage[] = [
       "load 接收 AbortSignal，异步完成前应检查是否中止。"
     ],
     "examples": [
+      {
+        "id": "pagination",
+        "title": "商品库存：分页加载",
+        "description": "用 ul / li 引用商品名称和库存两个字段；按照 page、pageSize 获取分页数据，追加 list，并根据 total 判断加载结束。",
+        "file": "src/examples/infinite-scroll/Pagination.vue",
+        "wide": true
+      },
       {
         "id": "basic",
         "title": "滚动加载与完成状态",
@@ -1045,7 +1052,7 @@ export const pagesA: DocPage[] = [
       {
         "id": "basic",
         "title": "订单详情",
-        "description": "两列详情中，收货地址跨两列，状态字段嵌入业务标签。",
+        "description": "采购订单与结算信息，展示连续边框、跨列与简洁的无边框布局。",
         "file": "src/examples/descriptions/Basic.vue",
         "wide": true
       },

@@ -119,7 +119,7 @@ onBeforeUnmount(cleanup);
     :class="[
       'zt-splitter',
       `zt-splitter--${direction}`,
-      { 'is-dragging': dragging },
+      { 'is-dragging': dragging, 'is-collapsed': current === 0, 'is-disabled': disabled },
     ]"
   >
     <div
@@ -152,7 +152,7 @@ onBeforeUnmount(cleanup);
         :aria-expanded="current !== 0"
         @click="collapse"
       >
-        {{ current === 0 ? '›' : '‹' }}
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6-6 6 6 6" /></svg>
       </button>
     </div>
     <div class="zt-splitter__pane zt-splitter__pane--second">
@@ -164,6 +164,7 @@ onBeforeUnmount(cleanup);
 @use '../../styles/tokens' as glass;
 .zt-splitter {
   @include glass.tokens;
+  box-sizing: border-box;
   display: flex;
   min-width: 0;
   min-height: 0;
@@ -177,62 +178,87 @@ onBeforeUnmount(cleanup);
     min-height: 0;
     overflow: auto;
     flex-shrink: 1;
-    &--second {
-      flex: 1;
-    }
+    transition: flex-basis 280ms cubic-bezier(.22, 1, .36, 1);
+    &--second { flex: 1; }
   }
   &__handle {
     flex: none;
-    width: 12px;
+    width: 2px;
     position: relative;
-    background: var(--glass-info-soft);
-    [role='separator'] {
+    background: var(--glass-line);
+    transition: background-color 160ms;
+    &:hover { background: var(--glass-accent-line); }
+    > [role='separator'] {
       position: absolute;
-      inset: 0;
+      top: 0;
+      bottom: 0;
+      left: -5px;
+      width: 12px;
+      z-index: 1;
       cursor: col-resize;
       touch-action: none;
-      &:focus {
+      &:focus-visible {
         outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent);
         outline-offset: -2px;
       }
+      &[aria-disabled='true'] { cursor: default; }
     }
-    button {
+    > button {
+      box-sizing: border-box;
       position: absolute;
+      z-index: 2;
       top: 50%;
-      left: 0;
-      width: 12px;
-      transform: translateY(-50%);
-      padding: 8px 0;
-      border: 0;
-      border-radius: glass.radius(3px);
-      background: var(--glass-line);
+      left: 50%;
+      display: grid;
+      place-items: center;
+      width: 16px;
+      height: 36px;
+      transform: translate(-50%, -50%);
+      padding: 0;
+      border: 1px solid var(--glass-line);
+      border-radius: glass.radius(5px);
+      background: var(--zt-surface, #fff);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, .1);
       color: var(--glass-default-ink);
       cursor: pointer;
+      transition: transform 280ms cubic-bezier(.22, 1, .36, 1), background-color 160ms, border-color 160ms;
+      > svg { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; transition: transform 280ms cubic-bezier(.22, 1, .36, 1); }
+      &:hover:not(:disabled) { background: var(--glass-accent-soft); border-color: var(--glass-accent-line); color: var(--glass-accent-ink); }
+      &:focus-visible { outline: var(--zt-focus-ring-width, 0px) solid var(--glass-accent); outline-offset: -2px; }
+      &:disabled { opacity: .5; cursor: not-allowed; }
     }
   }
   &--vertical {
     flex-direction: column;
     height: 100%;
     min-height: 120px;
-    .zt-splitter__handle {
-      height: 12px;
+    > .zt-splitter__handle {
+      height: 2px;
       width: 100%;
-      [role='separator'] {
-        cursor: row-resize;
-      }
-      button {
-        top: 0;
-        left: 50%;
-        transform: none;
-        padding: 0 8px;
-        width: 28px;
-        height: 12px;
-        line-height: 10px;
-      }
+      > [role='separator'] { top: -5px; bottom: auto; left: 0; width: 100%; height: 12px; cursor: row-resize; }
+      > button { width: 36px; height: 16px; }
+      > button > svg { transform: rotate(90deg); }
     }
   }
+  &.is-collapsed > .zt-splitter__handle > [role='separator'] { left: 0; }
+  &--vertical.is-collapsed > .zt-splitter__handle > [role='separator'] { top: 0; }
+  &.is-collapsed > .zt-splitter__handle > button { left: 0; transform: translate(0, -50%); }
+  &.is-collapsed > .zt-splitter__handle > button > svg { transform: rotate(180deg); }
+  &--vertical.is-collapsed > .zt-splitter__handle > button { top: 0; left: 50%; transform: translate(-50%, 0); }
+  &--vertical.is-collapsed > .zt-splitter__handle > button > svg { transform: rotate(270deg); }
+  &.is-disabled > .zt-splitter__handle { background: var(--glass-line); }
   &.is-dragging {
     user-select: none;
+    > .zt-splitter__handle { background: var(--glass-accent); }
+    > .zt-splitter__pane,
+    > .zt-splitter__handle > button,
+    > .zt-splitter__handle > button > svg { transition: none; }
   }
+}
+@media (prefers-reduced-motion: reduce) {
+  .zt-splitter > .zt-splitter__pane,
+  .zt-splitter > .zt-splitter__handle,
+  .zt-splitter > .zt-splitter__handle > button,
+  .zt-splitter > .zt-splitter__handle > button > svg { transition: none; }
 }
 </style>

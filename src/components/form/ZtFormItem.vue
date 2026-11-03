@@ -22,15 +22,20 @@ const element = ref<HTMLElement>()
 const contentElement = ref<HTMLElement>()
 const labelContent = ref<HTMLElement>()
 let labelObserver: ResizeObserver | undefined
+let feedbackObserver: ResizeObserver | undefined
+let alive = true
 const labelId = instance?.uid ?? Math.random()
 const indicatorElement = ref<HTMLElement>()
 const tooltipElement = ref<HTMLElement>()
 const validateState = ref<ZtFormFieldContext['validateState']['value']>('')
 const validateMessage = ref('')
 const fieldFocused = ref(false)
+const compactFeedback = ref(false)
 const indicatorHovered = ref(false)
+const fieldHovered = ref(false)
+const popoverDismissed = ref(false)
 const autoTooltipVisible = ref(false)
-const tooltipPlacement = ref<'left' | 'right'>('right')
+const tooltipPlacement = ref<'left' | 'right' | 'top' | 'bottom'>('right')
 const tooltipStyle = ref<CSSProperties>({ position: 'fixed', pointerEvents: 'none' })
 const fieldKey = computed(() => props.prop == null ? '' : pathKey(props.prop))
 const inputId = `zt-form-input-${instance?.uid ?? Math.random().toString(36).slice(2)}`
@@ -59,6 +64,10 @@ const hasOwnShowMessage = computed(() => {
   return Boolean(vnodeProps && ('showMessage' in vnodeProps || 'show-message' in vnodeProps))
 })
 const showMessage = computed(() => hasOwnShowMessage.value ? props.showMessage : form?.showMessage.value ?? true)
+const messageDisplay = computed(() => props.messageDisplay ?? form?.messageDisplay?.value ?? 'tooltip')
+const labelFeedback = computed(() => messageDisplay.value === 'label' && labelPosition.value === 'top' && Boolean(props.label || instance?.slots.label))
+const sideLabelFeedback = computed(() => messageDisplay.value === 'label' && labelPosition.value !== 'top' && Boolean(props.label || instance?.slots.label))
+const isPopover = computed(() => messageDisplay.value === 'popover' || messageDisplay.value === 'summary')
 const labelPosition = computed(() => props.labelPosition ?? form?.labelPosition.value ?? 'right')
 const labelWidth = computed(() => props.labelWidth ?? form?.labelWidth.value ?? 'auto')
 const labelStyle = computed<CSSProperties>(() => {
@@ -72,7 +81,8 @@ const labelStyle = computed<CSSProperties>(() => {
 })
 const classes = computed(() => [
   'zt-form-item',
-  { 'is-label-top': labelPosition.value === 'top' },
+  `is-message-${messageDisplay.value}`,
+  { 'is-label-top': labelPosition.value === 'top', 'has-side-label-feedback': sideLabelFeedback.value && showMessage.value, 'is-feedback-stacked': sideLabelFeedback.value && compactFeedback.value },
   validateState.value && `is-${validateState.value}`,
   isRequired.value && 'is-required',
   size.value !== 'default' && `zt-form-item--${size.value}`,
@@ -80,7 +90,8 @@ const classes = computed(() => [
 const tooltipVisible = computed(() => Boolean(
   validateMessage.value
   && showMessage.value
-  && (autoTooltipVisible.value || fieldFocused.value || indicatorHovered.value),
+  && !['inline', 'label'].includes(messageDisplay.value)
+  && (isPopover.value ? !popoverDismissed.value && (fieldFocused.value || fieldHovered.value) : autoTooltipVisible.value || fieldFocused.value || indicatorHovered.value),
 ))
 
 function clearAutoHideTimer() {
@@ -100,7 +111,10 @@ function brieflyShowTooltip() {
 
 function updateTooltipPosition() {
   if (typeof window === 'undefined' || !tooltipVisible.value) return
-  const anchor = indicatorElement.value?.getBoundingClientRect()
+  const content = contentElement.value
+  const controls = content ? Array.from(content.children).filter(child => !child.matches('.zt-form-item__feedback-inline, .zt-form-item__feedback-label, .zt-form-item__error-indicator')) : []
+  const anchorElement = isPopover.value ? controls.length === 1 ? controls[0] : content : indicatorElement.value
+  const anchor = anchorElement?.getBoundingClientRect()
   const tooltip = tooltipElement.value?.getBoundingClientRect()
   if (!anchor || !tooltip) return
 
@@ -114,7 +128,7 @@ function updateTooltipPosition() {
   const gap = 9
   const width = tooltip.width
   const height = tooltip.height
-  let placement: 'left' | 'right' = 'right'
+  let placement: 'left' | 'right' | 'top' | 'bottom' = 'right'
   let left = anchor.right + gap
 
   if (left + width > window.innerWidth - viewportPadding) {
@@ -123,10 +137,20 @@ function updateTooltipPosition() {
   }
 
   left = Math.min(Math.max(left, viewportPadding), Math.max(viewportPadding, window.innerWidth - width - viewportPadding))
-  const top = Math.min(
+  let top = Math.min(
     Math.max(anchor.top + (anchor.height - height) / 2, viewportPadding),
     Math.max(viewportPadding, window.innerHeight - height - viewportPadding),
   )
+
+  if (isPopover.value) {
+    const label = labelContent.value?.getBoundingClientRect()
+    const sharesLabelRow = labelPosition.value === 'top' && label && width + label.width + 14 <= anchor.width && height <= label.height + 16
+    placement = sharesLabelRow ? 'top' : 'bottom'
+    left = Math.min(Math.max(sharesLabelRow ? anchor.right - width : anchor.left, viewportPadding), Math.max(viewportPadding, window.innerWidth - width - viewportPadding))
+    top = sharesLabelRow ? anchor.top - height - 6 : anchor.bottom + 7
+    if (placement === 'bottom' && top + height > window.innerHeight - viewportPadding) { placement = 'top'; top = anchor.top - height - 7 }
+    top = Math.min(Math.max(top, viewportPadding), Math.max(viewportPadding, window.innerHeight - height - viewportPadding))
+  }
 
   tooltipPlacement.value = placement
   tooltipStyle.value = {
@@ -134,7 +158,7 @@ function updateTooltipPosition() {
     position: 'fixed',
     pointerEvents: 'none',
     zIndex: layer + 1,
-    fontSize: fieldStyle?.fontSize,
+    fontSize: isPopover.value ? `${Math.max(11, Number.parseFloat(fieldStyle?.fontSize || '14') * .86)}px` : fieldStyle?.fontSize,
     fontFamily: fieldStyle?.fontFamily,
     left: `${Math.round(left)}px`,
     top: `${Math.round(top)}px`,
@@ -143,6 +167,7 @@ function updateTooltipPosition() {
 
 function handleFocusIn() {
   fieldFocused.value = true
+  popoverDismissed.value = false
 }
 
 function handleFocusOut(event: FocusEvent) {
@@ -196,6 +221,7 @@ function resetField() {
 
 const fieldContext: ZtFormFieldContext = {
   get prop() { return fieldKey.value },
+  label: computed(() => props.label),
   inputId,
   errorId,
   element,
@@ -210,22 +236,26 @@ const fieldContext: ZtFormFieldContext = {
 
 provide(ztFormItemKey, fieldContext)
 function measureLabel() {
+  compactFeedback.value = (contentElement.value?.clientWidth ?? 0) < 360
   if (labelWidth.value === 'auto' && labelPosition.value !== 'top' && labelContent.value) {
     form?.setLabelWidth(labelId, Math.ceil(labelContent.value.getBoundingClientRect().width))
   } else form?.removeLabelWidth(labelId)
 }
-watch([labelWidth, labelPosition, () => props.label], () => { void nextTick(measureLabel) })
+watch([labelWidth, labelPosition, messageDisplay, () => props.label], () => { void nextTick(measureLabel) })
 onMounted(() => {
   measureLabel()
   if (typeof ResizeObserver !== 'undefined' && labelContent.value) {
     labelObserver = new ResizeObserver(measureLabel)
     labelObserver.observe(labelContent.value)
+    if (contentElement.value) labelObserver.observe(contentElement.value)
   }
   if (fieldKey.value) form?.addField(fieldContext)
   window.addEventListener('resize', updateTooltipPosition)
   window.addEventListener('scroll', updateTooltipPosition, true)
 })
 onBeforeUnmount(() => {
+  alive = false
+  feedbackObserver?.disconnect()
   labelObserver?.disconnect()
   form?.removeLabelWidth(labelId)
   clearAutoHideTimer()
@@ -244,15 +274,28 @@ watch(() => props.error, value => {
 }, { immediate: true })
 
 watch(validateMessage, value => {
-  if (value && showMessage.value) brieflyShowTooltip()
+  if (value && showMessage.value && !isPopover.value && !['inline', 'label'].includes(messageDisplay.value)) brieflyShowTooltip()
   else {
     clearAutoHideTimer()
     autoTooltipVisible.value = false
   }
 }, { immediate: true })
 
-watch(tooltipVisible, visible => {
-  if (visible) void nextTick(updateTooltipPosition)
+watch(messageDisplay, () => { clearAutoHideTimer(); autoTooltipVisible.value = false; popoverDismissed.value = false; void nextTick(updateTooltipPosition) })
+
+watch([tooltipVisible, messageDisplay], async ([visible]) => {
+  feedbackObserver?.disconnect()
+  if (!visible) return
+  await nextTick()
+  if (!alive || !tooltipVisible.value) return
+  updateTooltipPosition()
+  if (isPopover.value && typeof ResizeObserver !== 'undefined') {
+    feedbackObserver = new ResizeObserver(updateTooltipPosition)
+    const formElement = element.value?.closest('form')
+    if (formElement) feedbackObserver.observe(formElement)
+    if (contentElement.value) feedbackObserver.observe(contentElement.value)
+    if (tooltipElement.value) feedbackObserver.observe(tooltipElement.value)
+  }
 })
 
 defineExpose({ validate, resetField, clearValidate, validateState, validateMessage })
@@ -260,16 +303,26 @@ defineExpose({ validate, resetField, clearValidate, validateState, validateMessa
 
 <template>
   <div ref="element" :class="classes" :style="{display: labelPosition === 'top' ? 'block' : 'flex'}">
-    <label v-if="label || $slots.label" class="zt-form-item__label" :for="inputId" :style="labelStyle">
+    <div v-if="labelFeedback" class="zt-form-item__heading">
+      <label class="zt-form-item__label" :for="inputId">
+        <span ref="labelContent" class="zt-form-item__label-text"><span v-if="isRequired && !form?.hideRequiredAsterisk.value" class="zt-form-item__required" aria-hidden="true">*</span><slot name="label" :label="label">{{ label }}</slot></span>
+      </label>
+      <span v-if="validateMessage && showMessage" :id="errorId" class="zt-form-item__feedback-label" role="alert"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.5v4M8 11.5h.01" /></svg><span>{{ validateMessage }}</span></span>
+    </div>
+    <label v-else-if="label || $slots.label" class="zt-form-item__label" :for="inputId" :style="labelStyle">
       <span ref="labelContent" class="zt-form-item__label-text">
       <span v-if="isRequired && !form?.hideRequiredAsterisk.value" class="zt-form-item__required" aria-hidden="true">*</span>
       <slot name="label" :label="label">{{ label }}</slot>
       </span>
     </label>
-    <div ref="contentElement" class="zt-form-item__content" @focusin="handleFocusIn" @focusout="handleFocusOut">
+    <div ref="contentElement" class="zt-form-item__content" @focusin="handleFocusIn" @focusout="handleFocusOut" @mouseenter="fieldHovered = true; popoverDismissed = false" @mouseleave="fieldHovered = false" @keydown.esc="isPopover && (popoverDismissed = true)">
       <slot />
-      <template v-if="validateMessage && showMessage">
+      <div v-if="validateMessage && showMessage && messageDisplay === 'inline'" :id="errorId" class="zt-form-item__feedback-inline" role="alert">{{ validateMessage }}</div>
+      <div v-else-if="sideLabelFeedback && showMessage" :id="validateMessage ? errorId : undefined" class="zt-form-item__feedback-label is-side" :role="validateMessage ? 'alert' : undefined" :aria-hidden="validateMessage ? undefined : true"><template v-if="validateMessage"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.5v4M8 11.5h.01" /></svg><span>{{ validateMessage }}</span></template></div>
+      <div v-else-if="validateMessage && showMessage && messageDisplay === 'label' && !labelFeedback" :id="errorId" class="zt-form-item__feedback-label is-below" role="alert"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6" /><path d="M8 4.5v4M8 11.5h.01" /></svg><span>{{ validateMessage }}</span></div>
+      <template v-else-if="validateMessage && showMessage && messageDisplay !== 'label'">
         <button
+          v-if="!isPopover"
           ref="indicatorElement"
           type="button"
           class="zt-form-item__error-indicator"
@@ -289,8 +342,8 @@ defineExpose({ validate, resetField, clearValidate, validateState, validateMessa
           ref="tooltipElement"
           :id="errorId"
           class="zt-form-item__error"
-          :class="[`is-${tooltipPlacement}`, { 'is-visible': tooltipVisible }]"
-          role="alert"
+          :class="[`is-${tooltipPlacement}`, { 'is-visible': tooltipVisible, 'is-popover': isPopover }]"
+          :role="isPopover ? 'tooltip' : 'alert'"
           :style="tooltipStyle"
         >{{ validateMessage }}</div>
         </Teleport>

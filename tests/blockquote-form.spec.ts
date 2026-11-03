@@ -79,7 +79,7 @@ describe('standalone form examples', () => {
   it('switches label placement while retaining automatic width', async () => {
     const wrapper = render(Layout);
     expect(wrapper.findAllComponents(ZtForm)[0]!.props('labelWidth')).toBe('auto');
-    await wrapper.get('[role="switch"]').trigger('click');
+    await wrapper.findAll('[role="radio"]').find(option => option.text() === '顶部标签')!.trigger('click');
     expect(wrapper.findAllComponents(ZtForm)[0]!.props('labelPosition')).toBe('top');
   });
 });
