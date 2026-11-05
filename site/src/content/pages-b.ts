@@ -377,6 +377,7 @@ export const pagesB: DocPage[] = [
     usage: [
       "单值对应 YYYY-MM-DD、YYYY-MM 或 YYYY。",
       "范围使用二元字符串数组，空值为 null。",
+      "屏幕宽度不超过 640px 时使用底部弹出面板，范围采用单月切换，点击确定后回填。点击遮罩或取消可放弃本次选择。",
     ],
     examples: [
       {
@@ -433,6 +434,7 @@ export const pagesB: DocPage[] = [
     description: "在日期基础上选择精确到秒的本地时间。",
     usage: [
       "绑定 YYYY-MM-DD HH:mm:ss 格式字符串。",
+      "移动端采用底部单月面板，操作区固定在底部；调整日期时间后点击确定提交。",
       "不包含时区换算，服务端接入时约定时区。",
     ],
     examples: [

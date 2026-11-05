@@ -6,13 +6,11 @@ A Vue 3 UI library for business applications, built with TypeScript and glass-in
 
 [Documentation](https://stevqin.github.io/zt-ui/) · [Getting started](https://stevqin.github.io/zt-ui/#/guide/quick-start) · [Component demos](https://stevqin.github.io/zt-ui/#/components) · [Changelog](./CHANGELOG.en.md)
 
-## v0.13.0 · 2026-11-03
+## v0.13.1 · 2026-11-05
 
-This release adds 240 icons and AvatarGroup, refines form validation and component motion, introduces ColorPicker underline and visible color spectra, and improves navigation and business examples.
+Mobile date ranges now use a bottom sheet with an explicit confirmation step and extra clearance for the bottom safe area.
 
-本次更新完善图标体系、表单校验与常用组件交互，新增 240 个图标及 AvatarGroup，补齐颜色选择器下划线与色谱，并改进导航和业务示例。
-
-[Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.0)
+[Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.1)
 
 ## Features
 

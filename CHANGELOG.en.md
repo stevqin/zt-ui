@@ -2,6 +2,18 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.1 — 2026-11-05
+
+### Improved
+
+- **DatePicker and DateTimePicker** open in a bottom sheet on mobile. Date ranges use a single month at a time. The calendar and time fields scroll while shortcuts and action buttons stay visible.
+- **Date ranges** can be previewed after selecting dates or a shortcut. Confirm applies the range. Cancel or tapping the backdrop discards the draft.
+- **Footer actions** have 24px of clearance below the buttons, plus the device’s bottom safe area.
+
+### Fixed
+
+- Fixed a focus loss issue that closed the mobile picker when tapping to change months.
+
 ## 0.13.0 — 2026-11-03
 
 This release improves the icon system, form validation feedback, and common component interactions, while refining navigation, examples, and appearance throughout the demo site.

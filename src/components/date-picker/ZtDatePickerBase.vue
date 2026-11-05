@@ -15,6 +15,7 @@ import {
 import { ztFormItemKey } from '../form/context';
 import { overlayContextKey } from '../overlay/context';
 import { resolvePopupZIndex } from '../overlay/resolvePopupZIndex';
+import { lockBody, unlockBody } from '../overlay/overlayManager';
 import {
   addDays,
   calendarDate,
@@ -59,6 +60,8 @@ const root = ref<HTMLElement>();
 const popup = ref<HTMLElement>();
 const input = ref<HTMLInputElement>();
 const visible = ref(props.inline);
+const mobile = ref(false);
+const scrollLockId = Symbol('zt-date-picker');
 const month = ref(
   calendarDate(new Date().getFullYear(), new Date().getMonth(), 1),
 );
@@ -70,6 +73,7 @@ const pickingEnd = ref(false);
 const hovered = ref('');
 const active = ref('');
 const position = ref({
+  bottom: 'auto',
   top: '0px',
   left: '0px',
   zIndex: 2000,
@@ -82,7 +86,8 @@ const disabled = computed(
 const size = useZtSize(props, () => formItem?.size.value);
 const mode = computed(() => props.datetime ? 'date' : props.type?.startsWith('year') ? 'year' : props.type?.startsWith('month') ? 'month' : 'date');
 const range = computed(() => props.range || Boolean(props.type?.endsWith('range')));
-const dualRange = computed(() => range.value && mode.value === 'date' && props.rangePanelMode === 'double');
+const requiresConfirmation = computed(() => props.datetime || (mobile.value && range.value));
+const dualRange = computed(() => range.value && mode.value === 'date' && props.rangePanelMode === 'double' && !mobile.value);
 const periodLabel = computed(() => mode.value === 'year' ? '年份' : mode.value === 'month' ? '月份' : '日期');
 function parseValue(value: string | undefined) {
   if (mode.value === 'year') return /^\d{4}$/.test(value ?? '') ? parseDate(`${value}-01-01`) : null;
@@ -273,6 +278,26 @@ function resetDraft() {
 }
 function updatePosition() {
   if (props.inline || !root.value || !popup.value) return;
+  const wasMobile = mobile.value;
+  mobile.value = window.innerWidth <= 640;
+  const zIndex = resolvePopupZIndex(root.value, overlay?.layer?.value);
+  if (mobile.value) {
+    lockBody(scrollLockId);
+    const viewport = window.visualViewport;
+    position.value = {
+      top: 'auto', left: '0px',
+      bottom: `${Math.max(0, window.innerHeight - (viewport ? viewport.height + viewport.offsetTop : window.innerHeight))}px`,
+      zIndex,
+      maxHeight: `${(viewport?.height ?? window.innerHeight) * .9}px`,
+    };
+    if (!wasMobile) void focusDay();
+    return;
+  }
+  unlockBody(scrollLockId);
+  if (wasMobile) {
+    month.value = clampMonth(month.value);
+    void nextTick(updatePosition);
+  }
   const rect = root.value.getBoundingClientRect();
   const panel = popup.value.getBoundingClientRect();
   const below = window.innerHeight - rect.bottom - 14;
@@ -280,9 +305,10 @@ function updatePosition() {
   const upward = below < panel.height && above > below;
   const available = Math.max(0, upward ? above : below);
   position.value = {
+    bottom: 'auto',
     top: `${Math.max(8, upward ? rect.top - Math.min(panel.height, available) - 6 : rect.bottom + 6)}px`,
     left: `${Math.max(8, Math.min(rect.left, window.innerWidth - panel.width - 8))}px`,
-    zIndex: resolvePopupZIndex(root.value, overlay?.layer?.value),
+    zIndex,
     maxHeight: `${available}px`,
   };
 }
@@ -310,17 +336,26 @@ function open() {
     visible.value
   )
     return;
+  mobile.value = window.innerWidth <= 640;
   resetDraft();
   visible.value = true;
   document.addEventListener('click', outside);
   window.addEventListener('resize', updatePosition);
+  window.visualViewport?.addEventListener('resize', updatePosition);
+  window.visualViewport?.addEventListener('scroll', updatePosition);
   window.addEventListener('scroll', updatePosition, true);
   emit('visible-change', true);
-  void nextTick(updatePosition);
+  void nextTick(() => {
+    updatePosition();
+    if (mobile.value) void focusDay();
+  });
 }
 function cleanup() {
   document.removeEventListener('click', outside);
   window.removeEventListener('resize', updatePosition);
+  window.visualViewport?.removeEventListener('resize', updatePosition);
+  window.visualViewport?.removeEventListener('scroll', updatePosition);
+  unlockBody(scrollLockId);
   window.removeEventListener('scroll', updatePosition, true);
 }
 function close() {
@@ -366,7 +401,7 @@ function selectDay(date: Date) {
       pickingEnd.value = false;
     }
   } else start.value = key;
-  if (!props.datetime && draft.value !== null) commit(draft.value);
+  if (!requiresConfirmation.value && draft.value !== null) commit(draft.value);
 }
 function confirm() {
   if (!disabled.value && !props.readonly && draft.value !== null)
@@ -389,16 +424,18 @@ function applyShortcut(shortcut: ZtDatePickerShortcut) {
   pickingEnd.value = false;
   hovered.value = '';
   const first = parsed[0]!;
-  month.value = clampMonth(calendarDate(first.getFullYear(), first.getMonth(), 1));
-  active.value = dateKey(first);
-  if (props.datetime) void nextTick(updatePosition);
-  else commit(range.value ? [entries[0]!, entries[1]!] : entries[0]!);
+  setMonth(first);
+  if (!requiresConfirmation.value) commit(range.value ? [entries[0]!, entries[1]!] : entries[0]!);
 }
 function setMonth(value: Date, index = 0) {
+  // Mobile opens with a focused day. Move focus before replacing that month's
+  // cells so the browser cannot mistake DOM removal for leaving the dialog.
+  if (mobile.value) popup.value?.focus({ preventScroll: true });
   month.value = clampMonth(
     calendarDate(value.getFullYear(), value.getMonth() - index, 1),
   );
   active.value = dateKey(value);
+  if (mobile.value) void focusDay();
   void nextTick(updatePosition);
 }
 async function focusDay() {
@@ -421,6 +458,18 @@ async function focusDay() {
       ?.focus();
 }
 function keydown(event: KeyboardEvent) {
+  if (mobile.value && visible.value && event.key === 'Tab' && popup.value) {
+    const targets = [...popup.value.querySelectorAll<HTMLElement>(
+      'button:not(:disabled):not([tabindex="-1"]), input:not(:disabled), select:not(:disabled)',
+    )];
+    const index = targets.indexOf(document.activeElement as HTMLElement);
+    if (targets.length) {
+      event.preventDefault();
+      event.stopPropagation();
+      targets[(index + (event.shiftKey ? -1 : 1) + targets.length) % targets.length]!.focus();
+    }
+    return;
+  }
   if (event.key === 'Escape' && visible.value) {
     event.preventDefault();
     event.stopPropagation();
@@ -596,6 +645,14 @@ defineExpose({ focus, blur, open, close, clear });
   </div>
   <Teleport to="body" :disabled="inline">
     <div
+      v-if="visible && mobile && !inline"
+      class="zt-date-picker__mask"
+      :style="{ zIndex: position.zIndex }"
+      aria-hidden="true"
+      @mousedown.prevent
+      @click="close(); focus()"
+    />
+    <div
       v-if="visible"
       :id="`${id}-popup`"
       ref="popup"
@@ -604,11 +661,15 @@ defineExpose({ focus, blur, open, close, clear });
         `zt-date-picker--status-${status}`,
         `zt-date-picker--${size}`,
         {
+          'is-mobile': mobile && !inline,
+          'is-inline': inline,
           'is-range': range && mode === 'date',
-          'is-range-single': range && mode === 'date' && rangePanelMode === 'single',
+          'is-range-single': range && mode === 'date' && !dualRange,
         },
       ]"
       :role="inline ? 'group' : 'dialog'"
+      :aria-modal="mobile && !inline ? true : undefined"
+      :tabindex="mobile && !inline ? -1 : undefined"
       :aria-label="placeholder"
       :style="[
         providerStyle,
@@ -618,110 +679,112 @@ defineExpose({ focus, blur, open, close, clear });
       @keydown="keydown"
       @focusout="focusout"
     >
-      <p v-if="range" class="zt-date-picker__hint" aria-live="polite">
-        {{ `请选择${pickingEnd ? '结束' : '开始'}${periodLabel}` }}
-      </p>
-      <div class="zt-date-picker__calendars">
-        <section
-          v-for="(calendar, index) in calendars"
-          :key="index"
-          class="zt-date-picker__calendar"
-          :data-calendar="index"
-          :aria-label="`${calendar.month.getFullYear()}年${calendar.month.getMonth() + 1}月`"
-        >
-          <ZtCalendarNavigation
-            :key="mode"
-            :model-value="calendar.month"
-            :mode="mode"
-            :period-disabled="date => disabled || readonly || isDisabled(date)"
-            :selected="date => periodKey(date) === start || periodKey(date) === end"
-            :in-range="date => Boolean(range && bounds[0] && periodKey(date) > bounds[0] && periodKey(date) < bounds[1])"
-            @pick="selectDay"
-            @hover="hovered = $event ? periodKey($event) : ''"
-            @update:model-value="setMonth($event, index)"
-            @select="focusDay"
-            @view-change="updatePosition"
+      <div class="zt-date-picker__body">
+        <p v-if="range" class="zt-date-picker__hint" aria-live="polite">
+          {{ `请选择${pickingEnd ? '结束' : '开始'}${periodLabel}` }}
+        </p>
+        <div class="zt-date-picker__calendars">
+          <section
+            v-for="(calendar, index) in calendars"
+            :key="index"
+            class="zt-date-picker__calendar"
+            :data-calendar="index"
+            :aria-label="`${calendar.month.getFullYear()}年${calendar.month.getMonth() + 1}月`"
           >
-            <div class="zt-date-picker__week">
-              <span
-                v-for="label in ['一', '二', '三', '四', '五', '六', '日']"
-                :key="label"
-                >{{ label }}</span
-              >
-            </div>
-            <div class="zt-date-picker__days" @mouseleave="hovered = ''">
-              <template
-                v-for="{ date, key, holiday, outside } in calendar.days"
-                :key="key"
-              >
+            <ZtCalendarNavigation
+              :key="mode"
+              :model-value="calendar.month"
+              :mode="mode"
+              :period-disabled="date => disabled || readonly || isDisabled(date)"
+              :selected="date => periodKey(date) === start || periodKey(date) === end"
+              :in-range="date => Boolean(range && bounds[0] && periodKey(date) > bounds[0] && periodKey(date) < bounds[1])"
+              @pick="selectDay"
+              @hover="hovered = $event ? periodKey($event) : ''"
+              @update:model-value="setMonth($event, index)"
+              @select="focusDay"
+              @view-change="updatePosition"
+            >
+              <div class="zt-date-picker__week">
                 <span
-                  v-if="range && outside"
-                  class="zt-date-picker__empty-day"
-                  aria-hidden="true"
-                />
-                <button
-                  v-else
-                  type="button"
-                  :data-date="key"
-                  :aria-label="holiday ? `${key} ${holiday.value}${holiday.type ? ` ${holiday.type === 'workday' ? '班' : '休'}` : ''}` : key"
-                  :title="holiday?.value"
-                  :aria-pressed="key === start || key === end"
-                  :aria-current="
-                    key === dateKey(new Date()) ? 'date' : undefined
-                  "
-                  :tabindex="key === active ? 0 : -1"
-                  :disabled="disabled || readonly || isDisabled(date)"
-                  :class="{
-                    'is-other': outside,
-                    'is-selected': key === start || key === end,
-                    'is-in-range':
-                      range && bounds[0] && key > bounds[0] && key < bounds[1],
-                    'is-today': key === dateKey(new Date()),
-                    'has-holiday': Boolean(holiday),
-                    'is-holiday': holiday?.type === 'holiday',
-                    'is-workday': holiday?.type === 'workday',
-                  }"
-                  @mouseenter="hovered = key"
-                  @focus="active = key"
-                  @click="selectDay(date)"
+                  v-for="label in ['一', '二', '三', '四', '五', '六', '日']"
+                  :key="label"
+                  >{{ label }}</span
                 >
-                  <span class="zt-date-picker__day-number">{{
-                    date.getDate()
-                  }}</span>
+              </div>
+              <div class="zt-date-picker__days" @mouseleave="hovered = ''">
+                <template
+                  v-for="{ date, key, holiday, outside } in calendar.days"
+                  :key="key"
+                >
                   <span
-                    v-if="holiday"
-                    class="zt-date-picker__holiday"
+                    v-if="range && outside"
+                    class="zt-date-picker__empty-day"
                     aria-hidden="true"
-                    >{{ holiday.value }}</span
+                  />
+                  <button
+                    v-else
+                    type="button"
+                    :data-date="key"
+                    :aria-label="holiday ? `${key} ${holiday.value}${holiday.type ? ` ${holiday.type === 'workday' ? '班' : '休'}` : ''}` : key"
+                    :title="holiday?.value"
+                    :aria-pressed="key === start || key === end"
+                    :aria-current="
+                      key === dateKey(new Date()) ? 'date' : undefined
+                    "
+                    :tabindex="key === active ? 0 : -1"
+                    :disabled="disabled || readonly || isDisabled(date)"
+                    :class="{
+                      'is-other': outside,
+                      'is-selected': key === start || key === end,
+                      'is-in-range':
+                        range && bounds[0] && key > bounds[0] && key < bounds[1],
+                      'is-today': key === dateKey(new Date()),
+                      'has-holiday': Boolean(holiday),
+                      'is-holiday': holiday?.type === 'holiday',
+                      'is-workday': holiday?.type === 'workday',
+                    }"
+                    @mouseenter="hovered = key"
+                    @focus="active = key"
+                    @click="selectDay(date)"
                   >
-                  <span
-                    v-if="holiday?.type"
-                    class="zt-date-picker__holiday-badge"
-                    aria-hidden="true"
-                    >{{ holiday.type === 'workday' ? '班' : '休' }}</span
-                  >
-                </button>
-              </template>
-            </div>
-          </ZtCalendarNavigation>
-        </section>
-      </div>
-      <div v-if="datetime" class="zt-date-picker__time">
-        <label
-          >{{ range ? '开始时间' : '时间'
-          }}<input
-            v-model="startTime"
-            type="time"
-            step="1"
-            :aria-label="range ? '开始时间' : '时间'"
-        /></label>
-        <label v-if="range"
-          >结束时间<input
-            v-model="endTime"
-            type="time"
-            step="1"
-            aria-label="结束时间"
-        /></label>
+                    <span class="zt-date-picker__day-number">{{
+                      date.getDate()
+                    }}</span>
+                    <span
+                      v-if="holiday"
+                      class="zt-date-picker__holiday"
+                      aria-hidden="true"
+                      >{{ holiday.value }}</span
+                    >
+                    <span
+                      v-if="holiday?.type"
+                      class="zt-date-picker__holiday-badge"
+                      aria-hidden="true"
+                      >{{ holiday.type === 'workday' ? '班' : '休' }}</span
+                    >
+                  </button>
+                </template>
+              </div>
+            </ZtCalendarNavigation>
+          </section>
+        </div>
+        <div v-if="datetime" class="zt-date-picker__time">
+          <label
+            >{{ range ? '开始时间' : '时间'
+            }}<input
+              v-model="startTime"
+              type="time"
+              step="1"
+              :aria-label="range ? '开始时间' : '时间'"
+          /></label>
+          <label v-if="range"
+            >结束时间<input
+              v-model="endTime"
+              type="time"
+              step="1"
+              aria-label="结束时间"
+          /></label>
+        </div>
       </div>
       <footer v-if="!inline || datetime || shortcuts.length" class="zt-date-picker__footer">
         <span class="zt-date-picker__summary">{{ draftSummary }}</span>
@@ -746,7 +809,7 @@ defineExpose({ focus, blur, open, close, clear });
           取消
         </button>
         <button
-          v-if="datetime"
+          v-if="requiresConfirmation"
           type="button"
           data-action="confirm"
           class="zt-date-picker__confirm"
