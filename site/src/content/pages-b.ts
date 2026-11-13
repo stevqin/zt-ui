@@ -290,8 +290,8 @@ export const pagesB: DocPage[] = [
       },
       {
         id: "segmented",
-        title: "连体选项",
-        description: "segmented 将互斥选项展示为一组连续按钮。",
+        title: "连体选项与对勾模式",
+        description: "segmented 将选项展示为一组连续按钮。checkmark 在共用外框内显示对勾。checkbox-style 用无外框的方形标记展示单选项。",
         file: "src/examples/radio/Segmented.vue",
       },
     ],

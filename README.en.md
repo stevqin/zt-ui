@@ -6,11 +6,11 @@ A Vue 3 UI library for business applications, built with TypeScript and glass-in
 
 [Documentation](https://stevqin.github.io/zt-ui/) · [Getting started](https://stevqin.github.io/zt-ui/#/guide/quick-start) · [Component demos](https://stevqin.github.io/zt-ui/#/components) · [Changelog](./CHANGELOG.en.md)
 
-## v0.13.3 · 2026-11-13
+## v0.13.4 · 2026-11-13
 
-InputNumber now supports live digit grouping in money mode.
+RadioGroup adds a transparent checkmark mode with a shared border that follows the configured corner radius.
 
-[Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.3)
+[Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.4)
 
 ## Features
 

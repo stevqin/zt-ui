@@ -2,6 +2,14 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.4 — 2026-11-13
+
+### Added
+
+- **RadioGroup** adds a `checkmark` mode with a transparent background and a shared outer border. A checkmark appears before the selected label. Option widths stay stable when selection changes, and the outer border follows `borderRadius`.
+- **RadioGroup square style** adds `checkbox-style`. The group has no outer border, and a bold checkmark extends past the top-right corner of the empty square. The options remain mutually exclusive.
+- **RadioGroup demos** use daily, weekly, monthly, quarterly, and annual reports to illustrate all three styles.
+
 ## 0.13.3 — 2026-11-13
 
 ### Added

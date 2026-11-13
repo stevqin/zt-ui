@@ -13,6 +13,8 @@ const props = withDefaults(defineProps<ZtRadioGroupProps>(), {
   disabled: false,
   status: 'primary',
   segmented: false,
+  checkmark: false,
+  checkboxStyle: false,
 })
 const formItem = inject(ztFormItemKey, undefined)
 const configSize = useZtSize(props, () => formItem?.size.value)
@@ -39,7 +41,16 @@ provide<RadioGroupContext>(radioGroupKey, {
 </script>
 
 <template>
-  <div class="zt-radio-group" :class="[`zt-radio-group--${segmented ? 'segmented' : 'default'}`, `zt-radio-group--${configSize}`]" role="radiogroup" v-bind="$attrs">
+  <div
+    class="zt-radio-group"
+    :class="[
+      `zt-radio-group--${checkboxStyle ? 'checkbox-style' : segmented || checkmark ? 'segmented' : 'default'}`,
+      `zt-radio-group--${configSize}`,
+      { 'zt-radio-group--checkmark': checkmark && !checkboxStyle },
+    ]"
+    role="radiogroup"
+    v-bind="$attrs"
+  >
     <slot />
   </div>
 </template>

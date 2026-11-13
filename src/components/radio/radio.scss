@@ -109,7 +109,7 @@
   // ── Checked state ──
   &.is-checked .zt-radio__inner {
     border-color: transparent;
-    // background color set per status below
+    background: var(--zt-radio-checked-color);
   }
 
   &.is-checked .zt-radio__inner::after {
@@ -117,12 +117,12 @@
   }
 
   // ── Status colors (checked) ──
-  &--primary.is-checked .zt-radio__inner { background: var(--glass-accent); }
-  &--success.is-checked .zt-radio__inner { background: #16a34a; }
-  &--warning.is-checked .zt-radio__inner { background: #d97706; }
-  &--danger.is-checked .zt-radio__inner  { background: #dc2626; }
-  &--info.is-checked .zt-radio__inner    { background: #4b5563; }
-  &--default.is-checked .zt-radio__inner { background: #6b7280; }
+  &--primary.is-checked .zt-radio__inner { --zt-radio-checked-color: var(--glass-accent); }
+  &--success.is-checked .zt-radio__inner { --zt-radio-checked-color: #16a34a; }
+  &--warning.is-checked .zt-radio__inner { --zt-radio-checked-color: #d97706; }
+  &--danger.is-checked .zt-radio__inner  { --zt-radio-checked-color: #dc2626; }
+  &--info.is-checked .zt-radio__inner    { --zt-radio-checked-color: #4b5563; }
+  &--default.is-checked .zt-radio__inner { --zt-radio-checked-color: #6b7280; }
 
   // ── Focus-visible ──
   &:has(input:focus) .zt-radio__inner {
@@ -173,7 +173,7 @@
     padding: 0 1em;
     border: 1px solid var(--glass-default-line);
     border-radius: 0;
-    background: var(--zt-surface, #fff);
+    background: var(--zt-radio-option-bg, var(--zt-surface, #fff));
     box-shadow: none;
     transition: background-color 160ms, color 160ms;
     &:first-child { margin-left: 0; border-radius: inherit; border-top-right-radius: 0; border-bottom-right-radius: 0; }
@@ -184,10 +184,90 @@
     &--danger { --zt-radio-color: #dc2626; --zt-radio-hover-soft: var(--glass-danger-soft); }
     &--info { --zt-radio-color: #4b5563; --zt-radio-hover-soft: var(--glass-info-soft); }
     &--default { --zt-radio-color: #4b5563; --zt-radio-hover-soft: var(--glass-default-soft); }
-    &:hover:not(.is-disabled):not(.is-checked) { z-index: 1; background: var(--zt-radio-hover-soft); border-color: var(--zt-radio-color); color: var(--zt-radio-color); }
-    &.is-checked { z-index: 2; background: var(--zt-radio-color); border-color: var(--zt-radio-color); color: #fff; }
+    &:hover:not(.is-disabled):not(.is-checked) { z-index: 1; background: var(--zt-radio-option-bg, var(--zt-radio-hover-soft)); border-color: var(--zt-radio-color); color: var(--zt-radio-color); }
+    &.is-checked { z-index: 2; background: var(--zt-radio-option-bg, var(--zt-radio-color)); border-color: var(--zt-radio-color); color: var(--zt-radio-checked-ink, #fff); }
     &:has(input:focus) { outline: var(--zt-focus-ring-width, 0px) solid var(--zt-radio-color); outline-offset: 3px; z-index: 1; }
   }
   .zt-radio__input { position: absolute; inset: 0; width: 100%; height: 100%; }
   .zt-radio__inner { display: none; }
+}
+
+.zt-radio-group--checkmark {
+  border: 1px solid var(--glass-default-line);
+  padding-inline: .2em;
+
+  .zt-radio {
+    --zt-radio-option-bg: transparent;
+    --zt-radio-checked-ink: var(--zt-radio-color);
+    height: calc(var(--zt-radio-height) - 2px);
+    margin-left: 0;
+    padding-inline: 1.3em;
+    border: 0;
+
+    &.is-checked { box-shadow: none; }
+    &:has(input:focus-visible) {
+      border-radius: inherit;
+      outline-offset: -2px;
+    }
+    &:has(input:focus:not(:focus-visible)) { outline: none; }
+  }
+
+  .zt-radio__input { z-index: 1; }
+
+  .zt-radio__label {
+    position: relative;
+    display: inline-block;
+  }
+
+  .zt-radio__label::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    inset-inline-end: calc(100% + .44em);
+    box-sizing: border-box;
+    width: .38em;
+    height: .94em;
+    border: solid currentColor;
+    border-width: 0 .12em .12em 0;
+    transform: translateY(-62%) rotate(45deg);
+    visibility: hidden;
+  }
+
+  .zt-radio.is-checked .zt-radio__label {
+    inset-inline-start: .47em;
+    &::before { visibility: visible; }
+  }
+}
+
+.zt-radio-group--checkbox-style {
+  .zt-radio.is-bordered {
+    padding: 0;
+    border: 0;
+    box-shadow: none;
+  }
+
+  .zt-radio__inner {
+    border-radius: glass.radius(4px);
+    background: transparent;
+  }
+
+  .zt-radio.is-checked .zt-radio__inner {
+    border-color: var(--zt-radio-checked-color);
+    background: transparent;
+  }
+
+  .zt-radio__inner::after {
+    box-sizing: border-box;
+    width: .54em;
+    height: 1.35em;
+    border: solid var(--zt-radio-checked-color);
+    border-width: 0 .29em .29em 0;
+    border-radius: 0;
+    background: transparent;
+    transform: translate(-35%, -68%) rotate(45deg) scale(0);
+  }
+
+  .zt-radio.is-checked .zt-radio__inner::after {
+    transform: translate(-35%, -68%) rotate(45deg) scale(1);
+  }
 }

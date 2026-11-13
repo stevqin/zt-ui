@@ -7183,8 +7183,8 @@
           },
           {
             "name": "ZtRadioGroupProps",
-            "type": "export interface ZtRadioGroupProps {\n  /** 启用连体分段样式，可直接传递 segmented 属性。 */\n  segmented?: boolean\n  name?: string\n  modelValue?: unknown\n  disabled?: boolean\n  size?: ZtRadioSize\n  status?: ZtRadioStatus\n}",
-            "description": "单选框组的输入参数结构，包含segmented、标识（name）、绑定值（modelValue）、禁用状态（disabled）、尺寸（size）。"
+            "type": "export interface ZtRadioGroupProps {\n  /** 启用连体分段样式，可直接传递 segmented 属性。 */\n  segmented?: boolean\n  /** 使用透明背景和整组外框，在选中项的文字前显示对勾。 */\n  checkmark?: boolean\n  /** 使用复选框外观的方形标记，组内仍为单选。 */\n  checkboxStyle?: boolean\n  name?: string\n  modelValue?: unknown\n  disabled?: boolean\n  size?: ZtRadioSize\n  status?: ZtRadioStatus\n}",
+            "description": "单选框组的输入参数结构，包含segmented、checkmark、checkboxStyle、标识（name）、绑定值（modelValue）。"
           },
           {
             "name": "ZtRadioStatus",
@@ -7206,6 +7206,20 @@
             "type": "boolean",
             "required": false,
             "description": "启用连体分段样式，可直接传递 segmented 属性。",
+            "defaultValue": "false"
+          },
+          {
+            "name": "checkmark",
+            "type": "boolean",
+            "required": false,
+            "description": "使用透明背景和整组外框，在选中项的文字前显示对勾。",
+            "defaultValue": "false"
+          },
+          {
+            "name": "checkboxStyle",
+            "type": "boolean",
+            "required": false,
+            "description": "使用复选框外观的方形标记，组内仍为单选。",
             "defaultValue": "false"
           },
           {

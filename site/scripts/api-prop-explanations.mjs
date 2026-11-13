@@ -68,7 +68,7 @@ const descriptions = {
     prevText: '上一页按钮的文字，设置后替换默认箭头。', nextText: '下一页按钮的文字，设置后替换默认箭头。',
   },
   ZtRadio: { modelValue: '当前选中的单选值，与本项 label 相等时选中；组内由 RadioGroup 管理。', label: '本项被选中后写入绑定值的值；未提供默认插槽时也作为显示文字。', name: '原生 radio 的分组名称；组内优先使用 RadioGroup 的 name。', border: '为单选框及文字显示外框。' },
-  ZtRadioGroup: { modelValue: '当前选中的 Radio.label 值。', name: '组内原生 radio 共用的 name；省略时自动生成，避免不同组相互影响。' },
+  ZtRadioGroup: { modelValue: '当前选中的 Radio.label 值。', checkmark: '使用透明背景和整组外框，在选中项的文字前显示对勾。', checkboxStyle: '使用方形复选框外观，整组无外框，选项仍互斥。与其他样式同时开启时优先采用此样式。', name: '组内原生 radio 共用的 name；省略时自动生成，避免不同组相互影响。' },
   ZtSelect: {
     modelValue: '选中项的 value；多选时为 value 数组，未选择时可为 null。',
     options: '下拉选项列表，每项以 value 标识，label 展示文字，disabled 禁用该项。',
