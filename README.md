@@ -6,11 +6,11 @@
 
 [在线文档](https://stevqin.github.io/zt-ui/) · [快速开始](https://stevqin.github.io/zt-ui/#/guide/quick-start) · [组件演示](https://stevqin.github.io/zt-ui/#/components) · [更新日志](./CHANGELOG.md)
 
-## v0.13.2 · 2026-11-13
+## v0.13.3 · 2026-11-13
 
-菜单收起按钮随五档尺寸调整高度，与同档模块标题对齐。
+数字输入框新增金额模式，输入时实时显示千分位。
 
-[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.2)
+[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.3)
 
 ## 特性
 

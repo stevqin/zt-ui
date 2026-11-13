@@ -43,6 +43,8 @@
     &::placeholder { color: var(--zt-text-muted, #9ca3af); }
   }
 
+  &--money &__inner { text-align: right; font-variant-numeric: tabular-nums; }
+
   &__control {
     display: grid;
     place-items: center;

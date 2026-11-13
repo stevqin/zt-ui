@@ -32,6 +32,61 @@ describe('ZtInputNumber', () => {
     expect(wrapper.emitted('change')?.at(-1)).toEqual([1.5, 0])
   })
 
+  it('groups money while editing and preserves the draft when v-model echoes input', async () => {
+    const wrapper = mount(ZtInputNumber, {
+      props: {
+        modelValue: 1234.5,
+        money: true,
+        'onUpdate:modelValue': value => wrapper.setProps({ modelValue: value }),
+      },
+    })
+    const input = wrapper.get('input')
+    expect(input.element.value).toBe('1,234.50')
+    await input.trigger('focus')
+    expect(input.element.value).toBe('1,234.50')
+    input.element.value = '1234.'
+    await input.trigger('input')
+    expect(input.element.value).toBe('1,234.')
+    input.element.value = '¥9,876.5'
+    await input.trigger('input')
+    expect(input.element.value).toBe('9,876.5')
+    await input.trigger('change')
+    await input.trigger('blur')
+    expect(wrapper.props('modelValue')).toBe(9876.5)
+    expect(input.element.value).toBe('9,876.50')
+  })
+
+  it.each([
+    ['insertText', '1,2934.50', 4, '12,934.50', 4, 12934.5],
+    ['deleteContentBackward', '1234.50', 1, '234.50', 0, 234.5],
+    ['deleteContentForward', '1234.50', 1, '134.50', 1, 134.5],
+  ] as const)('keeps the caret at the edited digit after %s', async (inputType, raw, caret, formatted, expectedCaret, amount) => {
+    const wrapper = mount(ZtInputNumber, { props: { modelValue: 1234.5, money: true } })
+    const input = wrapper.get('input')
+    await input.trigger('focus')
+    input.element.value = raw
+    input.element.setSelectionRange(caret, caret)
+    await input.trigger('input', { inputType })
+    expect(input.element.value).toBe(formatted)
+    expect(input.element.selectionStart).toBe(expectedCaret)
+    expect(wrapper.emitted('update:modelValue')).toEqual([[amount]])
+  })
+
+  it('uses configured money precision and keeps empty and invalid inputs distinct from zero', async () => {
+    const wrapper = mount(ZtInputNumber, { props: { money: true, precision: 3, modelValue: -1234.5 } })
+    const input = wrapper.get('input')
+    expect(input.element.value).toBe('-1,234.500')
+    input.element.value = '12,34'
+    await input.trigger('input')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    await input.trigger('change')
+    expect(input.element.value).toBe('-1,234.500')
+    await input.setValue('')
+    expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([null])
+    await wrapper.setProps({ money: false, modelValue: 1234.5 })
+    expect(input.element.value).toBe('1234.500')
+  })
+
   it('supports an empty value, keyboard controls, sizes and read-only mode', async () => {
     const empty = mount(ZtInputNumber, { props: { modelValue: 2, size: 'mini' } })
     await empty.get('input').setValue('')

@@ -2,13 +2,13 @@
 import { ref } from 'vue';
 import { ZtInputNumber } from '@ztechjs/zt-ui';
 const quantity = ref<number | null>(3);
-const price = ref<number | null>(199.5);
+const price = ref<number | null>(1234.5);
 </script>
 
 <template>
   <div class="demo">
     <ZtInputNumber v-model="quantity" :min="1" :max="99" />
-    <ZtInputNumber v-model="price" :min="0" :step="0.5" :precision="2" />
+    <ZtInputNumber v-model="price" money :min="0" :controls="false" aria-label="单价" />
     <p>数量：{{ quantity }}，单价：{{ price }}</p>
   </div>
 </template>

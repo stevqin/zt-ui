@@ -11,6 +11,8 @@ export interface ZtInputNumberProps {
   max?: number
   step?: number
   precision?: number
+  /** 金额模式，输入时实时添加千分位，失焦时默认保留两位小数。绑定值仍为数字。 */
+  money?: boolean
   stepStrictly?: boolean
   size?: ZtInputNumberSize
   disabled?: boolean

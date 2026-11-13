@@ -4899,6 +4899,13 @@
             "description": "数值保留的小数位数，同时用于数值归一化及显示。"
           },
           {
+            "name": "money",
+            "type": "boolean",
+            "required": false,
+            "description": "金额模式，输入时实时添加千分位，失焦时默认保留两位小数。绑定值仍为数字。",
+            "defaultValue": "false"
+          },
+          {
             "name": "stepStrictly",
             "type": "boolean",
             "required": false,
@@ -4998,7 +5005,7 @@
           },
           {
             "name": "ZtInputNumberProps",
-            "type": "export interface ZtInputNumberProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  modelValue?: number | null\n  min?: number\n  max?: number\n  step?: number\n  precision?: number\n  stepStrictly?: boolean\n  size?: ZtInputNumberSize\n  disabled?: boolean\n  readonly?: boolean\n  controls?: boolean\n  controlsPosition?: ZtInputNumberControlsPosition\n}",
+            "type": "export interface ZtInputNumberProps {\n  /** 显式 true 启用下边框，false 强制普通边框；省略时继承最近 Form 的 underline。内部及弹出面板辅助控件保留普通边框。 */\n  underline?: boolean\n  modelValue?: number | null\n  min?: number\n  max?: number\n  step?: number\n  precision?: number\n  /** 金额模式，输入时实时添加千分位，失焦时默认保留两位小数。绑定值仍为数字。 */\n  money?: boolean\n  stepStrictly?: boolean\n  size?: ZtInputNumberSize\n  disabled?: boolean\n  readonly?: boolean\n  controls?: boolean\n  controlsPosition?: ZtInputNumberControlsPosition\n}",
             "description": "数字输入框的输入参数结构，包含underline、绑定值（modelValue）、下限（min）、上限（max）、步长（step）。"
           }
         ]

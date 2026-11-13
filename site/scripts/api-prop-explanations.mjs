@@ -55,7 +55,7 @@ const descriptions = {
     maxlength: '密码输入框允许输入的最大字符长度。', showWordLimit: '在已配置 maxlength 时显示已输入密码的字符数及长度上限。',
   },
   ZtInputNumber: {
-    modelValue: '数字输入框的数值，清空时为 null。', precision: '数值保留的小数位数，同时用于数值归一化及显示。',
+    modelValue: '数字输入框的数值，清空时为 null。', money: '开启金额格式。输入时实时显示千分位，失焦时补齐小数位，默认两位，可用 precision 覆盖。', precision: '数值保留的小数位数，同时用于数值归一化及显示。',
     stepStrictly: '将输入值归一化为 step 的整数倍。', controls: '显示增加和减少数值的操作按钮。',
     controlsPosition: '步进按钮的位置：默认分居两侧，或统一置于左侧、右侧。',
   },

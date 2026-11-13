@@ -85,7 +85,7 @@ export const pagesB: DocPage[] = [
       {
         id: "basic",
         title: "数量与金额",
-        description: "步长控制每次调整，precision 控制小数精度。",
+        description: "步长控制每次调整。开启 money 后，输入时实时显示千分位，失焦时默认补齐两位小数。",
         file: "src/examples/input-number/Basic.vue",
       },
       {

@@ -14,6 +14,7 @@ const props = withDefaults(defineProps<ZtInputNumberProps>(), {
   min: Number.NEGATIVE_INFINITY,
   max: Number.POSITIVE_INFINITY,
   step: 1,
+  money: false,
   stepStrictly: false,
   disabled: false,
   readonly: false,
@@ -33,16 +34,23 @@ const emit = defineEmits<{
 const attrs = useAttrs()
 const formItem = inject(ztFormItemKey, undefined)
 const inputRef = ref<HTMLInputElement>()
+const focused = ref(false)
 const displayValue = ref(format(props.modelValue))
 let lastInputValue: number | null | undefined
 
 watch(() => props.modelValue, value => {
+  // Preserve the draft and caret when v-model echoes a value from this field.
+  if (props.money && focused.value && Object.is(value, lastInputValue)) return
   displayValue.value = format(value)
   lastInputValue = undefined
+})
+watch([() => props.money, () => props.precision], () => {
+  displayValue.value = format(props.modelValue)
 })
 
 const classes = computed(() => [
   'zt-input-number',
+  props.money && 'zt-input-number--money',
   underline.value && 'is-form-underline',
   effectiveSize.value !== 'default' && `zt-input-number--${effectiveSize.value}`,
   props.controlsPosition === 'left' && 'zt-input-number--controls-left',
@@ -70,8 +78,12 @@ function decimals(value: number) {
   return source.includes('.') ? source.length - source.indexOf('.') - 1 : 0
 }
 
+function effectivePrecision() {
+  return props.precision ?? (props.money ? 2 : undefined)
+}
+
 function round(value: number) {
-  const precision = props.precision ?? Math.min(12, Math.max(decimals(value), decimals(props.step)))
+  const precision = effectivePrecision() ?? Math.min(12, Math.max(decimals(value), decimals(props.step)))
   const factor = 10 ** precision
   return Math.round((value + Number.EPSILON) * factor) / factor
 }
@@ -88,7 +100,37 @@ function normalize(value: number) {
 
 function format(value: number | null | undefined) {
   if (value == null || !Number.isFinite(value)) return ''
-  return props.precision == null ? String(value) : value.toFixed(props.precision)
+  const precision = effectivePrecision()
+  if (props.money) {
+    return new Intl.NumberFormat('en-US', {
+      minimumFractionDigits: precision,
+      maximumFractionDigits: precision,
+    }).format(value)
+  }
+  return precision == null ? String(value) : value.toFixed(precision)
+}
+
+function parse(raw: string) {
+  if (!props.money) return Number(raw)
+  const amount = raw.trim().replace(/^([+-]?)[¥￥]\s*/, '$1')
+  // Accept plain decimals or correctly grouped amounts copied from a display.
+  if (!/^[+-]?(?:(?:\d+|\d{1,3}(?:,\d{3})+)(?:\.\d*)?|\.\d+)$/.test(amount)) return NaN
+  return Number(amount.replace(/,/g, ''))
+}
+
+function handleFocus(event: FocusEvent) {
+  focused.value = true
+  emit('focus', event)
+}
+
+function handleBlur(event: FocusEvent) {
+  focused.value = false
+  if (props.money && displayValue.value.trim() !== '') {
+    const value = parse(displayValue.value)
+    displayValue.value = format(Number.isFinite(value) ? value : props.modelValue)
+  }
+  emit('blur', event)
+  void formItem?.validate('blur')
 }
 
 function emitInput(value: number | null) {
@@ -101,15 +143,56 @@ function emitInputWhenChanged(value: number | null) {
   if (!Object.is(lastInputValue, value)) emitInput(value)
 }
 
+function groupMoneyDraft(input: HTMLInputElement, inputType: string) {
+  let raw = input.value
+  let caret = input.selectionStart ?? raw.length
+
+  // Deleting only an auto-inserted comma should delete the adjacent digit.
+  const previous = displayValue.value
+  if (previous[caret] === ',' && raw === previous.slice(0, caret) + previous.slice(caret + 1)) {
+    if (inputType === 'deleteContentBackward') {
+      raw = raw.slice(0, caret - 1) + raw.slice(caret)
+      caret--
+    } else if (inputType === 'deleteContentForward') {
+      raw = raw.slice(0, caret) + raw.slice(caret + 1)
+    }
+  }
+
+  const amount = raw.trim().replace(/^([+-]?)[¥￥]\s*/, '$1')
+  // Existing separators can be misplaced after editing in the middle.
+  const isDigitEdit = inputType === 'insertText' || inputType.startsWith('deleteContent')
+  if (!isDigitEdit && !Number.isFinite(parse(raw))) return raw
+  const draft = amount.replace(/,/g, '')
+  if (!/^[+-]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(draft)) return raw
+
+  const [integer, fraction] = draft.split('.')
+  const grouped = integer.replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+  const formatted = fraction === undefined ? grouped : grouped + '.' + fraction
+
+  if (formatted !== input.value) {
+    // Track the caret by digits, sign and decimal point, ignoring formatting.
+    let remaining = raw.slice(0, caret).replace(/[^0-9.+-]/g, '').length
+    let position = 0
+    while (remaining > 0 && position < formatted.length) {
+      if (formatted[position++] !== ',') remaining--
+    }
+    if (raw[caret - 1] === ',' && formatted[position] === ',') position++
+    input.value = formatted
+    input.setSelectionRange(position, position)
+  }
+  return formatted
+}
+
 function handleInput(event: Event) {
-  const raw = (event.target as HTMLInputElement).value
+  const input = event.target as HTMLInputElement
+  const raw = props.money ? groupMoneyDraft(input, (event as InputEvent).inputType ?? '') : input.value
   displayValue.value = raw
   if (raw.trim() === '') {
     emitInput(null)
     void formItem?.validate('change')
     return
   }
-  const value = Number(raw)
+  const value = parse(raw)
   if (Number.isFinite(value)) {
     emitInput(value)
     void formItem?.validate('change')
@@ -124,7 +207,7 @@ function commit() {
     emit('change', null, oldValue)
     return
   }
-  const parsed = Number(displayValue.value)
+  const parsed = parse(displayValue.value)
   const next = Number.isFinite(parsed) ? normalize(parsed) : oldValue
   displayValue.value = format(next)
   emitInputWhenChanged(next)
@@ -190,8 +273,8 @@ defineExpose({
       @input="handleInput"
       @change="commit"
       @keydown="handleKeydown"
-      @focus="emit('focus', $event)"
-      @blur="emit('blur', $event); formItem?.validate('blur')"
+      @focus="handleFocus"
+      @blur="handleBlur"
     >
     <button
       v-if="controls"

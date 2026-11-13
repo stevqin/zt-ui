@@ -2,6 +2,12 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.3 — 2026-11-13
+
+### Added
+
+- **InputNumber** adds a `money` option that groups digits while you type and preserves the caret position. It displays two decimal places on blur by default and accepts pasted amounts with a yuan symbol. The bound value remains a number or `null`.
+
 ## 0.13.2 — 2026-11-13
 
 ### Fixed
