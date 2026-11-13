@@ -177,7 +177,7 @@ function keydown(event:KeyboardEvent){
     </component></li>
    </ul>
    <div v-if="mode!=='double'||!folded" class="zt-menu__content">
-    <div v-if="mode==='double'" class="zt-menu__module-title">{{activeCategory?.label??'暂无菜单'}}</div>
+    <div v-if="mode==='double'" class="zt-menu__module-title" :title="activeCategory?.label">{{activeCategory?.label??'暂无菜单'}}</div>
     <ul class="zt-menu__list" role="menu" :aria-label="ariaLabel" aria-orientation="vertical"><ZtMenuNode v-for="item in menuItems" :key="item.key" :item="item" /></ul>
     <p v-if="mode==='double'&&!menuItems.length" class="zt-menu__empty">此模块没有子菜单</p>
    </div>
@@ -186,7 +186,7 @@ function keydown(event:KeyboardEvent){
   <div v-if="resizable&&!folded&&mode!=='horizontal'" class="zt-menu__resize" role="separator" aria-label="调整菜单宽度" aria-orientation="vertical" :aria-valuemin="widthMin" :aria-valuemax="widthMax" :aria-valuenow="typeof localWidth==='number'?Math.max(120,localWidth+widthOffset):Math.round(root?.getBoundingClientRect().width??240)" :tabindex="disabled?-1:0" @pointerdown="resizeDown" @pointermove="resizeMove" @pointerup="resizeEnd" @pointercancel="resizeEnd" @lostpointercapture="resizeEnd" @keydown="resizeKey" />
   <Teleport to="body">
    <div v-if="popupKey&&folded&&mode!=='horizontal'" :id="popupId" ref="popup" class="zt-menu zt-menu__flyout" :class="[`zt-menu--${size}`,`zt-menu--status-${status}`]" :style="[providerStyle,popupPosition,{zIndex:flyout.popupStyle.value.zIndex}]" @keydown="keydown" @focusout="focusOut">
-    <div class="zt-menu__module-title">{{activeCategory?.label}}</div>
+    <div class="zt-menu__module-title" :title="activeCategory?.label">{{activeCategory?.label}}</div>
     <ul role="menu" :aria-label="`${activeCategory?.label}子菜单`"><ZtMenuNode v-for="item in activeCategory?.children" :key="item.key" :item="item" flyout /></ul>
    </div>
   </Teleport>

@@ -6,11 +6,11 @@
 
 [在线文档](https://stevqin.github.io/zt-ui/) · [快速开始](https://stevqin.github.io/zt-ui/#/guide/quick-start) · [组件演示](https://stevqin.github.io/zt-ui/#/components) · [更新日志](./CHANGELOG.md)
 
-## v0.13.1 · 2026-11-05
+## v0.13.2 · 2026-11-13
 
-移动端日期范围改用底部面板，点击「确定」后回填，操作按钮适配底部安全区。
+菜单收起按钮随五档尺寸调整高度，与同档模块标题对齐。
 
-[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.1)
+[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.2)
 
 ## 特性
 

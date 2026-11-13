@@ -27,3 +27,27 @@ for (const width of [1440, 390]) {
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   });
 }
+
+test('collapse controls match the module title height at every size', async ({ page }) => {
+  await page.goto('/#/components/menu');
+  const sizePicker = page.getByRole('combobox', { name: '组件尺寸', exact: true });
+  const menu = page.locator('#example-basic .zt-menu--vertical');
+  const collapse = menu.locator('.zt-menu__collapse');
+  const title = page.locator('#example-modes .zt-menu__module-title');
+  const height = (locator: typeof collapse) => locator.evaluate(el => el.getBoundingClientRect().height);
+  let previousHeight = 0;
+
+  for (const size of ['mini', 'small', 'default', 'medium', 'large']) {
+    await sizePicker.click();
+    await page.getByRole('option', { name: size, exact: true }).click();
+    await expect(menu).toHaveClass(new RegExp(`zt-menu--${size}\\b`));
+    const titleHeight = await height(title);
+    expect(titleHeight).toBeGreaterThan(previousHeight);
+    expect(await height(collapse)).toBe(titleHeight);
+    await collapse.click();
+    await expect(collapse).toHaveAttribute('aria-expanded', 'false');
+    expect(await height(collapse)).toBe(titleHeight);
+    await collapse.click();
+    previousHeight = titleHeight;
+  }
+});

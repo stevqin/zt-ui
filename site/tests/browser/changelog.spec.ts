@@ -4,9 +4,9 @@ test('changelog renders versions, categorized lists, links and inline code as a 
   await page.goto('/#/guide/changelog');
   const content = page.locator('.changelog-content');
   await expect(page.getByRole('heading', { level: 1, name: '更新日志', exact: true })).toHaveCount(1);
-  await expect(content.getByRole('heading', { level: 2 }).first()).toContainText('0.13.1');
-  await expect(content.getByRole('heading', { level: 3 }).first()).toHaveText('优化');
-  await expect(content.locator('li strong').first()).toContainText('日期与日期时间选择器');
+  await expect(content.getByRole('heading', { level: 2 }).first()).toContainText('0.13.2');
+  await expect(content.getByRole('heading', { level: 3 }).first()).toHaveText('修复');
+  await expect(content.locator('li strong').first()).toContainText('Menu 菜单');
   await expect(content.locator('code').filter({ hasText: 'product_no' }).first()).toBeVisible();
   await expect(content.locator('a[href="https://github.com/stevqin/zt-ui/compare/v0.9.0...v0.10.0"]')).toBeVisible();
   await expect(page.locator('pre.changelog-content')).toHaveCount(0);
@@ -45,9 +45,9 @@ test('version navigation locates complete historical entries and keeps the activ
   await expect.poll(() => page.locator('#release-0-12-0').evaluate(el => Math.abs(el.getBoundingClientRect().top - 88))).toBeLessThan(2);
   await expect(outline.getByRole('link', { name: 'v0.12.0', exact: true })).toHaveClass(/active/);
   await expect(page.locator('#release-0-12-0')).toContainText('SkuSelect');
-  await outline.getByRole('link', { name: 'v0.13.1', exact: true }).click();
-  await expect.poll(() => page.locator('#release-0-13-1').evaluate(el => Math.abs(el.getBoundingClientRect().top - 88))).toBeLessThan(2);
-  await expect(page.locator('#release-0-13-1 .release-badge')).toHaveText('本次更新');
+  await outline.getByRole('link', { name: 'v0.13.2', exact: true }).click();
+  await expect.poll(() => page.locator('#release-0-13-2').evaluate(el => Math.abs(el.getBoundingClientRect().top - 88))).toBeLessThan(2);
+  await expect(page.locator('#release-0-13-2 .release-badge')).toHaveText('本次更新');
   await page.screenshot({ path: '/tmp/zt-changelog-desktop.png' });
 });
 
@@ -58,7 +58,7 @@ test('release notes remain readable in narrow dark layouts and expose mobile ver
   const quick = page.getByRole('navigation', { name: '版本快速导航' });
   await expect(quick).toBeVisible();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  const release = page.locator('#release-0-13-1');
+  const release = page.locator('#release-0-13-2');
   const meta = (await release.locator('.release-meta').boundingBox())!;
   const body = (await release.locator('.release-body').boundingBox())!;
   expect(body.y).toBeGreaterThan(meta.y + meta.height);

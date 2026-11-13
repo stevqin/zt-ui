@@ -2,6 +2,12 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.2 — 2026-11-13
+
+### Fixed
+
+- **Menu** collapse controls match the module title height in both expanded and collapsed states. Heights for `mini`, `small`, `default`, `medium`, and `large` are 41.5, 43, 44.5, 46, and 47.5 px, respectively.
+
 ## 0.13.1 — 2026-11-05
 
 ### Improved
