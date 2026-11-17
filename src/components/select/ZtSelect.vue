@@ -80,6 +80,7 @@ const searchElement = ref<HTMLInputElement>();
 const listboxElement = ref<HTMLElement>();
 const optionsElement = ref<HTMLElement>();
 const visible = ref(false);
+const openControlHeight = ref<string>();
 const keyword = ref('');
 const searching = ref(false);
 const activeIndex = ref(-1);
@@ -204,7 +205,13 @@ const renderedOptions = computed(() =>
 function handleOptionsScroll(event: Event) {
   virtualScrollTop.value = (event.target as HTMLElement).scrollTop;
 }
-watch(displayedOptions, () => {
+watch([displayedOptions, keyword], ([options, query], [previousOptions, previousQuery]) => {
+  // A model update can recreate the options without changing the visible list.
+  if (
+    query === previousQuery &&
+    options.length === previousOptions.length &&
+    options.every((option, index) => option.value === previousOptions[index]?.value)
+  ) return;
   virtualScrollTop.value = 0;
   if (optionsElement.value) optionsElement.value.scrollTop = 0;
   activeIndex.value = -1;
@@ -325,6 +332,11 @@ function setVisible(next: boolean) {
     visible.value === next
   )
     return;
+  // Keep the popup anchored while selecting tags that would otherwise wrap.
+  const control = controlElement.value;
+  openControlHeight.value = next && props.multiple && !props.collapseTags && control
+    ? getComputedStyle(control).height
+    : undefined;
   if (next) dropdownZIndex.value = resolvePopupZIndex(rootElement.value, overlay?.layer?.value);
   visible.value = next;
   if (next && panelSearch.value) {
@@ -618,7 +630,11 @@ defineExpose({ focus, blur, open, close, clear });
     :style="attrs.style"
     @focusout="handleFocusout"
   >
-    <div ref="controlElement" class="zt-select__control">
+    <div
+      ref="controlElement"
+      class="zt-select__control"
+      :style="{ height: openControlHeight }"
+    >
       <span v-if="$slots.prefix" class="zt-select__prefix"
         ><slot name="prefix"
       /></span>
@@ -788,6 +804,7 @@ defineExpose({ focus, blur, open, close, clear });
                     height: `${virtualRowHeight}px`,
                     minHeight: `${virtualRowHeight}px`,
                     maxHeight: `${virtualRowHeight}px`,
+                    margin: 0,
                     boxSizing: 'border-box',
                     overflow: 'hidden',
                   }

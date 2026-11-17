@@ -100,6 +100,10 @@
     scrollbar-width: thin;
   }
 
+  &.is-open.is-multiple:not(.is-collapsed) &__tags {
+    max-height: min(100%, calc(var(--zt-select-height) * 3));
+  }
+
   &__tag {
     display: inline-flex;
     flex: 0 0 auto;

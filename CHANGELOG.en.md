@@ -2,6 +2,12 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.5 — 2026-11-17
+
+### Fixed
+
+- **Select multiple selection** preserves the scroll position in standard and virtual lists when toggling options, even if the parent recreates the same options. The dropdown stays in place while open, and selected tags wrap after it closes.
+
 ## 0.13.4 — 2026-11-13
 
 ### Added

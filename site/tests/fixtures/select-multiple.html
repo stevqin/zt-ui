@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8">
+  <div id="app" style="margin: 40px"></div>
+  <script type="module">
+    import { createApp, h, ref } from 'vue';
+    import ZtSelect from '../../../src/components/select/ZtSelect.vue';
+
+    const params = new URLSearchParams(location.search);
+    const options = Array.from({ length: 50 }, (_, value) => ({
+      value,
+      label: `测试选项编号 ${value}`,
+    }));
+
+    createApp({
+      setup() {
+        const selection = ref([]);
+        return () => h(ZtSelect, {
+          'aria-label': '多选测试',
+          modelValue: selection.value,
+          'onUpdate:modelValue': value => { selection.value = value; },
+          options: params.has('inline') ? options.map(option => ({ ...option })) : options,
+          multiple: true,
+          collapseTags: params.has('inline'),
+          virtual: params.has('virtual'),
+          style: { width: '170px' },
+        });
+      },
+    }).mount('#app');
+  </script>
+</html>
