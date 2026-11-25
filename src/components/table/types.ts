@@ -1,4 +1,5 @@
-import type { CSSProperties } from 'vue';
+import type { Component, CSSProperties } from 'vue';
+import type { ZtIconName } from '../icon/types';
 import type { ZtComponentSize } from '../types';
 export type ZtTableKey = string | number;
 export type ZtTableRow = Record<string, unknown>;
@@ -137,6 +138,10 @@ export interface ZtTableColumnProps extends Omit<
   prop?: string;
   /** 列标题；工具列可省略，普通列省略时使用 prop。 */
   label?: string;
+  /** 收起状态的图标组件或 ZtIcon 名称，默认 add。 */
+  collapsedIcon?: ZtIconName | Component;
+  /** 展开状态的图标组件或 ZtIcon 名称，默认 minus。 */
+  expandedIcon?: ZtIconName | Component;
 }
 export interface ZtTableHeaderScope {
   column: ZtTableColumn;

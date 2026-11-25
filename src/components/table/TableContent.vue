@@ -1,5 +1,14 @@
 <script setup lang="ts">
-import { computed, ref, nextTick, useId, type CSSProperties } from 'vue';
+import {
+  computed,
+  ref,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  useId,
+  watch,
+  type CSSProperties,
+} from 'vue';
 import { useZtConfig, useZtSize } from '../config-provider/context';
 import type {
   ZtTableProps,
@@ -17,6 +26,7 @@ import TableSelectionControl from './TableSelectionControl.vue';
 import ZtPopover from '../popover/ZtPopover.vue';
 import TableOverflow from './TableOverflow.vue';
 import ZtIcon from '../icon/ZtIcon.vue';
+import { ZtScrollbar, type ZtScrollbarInstance } from '../scrollbar';
 import { useTableColumnResize } from './resize';
 import { legacyTableLayout, type TableLayoutColumn } from './layout';
 import './table.scss';
@@ -61,8 +71,58 @@ const sortIconSize = computed(
     ({ mini: 10, small: 11, default: 12, medium: 13, large: 14 })[size.value],
 );
 const root = ref<HTMLElement>();
+const scrollbar = ref<ZtScrollbarInstance>();
+const tableHead = ref<HTMLTableSectionElement>();
+const headerHeight = ref(0);
+const maxHeightStyle = computed(() =>
+  typeof props.maxHeight === 'number' ? `${props.maxHeight}px` : props.maxHeight,
+);
+let headerObserver: ResizeObserver | undefined;
+function measureHeader() {
+  headerHeight.value = tableHead.value?.offsetHeight ?? 0;
+}
+watch(headerHeight, () => scrollbar.value?.update(), { flush: 'post' });
+onMounted(() => {
+  measureHeader();
+  if (tableHead.value && typeof ResizeObserver !== 'undefined') {
+    headerObserver = new ResizeObserver(([entry]) => {
+      headerHeight.value = entry.borderBoxSize?.[0]?.blockSize
+        ?? tableHead.value?.offsetHeight
+        ?? 0;
+    });
+    headerObserver.observe(tableHead.value);
+  } else {
+    window.addEventListener('resize', measureHeader);
+  }
+});
+onBeforeUnmount(() => {
+  headerObserver?.disconnect();
+  window.removeEventListener('resize', measureHeader);
+});
 const selectionName = `zt-table-selection-${useId()}`;
+const expansionId = useId();
+const expandedRowId = (index: number) => `zt-table-detail-${expansionId}-${index}`;
+const expandedKeySet = computed(() => new Set(props.expandedKeys));
+function expansionIconProps(column: TableLayoutColumn, expanded: boolean) {
+  const icon = expanded
+    ? column.expandedIcon ?? 'minus'
+    : column.collapsedIcon ?? 'add';
+  return typeof icon === 'string' ? { name: icon } : { component: icon };
+}
 const layout = computed(() => props.columnLayout ?? legacyTableLayout(props));
+const fixedEdges = computed(() => {
+  let leftEnd = -1;
+  let rightStart = -1;
+  layout.value.forEach((column, index) => {
+    if (column.fixed === 'left') leftEnd = index;
+    if (column.fixed === 'right' && rightStart === -1) rightStart = index;
+  });
+  return { leftEnd, rightStart };
+});
+function fixedEdge(index: number, colspan = 1) {
+  if (index === fixedEdges.value.rightStart) return 'left';
+  if (index + colspan - 1 === fixedEdges.value.leftEnd) return 'right';
+}
 const resize = useTableColumnResize(
   props,
   root,
@@ -94,6 +154,26 @@ function key(row: ZtTableRow): ZtTableKey {
 }
 const localFilters = ref<ZtTableFilters>({});
 const filterState = computed(() => props.filters ?? localFilters.value);
+const filterId = useId();
+const openFilterColumn = ref<string>();
+const filterOptionsId = (index: number) => `zt-table-filters-${filterId}-${index}`;
+watch(
+  () => layout.value.some((column) =>
+    column.prop === openFilterColumn.value && column.filters?.length,
+  ),
+  (available) => {
+    if (!available) openFilterColumn.value = undefined;
+  },
+);
+function setFilterPopup(column: string, visible: boolean) {
+  if (visible) openFilterColumn.value = column;
+  else if (openFilterColumn.value === column) openFilterColumn.value = undefined;
+}
+function focusFilterOptions(index: number) {
+  document.getElementById(filterOptionsId(index))
+    ?.querySelector<HTMLInputElement>('input:not(:disabled)')
+    ?.focus({ preventScroll: true });
+}
 function changeFilter(
   column: ZtTableColumn,
   value: ZtTableFilterValue,
@@ -221,7 +301,7 @@ function toggle(row: ZtTableRow) {
 }
 function expand(row: ZtTableRow) {
   const k = key(row),
-    on = !props.expandedKeys.includes(k);
+    on = !expandedKeySet.value.has(k);
   emit(
     'update:expandedKeys',
     on ? [...props.expandedKeys, k] : props.expandedKeys.filter((v) => v !== k),
@@ -261,7 +341,7 @@ function columnStyle(
       `${layout.value.reduce((sum, c, i) => sum + (c.fixed === column.fixed && (column.fixed === 'left' ? i < index : i > index) ? layoutWidth(c) : 0), 0)}px`;
     style.zIndex = header ? 4 : 2;
   }
-  if (header && props.maxHeight) {
+  if (header && maxHeightStyle.value) {
     style.position = 'sticky';
     style.top = 0;
     style.zIndex = column.fixed ? 4 : 3;
@@ -335,7 +415,7 @@ const spans = computed(() => {
     return rows.value.map(() => layout.value.map(() => ({ rowspan: 1, colspan: 1 })));
 
   const availableRows = new Array<number>(rows.value.length);
-  const expandedKeys = new Set(props.expandedKeys);
+  const expandedKeys = expandedKeySet.value;
   let nextExpanded = rows.value.length;
   for (let index = rows.value.length - 1; index >= 0; index--) {
     if (props.expandable && expandedKeys.size && expandedKeys.has(key(rows.value[index])))
@@ -456,27 +536,33 @@ const span = computed(() => layout.value.length);
         'is-striped': stripe,
         'is-bordered': border,
         'is-resizing': resize.dragging.value,
+        'is-height-constrained': maxHeightStyle,
       },
     ]"
-    :style="config.style.value"
+    :style="[
+      config.style.value,
+      {
+        maxHeight: maxHeightStyle,
+        '--zt-table-header-height': `${headerHeight}px`,
+      },
+    ]"
     :aria-busy="loading"
   >
-    <div
-      class="zt-table__scroll"
-      :style="{
-        maxHeight: typeof maxHeight === 'number' ? `${maxHeight}px` : maxHeight,
-      }"
-      tabindex="0"
+    <ZtScrollbar
+      ref="scrollbar"
+      wrap-class="zt-table__scroll"
+      tag="table"
+      :size="size"
+      :native="!maxHeightStyle"
+      always
       aria-label="表格滚动区域"
+      :view-style="{
+        minWidth: `${resize.totalWidth.value}px`,
+        width: resize.widths.value.size
+          ? `${resize.totalWidth.value}px`
+          : undefined,
+      }"
     >
-      <table
-        :style="{
-          minWidth: `${resize.totalWidth.value}px`,
-          width: resize.widths.value.size
-            ? `${resize.totalWidth.value}px`
-            : undefined,
-        }"
-      >
         <colgroup>
           <col
             v-for="column in layout"
@@ -488,7 +574,7 @@ const span = computed(() => layout.value.length);
             :style="{ width: `${layoutWidth(column)}px` }"
           />
         </colgroup>
-        <thead>
+        <thead ref="tableHead">
           <tr>
             <template
               v-for="(column, i) in layout"
@@ -504,6 +590,7 @@ const span = computed(() => layout.value.length);
                 class="zt-table__utility"
                 :class="`zt-table__${column.utility}`"
                 :data-table-utility="column.utility"
+                :data-fixed-edge="fixedEdge(i)"
                 :style="columnStyle(column, i, true)"
                 :aria-label="column.label"
               >
@@ -526,6 +613,7 @@ const span = computed(() => layout.value.length);
                 v-else
                 scope="col"
                 :data-column="column.prop"
+                :data-fixed-edge="fixedEdge(i)"
                 :class="{ 'is-resizable': resize.canResize(column) }"
                 :style="columnStyle(column, i, true)"
                 :aria-sort="
@@ -534,97 +622,111 @@ const span = computed(() => layout.value.length);
                     : 'none'
                 "
               >
-                <button
-                  v-if="column.sortable"
-                  type="button"
-                  :data-sort="column.prop"
-                  :disabled="loading"
-                  @click="sortBy(column)"
-                >
-                  <slot :name="`header-${column.prop}`" :column="column">{{
-                    column.label
-                  }}</slot>
-                  <span
-                    class="zt-table__sort-icons"
-                    :style="{ '--zt-table-sort-size': `${sortIconSize}px` }"
-                    :class="{
-                      'has-order':
-                        sortState.prop === column.prop && !!sortState.order,
-                    }"
-                    aria-hidden="true"
-                  >
-                    <ZtIcon
-                      :size="sortIconSize"
-                      :class="{
-                        'is-active':
-                          sortState.prop === column.prop &&
-                          sortState.order === 'ascending',
-                      }"
-                      ><svg viewBox="0 0 12 8" fill="currentColor">
-                        <path d="M1 7 6 1l5 6Z" /></svg
-                    ></ZtIcon>
-                    <ZtIcon
-                      :size="sortIconSize"
-                      :class="{
-                        'is-active':
-                          sortState.prop === column.prop &&
-                          sortState.order === 'descending',
-                      }"
-                      ><svg viewBox="0 0 12 8" fill="currentColor">
-                        <path d="m1 1 5 6 5-6Z" /></svg
-                    ></ZtIcon>
-                  </span></button
-                ><slot
-                  v-else
-                  :name="`header-${column.prop}`"
-                  :column="column"
-                  >{{ column.label }}</slot
-                >
-                <ZtPopover
-                  v-if="column.filters?.length"
-                  placement="bottom-end"
-                  :disabled="loading"
-                  :width="200"
+                <div
+                  class="zt-table__header-content"
+                  :class="{ 'has-filter': column.filters?.length }"
                 >
                   <button
+                    v-if="column.sortable"
                     type="button"
-                    class="zt-table__filter-trigger"
-                    :data-filter="column.prop"
+                    :data-sort="column.prop"
                     :disabled="loading"
-                    :aria-label="`筛选${column.label}`"
-                    :class="{ 'is-active': filterState[column.prop]?.length }"
+                    @click="sortBy(column)"
                   >
-                    筛选
-                  </button>
-                  <template #content>
-                    <div
-                      class="zt-table__filter-options"
-                      :aria-label="`${column.label}筛选选项`"
+                    <slot :name="`header-${column.prop}`" :column="column">{{
+                      column.label
+                    }}</slot>
+                    <span
+                      class="zt-table__sort-icons"
+                      :style="{ '--zt-table-sort-size': `${sortIconSize}px` }"
+                      :class="{
+                        'has-order':
+                          sortState.prop === column.prop && !!sortState.order,
+                      }"
+                      aria-hidden="true"
                     >
-                      <label
-                        v-for="(option, optionIndex) in column.filters"
-                        :key="optionIndex"
+                      <ZtIcon
+                        :size="sortIconSize"
+                        :class="{
+                          'is-active':
+                            sortState.prop === column.prop &&
+                            sortState.order === 'ascending',
+                        }"
+                        ><svg viewBox="0 0 12 8" fill="currentColor">
+                          <path d="M1 7 6 1l5 6Z" /></svg
+                      ></ZtIcon>
+                      <ZtIcon
+                        :size="sortIconSize"
+                        :class="{
+                          'is-active':
+                            sortState.prop === column.prop &&
+                            sortState.order === 'descending',
+                        }"
+                        ><svg viewBox="0 0 12 8" fill="currentColor">
+                          <path d="m1 1 5 6 5-6Z" /></svg
+                      ></ZtIcon>
+                    </span>
+                  </button>
+                  <div v-else class="zt-table__header-label">
+                    <slot :name="`header-${column.prop}`" :column="column">
+                      {{ column.label }}
+                    </slot>
+                  </div>
+                  <ZtPopover
+                    v-if="column.filters?.length"
+                    placement="bottom-end"
+                    :visible="openFilterColumn === column.prop"
+                    :disabled="loading"
+                    :width="200"
+                    @update:visible="setFilterPopup(column.prop, $event)"
+                    @after-enter="focusFilterOptions(i)"
+                  >
+                    <button
+                      type="button"
+                      class="zt-table__filter-trigger"
+                      :data-filter="column.prop"
+                      :disabled="loading"
+                      :aria-label="`筛选${column.label}`"
+                      :aria-expanded="openFilterColumn === column.prop"
+                      :aria-controls="
+                        openFilterColumn === column.prop ? filterOptionsId(i) : undefined
+                      "
+                      :class="{ 'is-active': filterState[column.prop]?.length }"
+                    >
+                      筛选
+                    </button>
+                    <template #content>
+                      <div
+                        :id="filterOptionsId(i)"
+                        class="zt-table__filter-options"
+                        role="group"
+                        :aria-label="`${column.label}筛选选项`"
                       >
-                        <input
-                          type="checkbox"
-                          :checked="
-                            filterState[column.prop]?.includes(option.value) ??
-                            false
-                          "
-                          :disabled="loading"
-                          @change="
-                            changeFilter(
-                              column,
-                              option.value,
-                              ($event.target as HTMLInputElement).checked,
-                              $event.target as HTMLInputElement,
-                            )
-                          "
-                        />{{ option.text }}
-                      </label>
-                    </div>
-                  </template>
-                </ZtPopover>
+                        <label
+                          v-for="(option, optionIndex) in column.filters"
+                          :key="optionIndex"
+                        >
+                          <input
+                            type="checkbox"
+                            :checked="
+                              filterState[column.prop]?.includes(option.value) ??
+                              false
+                            "
+                            :disabled="loading"
+                            @change="
+                              changeFilter(
+                                column,
+                                option.value,
+                                ($event.target as HTMLInputElement).checked,
+                                $event.target as HTMLInputElement,
+                              )
+                            "
+                          />{{ option.text }}
+                        </label>
+                      </div>
+                    </template>
+                  </ZtPopover>
+                </div>
                 <span
                   v-if="resize.canResize(column)"
                   class="zt-table__resize-handle"
@@ -688,6 +790,7 @@ const span = computed(() => layout.value.length);
                     `zt-table__${column.utility}`,
                     cellClass(row, column, i),
                   ]"
+                  :data-fixed-edge="fixedEdge(i)"
                   :style="cellStyleValue(row, column, i)"
                   @click.stop
                 >
@@ -705,17 +808,24 @@ const span = computed(() => layout.value.length);
                     v-else
                     data-expand
                     type="button"
-                    :aria-label="`展开行 ${key(row)}`"
-                    :aria-expanded="expandedKeys.includes(key(row))"
+                    class="zt-table__expand-button"
+                    :disabled="loading"
+                    :aria-label="`${expandedKeySet.has(key(row)) ? '收起' : '展开'}行 ${key(row)}`"
+                    :aria-expanded="expandedKeySet.has(key(row))"
+                    :aria-controls="expandedKeySet.has(key(row)) ? expandedRowId(index) : undefined"
                     @click.stop="expand(row)"
                   >
-                    {{ expandedKeys.includes(key(row)) ? '−' : '+' }}
+                    <ZtIcon
+                      v-bind="expansionIconProps(column, expandedKeySet.has(key(row)))"
+                      :size="14"
+                    />
                   </button>
                 </td>
                 <td
                   v-else-if="spans[index][i].rowspan && spans[index][i].colspan"
                   :rowspan="spans[index][i].rowspan"
                   :colspan="spans[index][i].colspan"
+                  :data-fixed-edge="fixedEdge(i, spans[index][i].colspan)"
                   :class="[
                     cellClass(row, column, i),
                     {
@@ -746,7 +856,8 @@ const span = computed(() => layout.value.length);
               </template>
             </tr>
             <tr
-              v-if="expandable && expandedKeys.includes(key(row))"
+              v-if="expandable && expandedKeySet.has(key(row))"
+              :id="expandedRowId(index)"
               class="zt-table__expanded"
             >
               <td :colspan="span">
@@ -769,14 +880,14 @@ const span = computed(() => layout.value.length);
             <td
               v-for="(column, i) in layout"
               :key="column.prop"
+              :data-fixed-edge="fixedEdge(i)"
               :style="columnStyle(column, i)"
             >
               {{ summary[i] }}
             </td>
           </tr>
         </tfoot>
-      </table>
-    </div>
+    </ZtScrollbar>
     <div v-if="loading" class="zt-table__loading" role="status">加载中…</div>
   </div>
 </template>

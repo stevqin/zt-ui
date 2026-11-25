@@ -1,6 +1,7 @@
 import { mount } from '@vue/test-utils';
 import { h, ref } from 'vue';
 import { describe, expect, it } from 'vitest';
+import { ZtChevronDownIcon, ZtChevronRightIcon, ZtIcon } from '../src/components/icon';
 import { ZtTable, ZtTableColumn } from '../src/components/table';
 const data = [
   { id: 1, name: '杭州' },
@@ -93,6 +94,49 @@ describe('Table template utility columns', () => {
     expect(w.emitted('row-click')).toBeUndefined();
     await w.setProps({ data: [] });
     expect(w.get('.zt-table__empty').attributes('colspan')).toBe('3');
+  });
+
+  it('uses each declared expansion icon independently of the other state', async () => {
+    const custom = ref(true);
+    const w = mount(ZtTable, {
+      props: { data, expandedKeys: [1] },
+      slots: {
+        default: () => [
+          utility('expand', {
+            'collapsed-icon': custom.value ? 'chevron-right' : undefined,
+            expandedIcon: 'chevron-down',
+          }),
+          field(),
+        ],
+      },
+    });
+    const iconNames = () => w.findAll('[data-expand]').slice(0, 2)
+      .map((button) => button.getComponent(ZtIcon).props('name'));
+    expect(iconNames()).toEqual(['chevron-down', 'chevron-right']);
+    await w.setProps({ expandedKeys: [2] });
+    expect(iconNames()).toEqual(['chevron-right', 'chevron-down']);
+    custom.value = false;
+    await w.vm.$nextTick();
+    expect(iconNames()).toEqual(['add', 'chevron-down']);
+  });
+
+  it('renders imported Vue icon components in each expansion state', async () => {
+    const w = mount(ZtTable, {
+      props: { data: [data[0]!], expandedKeys: [] },
+      slots: {
+        default: () => [
+          utility('expand', {
+            collapsedIcon: ZtChevronRightIcon,
+            expandedIcon: ZtChevronDownIcon,
+          }),
+          field(),
+        ],
+      },
+    });
+    const button = w.get('[data-expand]');
+    expect(button.getComponent(ZtIcon).props('component')).toBe(ZtChevronRightIcon);
+    await w.setProps({ expandedKeys: [1] });
+    expect(button.getComponent(ZtIcon).props('component')).toBe(ZtChevronDownIcon);
   });
   it('deduplicates legacy props, accepts old expand slots, and reacts to conditional utility types', async () => {
     const mode = ref('selection'),

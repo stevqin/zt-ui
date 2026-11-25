@@ -33,6 +33,46 @@ test('Table local filters combine column criteria and restore rows when cleared'
   await expect(rows).toHaveCount(3);
 });
 
+test('Table filter controls align with sorting and support keyboard operation', async ({ page }) => {
+  await page.goto('/#/components/table');
+  const preview = example(page, 'filter');
+  const trigger = preview.getByRole('button', { name: '筛选价格', exact: true });
+  const sort = preview.getByRole('button', { name: '价格', exact: true });
+  const clear = preview.getByRole('button', { name: '清空筛选', exact: true });
+  const rows = preview.locator('tbody tr');
+  await expect(clear).toBeDisabled();
+  await trigger.scrollIntoViewIfNeeded();
+  const triggerBox = (await trigger.boundingBox())!;
+  const sortBox = (await sort.boundingBox())!;
+  expect(triggerBox.y + triggerBox.height / 2).toBeCloseTo(sortBox.y + sortBox.height / 2, 0);
+  await trigger.focus();
+  await trigger.press('Enter');
+  const high = page.getByRole('checkbox', { name: '50 元及以上', exact: true });
+  await expect(high).toBeFocused();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'true');
+  await high.press('Space');
+  await expect(high).toBeChecked();
+  await expect(rows).toHaveCount(2);
+  await high.press('Tab');
+  const low = page.getByRole('checkbox', { name: '低于 50 元', exact: true });
+  await expect(low).toBeFocused();
+  await low.press('Space');
+  await expect(low).toBeChecked();
+  await expect(high).not.toBeChecked();
+  await expect(rows).toHaveCount(1);
+  await expect(rows.first()).toContainText('帆布提袋');
+  await low.press('Escape');
+  await expect(trigger).toBeFocused();
+  await expect(trigger).toHaveAttribute('aria-expanded', 'false');
+  await expect(preview.locator('th[data-column="price"]')).toHaveAttribute('aria-sort', 'none');
+  await clear.click();
+  await expect(rows).toHaveCount(3);
+  await expect(clear).toBeDisabled();
+  await trigger.click();
+  await expect(low).not.toBeChecked();
+  await expect(high).not.toBeChecked();
+});
+
 test('Table merged cells and both summary modes render the expected DOM', async ({ page }) => {
   await page.goto('/#/components/table');
   const span = example(page, 'span');
@@ -66,6 +106,35 @@ test('Table current row responds to mouse, keyboard and external clear', async (
   await rows.nth(0).focus();
   await rows.nth(0).press('Space');
   await expect(rows.nth(0)).toHaveAttribute('aria-current', 'true');
+});
+
+test('Table expansion uses icons and links each toggle to its detail row', async ({ page }) => {
+  await page.goto('/#/components/table');
+  const preview = example(page, 'expand');
+  const first = preview.locator('[data-expand]').first();
+  const second = preview.locator('[data-expand]').nth(1);
+  await expect(first.locator('.zt-icon-glyph svg path')).toHaveAttribute('d', 'M5 12h14');
+  await expect(second.locator('.zt-icon-glyph svg path')).toHaveAttribute('d', 'M12 5v14M5 12h14');
+  await expect(first).toHaveAccessibleName('收起行 A');
+  await expect(first).toHaveAttribute('aria-expanded', 'true');
+  const firstDetail = preview.locator('.zt-table__expanded');
+  await expect(firstDetail).toContainText('450 mL');
+  expect(await first.getAttribute('aria-controls')).toBe(await firstDetail.getAttribute('id'));
+
+  await first.click();
+  await expect(first).toHaveAccessibleName('展开行 A');
+  await expect(first).toHaveAttribute('aria-expanded', 'false');
+  await expect(firstDetail).toHaveCount(0);
+  await second.press('Enter');
+  await expect(second).toHaveAccessibleName('收起行 B');
+  await expect(second.locator('.zt-icon-glyph svg path')).toHaveAttribute('d', 'M5 12h14');
+  await expect(firstDetail).toContainText('内置小口袋');
+  await expect(preview).toContainText('已展开：B');
+  await preview.getByText('使用导入的箭头图标', { exact: true }).click();
+  await expect(preview.getByRole('checkbox', { name: '使用导入的箭头图标' })).toBeChecked();
+  await expect(first.locator('.zt-icon-glyph svg path')).toHaveAttribute('d', 'm9 6 6 6-6 6');
+  await expect(second.locator('.zt-icon-glyph svg path')).toHaveAttribute('d', 'm6 9 6 6 6-6');
+  await expect(second).toHaveAttribute('aria-expanded', 'true');
 });
 
 test('Table remote pagination preserves selection and resets page for filters and sorting', async ({ page }) => {

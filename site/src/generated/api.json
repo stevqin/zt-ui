@@ -9873,7 +9873,7 @@
           },
           {
             "name": "ZtTableColumnProps",
-            "type": "export interface ZtTableColumnProps extends Omit<\n  ZtTableColumn,\n  'prop' | 'label' | 'type'\n> {\n  /** 默认 default。default 普通列；index 序号列；selection 复选列；radio 单选列；expand 展开列。 */\n  type?: 'default' | 'index' | 'selection' | 'radio' | 'expand';\n  /** 数据列对应的唯一字段；工具列可省略。 */\n  prop?: string;\n  /** 列标题；工具列可省略，普通列省略时使用 prop。 */\n  label?: string;\n}",
+            "type": "export interface ZtTableColumnProps extends Omit<\n  ZtTableColumn,\n  'prop' | 'label' | 'type'\n> {\n  /** 默认 default。default 普通列；index 序号列；selection 复选列；radio 单选列；expand 展开列。 */\n  type?: 'default' | 'index' | 'selection' | 'radio' | 'expand';\n  /** 数据列对应的唯一字段；工具列可省略。 */\n  prop?: string;\n  /** 列标题；工具列可省略，普通列省略时使用 prop。 */\n  label?: string;\n  /** 收起状态的图标组件或 ZtIcon 名称，默认 add。 */\n  collapsedIcon?: ZtIconName | Component;\n  /** 展开状态的图标组件或 ZtIcon 名称，默认 minus。 */\n  expandedIcon?: ZtIconName | Component;\n}",
             "description": "模板列支持普通数据列、多选、单选及展开列。"
           },
           {
@@ -9939,6 +9939,18 @@
             "type": "string",
             "required": false,
             "description": "列标题；工具列可省略，普通列省略时使用 prop。"
+          },
+          {
+            "name": "collapsedIcon",
+            "type": "ZtIconName | Component",
+            "required": false,
+            "description": "收起状态的图标组件或 ZtIcon 名称，默认 add。"
+          },
+          {
+            "name": "expandedIcon",
+            "type": "ZtIconName | Component",
+            "required": false,
+            "description": "展开状态的图标组件或 ZtIcon 名称，默认 minus。"
           },
           {
             "name": "fixed",

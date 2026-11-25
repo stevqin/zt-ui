@@ -1,6 +1,9 @@
 import type { ZtTableColumn, ZtTableColumnProps, ZtTableProps } from './types';
 export type TableUtility = 'selection' | 'expansion';
-export interface TableLayoutColumn extends ZtTableColumn {
+export interface TableLayoutColumn extends ZtTableColumn, Pick<
+  ZtTableColumnProps,
+  'collapsedIcon' | 'expandedIcon'
+> {
   utility?: TableUtility;
   selectionType?: 'checkbox' | 'radio';
 }

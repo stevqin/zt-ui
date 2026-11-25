@@ -2,6 +2,17 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.6 — 2026-11-25
+
+### Fixed
+
+- **ZtTable scrolling** resolves `max-height="100%"` against the available parent height. The vertical scrollbar starts below the header, and the header and rows scroll horizontally together. A subtle gradient separates the fixed column groups from the scrolling columns when needed.
+- **ZtTable column filters** place sort and filter controls on the same line. Opening a filter with the keyboard focuses its options, and Escape returns focus to the header.
+
+### Added
+
+- **ZtTable row expansion** uses ZtIcon plus and minus glyphs by default. Set `collapsed-icon` and `expanded-icon` to imported Vue icon components or built-in icon names.
+
 ## 0.13.5 — 2026-11-17
 
 ### Fixed
