@@ -6,11 +6,11 @@
 
 [在线文档](https://stevqin.github.io/zt-ui/) · [快速开始](https://stevqin.github.io/zt-ui/#/guide/quick-start) · [组件演示](https://stevqin.github.io/zt-ui/#/components) · [更新日志](./CHANGELOG.md)
 
-## v0.13.6 · 2026-11-25
+## v0.13.7 · 2026-11-26
 
-完善 ZtTable 的表体滚动、固定列分隔和键盘筛选。展开列支持导入自定义图标组件。
+修复原生 label 在 Select 多选中误移除标签、在 InputNumber 中误减数值的问题。
 
-[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.6)
+[完整中文更新日志](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.md) · [Full English changelog](https://github.com/stevqin/zt-ui/blob/main/CHANGELOG.en.md) · [GitHub Release](https://github.com/stevqin/zt-ui/releases/tag/v0.13.7)
 
 ## 特性
 

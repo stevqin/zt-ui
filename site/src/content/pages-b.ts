@@ -80,6 +80,7 @@ export const pagesB: DocPage[] = [
     usage: [
       "数量、价格等数值字段应提供上下界。",
       "空值使用 null，与数值 0 区分。",
+      "字段标题推荐使用 ZtFormItem。使用原生 label 时，将 for 指向传给 ZtInputNumber 的 id，该 id 会应用到实际输入框。",
     ],
     examples: [
       {
@@ -205,6 +206,7 @@ export const pagesB: DocPage[] = [
     usage: [
       "选项使用 value、label，禁用项通过 disabled 标记。",
       "大数据量可以启用 virtual；远程查询返回选项数组。",
+      "字段标题推荐使用 ZtFormItem。使用原生 label 时，将 for 指向传给 ZtSelect 的 id，该 id 会应用到主 combobox 输入框。",
     ],
     examples: [
       {

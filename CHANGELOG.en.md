@@ -2,6 +2,13 @@
 
 **English** · [简体中文](./CHANGELOG.md)
 
+## 0.13.7 — 2026-11-26
+
+### Fixed
+
+- **ZtSelect multiple selection** associates an implicit native label with the input. Hovering or clicking a field label or selected tag text no longer targets a remove button. Remove buttons still work with the mouse and keyboard.
+- **ZtInputNumber** focuses its input when an implicit native label is clicked. The stepper buttons keep their existing layout and behavior.
+
 ## 0.13.6 — 2026-11-25
 
 ### Fixed

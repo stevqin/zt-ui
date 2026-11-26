@@ -245,15 +245,7 @@ defineExpose({
 
 <template>
   <div :class="[classes, attrs.class]" :style="attrs.style">
-    <button
-      v-if="controls"
-      type="button"
-      class="zt-input-number__control zt-input-number__decrease"
-      aria-label="减少数值"
-      :disabled="decreaseDisabled"
-      tabindex="-1"
-      @click="stepBy(-1)"
-    >−</button>
+    <!-- Keep the input first for implicit labels. Grid places the steppers visually. -->
     <input
       ref="inputRef"
       class="zt-input-number__inner"
@@ -276,6 +268,15 @@ defineExpose({
       @focus="handleFocus"
       @blur="handleBlur"
     >
+    <button
+      v-if="controls"
+      type="button"
+      class="zt-input-number__control zt-input-number__decrease"
+      aria-label="减少数值"
+      :disabled="decreaseDisabled"
+      tabindex="-1"
+      @click="stepBy(-1)"
+    >−</button>
     <button
       v-if="controls"
       type="button"

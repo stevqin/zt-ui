@@ -571,6 +571,8 @@ function handleTagsMousedown(event: MouseEvent) {
 
 function handleTagsClick(event: MouseEvent) {
   if (effectiveDisabled.value || isTagAction(event.target)) return;
+  // We handle activation here, so an enclosing label must not forward it again.
+  event.preventDefault();
   focus();
   handleClick();
 }
@@ -635,6 +637,33 @@ defineExpose({ focus, blur, open, close, clear });
       class="zt-select__control"
       :style="{ height: openControlHeight }"
     >
+      <!-- Implicit labels associate with the first labelable descendant. -->
+      <input
+        ref="comboboxElement"
+        class="zt-select__input"
+        v-bind="controlAttrs"
+        :id="String(attrs.id ?? formItem?.inputId ?? selectId)"
+        role="combobox"
+        :disabled="effectiveDisabled"
+        :readonly="props.readonly || panelSearch || (!filterable && !remote)"
+        :value="inputValue"
+        :placeholder="
+          !selectedOption && !selectedValues.length
+            ? placeholder
+            : undefined
+        "
+        :aria-expanded="visible"
+        aria-haspopup="listbox"
+        :aria-controls="listboxId"
+        :aria-activedescendant="panelSearch ? undefined : activeOptionId"
+        :aria-disabled="effectiveDisabled"
+        :aria-invalid="ariaInvalid"
+        :aria-describedby="describedBy"
+        @click="handleClick"
+        @focus="emit('focus', $event)"
+        @input="handleInput"
+        @keydown="handleKeydown"
+      />
       <span v-if="$slots.prefix" class="zt-select__prefix"
         ><slot name="prefix"
       /></span>
@@ -680,32 +709,6 @@ defineExpose({ focus, blur, open, close, clear });
           selectedOption.label
         }}</slot>
       </span>
-      <input
-        ref="comboboxElement"
-        class="zt-select__input"
-        v-bind="controlAttrs"
-        :id="String(attrs.id ?? formItem?.inputId ?? selectId)"
-        role="combobox"
-        :disabled="effectiveDisabled"
-        :readonly="props.readonly || panelSearch || (!filterable && !remote)"
-        :value="inputValue"
-        :placeholder="
-          !selectedOption && !selectedValues.length
-            ? placeholder
-            : undefined
-        "
-        :aria-expanded="visible"
-        aria-haspopup="listbox"
-        :aria-controls="listboxId"
-        :aria-activedescendant="panelSearch ? undefined : activeOptionId"
-        :aria-disabled="effectiveDisabled"
-        :aria-invalid="ariaInvalid"
-        :aria-describedby="describedBy"
-        @click="handleClick"
-        @focus="emit('focus', $event)"
-        @input="handleInput"
-        @keydown="handleKeydown"
-      />
       <button
         v-if="canClear"
         type="button"

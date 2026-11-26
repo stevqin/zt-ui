@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+  <meta charset="utf-8" />
+  <div id="app" style="margin: 40px"></div>
+  <script type="module">
+    import { createApp, h, ref } from 'vue';
+    import ZtSelect from '../../../src/components/select/ZtSelect.vue';
+    import ZtInputNumber from '../../../src/components/input-number/ZtInputNumber.vue';
+    import ZtPopover from '../../../src/components/popover/ZtPopover.vue';
+    import ZtFormItem from '../../../src/components/form/ZtFormItem.vue';
+
+    const params = new URLSearchParams(location.search);
+    const context = params.get('context');
+    const options = [
+      { label: '杭州', value: 'hangzhou' },
+      { label: '上海', value: 'shanghai' },
+      { label: '宁波', value: 'ningbo' },
+      { label: '苏州', value: 'suzhou' },
+    ];
+
+    createApp({
+      setup() {
+        const selection = ref(['hangzhou', 'shanghai', 'ningbo']);
+        const quantity = ref(5);
+        const selectEvents = ref([]);
+        const renderSelect = () => h(ZtSelect, {
+          id: context === 'explicit' ? 'select-field' : undefined,
+          modelValue: selection.value,
+          'onUpdate:modelValue': value => {
+            selection.value = value;
+            selectEvents.value.push(['update:modelValue', value]);
+          },
+          onChange: value => selectEvents.value.push(['change', value]),
+          onRemoveTag: value => selectEvents.value.push(['remove-tag', value]),
+          options,
+          multiple: true,
+          filterable: !params.has('plain'),
+          style: { width: '260px' },
+        });
+        const implicitSelect = () => h('label', { 'data-testid': 'select-label' }, [
+          h('span', '多选字段'),
+          renderSelect(),
+        ]);
+
+        return () => [
+          context === 'popover'
+            ? h(ZtPopover, { placement: 'bottom-start', width: 360 }, {
+                default: () => h('button', { type: 'button' }, '打开字段弹层'),
+                content: implicitSelect,
+              })
+            : context === 'form'
+              ? h(ZtFormItem, { label: '多选字段', labelPosition: 'top' }, { default: renderSelect })
+              : context === 'explicit'
+                ? [h('label', { for: 'select-field', 'data-testid': 'select-label' }, [h('span', '多选字段')]), renderSelect()]
+              : implicitSelect(),
+          context === 'number'
+            ? h('p', [
+                h('label', { 'data-testid': 'number-label' }, [
+                  h('span', '补货数量'),
+                  h(ZtInputNumber, {
+                    modelValue: quantity.value,
+                    'onUpdate:modelValue': value => { quantity.value = value; },
+                    controls: !params.has('no-controls'),
+                    controlsPosition: params.get('position') ?? 'default',
+                  }),
+                ]),
+              ])
+            : null,
+          h('pre', { 'data-testid': 'selection' }, JSON.stringify(selection.value)),
+          h('pre', { 'data-testid': 'select-events' }, JSON.stringify(selectEvents.value)),
+          h('output', { 'data-testid': 'quantity' }, String(quantity.value)),
+        ];
+      },
+    }).mount('#app');
+  </script>
+</html>
